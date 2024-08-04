@@ -1,19 +1,23 @@
 import React from 'react';
-import { Layout, Button, Dropdown, Menu, Avatar, Badge } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined, BellOutlined } from '@ant-design/icons';
+import { Layout, Button, Dropdown, Menu, Avatar } from 'antd';
+import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined } from '@ant-design/icons';
 
 const { Header } = Layout;
 
 function DashHeader({ collapsed, toggleCollapsed }) {
+  const menuItems = [
+    {
+      key: 'profile',
+      label: 'Profile Settings',
+    },
+    {
+      key: 'logout',
+      label: 'Logout',
+    },
+  ];
+
   const menu = (
-    <Menu>
-      <Menu.Item key="profile">
-        Profile Settings
-      </Menu.Item>
-      <Menu.Item key="logout">
-        Logout
-      </Menu.Item>
-    </Menu>
+    <Menu items={menuItems} />
   );
 
   return (
@@ -22,10 +26,7 @@ function DashHeader({ collapsed, toggleCollapsed }) {
         {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
       <div className="flex items-center gap-6" style={{ marginRight: "16px" }}>
-        {/* <Badge count={5}>
-          <BellOutlined style={{ fontSize: '24px' }} />
-        </Badge> */}
-        <Dropdown overlay={menu} placement="bottomRight">
+        <Dropdown menu={menu} placement="bottomRight">
           <Avatar size={45} icon={<UserOutlined />} />
         </Dropdown>
       </div>

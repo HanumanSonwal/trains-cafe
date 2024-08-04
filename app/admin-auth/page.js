@@ -1,0 +1,115 @@
+"use client";
+import React from "react";
+import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import "@/app/globals.css"; // Import the CSS file
+
+const { useToken } = theme;
+const { useBreakpoint } = Grid;
+const { Text, Title, Link } = Typography;
+
+export default function App() {
+  const { token } = useToken();
+  const screens = useBreakpoint();
+
+  const onFinish = (values) => {
+    console.log("Received values of form: ", values);
+  };
+
+  const dynamicStyles = {
+    "--padding": screens.md ? `${token.paddingXL}px` : `${token.sizeXXL}px ${token.padding}px`,
+    "--margin-lg": token.marginLG,
+    "--margin-xl": token.marginXL,
+    "--color-bg-container": token.colorBgContainer,
+    "--height": screens.sm ? "100vh" : "auto",
+    "--padding-section": screens.md ? `${token.sizeXXL}px 0px` : "0px",
+    "--color-text-secondary": token.colorTextSecondary,
+    "--font-size-title": screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3,
+  };
+
+  return (
+    <section className="section" style={dynamicStyles}>
+      <div className="container">
+        <div className="header">
+          <svg
+            width="25"
+            height="24"
+            viewBox="0 0 25 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect x="0.464294" width="24" height="24" rx="4.8" fill="#1890FF" />
+            <path
+              d="M14.8643 3.6001H20.8643V9.6001H14.8643V3.6001Z"
+              fill="white"
+            />
+            <path
+              d="M10.0643 9.6001H14.8643V14.4001H10.0643V9.6001Z"
+              fill="white"
+            />
+            <path
+              d="M4.06427 13.2001H11.2643V20.4001H4.06427V13.2001Z"
+              fill="white"
+            />
+          </svg>
+
+          <Title className="title">Sign in</Title>
+          <Text className="text">
+            Welcome back to AntBlocks UI! Please enter your details below to
+            sign in.
+          </Text>
+        </div>
+        <Form
+          name="normal_login"
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
+          layout="vertical"
+          requiredMark="optional"
+        >
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                type: "email",
+                required: true,
+                message: "Please input your Email!",
+              },
+            ]}
+          >
+            <Input prefix={<MailOutlined />} placeholder="Email" />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Password!",
+              },
+            ]}
+          >
+            <Input.Password prefix={<LockOutlined />} type="password" placeholder="Password" />
+          </Form.Item>
+          <Form.Item>
+            <Form.Item name="remember" valuePropName="checked" noStyle>
+              <Checkbox>Remember me</Checkbox>
+            </Form.Item>
+            <a className="forgotPassword" href="">
+              Forgot password?
+            </a>
+          </Form.Item>
+          <Form.Item style={{ marginBottom: "0px" }}>
+            <Button block type="primary" htmlType="submit">
+              Log in
+            </Button>
+            <div className="footer">
+              <Text className="text">Don't have an account?</Text>{" "}
+              <Link href="">Sign up now</Link>
+            </div>
+          </Form.Item>
+        </Form>
+      </div>
+    </section>
+  );
+}

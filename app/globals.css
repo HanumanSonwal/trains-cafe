@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+
+/* SignIn Componanat css */
+
+.container {
+    margin: 0 auto;
+    padding: var(--padding);
+    width: 380px;
+  }
+  
+  .footer {
+    margin-top: var(--margin-lg);
+    text-align: center;
+    width: 100%;
+  }
+  
+  .forgotPassword {
+    float: right;
+  }
+  
+  .header {
+    margin-bottom: var(--margin-xl);
+  }
+  
+  .section {
+    align-items: center;
+    background-color: var(--color-bg-container);
+    display: flex;
+    height: var(--height);
+    padding: var(--padding-section);
+  }
+  
+  .text {
+    color: var(--color-text-secondary);
+  }
+  
+  .title {
+    font-size: var(--font-size-title);
+  }
+  
