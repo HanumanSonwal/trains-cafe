@@ -1,5 +1,5 @@
 import React from 'react';
-import { DashboardOutlined, CoffeeOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ShopOutlined, AppstoreAddOutlined, TagOutlined, MenuOutlined, ImportOutlined, FileTextOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import Link from 'next/link';
 
@@ -12,26 +12,75 @@ const Menubar = () => {
     },
     {
       key: '2',
-      icon: <CoffeeOutlined />,
-      label: <Link href="/dashboard/order">Orders</Link>,
+      icon: <ShopOutlined />,
+      label: <Link href="#">Stations</Link>,
     },
     {
       key: '3',
+      icon: <ShopOutlined />,
+      label: <Link href="#">Vendors</Link>,
+    },
+    {
+      key: '4',
+      icon: <TagOutlined />,
+      label: <Link href="#">Categories</Link>,
+    },
+    {
+      key: '5',
+      icon: <MenuOutlined />,
+      label: <Link href="#">Menu Items</Link>,
+    },
+    {
+      key: '6',
+      icon: <ImportOutlined />,
+      label: <Link href="#">Import</Link>,
+    },
+    {
+      key: '7',
+      icon: <FileTextOutlined />,
+      label: <Link href="#">Website Pages</Link>,
+    },
+    {
+      key: '8',
+      icon: <FileTextOutlined />,
+      label: <Link href="#">Contact Info</Link>,
+    },
+    {
+      key: '9',
       icon: <UserOutlined />,
-      label: <Link href="/customers">Customers</Link>,
+      label: <Link href="#">Customers</Link>,
     },
     {
       key: 'sub1',
       icon: <SettingOutlined />,
+      label: 'Orders',
+      children: [
+        {
+          key: '10',
+          label: <Link href="#">Ongoing</Link>,
+        },
+        {
+          key: '11',
+          label: <Link href="#">Delivered</Link>,
+        },
+        {
+          key: '12',
+          label: <Link href="#">Cancelled</Link>,
+        },
+      ],
+    },
+    {
+      key: 'sub2',
+      icon: <SettingOutlined />,
       label: 'Settings',
       children: [
         {
-          key: '4',
-          label: <Link href="/settings/profile">Profile</Link>,
+          key: '13',
+          label: <Link href="#">Profile</Link>,
         },
         {
-          key: '5',
-          label: <Link href="/settings/account">Account</Link>,
+          key: '14',
+          label: <Link href="#">Account</Link>,
         },
       ],
     },
@@ -49,3 +98,4 @@ const Menubar = () => {
 };
 
 export default Menubar;
+
