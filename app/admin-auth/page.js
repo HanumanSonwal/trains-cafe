@@ -104,7 +104,7 @@ export default function App() {
               Log in
             </Button>
             <div className="footer">
-              <Text className="text">Don't have an account?</Text>{" "}
+              <Text className="text">Dont have an account?</Text>{" "}
               <Link href="">Sign up now</Link>
             </div>
           </Form.Item>
