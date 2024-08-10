@@ -43,3 +43,9 @@
     font-size: var(--font-size-title);
   }
   
+
+  /* Add this to your global stylesheet or CSS-in-JS */
+.ant-table-thead > tr > th {
+  background-color: #D6872A;
+  color: #FAF3CC;
+}

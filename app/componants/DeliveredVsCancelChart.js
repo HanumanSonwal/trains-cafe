@@ -9,16 +9,18 @@ const data = [
   { name: 'Cancelled', value: 200 },
 ];
 
+const COLORS = ['#D6872A', '#6F4D27']; // Same colors as the pie chart
+
 const DeliveredVsCancelChart = () => (
-  <Card title="Delivered vs Cancel">
-    <ResponsiveContainer width="100%" height={300}>
+  <Card className='bg-[#FAF3CC] border-2 border-b-4' title={<div style={{ borderBottom: '4px solid #D6872A', paddingBottom: '4px' }}>Delivered vs Cancel</div>}>
+    <ResponsiveContainer width="100%" height={220}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="value" fill="#82ca9d" />
+        <Bar dataKey="value" fill={COLORS[0]} />
       </BarChart>
     </ResponsiveContainer>
   </Card>

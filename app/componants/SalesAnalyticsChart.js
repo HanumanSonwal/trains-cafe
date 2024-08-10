@@ -14,19 +14,25 @@ const data = [
   { name: 'Jul', revenue: 3490 },
 ];
 
+const COLORS = '#D6872A'; // Same color as the pie chart for consistency
+
 const SalesAnalyticsChart = () => (
-  <Card title="Sales Analytics">
-    <ResponsiveContainer width="100%" height={300}>
+  <Card
+    className='bg-[#FAF3CC] border-2 border-b-4'
+    title={<div style={{ borderBottom: '4px solid #D6872A', paddingBottom: '4px' }}>Sales Analytics</div>}
+  >
+    <ResponsiveContainer width="100%" height={220}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+        <Line type="monotone" dataKey="revenue" stroke={COLORS} />
       </LineChart>
     </ResponsiveContainer>
   </Card>
 );
 
 export default SalesAnalyticsChart;
+

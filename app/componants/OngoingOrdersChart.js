@@ -38,9 +38,13 @@ const data = [
 ];
 
 const OngoingOrdersChart = () => (
-  <Card title="Ongoing Orders">
-    <Table columns={columns} dataSource={data} />
+  <Card
+    className='bg-[#FAF3CC] border-2 border-b-4'
+    title={<div style={{ borderBottom: '4px solid #D6872A', paddingBottom: '4px' }}>Ongoing Orders</div>}
+  >
+    <Table columns={columns} dataSource={data} pagination={false} />
   </Card>
 );
 
 export default OngoingOrdersChart;
+

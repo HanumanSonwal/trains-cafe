@@ -1,24 +1,43 @@
-import React from 'react';
-import { DashboardOutlined, ShopOutlined, AppstoreAddOutlined, TagOutlined, MenuOutlined, ImportOutlined, FileTextOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
+
+import React, { useState } from 'react';
+import {
+  DashboardOutlined,
+  ShopOutlined,
+  AppstoreAddOutlined,
+  TagOutlined,
+  MenuOutlined,
+  ImportOutlined,
+  FileTextOutlined,
+  UserOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import { Menu } from 'antd';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Menubar = () => {
+  const router = useRouter();
+  const [selectedKey, setSelectedKey] = useState('1');
+
+  const handleClick = (e) => {
+    setSelectedKey(e.key);
+  };
+
   const menuItems = [
     {
       key: '1',
       icon: <DashboardOutlined />,
-      label: <Link href="/dashboard">Dashboard</Link>,
+      label: <Link href="/admin/dashboard">Dashboard</Link>,
     },
     {
       key: '2',
       icon: <ShopOutlined />,
-      label: <Link href="#">Stations</Link>,
+      label: <Link href="/admin/Stations">Stations</Link>,
     },
     {
       key: '3',
       icon: <ShopOutlined />,
-      label: <Link href="#">Vendors</Link>,
+      label: <Link href="/admin/venders">Vendors</Link>,
     },
     {
       key: '4',
@@ -86,16 +105,44 @@ const Menubar = () => {
     },
   ];
 
+  const menuStyles = {
+    default: { color: "#6F4D27" },
+    active: { color: "#D6872A", backgroundColor:"#FAF3CC"  }
+  };
+
+  const getItemStyle = (key) => {
+    return selectedKey === key ? menuStyles.active : menuStyles.default;
+  };
+
   return (
     <Menu
-      style={{ marginTop: '20px', padding: '10px' }}
+      style={{ padding: '10px' }}
       theme="light"
       mode="inline"
       defaultSelectedKeys={['1']}
-      items={menuItems}
-    />
+      selectedKeys={[selectedKey]}
+      onClick={handleClick}
+    >
+      {menuItems.map(item => {
+        if (item.children) {
+          return (
+            <Menu.SubMenu key={item.key} icon={item.icon} title={item.label}>
+              {item.children.map(child => (
+                <Menu.Item key={child.key} style={getItemStyle(child.key)}>
+                  {child.label}
+                </Menu.Item>
+              ))}
+            </Menu.SubMenu>
+          );
+        }
+        return (
+          <Menu.Item key={item.key} icon={item.icon} style={getItemStyle(item.key)}>
+            {item.label}
+          </Menu.Item>
+        );
+      })}
+    </Menu>
   );
 };
 
 export default Menubar;
-

@@ -14,19 +14,28 @@ const data = [
   { name: 'Jul', behavior: 3490, orderPattern: 4300 },
 ];
 
+const COLORS = {
+  behavior: '#D6872A', // Matches previous color
+  orderPattern: '#6F4D27' // Matches previous color
+};
+
 const CustomerInsightsChart = () => (
-  <Card title="Customer Insights">
-    <ResponsiveContainer width="100%" height={300}>
+  <Card
+    className='bg-[#FAF3CC] border-2 border-b-4'
+    title={<div style={{ borderBottom: '4px solid #D6872A', paddingBottom: '4px' }}>Customer Insights</div>}
+  >
+    <ResponsiveContainer width="100%" height={220}>
       <AreaChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
         <Tooltip />
-        <Area type="monotone" dataKey="behavior" stroke="#8884d8" fill="#8884d8" />
-        <Area type="monotone" dataKey="orderPattern" stroke="#82ca9d" fill="#82ca9d" />
+        <Area type="monotone" dataKey="behavior" stroke={COLORS.behavior} fill={COLORS.behavior} />
+        <Area type="monotone" dataKey="orderPattern" stroke={COLORS.orderPattern} fill={COLORS.orderPattern} />
       </AreaChart>
     </ResponsiveContainer>
   </Card>
 );
 
 export default CustomerInsightsChart;
+

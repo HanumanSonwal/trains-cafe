@@ -1,10 +1,7 @@
 "use client";
-import { Layout } from "antd"; // Importing Layout from antd
-import Sidebar from "./Sidebar";
-import DashHeader from "./DashHeader";
-import { useState } from "react";
-
-const { Content } = Layout; // Destructure Content from Layout
+import { useState } from 'react';
+import Sidebar from './Sidebar';
+import DashHeader from './DashHeader';
 
 const SidebarWrapper = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -14,17 +11,18 @@ const SidebarWrapper = ({ children }) => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <div className="flex h-screen">
       <Sidebar collapsed={collapsed} width={256} />
-      <Layout className="site-layout">
+      <div className="flex flex-col flex-1">
         <DashHeader collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
-        <Content style={{ margin: '16px' }}>
+        <main className="p-4 bg-gray-100 flex-1">
           {children}
-        </Content>
-      </Layout>
-    </Layout>
+        </main>
+      </div>
+    </div>
   );
 };
 
 export default SidebarWrapper;
+
 

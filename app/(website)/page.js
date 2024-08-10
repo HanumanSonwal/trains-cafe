@@ -9,6 +9,9 @@ export default function Home() {
       <HeroSection/>
       <OrderForm />
       <OfferSection />
+      <HeroSection/>
+      <OrderForm />
+      <OfferSection />
     </div>
   );
 }
