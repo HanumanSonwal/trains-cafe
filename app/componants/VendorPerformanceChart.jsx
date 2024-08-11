@@ -38,8 +38,8 @@ const data = [
 ];
 
 const VendorPerformanceChart = () => (
-  <Card
-    className='bg-[#FAF3CC] border-2 border-b-4'
+  <Card style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
+   
     title={<div style={{ borderBottom: '4px solid #D6872A', paddingBottom: '4px' }}>Vendor Performance</div>}
   >
     <Table columns={columns} dataSource={data} pagination={false} />

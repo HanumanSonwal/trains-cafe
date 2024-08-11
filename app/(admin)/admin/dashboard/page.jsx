@@ -9,7 +9,7 @@ import DashboardCard from '@/app/componants/DashboardCard';
 
 const Dashboard = () => {
   return (
-    <div className="p-6">
+    <div className="">
       <div className='mb-4'>
       <DashboardCard/>
       </div>
@@ -25,14 +25,17 @@ const Dashboard = () => {
       <div className="mt-4">
         <OngoingOrdersChart />
       </div>
-      <div className="mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="col-span-1 mt-4">
         <SalesAnalyticsChart />
       </div>
-      <div className="mt-4">
-        <VendorPerformanceChart />
+      <div className="col-span-1 mt-4">
+      <CustomerInsightsChart />
+      </div>
       </div>
       <div className="mt-4">
-        <CustomerInsightsChart />
+      <VendorPerformanceChart />
+      
       </div>
     </div>
   );

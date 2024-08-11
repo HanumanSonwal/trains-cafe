@@ -49,3 +49,12 @@
   background-color: #D6872A;
   color: #FAF3CC;
 }
+
+
+.ant-switch-checked {
+  background-color: #FAF3CC !important; 
+}
+
+.ant-switch {
+  background-color: #6F4D27 !important; 
+}

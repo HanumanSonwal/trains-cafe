@@ -1,12 +1,15 @@
-import React from 'react'
+'use client';
+import { redirect, usePathname,useRouter  } from "next/navigation"
 
-function page() {
+export default function Home() {
+
+  const pathname = usePathname()
+
+  if( pathname === '/admin'){
+    return redirect('/admin/dashboard')
+  }
+
   return (
-    <div>
-      login page
-      
-    </div>
+    <>Hello</>
   )
 }
-
-export default page

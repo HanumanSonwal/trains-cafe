@@ -15,7 +15,7 @@ const SidebarWrapper = ({ children }) => {
       <Sidebar collapsed={collapsed} width={256} />
       <div className="flex flex-col flex-1">
         <DashHeader collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
-        <main className="p-4 bg-gray-100 flex-1">
+        <main className="p-8 bg-gray-200 flex-1">
           {children}
         </main>
       </div>

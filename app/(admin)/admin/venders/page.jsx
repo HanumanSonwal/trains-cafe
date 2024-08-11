@@ -68,7 +68,7 @@ const VendorsManagement = () => {
 
   const handleResetSearch = () => {
     setSearchText('');
-    setFilteredVendors(initialVendors); // Reset to initial vendors data or fetch from source
+    setFilteredVendors(initialVendors); 
   };
 
   const columns = [
@@ -128,7 +128,7 @@ const VendorsManagement = () => {
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAddVendor} style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}>
           Add Vendor
         </Button>
-        {/* <Button onClick={handleResetSearch} style={{ marginLeft: '8px' }}>Reset Search</Button> */}
+    
       </div>
       <Table columns={columns} dataSource={filteredVendors} />
 
