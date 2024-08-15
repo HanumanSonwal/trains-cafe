@@ -19,6 +19,8 @@ const Menubar = () => {
   const router = useRouter();
   const [selectedKey, setSelectedKey] = useState('1');
 
+  console.log(selectedKey,"selectedKey")
+
   const handleClick = (e) => {
     setSelectedKey(e.key);
   };
@@ -37,17 +39,17 @@ const Menubar = () => {
     {
       key: '3',
       icon: <ShopOutlined />,
-      label: <Link href="/admin/venders">Vendors</Link>,
+      label: <Link href="/admin/vendors">Vendors</Link>,
     },
     {
       key: '4',
       icon: <TagOutlined />,
-      label: <Link href="#">Categories</Link>,
+      label: <Link href="/admin/categories">Categories</Link>,
     },
     {
       key: '5',
       icon: <MenuOutlined />,
-      label: <Link href="#">Menu Items</Link>,
+      label: <Link href="/admin/menu-item">Menu Items</Link>,
     },
     {
       key: '6',
@@ -119,7 +121,7 @@ const Menubar = () => {
       style={{ padding: '10px' }}
       theme="light"
       mode="inline"
-      defaultSelectedKeys={['1']}
+      defaultSelectedKeys={[selectedKey]}
       selectedKeys={[selectedKey]}
       onClick={handleClick}
     >
