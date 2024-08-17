@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
-<<<<<<< HEAD
+    "@hookform/resolvers": "^3.9.0",
     "antd": "^5.20.0",
     "framer-motion": "^11.3.24",
     "next": "14.2.5",
@@ -18,21 +18,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.2",
     "react-slick": "^0.30.2",
-    "slick-carousel": "^1.8.1"
-=======
-    "@hookform/resolvers": "^3.9.0",
-    "antd": "^5.20.0",
-    "autoprefixer": "^10.4.20",
-    "less": "^4.2.0",
-    "less-loader": "^12.2.0",
-    "next": "^14.2.5",
-    "next-plugin-antd-less": "^1.8.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-hook-form": "^7.52.2",
     "recharts": "^2.12.7",
-    "zod": "^3.23.8"
->>>>>>> 0b6ea0e593f7110a09558f56782cfdbd6254e995
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "eslint": "^8",
