@@ -29,7 +29,7 @@ export default function Header() {
         <header className="relative flex flex-col items-center p-4 bg-white shadow-md ">
           <div className="flex justify-between items-center w-full">
            <div>
-           <img src="/images/logo.jpg" alt="Logo" className="h-10" />
+           <img src="/images/logo.svg" alt="Logo" className="h-10" />
            </div>
             <button onClick={toggleMenu} className="p-2 text-gray-600">
               <MenuOutlined />

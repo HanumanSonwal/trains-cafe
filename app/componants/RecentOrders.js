@@ -72,7 +72,7 @@ export default function RecentOrders() {
           <Button
             type="btn"
             icon={<PhoneOutlined />}
-            className="bg-[#704D25] text-[#FFFFFF] hover:bg-[#ffffff] hover:text-[#704D25] border-none flex items-center justify-center px-6 py-2 text-sm font-[600] rounded-full"
+            className="common-btn border-none flex items-center justify-center px-6 py-2 text-sm font-[600] rounded-full"
           >
             Order via call
           </Button>

@@ -22,7 +22,7 @@ const PromoBanner = () => {
         </div>
         <Button
           type="btn"
-          className="bg-[#704D25] text-white border-none rounded-full px-4 py-2 text-sm font-[600] hover:bg-[#ffffff] hover:text-[#704D25]"
+          className="common-btn text-white border-none rounded-full px-4 py-2 text-sm font-[600]"
         >
           Order Now
         </Button>

@@ -20,7 +20,7 @@ const MobileFooter = () => {
 };
 
 const FooterItem = ({ icon, text, link }) => (
-  <Link href={link} className="flex flex-col items-center font-bold hover:text-[#704D25]">
+  <Link href={link} className="flex flex-col items-center font-bold text-[#000] hover:text-[#704D25]">
     <span className="text-xl">{icon}</span>
     <span className="text-xs mt-1">{text}</span>
   </Link>

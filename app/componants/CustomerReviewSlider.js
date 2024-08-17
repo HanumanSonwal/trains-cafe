@@ -28,7 +28,7 @@ const CustomerReviews = () => {
   }, []);
 
   return (
-    <div className="relative max-w-6xl mx-auto px-4 py-8">
+    <div className="relative max-w-6xl mx-auto px-4 py-8 bg-gray-100 rounded-md mb-5">
       <div className="flex items-center">
         <div className="w-1/3 pr-4">
           <div className="relative mb-4">
@@ -63,8 +63,8 @@ const CustomerReviews = () => {
           <Carousel ref={carouselRef} dots={false} autoplay>
             {reviews.map((review, index) => (
               <div key={index} className="px-4">
-                <div className="relative p-6">
-                  <div className="bg-white shadow-lg rounded-lg p-8">
+                <div className="relative p-2">
+                  <div className="bg-white shadow-md rounded-lg p-8">
                     <div className="flex justify-between items-center mb-3">
                       <img
                         src={review.image}

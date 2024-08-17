@@ -2,7 +2,7 @@ import { Button } from "antd";
 
 export default function Articles() {
   return (
-    <div className="py-8 px-2 mx-auto max-w-[575px]">
+    <div className="py-8 px-2 mx-auto max-w-[575px] bg-gray-100 rounded-md mb-3">
       <div className="relative text-center mb-8">
         <img
           src="/images/Articles.png"
@@ -17,7 +17,7 @@ export default function Articles() {
 
       <div className="text-center">
         <h2 className="font-bold mb-3">Article full heading</h2>
-        <p className="text-sm mb-4">
+        <p className="text-sm mb-5">
           In publishing and graphic design, Lorem ipsum is a placeholder text
           commonly used to demonstrate the visual form of a document or a
           typeface without relying on meaningful content. Lorem ipsum may be
@@ -28,7 +28,7 @@ export default function Articles() {
         </p>
         <Button
           type="btn"
-           className='bg-[#704D25] text-white border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]'
+           className='order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]'
         >
           View More
         </Button>
