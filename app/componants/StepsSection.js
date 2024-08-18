@@ -22,7 +22,7 @@ const StepSection = () => {
   ];
 
   return (
-    <div className="max-w-sm mx-auto py-8 mx-auto text-center relative">
+    <div className="max-w-sm mx-auto py-8 mx-auto text-center relative mb-2">
       <img
         src="/images/Process.png"
         alt="Process"

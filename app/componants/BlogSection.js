@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, Button } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const { Meta } = Card;
 
@@ -35,7 +36,6 @@ const BlogSection = () => {
           src="/images/blog.png"
           alt="Blog Title Background"
           className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-          // style={{ top: '-20px', }}
         />
         <h2 className="text-2xl font-bold relative z-10 text-[#704D25]">
           Our Blogs
@@ -68,9 +68,11 @@ const BlogSection = () => {
                 title={post.title}
                 description={post.description}
               />
-              <a type="link" className="blog-link mt-4 flex items-center">
-                Read more <ArrowRightOutlined className="ml-1" />
-              </a>
+              <Link href="/blog" passHref>
+                <Button type="link" className="blog-link mt-4 flex items-center">
+                  Read more <ArrowRightOutlined className="ml-1" />
+                </Button>
+              </Link>
             </Card>
           </div>
         ))}

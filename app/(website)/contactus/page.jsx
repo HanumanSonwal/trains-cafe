@@ -10,13 +10,17 @@ const ContactUsPage = () => {
   return (
     <div className="min-h-screen">
       {/* Banner Section */}
-      <div className="relative md:h-60 h-40">
-        <img
-          src="https://www.zoopindia.com/_next/image?url=%2FfixedBanner.webp&w=575&q=75" 
-          alt="Banner"
-          className="absolute inset-0 object-cover w-full"
-        />
-      </div>
+      <div className="relative md:h-60 h-40 mb-4">
+  <img
+    src="/images/section-bg.webp"
+    alt="Banner"
+    className="absolute inset-0 object-cover w-full h-full"
+  />
+  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <h1 className="text-white text-2xl md:text-4xl font-bold">Contact Us</h1>
+  </div>
+</div>
+
 
       {/* Form Section */}
       <div className="flex items-center justify-center py-8">
@@ -51,7 +55,7 @@ const ContactUsPage = () => {
 
             <Form.Item>
               <div className="text-center">
-                <Button type="primary" htmlType="submit">Send Message</Button>
+                <Button type="btn" className='order-btn' htmlType="submit">Send Message</Button>
               </div>
             </Form.Item>
           </Form>

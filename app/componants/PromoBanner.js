@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "antd";
+import Link from "next/link";
 
 const PromoBanner = () => {
   return (
@@ -20,12 +21,14 @@ const PromoBanner = () => {
             Grab It Soon
           </h2>
         </div>
+        <Link href='tel:090909090'>
         <Button
           type="btn"
-          className="common-btn text-white border-none rounded-full px-4 py-2 text-sm font-[600]"
+          className="common-btn text-white border-none  text-sm font-[600]"
         >
           Order Now
         </Button>
+        </Link>
       </div>
 
       <div className="absolute top-0 right-0 flex flex-col items-center">
