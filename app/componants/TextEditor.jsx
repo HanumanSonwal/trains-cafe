@@ -1,7 +1,10 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
 
-const SunEditor = dynamic(() => import("suneditor-react"), { ssr: false });
+const SunEditor = dynamic(() => import("suneditor-react"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
 
 const TextEditor = ({ previousValue = "a", updatedValue, height }) => {
   useEffect(() => {
