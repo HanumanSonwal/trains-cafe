@@ -15,7 +15,6 @@ const initialCategories = [
     { key: '7', thumbnail: '/food/brooke-lark-R18ecx07b3c-unsplash.jpg', title: 'Indian Breads', categoryId: '12' },
     { key: '8', thumbnail: '/food/eaters-collective-ddZYOtZUnBk-unsplash.jpg', title: 'Curd & Raita', categoryId: '13' },
     { key: '9', thumbnail: '/food/taylor-kiser-6RJct18G_3I-unsplash.jpg', title: 'Combo Meal', categoryId: '14' },
-    { key: '10', thumbnail: '/food/wikisleep-app-qvIrI4ueqzY-unsplash.jpg', title: 'Chinese', categoryId: '15' },
 ];
 
 const CategoryManagement = () => {

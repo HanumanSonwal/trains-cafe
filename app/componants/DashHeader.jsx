@@ -22,7 +22,7 @@ function DashHeader({ collapsed, toggleCollapsed }) {
   );
 
   return (
-    <Header className="!bg-[#6F4D27]  border-b border-[#f1f1f1] flex items-center justify-between" style={{ padding: 0, backgroundColor: "#fff" }}>
+    <Header className="!bg-[#6F4D27]  border-b border-[#f1f1f1] flex items-center justify-between" style={{ position:"sticky", top:0,  zIndex: 1, padding: 0, backgroundColor: "#fff" }}>
       <Button className="!bg-[#FAF3CC] border-2 border-b border-[#6F4D27]" type="dark" onClick={toggleCollapsed} style={{ marginLeft: '16px' }}>
         {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
