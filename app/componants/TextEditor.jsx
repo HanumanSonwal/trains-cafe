@@ -1,19 +1,22 @@
-import React, { useEffect } from "react";
-import dynamic from "next/dynamic";
-
-const SunEditor = dynamic(() => import("suneditor-react"), {
-  ssr: false,
-  loading: () => <p>Loading...</p>,
-});
+import React, { useEffect, useState } from "react";
+import SunEditor from "suneditor-react";
+import "suneditor/dist/css/suneditor.min.css";
 
 const TextEditor = ({ previousValue = "a", updatedValue, height }) => {
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
-    import("suneditor/dist/css/suneditor.min.css");
+    // This ensures the editor is only rendered on the client-side
+    setIsClient(true);
   }, []);
 
   const handleChange = (content) => {
     updatedValue(content);
   };
+
+  if (!isClient) {
+    return null; // Return null on server side rendering
+  }
 
   return (
     <SunEditor
