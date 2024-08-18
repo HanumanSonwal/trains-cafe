@@ -1,17 +1,26 @@
+import Articles from "../componants/Article";
+import BlogSection from "../componants/BlogSection";
+import CustomerReviewSlider from "../componants/CustomerReviewSlider";
 import HeroSection from "../componants/HeroSection";
-import OfferSection from "../componants/OfferSection";
-import OrderForm from "../componants/OrderForm";
+import OrderFood from "../componants/OrderFood";
+import PromoBanner from "../componants/PromoBanner";
+import RecentOrders from "../componants/RecentOrders";
+import StepsSection from "../componants/StepsSection";
+
 
 
 export default function Home() {
   return (
-    <div>
+    <div >
       <HeroSection/>
-      <OrderForm />
-      <OfferSection />
-      <HeroSection/>
-      <OrderForm />
-      <OfferSection />
+      <OrderFood/>
+      <StepsSection/>
+      <PromoBanner/>
+      <RecentOrders/>
+      <CustomerReviewSlider />
+      <BlogSection/>
+      <Articles/>
+      
     </div>
   );
 }

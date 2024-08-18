@@ -1,12 +1,50 @@
+"use client"
+
+import { useState } from 'react';
+import { PhoneOutlined, WhatsAppOutlined, MenuOutlined } from '@ant-design/icons';
+
 export default function Header() {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
     return (
-      <header className="flex justify-between items-center p-4 bg-white shadow-md">
-        <div className="flex items-center">
-          <img src="/images/logo.svg" alt="Logo" className="h-10" />
-          <h1 className="text-xl font-bold ml-2">Trains-Cafe</h1>
-        </div>
-        <button className="text-black-500 font-bold">Login</button>
-      </header>
+      <div>
+        {/* Top Header */}
+        <div className="bg-gray-100 flex justify-center gap-4 p-2 text-center text-sm">
+  <a href='tel:090909090' className="transition-transform transform hover:scale-105 hover:shadow-md flex items-center justify-center bg-white border border-gray-300 rounded-lg p-1 text-blue-600 hover:bg-blue-50">
+    <PhoneOutlined className="mr-2" />
+    <span className="font-small text-xs">Order via Call</span>
+  </a>
+  <a href='https://wa.me/090909090' className="transition-transform transform hover:scale-105 hover:shadow-md flex items-center justify-center bg-white border border-gray-300 rounded-lg p-1 text-green-600 hover:bg-green-50">
+    <WhatsAppOutlined className="mr-2" />
+    <span className="font-medium text-xs">Order via WhatsApp</span>
+  </a>
+</div>
+
+
+        {/* menu Header */}
+        <header className="relative flex flex-col items-center p-4 bg-white shadow-md ">
+          <div className="flex justify-between items-center w-full">
+           <div>
+           <img src="/images/logo.svg" alt="Logo" className="h-10" />
+           </div>
+            <button onClick={toggleMenu} className="p-2 text-gray-600">
+              <MenuOutlined />
+            </button>
+          </div>
+          {isMenuOpen && (
+            <div className="absolute top-16 right-0 bg-white shadow-md rounded-md p-4 w-full z-10">
+              <ul className="text-center">
+                <li><a href="/about" className="block py-2 hover:text-[#704d25]">About</a></li>
+                <li><a href="/contactus" className="block py-2 hover:text-[#704d25]">Contact Us</a></li>
+                <li><a href="#blog" className="block py-2 hover:text-[#704d25]">Blog</a></li>
+              </ul>
+            </div>
+          )}
+        </header>
+      </div>
     );
-  }
-  
+}
