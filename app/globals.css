@@ -124,6 +124,7 @@
   font-weight: 700;
   font-size: 12px;
   text-decoration: underline;
+  padding: 0 !important;
 }
 .ant-tabs-tab-btn{
   font-weight: bold !important;
@@ -209,4 +210,18 @@
   display: block;
   max-width: 100% !important;
   border-radius: 8px 8px 0 0;
+}
+@media (max-width: 425.98px){
+.blog-date,.blog-author{
+  font-size: 10px !important;
+}
+.common-btn-outline{
+  border-color: #fff !important;
+  border-radius: 9999px !important;
+  background-color: #fff !important;
+}
+}
+:where(.css-dev-only-do-not-override-d2lrxs).ant-card .ant-card-body {
+  padding: 16px !important;
+  border-radius: 0 0 8px 8px;
 }

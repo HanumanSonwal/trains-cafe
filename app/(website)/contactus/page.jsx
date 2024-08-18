@@ -64,16 +64,16 @@ const ContactUsPage = () => {
 
       {/* Contact Details Section */}
       <div className="flex flex-col items-center py-8">
-        <Title level={3} className="text-2xl font-semibold mb-4">Company Contact Details</Title>
+        <Title level={3} className="text-xl font-semibold mb-4">Company Contact Details</Title>
         <div className="text-center">
-          <p><strong>Phone:</strong> +123 456 7890</p>
-          <p><strong>Email:</strong> contact@company.com</p>
-          <p><strong>Address:</strong> 123 Business Rd, Business City, BC 12345</p>
+          <p className='text-sm'><strong>Phone:</strong> +123 456 7890</p>
+          <p className='text-sm'><strong>Email:</strong> contact@company.com</p>
+          <p className='text-sm'><strong>Address:</strong> 123 Business Rd, Business City, BC 12345</p>
         </div>
       </div>
 
       {/* Map Section */}
-      <Divider />
+      <Divider className='m-0' />
       <div className="flex items-center justify-center py-8">
         <div className="w-full max-w-4xl">
           <Title level={3} className="text-2xl font-semibold mb-4 text-center">Our Location</Title>

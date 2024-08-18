@@ -67,7 +67,7 @@ export default function RecentOrders() {
           <img
             src="/images/order-vector.png"
             alt="Person Ordering Food"
-            className="w-2/3 my-4"
+            className="my-4"
           />
           <Link href="tel:090909090">
             <Button
