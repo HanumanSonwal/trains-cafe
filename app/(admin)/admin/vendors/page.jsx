@@ -97,7 +97,7 @@ const VendorsManagement = () => {
       title: 'Contact No',
       dataIndex: 'contact',
       key: 'contact',
-      render: (contact) => contact.join(', '),
+      render: (contact) => Array.isArray(contact) ? contact.join(', ') : contact,
     },
     {
       title: 'Station(s)',
@@ -133,6 +133,7 @@ const VendorsManagement = () => {
       ),
     },
   ];
+  
 
   return (
     <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
