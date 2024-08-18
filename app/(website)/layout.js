@@ -24,10 +24,10 @@ export default function RootLayout({ children }) {
         }}
       >
         <AntdRegistry>
-          <Header />
+          <Header/>
           {children}
-          <MobileFooter />
-          <Footer />
+          <MobileFooter/>
+          <Footer/>
         </AntdRegistry>
       </body>
     </html>
