@@ -1,7 +1,7 @@
 import React from 'react';
 import { HomeOutlined, ToolOutlined, FileTextOutlined, GiftOutlined, MenuOutlined } from '@ant-design/icons';
 import { Space } from 'antd';
-import Link from 'next/link'; // Import Link from Next.js
+import Link from 'next/link'; 
 
 const MobileFooter = () => {
   return (

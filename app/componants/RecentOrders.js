@@ -1,5 +1,6 @@
 import { Button, Card, Carousel } from "antd";
 import { PhoneOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 export default function RecentOrders() {
   return (
@@ -68,14 +69,15 @@ export default function RecentOrders() {
             alt="Person Ordering Food"
             className="w-2/3 my-4"
           />
-
-          <Button
-            type="btn"
-            icon={<PhoneOutlined />}
-            className="common-btn border-none flex items-center justify-center px-6 py-2 text-sm font-[600] rounded-full"
-          >
-            Order via call
-          </Button>
+          <Link href="tel:090909090">
+            <Button
+              type="btn"
+              icon={<PhoneOutlined />}
+              className="common-btn border-none flex items-center justify-center  text-sm font-[600] rounded-full"
+            >
+              Order via call
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
