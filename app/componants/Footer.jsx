@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ArrowUpOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const Footer = () => {
   const [showTopNavigation, setShowTopNavigation] = useState(false);
@@ -68,11 +69,13 @@ const Footer = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="text-center sm:text-left">
+              <Link href="/"> 
                 <img
                   src="/images/logo.svg"
                   alt="Company Logo"
                   className="w-24 mx-auto sm:mx-0 mb-4"
                 />
+                </Link>
                 <p className="text-sm text-[#3A3A3A]">
                   We are dedicated to providing the best food service for
                   travelers. Our commitment is to ensure a delightful journey

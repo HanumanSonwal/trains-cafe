@@ -17,7 +17,7 @@ export default function Home() {
       <StepsSection/>
       <PromoBanner/>
       <RecentOrders/>
-      <CustomerReviewSlider />
+      <CustomerReviewSlider/>
       <BlogSection/>
       <Articles/>
       
