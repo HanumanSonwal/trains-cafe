@@ -185,7 +185,7 @@ const TablePage = () => {
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={handleSearch}
-          style={{ maxWidth: 300 }}
+          style={{ maxWidth: 300 ,borderColor: "#D6872A"}}
         />
         <Button
           type="primary"

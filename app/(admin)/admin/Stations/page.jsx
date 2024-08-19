@@ -260,7 +260,7 @@ const StationManagement = () => {
       <div className="flex items-center mb-4 justify-between">
         <AntdInput
           placeholder="Search"
-          style={{ width: 200, borderColor: "#D6872A" }}
+          style={{ width: 300, borderColor: "#D6872A" }}
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={handleSearch}
