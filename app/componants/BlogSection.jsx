@@ -53,14 +53,14 @@ const BlogSection = () => {
               cover={<img alt={post.title} src={post.imageUrl} />}
             >
               <div className="flex justify-between items-center mb-2">
-                <p className="text-sm text-gray-400">{post.date}</p>
+                <p className="text-sm blog-date text-gray-400">{post.date}</p>
                 <div className="flex items-center text-sm text-gray-400">
                   <img
                     src="/images/user-icon.png"
                     alt="Author"
                     className="w-4 h-4 mr-2"
                   />
-                  <p>By {post.author}</p>
+                  <p className="blog-author">By {post.author}</p>
                 </div>
               </div>
               <Meta
