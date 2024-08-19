@@ -13,8 +13,8 @@ const initialCategories = [
     { key: '5', thumbnail: '/food/wikisleep-app-qvIrI4ueqzY-unsplash.jpg', title: 'Beverages', categoryId: '10' },
     { key: '6', thumbnail: '/food/brooke-lark--F_5g8EEHYE-unsplash.jpg', title: 'Indian Main Course', categoryId: '11' },
     { key: '7', thumbnail: '/food/brooke-lark-R18ecx07b3c-unsplash.jpg', title: 'Indian Breads', categoryId: '12' },
-    { key: '8', thumbnail: '/food/eaters-collective-ddZYOtZUnBk-unsplash.jpg', title: 'Curd & Raita', categoryId: '13' },
-    { key: '9', thumbnail: '/food/taylor-kiser-6RJct18G_3I-unsplash.jpg', title: 'Combo Meal', categoryId: '14' },
+    // { key: '8', thumbnail: '/food/eaters-collective-ddZYOtZUnBk-unsplash.jpg', title: 'Curd & Raita', categoryId: '13' },
+    // { key: '9', thumbnail: '/food/taylor-kiser-6RJct18G_3I-unsplash.jpg', title: 'Combo Meal', categoryId: '14' },
 ];
 
 const CategoryManagement = () => {
@@ -109,14 +109,15 @@ const CategoryManagement = () => {
   ];
 
   return (
-    <div>
+    <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+      <h2 className="text-lg font-semibold mb-4" style={{ color: '#6F4D27' }}> Categories Management</h2>
       <div className="flex justify-between items-center mb-4">
         <AntdInput
           placeholder="Search Categories"
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={handleSearch}
-          style={{ maxWidth: 300 }}
+          style={{ maxWidth: 300,borderColor: '#D6872A' }}
         />
         <Button
           type="primary"

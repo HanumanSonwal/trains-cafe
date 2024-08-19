@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { Table, Button, Input as AntdInput, message, Switch } from 'antd';
+import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from 'antd';
 import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled, FileAddOutlined } from '@ant-design/icons';
 import VendorsForm from './VendorsForm';
 import GenerateInvoice from './GenerateInvoice';
@@ -121,19 +121,33 @@ const VendorsManagement = () => {
         />
       ),
     },
+
+
     {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
-        <div className="flex space-x-2">
-          <EditFilled style={{ color: "#D6872A", fontSize: "22px" }} onClick={() => handleEditVendor(record)} />
-          <DeleteFilled style={{ color: "#6F4D27", fontSize: "22px" }} onClick={() => handleDeleteVendor(record.key)} />
-          {/* <FileAddOutlined style={{ color: "#6F4D27", fontSize: "22px" }} onClick={() => handleGenerateInvoice(record)} /> */}
+        <div className="space-x-2">
+          <Button
+            icon={<EditFilled />}
+            onClick={() => handleEditVendor(record)}
+            style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
+          />
+          <Popconfirm
+            title="Are you sure to delete?"
+            onConfirm={() => handleDeleteVendor(record.key)}
+          >
+            <Button
+              icon={<DeleteFilled />}
+              danger
+            />
+          </Popconfirm>
         </div>
       ),
     },
+
   ];
-  
+
 
   return (
     <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -141,7 +155,7 @@ const VendorsManagement = () => {
       <div className="flex items-center mb-4 justify-between">
         <AntdInput
           placeholder="Search"
-          style={{ width: 200, borderColor: '#D6872A' }}
+          style={{ width: 300, borderColor: '#D6872A' }}
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={handleSearch}
