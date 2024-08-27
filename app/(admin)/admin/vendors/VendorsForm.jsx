@@ -12,6 +12,7 @@ const TextEditor = dynamic(() => import('../../../componants/TextEditor'), { ssr
 const vendorSchema = z.object({
   name: z.string().nonempty('Please enter the vendor name'),
   contact: z.string().nonempty('Please enter the contact number'),
+  alternateContact: z.string().optional(), 
   deliveryCharges: z.string().nonempty('Please enter the delivery charges'),
   minOrderValue: z.string().nonempty('Please enter the minimum order value'),
   minOrderTime: z.string().nonempty('Please enter the minimum order time'),
@@ -20,6 +21,7 @@ const vendorSchema = z.object({
   foodType: z.string().nonempty('Please select the food type'),
   description: z.string().nonempty('Please enter a description'),
   address: z.string().nonempty('Please enter the address'),
+  station: z.string().nonempty('Please select a station'),
 });
 
 const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
@@ -28,6 +30,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
     defaultValues: initialValues || {
       name: '',
       contact: '',
+      alternateContact: '', 
       deliveryCharges: '',
       minOrderValue: '',
       minOrderTime: '',
@@ -36,6 +39,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
       foodType: '',
       description: '',
       address: '',
+      station: '',
     },
   });
 
@@ -104,6 +108,37 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
               )}
             />
           </Col>
+          <Col span={12}>
+    <Controller
+      name="alternateContact"
+      control={control}
+      render={({ field }) => (
+        <div className="mb-4">
+          <label className="block mb-1">Alternate Contact No.</label>
+          <Input {...field} />
+          {errors.alternateContact && <p className="text-red-500">{errors.alternateContact.message}</p>}
+        </div>
+      )}
+    />
+  </Col>
+  <Col span={12}>
+    <Controller
+      name="station"
+      control={control}
+      render={({ field }) => (
+        <div className="mb-4">
+          <label className="block mb-1">Station</label>
+          <Select {...field} style={{ width: '100%' }}>
+            {/* Replace the options below with actual station options */}
+            <Option value="Station 1">Station 1</Option>
+            <Option value="Station 2">Station 2</Option>
+            <Option value="Station 3">Station 3</Option>
+          </Select>
+          {errors.station && <p className="text-red-500">{errors.station.message}</p>}
+        </div>
+      )}
+    />
+  </Col>
         </Row>
         <Row gutter={16}>
           <Col span={12}>
