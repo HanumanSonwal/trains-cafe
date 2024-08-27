@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect, useRef } from 'react';
 import { PhoneOutlined, WhatsAppOutlined, MenuOutlined } from '@ant-design/icons';
@@ -13,7 +13,7 @@ export default function Header() {
     };
 
     const handleClickOutside = (event) => {
-        if (menuRef.current && !menuRef.current.contains(event.target)) {
+        if (menuRef.current && !menuRef.current.contains(event.target) && !event.target.closest('.menu-button')) {
             setIsMenuOpen(false);
         }
     };
@@ -52,7 +52,7 @@ export default function Header() {
                     <Link href="/">
                         <img src="/images/logo.svg" alt="Logo" className="h-10" />
                     </Link>
-                    <button onClick={toggleMenu} className="p-2 text-gray-600">
+                    <button onClick={toggleMenu} className="menu-button p-2 text-gray-600">
                         <MenuOutlined />
                     </button>
                 </div>
