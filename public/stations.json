@@ -1,0 +1,14 @@
+[
+    { "key": "1", "name": "Aligarh Junction", "code": "ALJN", "location": "Aligarh", "address": "Aligarh Junction, Aligarh, Uttar Pradesh, India" },
+    { "key": "2", "name": "Prayagraj Chheoki", "code": "PCOI", "location": "Prayagraj", "address": "Naini Gaon, Naini, Chak Imam Ali, Uttar Pradesh 211008" },
+    { "key": "3", "name": "Zawar", "code": "ZW", "location": "Zawar", "address": "" },
+    { "key": "4", "name": "Zarap", "code": "ZARP", "location": "Zarap", "address": "" },
+    { "key": "5", "name": "Zangalapalle", "code": "ZPL", "location": "Zangalapalle", "address": "" },
+    { "key": "6", "name": "Zampini", "code": "ZPI", "location": "Zampini", "address": "" },
+    { "key": "7", "name": "Zamania", "code": "ZNA", "location": "Zamania", "address": "" },
+    { "key": "8", "name": "Zahirabad", "code": "ZB", "location": "Zahirabad", "address": "" },
+    { "key": "9", "name": "Zafarabad Junction", "code": "ZBD", "location": "Zafarabad Junction", "address": "" },
+    { "key": "10", "name": "Yusufpur", "code": "YFP", "location": "Yusufpur", "address": "" },
+    { "key": "11", "name": "Yevat", "code": "YT", "location": "Yevat", "address": "" }
+  ]
+  
