@@ -42,11 +42,11 @@ const BlogSection = () => {
         </h2>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex flex-wrap justify-center">
         {blogPosts.map((post) => (
           <div
             key={post.id}
-            className="max-w-sm mx-4 mb-8 shadow-lg rounded-lg"
+            className="w-full max-w-[275px] sm:max-w-[calc(50%-16px)] mx-2 mb-8 shadow-lg rounded-lg"
           >
             <Card
               hoverable
