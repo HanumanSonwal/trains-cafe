@@ -33,7 +33,7 @@ const BlogSection = () => {
     <div className="py-8 mx-auto max-w-[575px]">
       <div className="relative text-center mb-8">
         <img
-          src="/images/blog.png"
+          src="/images/Blog.png"
           alt="Blog Title Background"
           className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         />
