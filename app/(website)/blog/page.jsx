@@ -102,7 +102,7 @@ const BlogPage = () => {
       </div>
 
       {/* Blog Cards */}
-      <div className="grid grid-cols-2 gap-6 mt-8 px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 px-4">
         {paginatedPosts.map((post) => (
           <div key={post.id} className="w-full shadow-lg rounded-lg relative">
             <Card hoverable cover={
