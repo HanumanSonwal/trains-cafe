@@ -79,7 +79,7 @@ const MenuPage = () => {
       
       <div className="bg-white shadow rounded-lg mb-6 p-4">
         <div className="flex justify-between items-center mb-4">
-          <span className="font-semibold text-lg">Filter:</span>
+          {/* <span className="font-semibold text-lg">Filter:</span> */}
           <div className="flex items-center">
             <span className={`mr-2 ${isVegCategory ? 'text-green-600' : 'text-red-600'}`}>
               {isVegCategory ? 'VEG' : 'NON-VEG'}
