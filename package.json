@@ -12,6 +12,8 @@
     "@ant-design/nextjs-registry": "^1.0.0",
     "@hookform/resolvers": "^3.9.0",
     "antd": "^5.20.0",
+    "bcryptjs": "^2.4.3",
+    "formidable": "^3.5.1",
     "framer-motion": "^11.3.24",
     "mongodb": "^6.8.0",
     "mongoose": "^8.6.0",
