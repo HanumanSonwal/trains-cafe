@@ -14,6 +14,10 @@
     "@reduxjs/toolkit": "^2.2.7",
     "antd": "^5.20.0",
     "bcryptjs": "^2.4.3",
+<<<<<<< HEAD
+=======
+    "formidable": "^3.5.1",
+>>>>>>> c324b35baae79aa72113c11c5ac34559902e4a2d
     "framer-motion": "^11.3.24",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
