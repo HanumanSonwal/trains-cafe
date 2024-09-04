@@ -2,11 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { PhoneOutlined, WhatsAppOutlined, MenuOutlined } from '@ant-design/icons';
+import { Badge } from 'antd';
+import { ShoppingCartOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import Link from 'next/link';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
+
+    const cartItems = useSelector((state) => state.cart.items);
+    const cartItemCount = Object.values(cartItems).reduce((acc, count) => acc + count, 0);
 
     const toggleMenu = () => {
         setIsMenuOpen(prev => !prev);
@@ -52,6 +58,12 @@ export default function Header() {
                     <Link href="/">
                         <img src="/images/logo.svg" alt="Logo" className="h-10" />
                     </Link>
+
+                    <Link href="/cart">
+          <Badge count={cartItemCount} showZero={true}>
+            <ShoppingCartOutlined style={{ fontSize: '24px' }} />
+          </Badge>
+        </Link>
                     <button onClick={toggleMenu} className="menu-button p-2 text-gray-600">
                         <MenuOutlined />
                     </button>

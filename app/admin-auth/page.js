@@ -1,95 +1,86 @@
 "use client";
-import React from "react";
-import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import "@/app/globals.css"; // Import the CSS file
+// pages/login.js
 
-const { useToken } = theme;
-const { useBreakpoint } = Grid;
-const { Text, Title, Link } = Typography;
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { signIn } from 'next-auth/react';
+import { Input, Button, Form } from 'antd';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import 'tailwindcss/tailwind.css';
 
-export default function App() {
-  const { token } = useToken();
-  const screens = useBreakpoint();
+// Define the validation schema with Zod
+const schema = z.object({
+  email: z.string().email('Invalid email address').nonempty('Email is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters long').nonempty('Password is required'),
+});
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-  };
+export default function LoginPage() {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    // resolver: zodResolver(schema),
+  });
 
-  const dynamicStyles = {
-    "--padding": screens.md ? `${token.paddingXL}px` : `${token.sizeXXL}px ${token.padding}px`,
-    "--margin-lg": token.marginLG,
-    "--margin-xl": token.marginXL,
-    "--color-bg-container": token.colorBgContainer,
-    "--height": screens.sm ? "100vh" : "auto",
-    "--padding-section": screens.md ? `${token.sizeXXL}px 0px` : "0px",
-    "--color-text-secondary": token.colorTextSecondary,
-    "--font-size-title": screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3,
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    const result = await signIn('credentials', {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+    });
+
+    setLoading(false);
+
+    if (result.error) {
+      // Handle error (show notification, etc.)
+      alert(result.error);
+    } else {
+      // Redirect to dashboard or another page
+      router.push('/dashboard');
+    }
   };
 
   return (
-    <section className="section" style={dynamicStyles}>
-      <div className="container">
-        <div className="header">
-        
-
-          <Title className="title">Sign in</Title>
-          <Text className="text">
-            Welcome back to AntBlocks UI! Please enter your details below to
-            sign in.
-          </Text>
-        </div>
-        <Form
-          name="normal_login"
-          initialValues={{
-            remember: true,
-          }}
-          onFinish={onFinish}
-          layout="vertical"
-          requiredMark="optional"
-        >
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="p-6 bg-white rounded shadow-md w-80">
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        <Form onFinish={handleSubmit(onSubmit)}>
           <Form.Item
-            name="email"
-            rules={[
-              {
-                type: "email",
-                required: true,
-                message: "Please input your Email!",
-              },
-            ]}
+            validateStatus={errors.email ? 'error' : ''}
+            help={errors.email?.message}
           >
-            <Input prefix={<MailOutlined />} placeholder="Email" />
+            <Input
+              placeholder="Email"
+              {...register('email')}
+              className="mb-2"
+              size="large"
+            />
           </Form.Item>
           <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your Password!",
-              },
-            ]}
+            validateStatus={errors.password ? 'error' : ''}
+            help={errors.password?.message}
           >
-            <Input.Password prefix={<LockOutlined />} type="password" placeholder="Password" />
+            <Input.Password
+              placeholder="Password"
+              {...register('password')}
+              className="mb-4"
+              size="large"
+            />
           </Form.Item>
-          <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-            <a className="forgotPassword" href="">
-              Forgot password?
-            </a>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "0px" }}>
-            <Button block type="primary" htmlType="submit">
-              Log in
-            </Button>
-            <div className="footer">
-              <Text className="text">Dont have an account?</Text>{" "}
-              <Link href="">Sign up now</Link>
-            </div>
-          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="w-full"
+            loading={loading}
+          >
+            Login
+          </Button>
         </Form>
       </div>
-    </section>
+    </div>
   );
 }
+

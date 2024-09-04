@@ -1,0 +1,171 @@
+"use client";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Button, Input, Radio } from "antd";
+import { menuItems } from "@/app/redux/menuItems";
+
+const CheckoutPage = () => {
+  const cartItems = useSelector((state) => state.cart.items);
+  const [paymentMethod, setPaymentMethod] = React.useState("PAYTM");
+
+  const handlePlaceOrder = () => {
+    console.log("Order placed");
+  };
+
+  const totalAmount = Object.keys(cartItems).reduce((total, id) => {
+    const item = menuItems.find((item) => item.id === parseInt(id));
+    return total + item.price * cartItems[id];
+  }, 0);
+
+  const gstAmount = totalAmount * 0.05;
+  const payableAmount = totalAmount + gstAmount;
+
+  return (
+    <div className="max-w-[1024px] mx-auto p-4 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        Your Order at <span className="text-purple-600">Jaipur</span> from{" "}
+        <span className="text-purple-600">Trains Cafe</span>
+      </h1>
+      <div className=" gap-4">
+        <div className="bg-white shadow rounded-lg p-4 mb-4">
+          <h2 className="text-lg font-bold mb-4 text-gray-800">
+            Customer Details
+          </h2>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">Mobile Number</label>
+            <Input placeholder="Mobile Number" />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">Name</label>
+            <Input placeholder="Name" />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">Email</label>
+            <Input placeholder="Enter Your Email" />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">
+              Alternate Mobile (Optional)
+            </label>
+            <Input placeholder="Alternate Mobile (Optional)" />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">PNR</label>
+            <Input placeholder="Enter 10 Digit PNR" />
+          </div>
+
+          <div className="flex gap-2 mb-4">
+            <div className="w-1/2">
+              <label className="block text-gray-700 mb-1">Coach</label>
+              <Input placeholder="Coach" />
+            </div>
+            <div className="w-1/2">
+              <label className="block text-gray-700 mb-1">Seat No.</label>
+              <Input placeholder="Seat No." />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-1">
+              Optional Instructions
+            </label>
+            <Input.TextArea placeholder="Optional Instructions" />
+          </div>
+        </div>
+
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-bold mb-6 text-gray-800">
+            Order Details
+          </h2>
+          <table className="w-full mb-6">
+            <thead>
+              <tr className="text-left border-b">
+                <th className="pb-2">Items</th>
+                <th className="pb-2">Quantity</th>
+                <th className="pb-2">Price</th>
+                <th className="pb-2">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(cartItems).map((id) => {
+                const item = menuItems.find((item) => item.id === parseInt(id));
+                return (
+                  <tr key={id} className="border-b">
+                    <td className="py-2">{item.name}</td>
+                    <td className="py-2">{cartItems[id]}</td>
+                    <td className="py-2">₹ {item.price}</td>
+                    <td className="py-2">₹ {item.price * cartItems[id]}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <hr className="border-black border-t-2 mb-2" />
+
+          <div className="space-y-2 ">
+            <div className="flex justify-between">
+              <span className="font-semibold text-gray-700">Sub Total</span>
+              <span>₹ {totalAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-semibold text-gray-700">GST</span>
+              <span>₹ {gstAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-semibold text-gray-700">
+                Delivery Charge
+              </span>
+              <span className="text-green-600">Free</span>
+            </div>
+            <div className="flex justify-between text-lg font-bold border-t pt-2">
+              <span>Total</span>
+              <span>₹ {payableAmount.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white shadow rounded-lg p-4 mt-4">
+        <Input
+          placeholder="COUPON CODE"
+          className="mb-4"
+          suffix={<Button className="text-green-600">Apply</Button>}
+        />
+      </div>
+
+      <div className="bg-white shadow rounded-lg p-4 mt-4">
+        <h2 className="text-lg font-bold mb-4 text-gray-800">
+          Payment Options
+        </h2>
+        <Radio.Group
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+          className=" gap-5"
+        >
+          <Radio value="PAYTM">
+            PAYTM (UPI + ATM/ Debit/ Credit Cards + Net Banking)
+          </Radio>
+          <Radio value="PhonePe">PhonePe (UPI / Debit & Credit Cards)</Radio>{" "}
+          <br />
+          <Radio value="COD">Cash on Delivery</Radio>
+        </Radio.Group>
+      </div>
+
+      <Button
+        type="primary"
+        style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+        className="w-full bg-blue-500 text-white py-3 text-lg font-semibold rounded-md mt-4"
+        onClick={handlePlaceOrder}
+      >
+        Place Order
+      </Button>
+    </div>
+  );
+};
+
+export default CheckoutPage;
