@@ -1,8 +1,5 @@
 "use client";
-// pages/login.js
-
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { signIn } from 'next-auth/react';
 import { Input, Button, Form } from 'antd';
@@ -10,11 +7,11 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import 'tailwindcss/tailwind.css';
 
-// Define the validation schema with Zod
-const schema = z.object({
-  email: z.string().email('Invalid email address').nonempty('Email is required'),
-  password: z.string().min(6, 'Password must be at least 6 characters long').nonempty('Password is required'),
-});
+
+// const schema = z.object({
+//   email: z.string().email('Invalid email address').nonempty('Email is required'),
+//   password: z.string().min(6, 'Password must be at least 6 characters long').nonempty('Password is required'),
+// });
 
 export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -35,10 +32,10 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result.error) {
-      // Handle error (show notification, etc.)
+     
       alert(result.error);
     } else {
-      // Redirect to dashboard or another page
+    
       router.push('/dashboard');
     }
   };
