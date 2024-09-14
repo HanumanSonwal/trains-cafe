@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Sidebar from './Sidebar';
 import DashHeader from './DashHeader';
+import { SessionProvider } from 'next-auth/react';
 
 const SidebarWrapper = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -16,7 +17,9 @@ const SidebarWrapper = ({ children }) => {
       <div className="flex flex-col flex-1">
         <DashHeader collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
         <main className="p-8 bg-gray-200 flex-1">
+        <SessionProvider>
           {children}
+          </SessionProvider>
         </main>
       </div>
     </div>
