@@ -1,20 +1,22 @@
 "use client";
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
-import { z } from 'zod';
-import { useState } from 'react';
-
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
+import { z } from "zod";
+import { useState } from "react";
+import Link from "next/link";
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { Spin } from "antd";
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(2, 'Password must be at least 6 characters'),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(3, "Password must be at least 6 characters"),
 });
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -24,13 +26,11 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-
   const onSubmit = async (data) => {
     setLoading(true);
-    setError('');
+    setError("");
 
-
-    const result = await signIn('credentials', {
+    const result = await signIn("credentials", {
       redirect: false,
       email: data.email,
       password: data.password,
@@ -41,66 +41,92 @@ export default function Login() {
     if (result?.error) {
       setError(result.error);
     } else {
- 
-      window.location.href = '/admin/dashboard';
+      window.location.href = "/admin/dashboard";
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Login</h1>
+    <div className="grid grid-cols-1 lg:grid-cols-2 items-center text-neutral-800 dark:text-neutral-200 h-[100vh]">
+      <div className="w-full">
+        <img alt="Login" src="/images/loginImg.jpg" className="" />
+      </div>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+      <div className="flex items-center rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none h-full">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full h-full flex flex-col justify-center items-center gap-6"
+        >
+          <p className="text-center text-[30px] font-semibold text-[#101828]">
+            Sign in
+          </p>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Email</label>
+          <div className="relative w-[85%]">
+            <label htmlFor="email" className="block mb-3 text-base font-medium text-[#101828]">
+              Email address
+            </label>
             <input
               type="email"
-              {...register('email')}
-              className={`w-full px-4 py-2 border rounded ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter your email"
+              id="email"
+              className={`border text-gray-900 text-base block w-full p-2.5 ${errors.email ? "border-red-500" : "border-[#E0E0E0]"}`}
+              placeholder="Enter Email Address"
+              {...register("email")}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <div className="text-red-500 text-xs">{errors.email.message}</div>
             )}
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700">Password</label>
-            <input
-              type="password"
-              {...register('password')}
-              className={`w-full px-4 py-2 border rounded ${
-                errors.password ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Enter your password"
-            />
+          <div className="relative w-[85%]">
+            <label htmlFor="password" className="block mb-3 text-base font-medium text-[#101828]">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className={`border text-gray-900 text-base block w-full p-2.5 ${errors.password ? "border-red-500" : "border-[#E0E0E0]"}`}
+                placeholder="Enter Password"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                className="absolute top-[11px] right-5 cursor-pointer"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+              </button>
+            </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <div className="text-red-500 text-xs">{errors.password.message}</div>
             )}
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 ${
-              loading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+          <div className="flex justify-between items-center w-[85%]">
+            <div className="flex items-center gap-[10px]">
+              <input type="checkbox" className="my-0 h-[16px] w-[16px]" />
+              <h4 className="text-sm font-normal text-[#101828]">Remember me</h4>
+            </div>
+            <Link href="/company-user-auth/forgot-password" className="text-sm font-normal text-[#F59E0B]">
+              Forgot password?
+            </Link>
+          </div>
 
-        <p className="mt-4 text-center">
-          Don't have an account?{' '}
-          <a href="/signup" className="text-blue-500 hover:underline">
-            Sign up
-          </a>
-        </p>
+          {loading ? (
+            <button className="bg-[#F59E0B] text-base font-medium w-[85%] py-3 flex justify-center items-center text-[#fff]">
+              Loading... <Spin className="ml-[10px]" />
+            </button>
+          ) : (
+            <button className="bg-[#F59E0B] text-base font-medium w-[85%] py-3 flex justify-center items-center text-[#fff]" type="submit">
+              Sign in
+            </button>
+          )}
+
+          {error && <div className="text-red-500 text-xs mt-2">{error}</div>}
+        </form>
       </div>
     </div>
   );

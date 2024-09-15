@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Button, Dropdown, Menu } from 'antd';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -8,13 +8,13 @@ import Image from 'next/image';
 const { Header } = Layout;
 
 function DashHeader({ collapsed, toggleCollapsed }) {
+  const { data: session } = useSession();
   const router = useRouter();
 
   const handleLogout = () => {
-    signOut({ redirect: false }) 
-      .then(() => {
-        router.push('/admin-auth');
-      });
+    signOut({ redirect: false }).then(() => {
+      router.push('/admin-auth');
+    });
   };
 
   const menuItems = [
@@ -25,24 +25,45 @@ function DashHeader({ collapsed, toggleCollapsed }) {
     {
       key: 'logout',
       label: 'Logout',
-      onClick: handleLogout, 
+      onClick: handleLogout,
     },
   ];
 
   const menu = <Menu items={menuItems} />;
 
   return (
-    <Header className="!bg-[#6F4D27] border-b border-[#f1f1f1] flex items-center justify-between" style={{ position: 'sticky', top: 0, zIndex: 1, padding: 0 }}>
-      <Button className="!bg-[#FAF3CC] border-2 border-[#6F4D27]" onClick={toggleCollapsed} style={{ marginLeft: '16px' }}>
+    <Header
+      className="!bg-[#6F4D27] border-b border-[#f1f1f1] flex items-center justify-between"
+      style={{ position: 'sticky', top: 0, zIndex: 1, padding: 0 }}
+    >
+    <div >
+    <Button
+        className="!bg-[#FAF3CC] border-2 border-[#6F4D27]"
+        onClick={toggleCollapsed}
+        style={{ marginLeft: '16px' }}
+      >
         {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
+
+      <span className="font-medium text-[#FAF3CC] ms-5">Welcome, {session?.user?.name}</span>
+
+
+    </div>
 
       <div className="flex items-center gap-6" style={{ marginRight: '16px' }}>
         <Dropdown menu={{ items: menuItems }} placement="bottomRight">
           <div className="flex items-center gap-2 cursor-pointer">
             <Image src="/images/avtar.png" alt="Avatar" width={40} height={40} />
-            <div className="font-medium text-[#FAF3CC]">Admin</div>
-            <DownOutlined style={{ color: '#FAF3CC' }} />
+            {session ? (
+              <>
+                <div className="font-medium text-[#FAF3CC]">
+                  ({session.user.role})
+                </div>
+                <DownOutlined style={{ color: '#FAF3CC' }} />
+              </>
+            ) : (
+              <div className="font-medium text-[#FAF3CC]">Loading...</div>
+            )}
           </div>
         </Dropdown>
       </div>

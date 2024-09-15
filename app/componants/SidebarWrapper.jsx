@@ -12,17 +12,19 @@ const SidebarWrapper = ({ children }) => {
   };
 
   return (
+    <SessionProvider>
     <div className="flex h-screen">
       <Sidebar collapsed={collapsed} width={256} />
       <div className="flex flex-col flex-1">
         <DashHeader collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
         <main className="p-8 bg-gray-200 flex-1">
-        <SessionProvider>
+     
           {children}
-          </SessionProvider>
+       
         </main>
       </div>
     </div>
+    </SessionProvider>
   );
 };
 
