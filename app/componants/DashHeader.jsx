@@ -4,6 +4,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { MenuUnfoldOutlined, MenuFoldOutlined, DownOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Spin } from "antd";
 
 const { Header } = Layout;
 
@@ -62,7 +63,7 @@ function DashHeader({ collapsed, toggleCollapsed }) {
                 <DownOutlined style={{ color: '#FAF3CC' }} />
               </>
             ) : (
-              <div className="font-medium text-[#FAF3CC]">Loading...</div>
+              <div className="font-medium text-[#FAF3CC]"><Spin className="ml-[10px]" /></div>
             )}
           </div>
         </Dropdown>

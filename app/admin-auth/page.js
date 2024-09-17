@@ -6,14 +6,23 @@ import { z } from "zod";
 import { useState } from "react";
 import Link from "next/link";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(3, "Password must be at least 6 characters"),
+  email: z
+    .string()
+    .min(1, "Email is required") 
+    .email("Invalid email address"), 
+  password: z
+    .string()
+    .min(1, "Password is required") 
+    .min(6, "Password must be at least 6 characters"), 
 });
 
 export default function Login() {
+  const router = useRouter();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,8 +49,10 @@ export default function Login() {
 
     if (result?.error) {
       setError(result.error);
+      message.error(result.error); 
     } else {
-      window.location.href = "/admin/dashboard";
+      message.success("Login successful");
+      router.push("/admin/dashboard");
     }
   };
 
