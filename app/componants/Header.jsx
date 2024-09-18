@@ -64,9 +64,9 @@ export default function Header() {
             <ShoppingCartOutlined style={{ fontSize: '24px' }} />
           </Badge>
         </Link>
-                    <button onClick={toggleMenu} className="menu-button p-2 text-gray-600">
+                    {/* <button onClick={toggleMenu} className="menu-button p-2 text-gray-600">
                         <MenuOutlined />
-                    </button>
+                    </button> */}
                 </div>
                 {isMenuOpen && (
                     <div ref={menuRef} className="absolute top-16 right-0 bg-white shadow-md rounded-md p-4 w-full z-10">
