@@ -1,6 +1,9 @@
 "use client";
-import { Input, Button, Tabs } from "antd";
+import { Input, Button, Tabs, Select } from "antd";
+import Link from "next/link";
 import { useState } from "react";
+
+const { Option } = Select;
 
 const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("1");
@@ -30,13 +33,26 @@ const OrderFood = () => {
       label: "Train Name/No.",
       children: (
         <div className="flex items-center space-x-2 p-6">
-          <Input placeholder="Enter Train Name/No." className="flex-grow" />
+          <Select
+            placeholder="Select Train"
+            className="flex-grow"
+            showSearch
+            filterOption={(input, option) =>
+              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            <Option value="25014">25014 - Moradabad CORBET PRK LINK</Option>
+            <Option value="22977">22977 - Jodhpur Intercity SF Express</Option>
+            <Option value="22995">22995 - Mandore Superfast Express</Option>
+          </Select>
+          <Link href="/station" passHref>
           <Button
             type="btn"
             className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]]"
           >
             Order Now
           </Button>
+          </Link>
         </div>
       ),
     },

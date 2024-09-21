@@ -1,115 +1,144 @@
 "use client";
-import React from "react";
-import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import "@/app/globals.css"; // Import the CSS file
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
+import { z } from "zod";
+import { useState } from "react";
+import Link from "next/link";
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { Spin, message } from "antd";
+import { useRouter } from "next/navigation";
 
-const { useToken } = theme;
-const { useBreakpoint } = Grid;
-const { Text, Title, Link } = Typography;
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required") 
+    .email("Invalid email address"), 
+  password: z
+    .string()
+    .min(1, "Password is required") 
+    .min(6, "Password must be at least 6 characters"), 
+});
 
-export default function App() {
-  const { token } = useToken();
-  const screens = useBreakpoint();
+export default function Login() {
+  const router = useRouter();
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setError("");
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email: data.email,
+      password: data.password,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      setError(result.error);
+      message.error(result.error); 
+    } else {
+      message.success("Login successful");
+      router.push("/admin/dashboard");
+    }
   };
 
-  const dynamicStyles = {
-    "--padding": screens.md ? `${token.paddingXL}px` : `${token.sizeXXL}px ${token.padding}px`,
-    "--margin-lg": token.marginLG,
-    "--margin-xl": token.marginXL,
-    "--color-bg-container": token.colorBgContainer,
-    "--height": screens.sm ? "100vh" : "auto",
-    "--padding-section": screens.md ? `${token.sizeXXL}px 0px` : "0px",
-    "--color-text-secondary": token.colorTextSecondary,
-    "--font-size-title": screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3,
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
-    <section className="section" style={dynamicStyles}>
-      <div className="container">
-        <div className="header">
-          <svg
-            width="25"
-            height="24"
-            viewBox="0 0 25 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect x="0.464294" width="24" height="24" rx="4.8" fill="#1890FF" />
-            <path
-              d="M14.8643 3.6001H20.8643V9.6001H14.8643V3.6001Z"
-              fill="white"
-            />
-            <path
-              d="M10.0643 9.6001H14.8643V14.4001H10.0643V9.6001Z"
-              fill="white"
-            />
-            <path
-              d="M4.06427 13.2001H11.2643V20.4001H4.06427V13.2001Z"
-              fill="white"
-            />
-          </svg>
-
-          <Title className="title">Sign in</Title>
-          <Text className="text">
-            Welcome back to AntBlocks UI! Please enter your details below to
-            sign in.
-          </Text>
-        </div>
-        <Form
-          name="normal_login"
-          initialValues={{
-            remember: true,
-          }}
-          onFinish={onFinish}
-          layout="vertical"
-          requiredMark="optional"
-        >
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                type: "email",
-                required: true,
-                message: "Please input your Email!",
-              },
-            ]}
-          >
-            <Input prefix={<MailOutlined />} placeholder="Email" />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your Password!",
-              },
-            ]}
-          >
-            <Input.Password prefix={<LockOutlined />} type="password" placeholder="Password" />
-          </Form.Item>
-          <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-            <a className="forgotPassword" href="">
-              Forgot password?
-            </a>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "0px" }}>
-            <Button block type="primary" htmlType="submit">
-              Log in
-            </Button>
-            <div className="footer">
-              <Text className="text">Dont have an account?</Text>{" "}
-              <Link href="">Sign up now</Link>
-            </div>
-          </Form.Item>
-        </Form>
+    <div className="grid grid-cols-1 lg:grid-cols-2 items-center text-neutral-800 dark:text-neutral-200 h-[100vh]">
+      <div className="w-full">
+        <img alt="Login" src="/images/loginImg.jpg" className="" />
       </div>
-    </section>
+
+      <div className="flex items-center rounded-b-lg lg:rounded-r-lg lg:rounded-bl-none h-full">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full h-full flex flex-col justify-center items-center gap-6"
+        >
+          <p className="text-center text-[30px] font-semibold text-[#101828]">
+            Sign in
+          </p>
+
+          <div className="relative w-[85%]">
+            <label htmlFor="email" className="block mb-3 text-base font-medium text-[#101828]">
+              Email address
+            </label>
+            <input
+              type="email"
+              id="email"
+              className={`border text-gray-900 text-base block w-full p-2.5 ${errors.email ? "border-red-500" : "border-[#E0E0E0]"}`}
+              placeholder="Enter Email Address"
+              {...register("email")}
+            />
+            {errors.email && (
+              <div className="text-red-500 text-xs">{errors.email.message}</div>
+            )}
+          </div>
+
+          <div className="relative w-[85%]">
+            <label htmlFor="password" className="block mb-3 text-base font-medium text-[#101828]">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className={`border text-gray-900 text-base block w-full p-2.5 ${errors.password ? "border-red-500" : "border-[#E0E0E0]"}`}
+                placeholder="Enter Password"
+                {...register("password")}
+              />
+              <button
+                type="button"
+                className="absolute top-[11px] right-5 cursor-pointer"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+              </button>
+            </div>
+            {errors.password && (
+              <div className="text-red-500 text-xs">{errors.password.message}</div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center w-[85%]">
+            <div className="flex items-center gap-[10px]">
+              <input type="checkbox" className="my-0 h-[16px] w-[16px]" />
+              <h4 className="text-sm font-normal text-[#101828]">Remember me</h4>
+            </div>
+            <Link href="/company-user-auth/forgot-password" className="text-sm font-normal text-[#F59E0B]">
+              Forgot password?
+            </Link>
+          </div>
+
+          {loading ? (
+            <button className="bg-[#F59E0B] text-base font-medium w-[85%] py-3 flex justify-center items-center text-[#fff]">
+              Loading... <Spin className="ml-[10px]" />
+            </button>
+          ) : (
+            <button className="bg-[#F59E0B] text-base font-medium w-[85%] py-3 flex justify-center items-center text-[#fff]" type="submit">
+              Sign in
+            </button>
+          )}
+
+          {error && <div className="text-red-500 text-xs mt-2">{error}</div>}
+        </form>
+      </div>
+    </div>
   );
 }
