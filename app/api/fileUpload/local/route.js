@@ -1,31 +1,29 @@
-import { deleteOne } from '@/app/middleware/function';
-import { parseForm } from '@/app/utils/parseForm';
+import {NextResponse} from "next/server";
+import fs from 'fs';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
+import crypto from 'crypto';
+import path from 'path';
 
-// export async function handler(req, res) {
-//   if (await requireRole(req, res, 'ADMIN')) {
-//     // Your protected logic here
-//     res.status(200).json({ message: 'Welcome Admin' });
-//   }
-// }
-export async function POST(req, res) {
+const pump = promisify(pipeline);
 
-  try {
-    const result = await parseForm(req);
-    const imageName = result.file.file.newFilename;
-    const url = `${process.env.NEXT_PUBLIC_URL}/${imageName}`;
-    return new Response({ success: true, name: imageName, url }, { status: 200 });
-  } catch (err) {
-    return new Response(JSON.stringify({ message: error.message }), { status: 500 });
-  }
-}
-
-export async function DELETE(req, res) {
-
-  try {
-    const { query } = req;
-    await deleteOne(query.name);
-    return new Response({ success: true}, { status: 200 });
-  } catch (err) {
-    return new Response(JSON.stringify({ message: error.message }), { status: 500 });
-  }
+export async function POST(req,res) {
+    try{
+        const formData = await req.formData();
+        const file = formData.getAll('file')[0];
+        console.log(formData);
+        const imageName = file.name;
+        
+        const extension = path.extname(file.name); // Get the file extension
+        
+        // Generate a unique name for the file
+        const uniqueName = crypto.randomBytes(16).toString('hex') + extension;
+        const filePath = `./public/uploads/${uniqueName}`;
+        const url = `${process.env.NEXT_PUBLIC_URL}/uploads/${uniqueName}`;
+        await pump(file.stream(), fs.createWriteStream(filePath));
+        return NextResponse.json({success: true, name: imageName, url})
+    }
+    catch (error) {
+        return  NextResponse.json({success: false, message: error.message})
+    }
 }

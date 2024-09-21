@@ -1,31 +1,30 @@
 import formidable from "formidable";
-import path from "path";
-import fs from "fs/promises";
 
-export const config = {
-    api: {
-      bodyParser: false,
-    },
-  };
-
-  // Ensure the upload directory exists
-const uploadDir = path.join(process.cwd(), "public/uploads");
-async function ensureUploadDir() {
-  try {
-    await fs.access(uploadDir);
-  } catch (err) {
-    await fs.mkdir(uploadDir, { recursive: true });
+async function bufferRequestBody(req) {
+  const buffers = [];
+  for await (const chunk of req.body) {
+    buffers.push(chunk);
   }
+  return Buffer.concat(buffers);
 }
 
 export async function parseForm(req) {
-await ensureUploadDir();
-  return new Promise((resolve, reject) => {
+  console.log("parse");
+  
+  return new Promise(async (resolve, reject) => {
     const form = formidable({
       keepExtensions: true,
-      uploadDir,
+      uploadDir: "./public/uploads",
     });
-    form.parse(req, (err, fields, files) => {
+
+    const bodyBuffer = await bufferRequestBody(req);
+
+    form.headers = {
+      'content-length': req.headers.get('content-length'),
+      'content-type': req.headers.get('content-type'),
+    };
+
+    form.parse(bodyBuffer, (err, fields, files) => {
       if (err) return reject(err);
       const data = { field: fields, file: files };
       resolve(data);
