@@ -52,7 +52,7 @@ export default function Login() {
       message.error(result.error); 
     } else {
       message.success("Login successful");
-      window.location.href = "/admin/dashboard"; 
+      router.push('/admin/dashboard'); // Redirect to dashboard
     }
   };
 
