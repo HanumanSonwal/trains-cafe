@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -28,38 +28,46 @@ const StationPage = () => {
   };
 
   return (
-    <div className="max-w-[575px] mx-auto p-4">
-      <Title level={2} className="text-center text-purple-700 mb-6">
-        Order Food in CORBET PRK LINK (25014) Train
+    <div className="max-w-[575px] mx-auto p-6 bg-gray-50">
+      <Title level={2} className="text-center text-indigo-600 font-bold mb-8">
+     
       </Title>
-      
-      <Card bordered={false} className="mb-6 p-4 shadow-lg rounded-lg">
-        <Title level={4} className="mb-4">Journey Details</Title>
+      <h2 className="text-[#704D25] mx-auto text-center p-6  text-2xl font-bold relative z-10">
+      Order Food in  <br/><span className="text-yellow-500">CORBET PRK LINK (25014)</span>
+        </h2>
+
+      {/* Journey Details Card */}
+      <Card bordered={false} className="mb-6 p-5 shadow-lg rounded-lg bg-white">
+        <Title level={4} className="mb-4 text-gray-700">Journey Details</Title>
         <div className="mb-4">
-          <Text className="block text-sm font-medium mb-2">Select Journey Date:</Text>
+          <Text className="block text-base font-semibold text-gray-600 mb-2">Select Journey Date:</Text>
           <DatePicker 
             value={journeyDate}
             onChange={(date) => setJourneyDate(date)}
-            className="w-full"
+            className="w-full border-gray-300"
           />
         </div>
       </Card>
 
-      <Card bordered={false} className="p-4 shadow-lg rounded-lg">
-        <Title level={4} className="mb-4">Select Your Boarding Station</Title>
+      {/* Boarding Station Selection Card */}
+      <Card bordered={false} className="p-5 shadow-lg rounded-lg bg-white">
+        <Title level={4} className="mb-4 text-gray-700">Select Your Boarding Station</Title>
         <Select
           showSearch
           style={{ width: '100%' }}
-          placeholder="Select a station"
+          placeholder="Choose a boarding station"
           optionFilterProp="children"
           onChange={handleStationChange}
+          className="border-gray-300"
           filterOption={(input, option) =>
             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
           {stations.map((station) => (
             <Option key={station.code} value={station.code}>
-              {station.code} - {station.name} ({station.time})
+              <span className="font-semibold text-gray-600">{station.code}</span> - 
+              <span className="text-gray-500"> {station.name} </span> 
+              <span className="text-blue-500">({station.time})</span>
             </Option>
           ))}
         </Select>

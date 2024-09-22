@@ -1,10 +1,7 @@
 import { Inter } from "next/font/google";
 import "../globals.css";
-import Header from "../componants/Header"; 
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-
-import Footer from "../componants/Footer"; 
-import MobileFooter from "../componants/MobileFooter"; 
+import ProviderWrapper from "../componants/ProviderWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,10 +21,9 @@ export default function RootLayout({ children }) {
         }}
       >
         <AntdRegistry>
-          <Header/>
-          {children}
-          <MobileFooter/>
-          <Footer/>
+          <ProviderWrapper>
+            {children}
+          </ProviderWrapper>
         </AntdRegistry>
       </body>
     </html>

@@ -1,15 +1,35 @@
 "use client";
 
 import React, { useState } from "react";
-import { Select, Switch, Button, InputNumber } from "antd";
-import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
+import { Select, Switch, Button, InputNumber, Badge } from "antd";
+import { ArrowRightOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  MinusOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { addItemToCart, removeItemFromCart } from "@/app/redux/cartSlice";
+import { menuItems } from "@/app/redux/menuItems";
 
 const { Option } = Select;
 
 const MenuPage = () => {
   const [isVegCategory, setIsVegCategory] = useState(true);
   const [activeCategory, setActiveCategory] = useState("RECOMMENDED");
-  const [cartItems, setCartItems] = useState({});
+
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+
+  const cartItemCount = Object.values(cartItems).reduce(
+    (total, count) => total + count,
+    0
+  );
+  const totalPrice = menuItems.reduce(
+    (total, item) => total + (cartItems[item.id] || 0) * item.price,
+    0
+  );
 
   const menuCategories = [
     { key: "RECOMMENDED", label: "Recommended" },
@@ -20,52 +40,16 @@ const MenuPage = () => {
     { key: "RICE", label: "Rice" },
   ];
 
-  const menuItems = [
-    {
-      id: 1,
-      name: "VEG SPECIAL THALI",
-      price: 246,
-      description:
-        "PANEER BUTTER MASALA,DAL FRY,3 BUTTER ROTI,RICE, SWEET,PICKLE,SALAD",
-      availability: "Available from 07:30 AM to 11:30 PM.",
-      image: "/images/special-veg-thali.jpg",
-      category: "THALI",
-      veg: true,
-    },
-    {
-      id: 2,
-      name: "CHICKEN BIRYANI",
-      price: 350,
-      description:
-        "Aromatic basmati rice cooked with tender chicken pieces and flavorful spices, served with raita.",
-      image: "/images/biryani.jpg",
-      category: "BIRYANI",
-      veg: false,
-    },
-  ];
-
   const filteredMenuItems = menuItems.filter(
     (item) => item.category === activeCategory && item.veg === isVegCategory
   );
 
   const handleAddToCart = (item) => {
-    setCartItems((prev) => ({
-      ...prev,
-      [item.id]: (prev[item.id] || 0) + 1,
-    }));
+    dispatch(addItemToCart({ id: item.id }));
   };
 
   const handleRemoveFromCart = (item) => {
-    setCartItems((prev) => {
-      const newCount = (prev[item.id] || 0) - 1;
-      const newCart = { ...prev };
-      if (newCount <= 0) {
-        delete newCart[item.id];
-      } else {
-        newCart[item.id] = newCount;
-      }
-      return newCart;
-    });
+    dispatch(removeItemFromCart({ id: item.id }));
   };
 
   const handleCategoryToggle = (checked) => {
@@ -80,7 +64,6 @@ const MenuPage = () => {
 
       <div className="bg-white shadow rounded-lg mb-6 p-4">
         <div className="flex justify-between items-center mb-4">
-          {/* <span className="font-semibold text-lg">Filter:</span> */}
           <div className="flex items-center">
             <span
               className={`mr-2 ${
@@ -168,6 +151,30 @@ const MenuPage = () => {
           No items available in this category.
         </p>
       )}
+
+      <div className="flex items-center justify-between space-x-4 mt-6">
+        <Link href="/cart">
+          <div className="flex items-center space-x-2 cursor-pointer">
+            <Badge count={cartItemCount} showZero={true}>
+              <ShoppingCartOutlined style={{ fontSize: "24px" }} />
+            </Badge>
+            <span>{cartItemCount} Item(s) in cart</span>
+            <span className="text-gray-500">
+              ({`₹${totalPrice.toFixed(2)}`})
+            </span>
+          </div>
+        </Link>
+        <Link href="/cart">
+          <Button
+            type="primary"
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+            className="w-full text-white py-3 text-lg font-semibold rounded-md"
+          >
+            View Cart{" "}
+            <ArrowRightOutlined style={{ color: "white", marginLeft: "8px" }} />
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };

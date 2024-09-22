@@ -3,13 +3,12 @@ import dbConnect from '../../lib/dbConnect';
 import CategoryModel from '../../models/category';
 import { requireRole } from '../../utils/auth';
 
-export default async function handler(req, res) {
-  if (await requireRole(req, res, 'ADMIN')) {
-    // Your protected logic here
-    res.status(200).json({ message: 'Welcome Admin' });
-  }
-}
-
+// export async function handler(req, res) {
+//   if (await requireRole(req, res, 'ADMIN')) {
+//     // Your protected logic here
+//     res.status(200).json({ message: 'Welcome Admin' });
+//   }
+// }
 
 export async function GET(req, res) {
     try {
