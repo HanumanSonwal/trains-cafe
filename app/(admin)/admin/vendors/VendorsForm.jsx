@@ -270,7 +270,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
                 <label className="block mb-1">Address</label>
                   <TextEditor
                     previousValue={field.value}
-                    updatedValue={(content) => setValue('Addressx', content)}
+                    updatedValue={(content) => setValue('Address', content)}
                     height={200}
                   />
                 {errors.Address && <p className="text-red-500">{errors.Address.message}</p>}
