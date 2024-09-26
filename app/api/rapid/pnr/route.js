@@ -21,9 +21,28 @@ export async function GET(req) {
         }
     });
     const thirdPartyData = await thirdPartyResponse.json();
+
+    const timestamp = thirdPartyData.timestamp; // Example timestamp (in milliseconds)
+    const date = new Date(timestamp); // Convert timestamp to Date object
+
+
+    const params = new URLSearchParams({
+      trainNo: thirdPartyData.data.TrainNo,
+      date: date.toISOString()
+    }).toString();
+
+    const liveTrainStatus = await fetch(`${process.env.NEXTAUTH_URL}/api/rapid/live?${params}` , {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const liveData = await liveTrainStatus.json();
+  
     return NextResponse.json({
       message: 'Data received successfully',
-      data: { thirdPartyData },
+      data: { liveData },
     });
   } catch (error) {
     return NextResponse.json({

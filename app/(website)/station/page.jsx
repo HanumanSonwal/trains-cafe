@@ -33,7 +33,7 @@ const StationPage = () => {
      
       </Title>
       <h2 className="text-[#704D25] mx-auto text-center p-6  text-2xl font-bold relative z-10">
-      Order Food in  <br/><span className="text-yellow-500">CORBET PRK LINK (25014)</span>
+      Order Food in  <br/><span className="text-[#d6872a] text-xl">CORBET PRK LINK (25014)</span>
         </h2>
 
       {/* Journey Details Card */}
@@ -67,7 +67,7 @@ const StationPage = () => {
             <Option key={station.code} value={station.code}>
               <span className="font-semibold text-gray-600">{station.code}</span> - 
               <span className="text-gray-500"> {station.name} </span> 
-              <span className="text-blue-500">({station.time})</span>
+              <span className="text-grey-600">({station.time})</span>
             </Option>
           ))}
         </Select>

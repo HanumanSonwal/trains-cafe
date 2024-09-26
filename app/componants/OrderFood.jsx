@@ -27,7 +27,7 @@ const OrderFood = () => {
       if (response.ok) {
         message.success("PNR found! Redirecting...");
         // router.push(`/pnr-details?pnr=${pnr}`);
-        router.push(`/pnr-details/${pnr}`);
+        router.push(`/station/${pnr}`);
       } else {
         throw new Error(result.message);
       }

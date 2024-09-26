@@ -58,8 +58,8 @@ const MenuPage = () => {
 
   return (
     <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Ordering Food at <span className="text-green-600">Jaipur</span>
+      <h1 className="text-2xl font-bold mb-6 text-center text-[#704D25]">
+        Ordering Food at <span className="text-[#d6872a]">Jaipur</span>
       </h1>
 
       <div className="bg-white shadow rounded-lg mb-6 p-4">
@@ -67,7 +67,7 @@ const MenuPage = () => {
           <div className="flex items-center">
             <span
               className={`mr-2 ${
-                isVegCategory ? "text-green-600" : "text-red-600"
+                isVegCategory ? "text-grey-600" : "text-grey-600"
               }`}
             >
               {isVegCategory ? "VEG" : "NON-VEG"}
@@ -77,7 +77,7 @@ const MenuPage = () => {
               onChange={handleCategoryToggle}
               checkedChildren="VEG"
               unCheckedChildren="NON-VEG"
-              className={isVegCategory ? "bg-green-500" : "bg-red-500"}
+              className={isVegCategory ? "bg-grey-600" : "bg-grey-600"}
             />
           </div>
         </div>
@@ -101,7 +101,7 @@ const MenuPage = () => {
           <div key={item.id} className="bg-white shadow rounded-lg mb-4 p-4">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <h3 className="text-lg font-semibold text-green-600">
+                <h3 className="text-lg font-semibold text-[#d6872a]">
                   {item.name}
                 </h3>
                 <p className="text-gray-600 text-sm mb-1">₹ {item.price}</p>
@@ -112,8 +112,8 @@ const MenuPage = () => {
                 className="w-20 h-20 object-cover rounded"
               />
             </div>
-            <p className="text-sm text-gray-500 mb-2">{item.description}</p>
-            <p className="text-xs text-blue-500 mb-2">{item.availability}</p>
+            <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+            <p className="text-xs text-green-500 mb-2">{item.availability}</p>
             <div className="flex justify-end items-center">
               {cartItems[item.id] ? (
                 <div className="flex items-center">
