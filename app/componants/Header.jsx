@@ -52,7 +52,7 @@ export default function Header() {
                 </Link>
             </div>
 
-            {/* Menu Header */}
+          
             <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
                 <div className="flex justify-between items-center w-full">
                     <Link href="/">

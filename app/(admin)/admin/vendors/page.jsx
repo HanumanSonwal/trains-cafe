@@ -1,30 +1,35 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled, FileAddOutlined } from '@ant-design/icons';
+import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
 import VendorsForm from './VendorsForm';
-import GenerateInvoice from './GenerateInvoice';
-
-const initialVendors = [
-  { key: '1', name: 'Eat Repeat', vendorId: '45', contact: ['9988196160', '9877746540', '7982718282'], stations: 'PTKC', foodType: 'Veg & Non-veg', status: '1' },
-  { key: '2', name: 'Lasya Catering services', vendorId: '44', contact: ['8341346809', '9704967930', '824578502'], stations: 'GY', foodType: 'Veg & Non-veg', status: '0' },
-  { key: '3', name: 'Neelam food centre', vendorId: '43', contact: ['8975998876'], stations: 'MMR', foodType: 'Veg & Non-veg', status: '0' },
-  { key: '4', name: 'Apki apni rasoi', vendorId: '42', contact: ['9999492052', '9813981109', '7404749495'], stations: 'GGN', foodType: 'Veg', status: '1' },
-  { key: '5', name: 'Welcome Restro', vendorId: '41', contact: ['9096261626', '9175777121'], stations: 'SUR', foodType: 'Veg & Non-veg', status: '0' },
-  { key: '6', name: 'Shukla Kitchen', vendorId: '40', contact: ['9098273635'], stations: 'NAD', foodType: 'Veg', status: '1' },
-  { key: '7', name: 'jai ambey fast food', vendorId: '39', contact: ['9925305986'], stations: 'MSH', foodType: 'Veg', status: '0' },
-  { key: '8', name: 'jai hind restaurant', vendorId: '38', contact: ['9414002738', '9251407011'], stations: 'AII', foodType: 'Veg', status: '1' },
-  { key: '9', name: 'Ms Gauri Hotel', vendorId: '37', contact: ['9921289518', '7385105518'], stations: 'KWV', foodType: 'Veg', status: '0' },
-  { key: '10', name: 'Ms Gauri Hotel', vendorId: '36', contact: ['9921289518'], stations: 'PUNE', foodType: 'Veg & Non-veg', status: '1' },
-];
+import { deleteData, fetchData, updateData } from '@/app/lib/ApiFuntions';
 
 const VendorsManagement = () => {
-  const [vendors, setVendors] = useState(initialVendors);
-  const [filteredVendors, setFilteredVendors] = useState(initialVendors);
+  const [vendors, setVendors] = useState([]); 
+  const [filteredVendors, setFilteredVendors] = useState([]); 
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
-  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [searchText, setSearchText] = useState('');
+
+  useEffect(() => {
+    const loadVendors = async () => {
+      try {
+        const result = await fetchData('/api/vendors');
+        if (result.success) {
+          setVendors(result.data);
+          setFilteredVendors(result.data);
+        } else {
+          message.error('Failed to fetch data');
+        }
+      } catch (err) {
+        console.error(err);
+        message.error('Error fetching data');
+      }
+    };
+
+    loadVendors();
+  }, []);
 
   const handleAddVendor = () => {
     setEditingVendor(null);
@@ -36,19 +41,29 @@ const VendorsManagement = () => {
     setIsVendorModalOpen(true);
   };
 
-  const handleDeleteVendor = (key) => {
-    setVendors(vendors.filter(vendor => vendor.key !== key));
-    setFilteredVendors(filteredVendors.filter(vendor => vendor.key !== key));
-    message.success('Vendor deleted successfully');
+  const handleDeleteVendor = async (id) => {
+    try {
+      const result = await deleteData(`/api/vendors`, { id });
+      if (result.success) {
+        setVendors(vendors.filter(vendor => vendor._id !== id));
+        setFilteredVendors(filteredVendors.filter(vendor => vendor._id !== id));
+        message.success('Vendor deleted successfully');
+      } else {
+        message.error('Failed to delete vendor');
+      }
+    } catch (error) {
+      console.error(error);
+      message.error('Error deleting vendor');
+    }
   };
 
   const handleVendorFormSubmit = (values) => {
     if (editingVendor) {
-      setVendors(vendors.map(vendor => vendor.key === editingVendor.key ? { ...values, key: editingVendor.key } : vendor));
-      setFilteredVendors(filteredVendors.map(vendor => vendor.key === editingVendor.key ? { ...values, key: editingVendor.key } : vendor));
+      setVendors(vendors.map(vendor => vendor._id === editingVendor._id ? { ...values, _id: editingVendor._id } : vendor));
+      setFilteredVendors(filteredVendors.map(vendor => vendor._id === editingVendor._id ? { ...values, _id: editingVendor._id } : vendor));
       message.success('Vendor updated successfully');
     } else {
-      const newVendor = { ...values, key: `${vendors.length + 1}` };
+      const newVendor = { ...values, _id: `${vendors.length + 1}` };
       setVendors([...vendors, newVendor]);
       setFilteredVendors([...filteredVendors, newVendor]);
       message.success('Vendor added successfully');
@@ -56,73 +71,109 @@ const VendorsManagement = () => {
     setIsVendorModalOpen(false);
   };
 
-  const handleGenerateInvoice = (vendor) => {
-    setEditingVendor(vendor);
-    setIsInvoiceModalOpen(true);
-  };
-
-  const handleSaveInvoice = (invoice) => {
-    message.success('Invoice generated successfully');
-    setIsInvoiceModalOpen(false);
-  };
-
   const handleSearch = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.toLowerCase();
     setSearchText(value);
+    
+  
     const filtered = vendors.filter(vendor =>
-      Object.values(vendor).some(val => Array.isArray(val) ? val.some(item => item.toLowerCase().includes(value.toLowerCase())) : val.toLowerCase().includes(value.toLowerCase()))
+      vendor.Vendor_Name.toLowerCase().includes(value) ||
+      (vendor.Contact_No && vendor.Contact_No.toString().toLowerCase().includes(value)) ||
+      (vendor.Alternate_Contact_No && vendor.Alternate_Contact_No.toString().toLowerCase().includes(value)) ||
+      (vendor.Station && vendor.Station.toLowerCase().includes(value)) ||
+      (vendor.Food_Type && vendor.Food_Type.toLowerCase().includes(value))
     );
+    
     setFilteredVendors(filtered);
   };
 
-  const handleStatusChange = (checked, key) => {
-    setVendors(vendors.map(vendor => vendor.key === key ? { ...vendor, status: checked ? '1' : '0' } : vendor));
-    setFilteredVendors(filteredVendors.map(vendor => vendor.key === key ? { ...vendor, status: checked ? '1' : '0' } : vendor));
-    message.success('Vendor status updated successfully');
+  const handleStatusChange = async (checked, _id) => {
+    try {
+      const status = checked ? 'Active' : 'Inactive';
+      const response = await updateData(`/api/vendors/?id=${_id}`, { Status: status });
+  
+      if (response.ok) {
+     
+        setVendors(vendors.map(vendor => vendor._id === _id ? { ...vendor, Status: status } : vendor));
+        setFilteredVendors(filteredVendors.map(vendor => vendor._id === _id ? { ...vendor, Status: status } : vendor));
+        message.success('Vendor status updated successfully');
+      } else {
+        message.error('Failed to update vendor status');
+      }
+    } catch (error) {
+      console.error('Error updating vendor status:', error);
+      message.error('An error occurred while updating vendor status');
+    }
   };
+  
 
   const vendorColumns = [
     {
       title: 'Vendor Name',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: 'Vendor Id',
-      dataIndex: 'vendorId',
-      key: 'vendorId',
+      dataIndex: 'Vendor_Name',
+      key: 'vendor_name',
+      sorter: (a, b) => a.Vendor_Name.localeCompare(b.Vendor_Name),
     },
     {
       title: 'Contact No',
-      dataIndex: 'contact',
-      key: 'contact',
+      dataIndex: 'Contact_No',
+      key: 'contact_no',
       render: (contact) => Array.isArray(contact) ? contact.join(', ') : contact,
     },
     {
+      title: 'Alternate Contact No',
+      dataIndex: 'Alternate_Contact_No',
+      key: 'alternate_contact_no',
+      render: (contact) => contact || 'N/A', 
+    },
+    {
       title: 'Station(s)',
-      dataIndex: 'stations',
-      key: 'stations',
+      dataIndex: 'Station',
+      key: 'station',
     },
     {
       title: 'Food Type',
-      dataIndex: 'foodType',
-      key: 'foodType',
+      dataIndex: 'Food_Type',
+      key: 'food_type',
+    },
+    {
+      title: 'Delivery Charges',
+      dataIndex: 'Delivery_Charges',
+      key: 'delivery_charges',
+      render: (charges) => `₹${charges}`, 
+    },
+    {
+      title: 'Min Order Value',
+      dataIndex: 'Min_Order_Value',
+      key: 'min_order_value',
+      render: (value) => `₹${value}`,
+    },
+    {
+      title: 'Min Order Time (mins)',
+      dataIndex: 'Min_Order_Time',
+      key: 'min_order_time',
+    },
+    {
+      title: 'Weekly Off',
+      dataIndex: 'Weekly_Off',
+      key: 'weekly_off',
+    },
+    {
+      title: 'Working Time',
+      dataIndex: 'Working_Time',
+      key: 'working_time',
     },
     {
       title: 'Status',
-      dataIndex: 'status',
+      dataIndex: 'Status',
       key: 'status',
-      render: (status, record) => (
+      render: (Status, record) => (
         <Switch
-          checked={status === '1'}
-          onChange={(checked) => handleStatusChange(checked, record.key)}
-          className={status === '1' ? 'ant-switch-checked' : 'ant-switch'}
+          checked={Status === 'Active'}
+          onChange={(checked) => handleStatusChange(checked, record._id)}
         />
       ),
     },
-
-
     {
       title: 'Actions',
       key: 'actions',
@@ -135,7 +186,7 @@ const VendorsManagement = () => {
           />
           <Popconfirm
             title="Are you sure to delete?"
-            onConfirm={() => handleDeleteVendor(record.key)}
+            onConfirm={() => handleDeleteVendor(record._id)}
           >
             <Button
               icon={<DeleteFilled />}
@@ -145,9 +196,7 @@ const VendorsManagement = () => {
         </div>
       ),
     },
-
   ];
-
 
   return (
     <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -178,11 +227,7 @@ const VendorsManagement = () => {
         initialValues={editingVendor}
       />
 
-      <GenerateInvoice
-        visible={isInvoiceModalOpen}
-        onClose={() => setIsInvoiceModalOpen(false)}
-        onSave={handleSaveInvoice}
-      />
+
     </div>
   );
 };
