@@ -1,12 +1,68 @@
 "use client";
-import { Input, Button, Tabs } from "antd";
+import { Input, Button, Tabs, message } from "antd";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+
+
 
 const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("1");
+  const [pnr, setPnr] = useState("");
+  const [trainNumber, setTrainNumber] = useState("");
+  const router = useRouter();
 
   const handleTabChange = (key) => {
     setActiveKey(key);
+  };
+
+  const searchPNR = async () => {
+    if (!pnr) {
+      return message.error("Please enter a valid PNR number.");
+    }
+    try {
+      const response = await fetch(`/api/rapid/pnr?query=${pnr}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        message.success("PNR found! Redirecting...");
+        // router.push(`/pnr-details?pnr=${pnr}`);
+        router.push(`/pnr-details/${pnr}`);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      message.error(`Error: ${error.message}`);
+    }
+  };
+
+  const searchTrain = async () => {
+    if (!trainNumber) {
+      return message.error("Please enter a valid train number.");
+    }
+    try {
+      const response = await fetch(`/api/rapid/train?query=${trainNumber}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        message.success("Train found! Redirecting...");
+        // router.push(`/train-details?train=${trainNumber}`);
+        router.push(`/train-details/${trainNumber}`);
+
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      message.error(`Error: ${error.message}`);
+    }
+  };
+
+  const handleSearch = () => {
+    if (activeKey === "1") {
+      searchPNR();
+    } else if (activeKey === "2") {
+      searchTrain();
+    }
   };
 
   const tabItems = [
@@ -15,9 +71,14 @@ const OrderFood = () => {
       label: "10 Digit PNR",
       children: (
         <div className="flex items-center space-x-2 p-6">
-          <Input placeholder="Enter PNR No." className="flex-grow" />
+          <Input
+            placeholder="Enter PNR No."
+            className="flex-grow"
+            value={pnr}
+            onChange={(e) => setPnr(e.target.value)}
+          />
           <Button
-            type="btn"
+            onClick={handleSearch}
             className="order-btn text-white border-none rounded-full px-4 py-2 text-xs font-[600]"
           >
             Order Now
@@ -27,28 +88,18 @@ const OrderFood = () => {
     },
     {
       key: "2",
-      label: "Train Name/No.",
+      label: "Train No.",
       children: (
         <div className="flex items-center space-x-2 p-6">
-          <Input placeholder="Enter Train Name/No." className="flex-grow" />
+          <Input
+            placeholder="Enter Train No."
+            className="flex-grow"
+            value={trainNumber}
+            onChange={(e) => setTrainNumber(e.target.value)}
+          />
           <Button
-            type="btn"
-            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]]"
-          >
-            Order Now
-          </Button>
-        </div>
-      ),
-    },
-    {
-      key: "3",
-      label: "Station",
-      children: (
-        <div className="flex items-center space-x-2 p-6">
-          <Input placeholder="Enter Station" className="flex-grow" />
-          <Button
-            type="btn"
-            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]]"
+            onClick={handleSearch}
+            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
           >
             Order Now
           </Button>

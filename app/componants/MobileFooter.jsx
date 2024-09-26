@@ -87,8 +87,8 @@ const MobileFooter = () => {
               
               <div className="mt-4">
                 <p className="text-sm font-bold">Contact Info</p>
-                <p className="text-sm">+91-8010802222</p>
-                <p className="text-sm">care@zoopindia.com</p>
+                <p className="text-sm">+91-09090909090</p>
+                <p className="text-sm">Trainscafe.com</p>
               </div>
             </nav>
           </div>
