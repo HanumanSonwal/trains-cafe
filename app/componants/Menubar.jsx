@@ -51,11 +51,11 @@ const Menubar = () => {
       icon: <MenuOutlined />,
       label: <Link href="/admin/menu-item">Menu Items</Link>,
     },
-    {
-      key: '6',
-      icon: <ImportOutlined />,
-      label: <Link href="#">Import</Link>,
-    },
+    // {
+    //   key: '6',
+    //   icon: <ImportOutlined />,
+    //   label: <Link href="#">Import</Link>,
+    // },
     {
       key: '7',
       icon: <FileTextOutlined />,
@@ -64,7 +64,7 @@ const Menubar = () => {
     {
       key: '8',
       icon: <FileTextOutlined />,
-      label: <Link href="#">Contact Info</Link>,
+      label: <Link href="/admin/contact-info">Contact Info</Link>,
     },
     {
       key: '9',
@@ -78,7 +78,7 @@ const Menubar = () => {
       children: [
         {
           key: '10',
-          label: <Link href="#">Ongoing</Link>,
+          label: <Link href="/admin/order">Ongoing</Link>,
         },
         {
           key: '11',

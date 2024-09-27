@@ -13,8 +13,10 @@ import {
   SearchOutlined,
   DeleteFilled,
   EditFilled,
+  ImportOutlined
 } from "@ant-design/icons";
-import MenuItemForm from "../add-menu-item/page";
+import MenuItemForm from "./MenuItemForm";
+import BulkImportMenu from "./BulkImportMenu";
 
 const initialData = [
   // Add your initial data here if needed
@@ -24,6 +26,7 @@ const TablePage = () => {
   const [data, setData] = useState(initialData);
   const [filteredData, setFilteredData] = useState(initialData);
   const [isMenuItemModalOpen, setIsMenuItemModalOpen] = useState(false);
+  const [isBulkImportModalOpen, setIsBulkImportModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [searchText, setSearchText] = useState("");
 
@@ -38,6 +41,13 @@ const TablePage = () => {
   const handleAddMenuItem = () => {
     setEditingItem(null);
     setIsMenuItemModalOpen(true);
+  };
+  const handleBulkImport = () => {
+    setIsBulkImportModalOpen(true); 
+  };
+  const handleBulkImportSubmit = (formData) => {
+    message.success("Bulk import processed successfully");
+    setIsBulkImportModalOpen(false);
   };
 
   const handleEditMenuItem = (record) => {
@@ -187,14 +197,29 @@ const TablePage = () => {
           onChange={handleSearch}
           style={{ maxWidth: 300 ,borderColor: "#D6872A"}}
         />
+        <div>
+        <Button
+            type="primary"
+            icon={<ImportOutlined />}
+            onClick={handleBulkImport}
+            style={{
+              backgroundColor: "#D6872A",
+              borderColor: "#D6872A",
+              marginRight: "30px",
+            }}
+          >
+            Bulk Import
+          </Button>
+
         <Button
           type="primary"
-          icon={<PlusOutlined />}
+          icon={<PlusOutlined /> }
           onClick={handleAddMenuItem}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           Add Menu Item
         </Button>
+        </div>
       </div>
       <Table
         columns={columns}
@@ -206,6 +231,11 @@ const TablePage = () => {
         onCancel={() => setIsMenuItemModalOpen(false)}
         onSubmit={handleMenuItemFormSubmit}
         initialValues={editingItem}
+      />
+       <BulkImportMenu
+        open={isBulkImportModalOpen}
+        onCancel={() => setIsBulkImportModalOpen(false)} 
+        onSubmit={handleBulkImportSubmit} 
       />
     </div>
   );
