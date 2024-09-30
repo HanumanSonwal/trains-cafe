@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const CategorySchema = new mongoose.Schema({
-    title: String,
-    image: String,
+    title: { type: String, required: true },
+    image: { type: String, required: true },
 });
 
 // This prevents model overwriting in development
