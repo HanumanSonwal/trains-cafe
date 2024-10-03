@@ -6,30 +6,53 @@ import VendorsForm from './VendorsForm';
 import { deleteData, fetchData, updateData } from '@/app/lib/ApiFuntions';
 
 const VendorsManagement = () => {
-  const [vendors, setVendors] = useState([]); 
-  const [filteredVendors, setFilteredVendors] = useState([]); 
+  const [vendors, setVendors] = useState([]);
+  const [filteredVendors, setFilteredVendors] = useState([]);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10, 
+      pageSizeOptions: ['10', '20', '30'], 
+      showSizeChanger: true, 
+    },
+    search: '',
+  });
+
   const [searchText, setSearchText] = useState('');
 
-  useEffect(() => {
-    const loadVendors = async () => {
-      try {
-        const result = await fetchData('/api/vendors');
-        if (result.success) {
-          setVendors(result.data);
-          setFilteredVendors(result.data);
-        } else {
-          message.error('Failed to fetch data');
-        }
-      } catch (err) {
-        console.error(err);
-        message.error('Error fetching data');
-      }
-    };
 
-    loadVendors();
-  }, []);
+  const loadVendors = async (page, pageSize, search) => {
+    setLoading(true);
+    try {
+      const result = await fetchData(`/api/vendors?page=${page}&limit=${pageSize}&search=${search}`);
+      if (result.success) {
+        setVendors(result.data);
+        setFilteredVendors(result.data);
+        setTableParams((prev) => ({
+          ...prev,
+          pagination: {
+            ...prev.pagination,
+            total: result.totalCount,  
+          },
+        }));
+      } else {
+        message.error('Failed to fetch data');
+      }
+    } catch (err) {
+      console.error(err);
+      message.error('Error fetching data');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    const { current, pageSize } = tableParams.pagination;
+    loadVendors(current, pageSize, searchText);
+  }, [tableParams.pagination.current, tableParams.pagination.pageSize, searchText]);
 
   const handleAddVendor = () => {
     setEditingVendor(null);
@@ -71,29 +94,12 @@ const VendorsManagement = () => {
     setIsVendorModalOpen(false);
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchText(value);
-    
-  
-    const filtered = vendors.filter(vendor =>
-      vendor.Vendor_Name.toLowerCase().includes(value) ||
-      (vendor.Contact_No && vendor.Contact_No.toString().toLowerCase().includes(value)) ||
-      (vendor.Alternate_Contact_No && vendor.Alternate_Contact_No.toString().toLowerCase().includes(value)) ||
-      (vendor.Station && vendor.Station.toLowerCase().includes(value)) ||
-      (vendor.Food_Type && vendor.Food_Type.toLowerCase().includes(value))
-    );
-    
-    setFilteredVendors(filtered);
-  };
-
   const handleStatusChange = async (checked, _id) => {
     try {
       const status = checked ? 'Active' : 'Inactive';
       const response = await updateData(`/api/vendors/?id=${_id}`, { Status: status });
   
       if (response.ok) {
-     
         setVendors(vendors.map(vendor => vendor._id === _id ? { ...vendor, Status: status } : vendor));
         setFilteredVendors(filteredVendors.map(vendor => vendor._id === _id ? { ...vendor, Status: status } : vendor));
         message.success('Vendor status updated successfully');
@@ -105,8 +111,33 @@ const VendorsManagement = () => {
       message.error('An error occurred while updating vendor status');
     }
   };
-  
 
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchText(value);
+    
+    const filtered = vendors.filter((vendor) =>
+      vendor.Vendor_Name.toLowerCase().includes(value)
+    );
+    setFilteredVendors(filtered);
+  };
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams((prev) => ({
+      ...prev,
+      pagination: {
+        ...prev.pagination,
+        current: pagination.current, 
+        pageSize: pagination.pageSize, 
+      },
+      filters,
+      sortOrder: sorter.order || null,
+      sortField: sorter.field || null,
+    }));
+  
+    loadVendors(pagination.current, pagination.pageSize, searchText);
+  };
+  
   const vendorColumns = [
     {
       title: 'Vendor Name',
@@ -124,44 +155,7 @@ const VendorsManagement = () => {
       title: 'Alternate Contact No',
       dataIndex: 'Alternate_Contact_No',
       key: 'alternate_contact_no',
-      render: (contact) => contact || 'N/A', 
-    },
-    {
-      title: 'Station(s)',
-      dataIndex: 'Station',
-      key: 'station',
-    },
-    {
-      title: 'Food Type',
-      dataIndex: 'Food_Type',
-      key: 'food_type',
-    },
-    {
-      title: 'Delivery Charges',
-      dataIndex: 'Delivery_Charges',
-      key: 'delivery_charges',
-      render: (charges) => `₹${charges}`, 
-    },
-    {
-      title: 'Min Order Value',
-      dataIndex: 'Min_Order_Value',
-      key: 'min_order_value',
-      render: (value) => `₹${value}`,
-    },
-    {
-      title: 'Min Order Time (mins)',
-      dataIndex: 'Min_Order_Time',
-      key: 'min_order_time',
-    },
-    {
-      title: 'Weekly Off',
-      dataIndex: 'Weekly_Off',
-      key: 'weekly_off',
-    },
-    {
-      title: 'Working Time',
-      dataIndex: 'Working_Time',
-      key: 'working_time',
+      render: (contact) => contact || 'N/A',
     },
     {
       title: 'Status',
@@ -209,7 +203,12 @@ const VendorsManagement = () => {
           value={searchText}
           onChange={handleSearch}
         />
-        <Button type="primary" style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }} icon={<PlusOutlined />} onClick={handleAddVendor}>
+        <Button
+          type="primary"
+          style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
+          icon={<PlusOutlined />}
+          onClick={handleAddVendor}
+        >
           Add Vendor
         </Button>
       </div>
@@ -217,7 +216,10 @@ const VendorsManagement = () => {
       <Table
         columns={vendorColumns}
         dataSource={filteredVendors}
-        pagination={{ pageSize: 10 }}
+        pagination={tableParams.pagination}
+        loading={loading}
+        onChange={handleTableChange}
+      
       />
 
       <VendorsForm
@@ -226,10 +228,9 @@ const VendorsManagement = () => {
         onSubmit={handleVendorFormSubmit}
         initialValues={editingVendor}
       />
-
-
     </div>
   );
 };
 
 export default VendorsManagement;
+

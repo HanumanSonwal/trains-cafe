@@ -28,7 +28,7 @@ const vendorSchema = z.object({
 const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
   console.log(initialValues,"initialValues")
   const { control, handleSubmit, reset, setValue, formState: { errors } } = useForm({
-    // resolver: zodResolver(vendorSchema),
+    resolver: zodResolver(vendorSchema),
     defaultValues: initialValues || {
       Vendor_Name: '',
       Contact_No: '',
