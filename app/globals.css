@@ -196,7 +196,7 @@
   border-radius: 9999px !important;
 }
 
-.order-btn{
+.order-btn,.foot-menu-btn{
   background-color: #704D25 !important;
   color: #ffffff !important;
   border-radius: 9999px !important;
@@ -230,4 +230,9 @@
 :where(.css-dev-only-do-not-override-d2lrxs).ant-menu-light .ant-menu-submenu-selected >.ant-menu-submenu-title, :where(.css-dev-only-do-not-override-d2lrxs).ant-menu-light>.ant-menu .ant-menu-submenu-selected >.ant-menu-submenu-title {
   color: #6F4D27 !important;
 }
-
+:where(.css-dev-only-do-not-override-qnu6hi).ant-collapse>.ant-collapse-item >.ant-collapse-header{
+  color: #fff !important;
+}
+:where(.css-dev-only-do-not-override-qnu6hi).ant-collapse{
+  background-color: #D49929 !important;
+}
