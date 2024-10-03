@@ -12,7 +12,12 @@ export default function Header() {
     const menuRef = useRef(null);
 
     const cartItems = useSelector((state) => state.cart.items);
-    const cartItemCount = Object.values(cartItems).reduce((acc, count) => acc + count, 0);
+
+    // // Count total quantity for the cart badge icon in the header
+    // const cartItemCount = Object.values(cartItems).reduce((acc, count) => acc + count, 0);
+
+    // Count total unique items for the cart icon in the cart section
+    const totalUniqueItems = Object.keys(cartItems).length;
 
     const toggleMenu = () => {
         setIsMenuOpen(prev => !prev);
@@ -52,22 +57,21 @@ export default function Header() {
                 </Link>
             </div>
 
-          
+            {/* Header */}
             <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
                 <div className="flex justify-between items-center w-full">
                     <Link href="/">
                         <img src="/images/logo.svg" alt="Logo" className="h-10" />
                     </Link>
 
+                    {/* Cart icon in header showing total quantity */}
                     <Link href="/cart">
-          <Badge count={cartItemCount} showZero={true}>
-            <ShoppingCartOutlined style={{ fontSize: '24px' }} />
-          </Badge>
-        </Link>
-                    {/* <button onClick={toggleMenu} className="menu-button p-2 text-gray-600">
-                        <MenuOutlined />
-                    </button> */}
+                        <Badge count={totalUniqueItems} showZero={true}>
+                            <ShoppingCartOutlined style={{ fontSize: '24px' }} />
+                        </Badge>
+                    </Link>
                 </div>
+
                 {isMenuOpen && (
                     <div ref={menuRef} className="absolute top-16 right-0 bg-white shadow-md rounded-md p-4 w-full z-10">
                         <ul className="text-center">

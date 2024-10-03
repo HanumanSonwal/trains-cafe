@@ -22,10 +22,17 @@ const MenuPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
 
-  const cartItemCount = Object.values(cartItems).reduce(
-    (total, count) => total + count,
-    0
-  );
+  // const cartItemCount = Object.values(cartItems).reduce(
+  //   (total, count) => total + count,
+  //   0
+  // );
+  // const cartItems = useSelector((state) => state.cart.items);
+
+    // // Count total quantity for the cart badge icon in the header
+    // const cartItemCount = Object.values(cartItems).reduce((acc, count) => acc + count, 0);
+
+    // Count total unique items for the cart icon in the cart section
+    const totalUniqueItems = Object.keys(cartItems).length;
   const totalPrice = menuItems.reduce(
     (total, item) => total + (cartItems[item.id] || 0) * item.price,
     0
@@ -155,10 +162,10 @@ const MenuPage = () => {
       <div className="flex items-center justify-between space-x-4 mt-6">
         <Link href="/cart">
           <div className="flex items-center space-x-2 cursor-pointer">
-            <Badge count={cartItemCount} showZero={true}>
+            <Badge count={totalUniqueItems} showZero={true}>
               <ShoppingCartOutlined style={{ fontSize: "24px" }} />
             </Badge>
-            <span>{cartItemCount} Item(s) in cart</span>
+            <span>{totalUniqueItems} Item(s) in cart</span>
             <span className="text-gray-500">
               ({`₹${totalPrice.toFixed(2)}`})
             </span>

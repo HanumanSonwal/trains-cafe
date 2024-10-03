@@ -16,10 +16,7 @@ const cartSlice = createSlice({
         state.items[id] = 1;
       }
     },
-    removeItemFromCart: (state, action) => {
-      const { id } = action.payload;
-      delete state.items[id];
-    },
+    // Updated this function to reduce the quantity or remove the item
     updateItemQuantity: (state, action) => {
       const { id, quantity } = action.payload;
       if (quantity > 0) {
@@ -31,6 +28,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addItemToCart, removeItemFromCart, updateItemQuantity } = cartSlice.actions;
+export const { addItemToCart, updateItemQuantity } = cartSlice.actions;
 export default cartSlice.reducer;
-

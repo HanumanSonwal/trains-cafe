@@ -24,24 +24,23 @@ const StationPage = () => {
 
   const handleStationChange = (value) => {
     setSelectedStation(value);
-    router.push(`/menu?station=${value}&date=${journeyDate.format('YYYY-MM-DD')}`);
+    // Navigate to arrival station selection page
+    router.push(`/arrivalStations?boardingStation=${value}&date=${journeyDate.format('YYYY-MM-DD')}`);
   };
 
   return (
     <div className="max-w-[575px] mx-auto p-6 bg-gray-50">
-      <Title level={2} className="text-center text-indigo-600 font-bold mb-8">
-     
-      </Title>
-      <h2 className="text-[#704D25] mx-auto text-center p-6  text-2xl font-bold relative z-10">
-      Order Food in  <br/><span className="text-[#d6872a] text-xl">CORBET PRK LINK (25014)</span>
-        </h2>
+      <h2 className="text-[#704D25] mx-auto text-center p-6 text-2xl font-bold relative z-10">
+        Order Food in <br />
+        <span className="text-[#d6872a] text-xl">CORBET PRK LINK (25014)</span>
+      </h2>
 
       {/* Journey Details Card */}
       <Card bordered={false} className="mb-6 p-5 shadow-lg rounded-lg bg-white">
         <Title level={4} className="mb-4 text-gray-700">Journey Details</Title>
         <div className="mb-4">
           <Text className="block text-base font-semibold text-gray-600 mb-2">Select Journey Date:</Text>
-          <DatePicker 
+          <DatePicker
             value={journeyDate}
             onChange={(date) => setJourneyDate(date)}
             className="w-full border-gray-300"

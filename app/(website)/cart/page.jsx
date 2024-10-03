@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "antd";
+import { Button, Badge } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   addItemToCart,
-  removeItemFromCart,
-  clearCart,
+  updateItemQuantity,  // Updated this action
 } from "@/app/redux/cartSlice";
 import { menuItems } from "@/app/redux/menuItems";
 import { useRouter } from "next/navigation";
@@ -15,18 +14,33 @@ const CartPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+
+
+  // Handle the proceed to checkout
   const handleProceedToCheckout = () => {
     router.push("/checkout");
   };
 
+  // Increase item quantity
   const handleIncreaseQuantity = (item) => {
     dispatch(addItemToCart({ id: item.id }));
   };
 
+  // Decrease item quantity but prevent removing the product until the quantity is 0
   const handleDecreaseQuantity = (item) => {
-    dispatch(removeItemFromCart({ id: item.id }));
+    const currentQuantity = cartItems[item.id];
+    
+    if (currentQuantity > 1) {
+      dispatch(updateItemQuantity({ id: item.id, quantity: currentQuantity - 1 }));
+    } else if (currentQuantity === 1) {
+      // Confirm removal of product
+      if (window.confirm("Do you want to remove this item from the cart?")) {
+        dispatch(updateItemQuantity({ id: item.id, quantity: 0 })); // Quantity will be zero and item will be removed
+      }
+    }
   };
 
+  // Calculate total price
   const totalPrice = Object.keys(cartItems).reduce((total, id) => {
     const item = menuItems.find((item) => item.id === parseInt(id));
     return total + item.price * cartItems[id];
@@ -34,6 +48,8 @@ const CartPage = () => {
 
   return (
     <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">
+      
+
       <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
         Your <span className="text-green-600">Cart</span>
       </h1>
