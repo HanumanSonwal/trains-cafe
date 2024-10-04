@@ -3,22 +3,7 @@ import dbConnect from '../../lib/dbConnect';
 import MenuModel from '../../models/menu';
 import { requireRole } from '../../utils/auth';
 
-// export async function handler(req, res) {
-//   if (await requireRole(req, res, 'ADMIN')) {
-//     // Your protected logic here
-//     res.status(200).json({ message: 'Welcome Admin' });
-//   }
-// }
 
-// export async function GET(req, res) {
-//     try {
-//       await dbConnect();
-//       const menu = await MenuModel.find({});
-//       return new Response(JSON.stringify(menu), { status: 200 });
-//     } catch (error) {
-//       return new Response(JSON.stringify({ message: 'Error fetching menu' }), { status: 500 });
-//     }
-// }
 
 export async function GET(req) {
   try {
@@ -33,8 +18,8 @@ export async function GET(req) {
       const searchCriteria = search ? {
           $or: [
               { Item_Name: { $regex: search, $options: 'i' } },
-             { Station: { $regex: search, $options: 'i' } }
-             , { Category: { $regex: search, $options: 'i' } }
+            { Station: { $regex: search, $options: 'i' } }
+            , { Category: { $regex: search, $options: 'i' } }
           ]
       } : {};
 
@@ -67,7 +52,9 @@ export async function GET(req) {
 
 export async function POST(req, res) {
     try {
-      const body = await req.json();
+      //const body = await req.json();
+      const formData = await req.formData();
+      const body = Object.fromEntries(formData.entries());
 
       await dbConnect();
       const newMenu = new MenuModel(body);
@@ -82,7 +69,8 @@ export async function PUT(req) {
   try {
       const { searchParams } = new URL(req.url);
       const id = searchParams.get('id');
-      const updateData = await req.json(); 
+      const updateData = await req.formData();
+      //const body = Object.fromEntries(updateData.entries());
 
       if (!id) {
           return new Response(JSON.stringify({ success: false, message: 'Menu ID is required' }), { status: 400 });

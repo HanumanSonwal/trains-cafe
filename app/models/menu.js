@@ -4,7 +4,7 @@ import { boolean } from 'zod';
 const MenuSchema = new mongoose.Schema({
     Item_Name: { type: String, required: true },
     image: { type: String, required: true },
-    Category:{ type: String, required: true },
+    Category_Id:{ type: String, required: true },
     Vendor: { type: String, required: true },
     Price: { type: String, required: true },
     Discount:{ type: String, required: true },
