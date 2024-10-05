@@ -59,7 +59,7 @@ const Menubar = () => {
     {
       key: '7',
       icon: <FileTextOutlined />,
-      label: <Link href="#">Website Pages</Link>,
+      label: <Link href="/admin/websitesPages">Website Pages</Link>,
     },
     {
       key: '8',
