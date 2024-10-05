@@ -63,28 +63,56 @@ export async function GET(req) {
       );
   }
 }
-
-export async function POST(req, res) {
-    try {
-    //   const body = await req.json();
-    const formData = await req.formData();
-      const body = Object.fromEntries(formData.entries())
-
+async function generateCategoryId() {
+  const lastCategory = await CategoryModel.findOne().sort({ Category_Id: -1 }).exec();
+  if (!lastCategory) {
+      return 'c1'; // Start with 'c1' if no categories exist
+  }
+  
+  const lastId = parseInt(lastCategory.Category_Id.slice(1), 10); // Extract numeric part
+  const nextId = lastId + 1; // Increment the numeric part
+  return `c${nextId}`; // Return the new Category_Id
+}
+export async function POST(req) {
+  try {
+      const formData = await req.formData();
+      const body = Object.fromEntries(formData.entries());
+      
       await dbConnect();
+      // Generate new Category_Id
+      body.Category_Id = await generateCategoryId();
+      
       const newCategory = new CategoryModel(body);
       await newCategory.save();
       return new Response(JSON.stringify(newCategory), { status: 201 });
-    } catch (error) {
+  } catch (error) {
       return new Response(JSON.stringify({ message: error.message }), { status: 500 });
-    }
+  }
 }
+// export async function POST(req, res) {
+//     try {
+//       //const body = await req.json();
+//       const formData = await req.formData();
+//       const body = Object.fromEntries(formData.entries());
+      
+
+//       await dbConnect();
+//       const newCategory = new CategoryModel(body);
+//       await newCategory.save();
+//       return new Response(JSON.stringify(newCategory), { status: 201 });
+//     } catch (error) {
+//       return new Response(JSON.stringify({ message: error.message }), { status: 500 });
+//     }
+// }
+
+
 export async function PUT(req) {
   try {
       const { searchParams } = new URL(req.url);
       const id = searchParams.get('id');
-    //   const updateData = await req.json(); 
-    const formData = await req.formData();
-    const updateData = Object.fromEntries(formData.entries())
+     // const updateData = await req.json(); 
+      const formData = await req.formData();
+      const updateData = Object.fromEntries(formData.entries());
 
       if (!id) {
           return new Response(JSON.stringify({ success: false, message: 'Category ID is required' }), { status: 400 });

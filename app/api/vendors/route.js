@@ -79,7 +79,9 @@ export async function PUT(req) {
     try {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get('id');
-        const updateData = await req.json(); 
+        // const updateData = await req.json(); 
+        const formData = await req.formData();
+      const updateData = Object.fromEntries(formData.entries());
 
         if (!id) {
             return new Response(JSON.stringify({ success: false, message: 'Vendor ID is required' }), { status: 400 });
