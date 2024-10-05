@@ -63,16 +63,27 @@ export async function GET(req) {
       );
   }
 }
+
 async function generateCategoryId() {
   const lastCategory = await CategoryModel.findOne().sort({ Category_Id: -1 }).exec();
+  
   if (!lastCategory) {
       return 'c1'; // Start with 'c1' if no categories exist
   }
+
+  // Extract the numeric part and convert it to an integer
+  const lastId = parseInt(lastCategory.Category_Id.slice(1), 10); // Get the number after 'c'
+  let nextId = lastId + 1; // Increment the numeric part
+  let newCategoryId = `c${nextId}`; // Use let for newCategoryId
   
-  const lastId = parseInt(lastCategory.Category_Id.slice(1), 10); // Extract numeric part
-  const nextId = lastId + 1; // Increment the numeric part
-  return `c${nextId}`; // Return the new Category_Id
+  while (await CategoryModel.exists({ Category_Id: newCategoryId })) {
+      nextId++;
+      newCategoryId = `c${nextId}`; // Create a new ID with the incremented number
+  }
+
+  return newCategoryId; // Return the new unique Category_Id
 }
+
 export async function POST(req) {
   try {
       const formData = await req.formData();

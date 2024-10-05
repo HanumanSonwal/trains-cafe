@@ -17,9 +17,9 @@ export async function GET(req) {
       // Create search criteria
       const searchCriteria = search ? {
           $or: [
-              { Item_Name: { $regex: search, $options: 'i' } },
-            { Station: { $regex: search, $options: 'i' } }
-            , { Category: { $regex: search, $options: 'i' } }
+            //   { Item_Name: { $regex: search, $options: 'i' } },
+            // { Station: { $regex: search, $options: 'i' } }
+             { Category_Id: { $regex: search, $options: 'i' } }
           ]
       } : {};
 
