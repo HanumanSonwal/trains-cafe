@@ -57,7 +57,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
     if (initialValues) {
       
   
-      response = await updateData(`/api/vendors/?id=${data._id}`, data);
+      response = await updateData(`/api/vendors/?id=${initialValues._id}`, data);
     } else {
     
       response = await postData('/api/vendors', data);

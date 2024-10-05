@@ -79,9 +79,7 @@ export async function PUT(req) {
     try {
         const { searchParams } = new URL(req.url);
         const id = searchParams.get('id');
-        // const updateData = await req.json(); 
-        const formData = await req.formData();
-      const updateData = Object.fromEntries(formData.entries());
+        const updateData = await req.json(); // Get JSON data directly from the request body
 
         if (!id) {
             return new Response(JSON.stringify({ success: false, message: 'Vendor ID is required' }), { status: 400 });
@@ -99,6 +97,7 @@ export async function PUT(req) {
         return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
     }
 }
+
 
 export async function DELETE(req) {
     try {

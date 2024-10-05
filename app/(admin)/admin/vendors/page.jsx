@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from 'antd';
 import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
 import VendorsForm from './VendorsForm';
-import { deleteData, fetchData, updateData } from '@/app/lib/ApiFuntions';
+import axios from 'axios';
+import { updateData , deleteData } from '@/app/lib/ApiFuntions';
 
 const VendorsManagement = () => {
   const [vendors, setVendors] = useState([]);
@@ -14,41 +15,42 @@ const VendorsManagement = () => {
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
-      pageSize: 10, 
-      pageSizeOptions: ['10', '20', '30'], 
-      showSizeChanger: true, 
+      pageSize: 10,
+      pageSizeOptions: ['10', '20', '30'],
+      showSizeChanger: true,
+      total: 0,
     },
-    search: '',
   });
 
   const [searchText, setSearchText] = useState('');
 
-
-  const loadVendors = async (page, pageSize, search) => {
+  const loadVendors = async (page = 1, pageSize = 10, search = '') => {
     setLoading(true);
     try {
-      const result = await fetchData(`/api/vendors?page=${page}&limit=${pageSize}&search=${search}`);
-      if (result.success) {
-        setVendors(result.data);
-        setFilteredVendors(result.data);
+      const response = await axios.get(`/api/vendors?page=${page}&limit=${pageSize}&search=${search}`);
+      const { data, total, success } = response.data;
+
+      if (success) {
+        setVendors(data);
+        setFilteredVendors(data);
         setTableParams((prev) => ({
           ...prev,
           pagination: {
             ...prev.pagination,
-            total: result.totalCount,  
+            total,
           },
         }));
       } else {
         message.error('Failed to fetch data');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       message.error('Error fetching data');
     } finally {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     const { current, pageSize } = tableParams.pagination;
     loadVendors(current, pageSize, searchText);
@@ -82,13 +84,17 @@ const VendorsManagement = () => {
 
   const handleVendorFormSubmit = (values) => {
     if (editingVendor) {
-      setVendors(vendors.map(vendor => vendor._id === editingVendor._id ? { ...values, _id: editingVendor._id } : vendor));
-      setFilteredVendors(filteredVendors.map(vendor => vendor._id === editingVendor._id ? { ...values, _id: editingVendor._id } : vendor));
+      const updatedVendors = vendors.map(vendor =>
+        vendor._id === editingVendor._id ? { ...values, _id: editingVendor._id } : vendor
+      );
+      setVendors(updatedVendors);
+      setFilteredVendors(updatedVendors);
       message.success('Vendor updated successfully');
     } else {
-      const newVendor = { ...values, _id: `${vendors.length + 1}` };
-      setVendors([...vendors, newVendor]);
-      setFilteredVendors([...filteredVendors, newVendor]);
+      const newVendor = { ...values, _id: `${vendors.length + 1}` }; 
+      const updatedVendors = [...vendors, newVendor];
+      setVendors(updatedVendors);
+      setFilteredVendors(updatedVendors);
       message.success('Vendor added successfully');
     }
     setIsVendorModalOpen(false);
@@ -98,10 +104,13 @@ const VendorsManagement = () => {
     try {
       const status = checked ? 'Active' : 'Inactive';
       const response = await updateData(`/api/vendors/?id=${_id}`, { Status: status });
-  
+
       if (response.ok) {
-        setVendors(vendors.map(vendor => vendor._id === _id ? { ...vendor, Status: status } : vendor));
-        setFilteredVendors(filteredVendors.map(vendor => vendor._id === _id ? { ...vendor, Status: status } : vendor));
+        const updatedVendors = vendors.map(vendor =>
+          vendor._id === _id ? { ...vendor, Status: status } : vendor
+        );
+        setVendors(updatedVendors);
+        setFilteredVendors(updatedVendors);
         message.success('Vendor status updated successfully');
       } else {
         message.error('Failed to update vendor status');
@@ -115,8 +124,7 @@ const VendorsManagement = () => {
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchText(value);
-    
-    const filtered = vendors.filter((vendor) =>
+    const filtered = vendors.filter(vendor =>
       vendor.Vendor_Name.toLowerCase().includes(value)
     );
     setFilteredVendors(filtered);
@@ -127,17 +135,17 @@ const VendorsManagement = () => {
       ...prev,
       pagination: {
         ...prev.pagination,
-        current: pagination.current, 
-        pageSize: pagination.pageSize, 
+        current: pagination.current,
+        pageSize: pagination.pageSize,
       },
       filters,
       sortOrder: sorter.order || null,
       sortField: sorter.field || null,
     }));
-  
+
     loadVendors(pagination.current, pagination.pageSize, searchText);
   };
-  
+
   const vendorColumns = [
     {
       title: 'Vendor Name',
@@ -182,10 +190,7 @@ const VendorsManagement = () => {
             title="Are you sure to delete?"
             onConfirm={() => handleDeleteVendor(record._id)}
           >
-            <Button
-              icon={<DeleteFilled />}
-              danger
-            />
+            <Button icon={<DeleteFilled />} danger />
           </Popconfirm>
         </div>
       ),
@@ -219,7 +224,6 @@ const VendorsManagement = () => {
         pagination={tableParams.pagination}
         loading={loading}
         onChange={handleTableChange}
-      
       />
 
       <VendorsForm
@@ -233,4 +237,3 @@ const VendorsManagement = () => {
 };
 
 export default VendorsManagement;
-
