@@ -66,7 +66,9 @@ export async function GET(req) {
 
 export async function POST(req, res) {
     try {
-      const body = await req.json();
+    //   const body = await req.json();
+    const formData = await req.formData();
+      const body = Object.fromEntries(formData.entries())
 
       await dbConnect();
       const newCategory = new CategoryModel(body);
@@ -80,7 +82,9 @@ export async function PUT(req) {
   try {
       const { searchParams } = new URL(req.url);
       const id = searchParams.get('id');
-      const updateData = await req.json(); 
+    //   const updateData = await req.json(); 
+    const formData = await req.formData();
+    const updateData = Object.fromEntries(formData.entries())
 
       if (!id) {
           return new Response(JSON.stringify({ success: false, message: 'Category ID is required' }), { status: 400 });

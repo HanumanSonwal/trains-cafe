@@ -1,13 +1,136 @@
+// import React, { useEffect, useState } from "react";
+// import { Modal, Button, Input, Col, message } from "antd";
+// import { useForm, Controller } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { z } from "zod";
+// import FileUploadComponent from "@/app/componants/ImageUpload";
+
+// const vendorSchema = z.object({
+//   title: z.string().nonempty("Please enter the category title"),
+//   image: z.string().nonempty("Please upload an image"), // Make sure it's a string URL
+// });
+
+// const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
+//   const {
+//     control,
+//     handleSubmit,
+//     reset,
+//     setValue,
+//     formState: { errors },
+//   } = useForm({
+//     // resolver: zodResolver(vendorSchema),
+//     defaultValues: initialValues || {
+//       title: "",
+//       image: "",
+//     },
+//   });
+
+//   const [url, setUrl] = useState(""); 
+
+//   useEffect(() => {
+//     if (initialValues && initialValues.image) {
+//       setUrl(initialValues.image);
+//       setValue("image", initialValues.image);
+//     }
+//     reset(initialValues);
+//   }, [initialValues, reset, setValue]);
+
+//   const postCategory = async (formData) => {
+//     try {
+//       const response = await fetch("/api/categories", {
+//         method: "POST",
+//         body: formData, 
+//       });
+  
+//       if (response.ok) {
+//         const result = await response.json();
+//         message.success("Category added successfully!");
+//         onSubmit(result);
+//       } else {
+//         const errorResponse = await response.json();
+//         console.log(errorResponse,"errorResponse")
+//         throw new Error(errorResponse.message || "Failed to add category");
+//       }
+//     } catch (error) {
+//       message.error(error.message || "Something went wrong");
+//     }
+//   };
+  
+
+//   const handleFormSubmit = (data) => {
+//     const formData = new FormData();
+//     formData.append("title", data.title);
+//     formData.append("image", url);
+//     postCategory(formData);
+//     reset({
+//       title: "",
+//       image: "",
+//     });
+//   };
+
+//   return (
+//     <Modal
+//       title={initialValues ? "Edit Category" : "Add Category"}
+//       open={open}
+//       onCancel={onCancel}
+//       width={800}
+//       footer={[
+//         <Button
+//           key="submit"
+//           type="primary"
+//           onClick={handleSubmit(handleFormSubmit)}
+//           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+//         >
+//           {initialValues ? "Save" : "Submit"}
+//         </Button>,
+//       ]}
+//     >
+//       <form>
+//         <Col span={24} className="mb-4">
+//           <Controller
+//             name="title"
+//             control={control}
+//             render={({ field }) => (
+//               <div className="mb-4">
+//                 <label className="block mb-1">Category Title</label>
+//                 <Input {...field} />
+//                 {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+//               </div>
+//             )}
+//           />
+//         </Col>
+
+//         <Col span={24} className="mb-4">
+//           <Controller
+//             name="image"
+//             control={control}
+//             render={({ field }) => (
+//               <div className="mb-4">
+//                 <label className="block mb-1">Thumbnail Image</label>
+//                 <FileUploadComponent url={url} setUrl={setUrl} />
+//                 {errors.image && <p className="text-red-500">{errors.image.message}</p>}
+//               </div>
+//             )}
+//           />
+//         </Col>
+//       </form>
+//     </Modal>
+//   );
+// };
+
+// export default CategoriesForm;
+
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Input, Col, message, Upload } from "antd";
+import { Modal, Button, Input, Col, message } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { UploadOutlined } from "@ant-design/icons";
+import FileUploadComponent from "@/app/componants/ImageUpload";
 
+// Zod schema for form validation
 const vendorSchema = z.object({
   title: z.string().nonempty("Please enter the category title"),
-  image: z.any().refine((val) => val && val.length > 0, "Please upload an image"),
+  image: z.string().nonempty("Please upload an image"), // Ensure image is a string URL
 });
 
 const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
@@ -18,88 +141,72 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
     setValue,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(vendorSchema),
-    defaultValues: initialValues || {
+    // resolver: zodResolver(vendorSchema),
+    defaultValues: {
       title: "",
-      image: [],
+      image: "",
     },
   });
 
-  const [fileList, setFileList] = useState([]);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewOpen, setPreviewOpen] = useState(false);
+  const [url, setUrl] = useState(""); 
 
+  // Handle initial values when editing
   useEffect(() => {
-    if (initialValues && initialValues.image) {
-      const initialFile = {
-        uid: "-1",
-        name: "thumbnail",
-        status: "done",
-        url: initialValues.image,
-      };
-      setFileList([initialFile]);
-      setValue("image", [initialFile]);
+    if (initialValues) {
+      setUrl(initialValues.image || "");
+      reset(initialValues); // Reset form with initial values
+    } else {
+      reset({
+        title: "",
+        image: "",
+      });
     }
-    reset(initialValues);
-  }, [initialValues, reset, setValue]);
+  }, [initialValues, reset]);
 
-  // Function to handle the POST API request with FormData
-  const postCategory = async (formData) => {
+  // Combined function for both add and edit category
+  const postCategory = async (formData, id) => {
+    const method = id ? "PUT" : "POST"; // Determine method based on presence of `id`
+    const url = id ? `/api/categories/${id}` : "/api/categories"; // Endpoint for post/edit
+
     try {
-      const response = await fetch("/api/categories", {
-        method: "POST",
-        body: formData, // Sending FormData
+      const response = await fetch(url, {
+        method: method,
+        body: formData,
       });
 
       if (response.ok) {
         const result = await response.json();
-        message.success("Category added successfully!");
-        onSubmit(result); // Trigger the parent component's onSubmit if needed
+        message.success(id ? "Category updated successfully!" : "Category added successfully!");
+        onSubmit(result); // Call parent submit handler
       } else {
-        throw new Error("Failed to add category");
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.message || "Failed to save category");
       }
     } catch (error) {
       message.error(error.message || "Something went wrong");
     }
   };
 
+  // Handle form submission
   const handleFormSubmit = (data) => {
+    if (!url) {
+      message.error("Please upload an image.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("image", data.image[0]?.originFileObj);
+    formData.append("image", url); // Append image URL or file
 
-    postCategory(formData); // Make the POST request with FormData
+    const id = initialValues ? initialValues.id : null; // Determine if it's edit mode
+    postCategory(formData, id); // Pass form data and ID for edit
+
     reset({
       title: "",
-      image: [],
+      image: "",
     });
-    setFileList([]);
+    setUrl(""); // Clear uploaded image URL
   };
-
-  const handleChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-    setValue("image", newFileList);
-  };
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-      });
-    }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-  };
-
-  const uploadButton = (
-    <div>
-      <UploadOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
 
   return (
     <Modal
@@ -111,7 +218,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
         <Button
           key="submit"
           type="primary"
-          onClick={handleSubmit(handleFormSubmit)}
+          onClick={handleSubmit(handleFormSubmit)} // Ensure single submission
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           {initialValues ? "Save" : "Submit"}
@@ -140,23 +247,13 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block mb-1">Thumbnail Image</label>
-                <Upload
-                  listType="picture-card"
-                  fileList={fileList}
-                  onPreview={handlePreview}
-                  onChange={handleChange}
-                >
-                  {fileList.length >= 1 ? null : uploadButton}
-                </Upload>
+                <FileUploadComponent url={url} setUrl={setUrl} />
                 {errors.image && <p className="text-red-500">{errors.image.message}</p>}
               </div>
             )}
           />
         </Col>
       </form>
-      <Modal open={previewOpen} footer={null} onCancel={() => setPreviewOpen(false)}>
-        <img alt="preview" style={{ width: "100%" }} src={previewImage} />
-      </Modal>
     </Modal>
   );
 };
