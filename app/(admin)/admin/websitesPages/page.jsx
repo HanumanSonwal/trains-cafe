@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
 import { Table, Switch, Button, Input, Select, Modal } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import WebsitePageModal from './WebsitePageModal';
 
 const { Search } = Input;
@@ -10,27 +10,48 @@ const { Option } = Select;
 const { confirm } = Modal;
 
 export default function WebsitesPages() {
-  const [pages, setPages] = useState([
-    { id: 1, name: 'About us', header: false, footer: false, metaTitle: 'About Us', metaDescription: 'Learn about our company', metaKeywords: 'about, company', pageData: '<p>About us content</p>' },
-    { id: 2, name: 'Privacy Policy', header: false, footer: true, metaTitle: 'Privacy Policy', metaDescription: 'Our privacy policy', metaKeywords: 'privacy, policy', pageData: '<p>Privacy policy content</p>' },
-    { id: 3, name: 'Terms & Conditions', header: false, footer: false, metaTitle: 'Terms and Conditions', metaDescription: 'Our terms and conditions', metaKeywords: 'terms, conditions', pageData: '<p>Terms and conditions content</p>' },
-  ]);
+  const [pages, setPages] = useState([]);
   const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingPage, setEditingPage] = useState(null);
   const [modalMode, setModalMode] = useState('add');
+  const [loading, setLoading] = useState(false);
 
-  const handleToggleChange = (id, field) => {
-    const updatedPages = pages.map((page) =>
-      page.id === id ? { ...page, [field]: !page[field] } : page
-    );
-    setPages(updatedPages);
+  useEffect(() => {
+    fetchPages();
+  }, [currentPage, pageSize, searchText]);
+
+  const fetchPages = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:3000/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`);
+      const data = await response.json();
+      setPages(data.docs);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Error fetching pages:', error);
+    }
+    setLoading(false);
   };
 
-  const filteredPages = pages.filter((page) =>
-    page.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const handleToggleChange = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+    try {
+      await fetch(`http://localhost:3000/api/web-pages/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      fetchPages(); // Refresh the page list
+    } catch (error) {
+      console.error('Error updating page status:', error);
+    }
+  };
 
   const showModal = (mode, page = null) => {
     setModalMode(mode);
@@ -43,34 +64,31 @@ export default function WebsitesPages() {
     setEditingPage(null);
   };
 
-  const handleSubmit = (values) => {
-    if (modalMode === 'add') {
-      const newPage = {
-        id: pages.length + 1,
-        name: values.pageName,
-        metaTitle: values.metaTitle,
-        metaDescription: values.metaDescription,
-        metaKeywords: values.metaKeywords,
-        pageData: values.pageData,
-        header: false,
-        footer: false,
-      };
-      setPages([...pages, newPage]);
-    } else {
-      const updatedPages = pages.map((page) =>
-        page.id === editingPage.id ? {
-          ...page,
-          name: values.pageName,
-          metaTitle: values.metaTitle,
-          metaDescription: values.metaDescription,
-          metaKeywords: values.metaKeywords,
-          pageData: values.pageData,
-        } : page
-      );
-      setPages(updatedPages);
+  const handleSubmit = async (values) => {
+    try {
+      if (modalMode === 'add') {
+        await fetch('http://localhost:3000/api/web-pages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+      } else {
+        await fetch(`http://localhost:3000/api/web-pages/${editingPage._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
+      }
+      fetchPages(); // Refresh the page list
+      setIsModalVisible(false);
+      setEditingPage(null);
+    } catch (error) {
+      console.error('Error submitting page:', error);
     }
-    setIsModalVisible(false);
-    setEditingPage(null);
   };
 
   const handleDelete = (pageId) => {
@@ -81,9 +99,15 @@ export default function WebsitesPages() {
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
-      onOk() {
-        const updatedPages = pages.filter(page => page.id !== pageId);
-        setPages(updatedPages);
+      onOk: async () => {
+        try {
+          await fetch(`http://localhost:3000/api/web-pages/delete/${pageId}`, {
+            method: 'DELETE',
+          });
+          fetchPages(); // Refresh the page list
+        } catch (error) {
+          console.error('Error deleting page:', error);
+        }
       },
     });
   };
@@ -91,8 +115,8 @@ export default function WebsitesPages() {
   const columns = [
     {
       title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: '_id',
+      key: '_id',
       width: '10%',
     },
     {
@@ -106,20 +130,14 @@ export default function WebsitesPages() {
       dataIndex: 'status',
       key: 'status',
       width: '20%',
-      render: (_, record) => (
+      render: (status, record) => (
         <div className="flex space-x-4">
           <Switch
-            checked={record.header}
-            onChange={() => handleToggleChange(record.id, 'header')}
+            checked={status === 'published'}
+            onChange={() => handleToggleChange(record._id, status)}
             size="small"
           />
-          <span>Header</span>
-          <Switch
-            checked={record.footer}
-            onChange={() => handleToggleChange(record.id, 'footer')}
-            size="small"
-          />
-          <span>Footer</span>
+          <span>{status === 'published' ? 'Published' : 'Draft'}</span>
         </div>
       ),
     },
@@ -131,7 +149,7 @@ export default function WebsitesPages() {
       render: (_, record) => (
         <div className="flex space-x-2">
           <Button icon={<EditOutlined />} onClick={() => showModal('edit', record)} type="primary" style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}/>
-          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} type="danger" style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }} />
+          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record._id)} type="danger" style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }} />
         </div>
       ),
     },
@@ -143,8 +161,11 @@ export default function WebsitesPages() {
         <div className="flex items-center space-x-4">
           <label>Show</label>
           <Select
-            defaultValue={pageSize}
-            onChange={(value) => setPageSize(value)}
+            value={pageSize}
+            onChange={(value) => {
+              setPageSize(value);
+              setCurrentPage(1);
+            }}
             className="w-24"
           >
             <Option value={5}>5</Option>
@@ -157,8 +178,10 @@ export default function WebsitesPages() {
 
         <Search
           placeholder="Search by name"
-          onSearch={(value) => setSearchText(value)}
-          onChange={(e) => setSearchText(e.target.value)}
+          onSearch={(value) => {
+            setSearchText(value);
+            setCurrentPage(1);
+          }}
           style={{ width: 200 }}
           allowClear
         />
@@ -176,9 +199,15 @@ export default function WebsitesPages() {
 
       <Table
         columns={columns}
-        dataSource={filteredPages}
-        pagination={{ pageSize }}
-        rowKey="id"
+        dataSource={pages}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalPages * pageSize,
+          onChange: (page) => setCurrentPage(page),
+        }}
+        rowKey="_id"
+        loading={loading}
       />
 
       <WebsitePageModal
