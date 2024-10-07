@@ -22,6 +22,9 @@ export async function GET(req) {
     });
     const thirdPartyData = await thirdPartyResponse.json();
 
+    console.log(thirdPartyData, "third");
+    
+
     const timestamp = thirdPartyData.timestamp; // Example timestamp (in milliseconds)
     const date = new Date(timestamp); // Convert timestamp to Date object
 
