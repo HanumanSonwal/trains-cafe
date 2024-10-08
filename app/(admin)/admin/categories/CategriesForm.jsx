@@ -11,7 +11,7 @@ const vendorSchema = z.object({
   title: z.string().nonempty("Category Title is required"),
 });
 
-const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
+const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategories}) => {
   console.log(initialValues,"CATAGRU initialValues")
   const {
     control,
@@ -44,8 +44,8 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
 
 
   const postCategory = async (formData, id, onSubmit = () => {}) => {
-    const url = initialValues._id ? `/api/categories?id=${initialValues._id}` : "/api/categories"; 
-    const method = initialValues._id ? updateData : postData; 
+    const url = initialValues ? `/api/categories?id=${initialValues?._id}` : "/api/categories"; 
+    const method = initialValues ? updateData : postData; 
   
     try {
       const response = await method(url, formData); 
@@ -53,6 +53,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
       if (response.success !== false) { 
         message.success(id ? "Category updated successfully!" : "Category added successfully!");
         onSubmit(response); 
+        fetchCategories();
         onCancel();
       } else {
         throw new Error(response.err || "Failed to save category");
@@ -123,7 +124,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues }) => {
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block mb-1">Thumbnail Image</label>
-                <FileUploadComponent url={url} setUrl={setUrl} />
+                <FileUploadComponent {...field} url={url} setUrl={setUrl} />
               </div>
             )}
           />

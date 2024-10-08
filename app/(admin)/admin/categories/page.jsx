@@ -146,9 +146,10 @@ const CategoryManagement = () => {
         onChange={handleTableChange}
       />
       <CategoriesForm
+      fetchCategories={fetchCategories}
         open={isCategoryModalOpen}
         onCancel={() => setIsCategoryModalOpen(false)}
-        onSubmit={handleCategoryFormSubmit} // Pass the callback to refresh the table
+        onSubmit={handleCategoryFormSubmit} 
         initialValues={editingCategory}
       />
     </div>

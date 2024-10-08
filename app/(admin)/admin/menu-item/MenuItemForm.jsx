@@ -1,90 +1,134 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  Button,
-  Upload,
-  message,
-  Select,
-  Radio,
-  Row,
-  Col,
-  Image,
-} from "antd";
-
-import { UploadOutlined, InboxOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Modal, Button, Input, Col, Row, Select, Radio, message, Form } from "antd";
 import { useForm, Controller } from "react-hook-form";
+import { postData, updateData } from "@/app/lib/ApiFuntions";
+import FileUploadComponent from "@/app/componants/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { MenuItemSchema } from "@/app/validation-schema/MenuItemSchema";
+import { z } from "zod";
+import axios from 'axios'; 
 
 const { Option } = Select;
-const { Dragger } = Upload;
+const menuSchema = z.object({
+  Item_Name: z.string().min(1, "Item Name is required"),
+  Category_Id: z.string().min(1, "Category is required"),
+  Vendor: z.string().min(1, "Vendor is required"),
+  Food_Type: z.enum(['veg', 'non-veg'], "Select a valid food type"), 
+  Price: z
+    .number({ invalid_type_error: "Price must be a number" })
+    .positive("Price must be greater than 0"),
+  Discount: z
+    .number({ invalid_type_error: "Discount must be a number" })
+    .min(0, "Discount cannot be negative")
+    .max(100, "Discount cannot be more than 100"),
+  Description: z.string().min(5, "Description should be at least 5 characters long"),
+  image: z.string().min(1, "Image is required"), 
+});
 
-const MenuItemForm = ({ open, onCancel, onSubmit, initialValues }) => {
+const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems }) => {
   const {
     control,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(MenuItemSchema),
-    defaultValues: initialValues || {},
+    // resolver: zodResolver(menuSchema),
+    defaultValues: {
+      Item_Name: "",
+      Category_Id: "",
+      Vendor: "",
+      Food_Type: "",
+      Price: "",
+      Discount: "",
+      Description: "",
+      image: "",
+    },
   });
-  const [fileList, setFileList] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const router = useRouter();
+
+  const [url, setUrl] = useState(""); 
+  const [categories, setCategories] = useState([]);
+  const [vendors, setVendors] = useState([]); 
+
+  console.log(categories,"categories")
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('/api/categories');
+       
+        setCategories(response.data.data);
+      } catch (error) {
+        message.error("Failed to fetch categories");
+      }
+    };
+
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get('/api/vendors'); 
+        console.log(response,"response cata")
+        setVendors(response.data.data);
+      } catch (error) {
+        message.error("Failed to fetch vendors");
+      }
+    };
+
+    fetchCategories();
+    fetchVendors();
+  }, []);
 
   useEffect(() => {
     if (initialValues) {
-      Object.keys(initialValues).forEach((key) =>
-        setValue(key, initialValues[key])
-      );
-      if (initialValues.image) {
-        setFileList([{ url: initialValues.image, name: "uploaded_image" }]);
-      }
-    }
-  }, [initialValues, setValue]);
-
-  const handleFormSubmit = (values) => {
-    if (fileList.length === 0) {
-      message.error("Please upload an image");
-      return;
-    }
-
-    const imageUrl = fileList[0].thumbUrl || fileList[0].url;
-
-    const newData = {
-      ...values,
-      image: imageUrl,
-      status: initialValues ? initialValues.status : "Pending",
-    };
-
-    onSubmit(newData);
-    setFileList([]);
-    reset();
-    onCancel();
-  };
-
-  const handleChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList.slice(-1));
-  };
-
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
+      setUrl(initialValues.image || "");
+      reset(initialValues);
+    } else {
+      reset({
+        Item_Name: "",
+        Category_Id: "",
+        Vendor: "",
+        Food_Type: "",
+        Price: "",
+        Discount: "",
+        Description: "",
+        image: "",
       });
     }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
+  }, [initialValues, reset]);
+
+  const handleFormSubmit = (data) => {
+    if (!url) {
+      message.error("Please upload an image.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("Item_Name", data.Item_Name);
+    formData.append("Category_Id", data.Category_Id);
+    formData.append("Vendor", data.Vendor);
+    formData.append("Food_Type", data.Food_Type);
+    formData.append("Price", data.Price);
+    formData.append("Discount", data.Discount);
+    formData.append("Description", data.Description);
+    formData.append("image", url); 
+
+    const id = initialValues ? initialValues.id : null;
+    postCategory(formData, id); 
+  };
+
+  const postCategory = async (formData, id) => {
+    const url = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
+    const method = initialValues ? updateData : postData;
+
+    try {
+      const response = await method(url, formData);
+
+      if (response.success !== false) {
+        message.success(id ? "Menu item updated successfully!" : "Menu item added successfully!");
+        fetchMenuItems();
+        onCancel();
+      } else {
+        throw new Error(response.err || "Failed to save category");
+      }
+    } catch (error) {
+      message.error(error.message || "Something went wrong");
+    }
   };
 
   return (
@@ -92,7 +136,6 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues }) => {
       open={open}
       width={1000}
       onCancel={onCancel}
-
       footer={[
         <Button
           key="submit"
@@ -112,146 +155,119 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues }) => {
           <Col span={12}>
             <Form.Item label="Item Name">
               <Controller
-                name="itemName"
+                name="Item_Name"
                 control={control}
                 render={({ field }) => <Input {...field} />}
               />
-              {errors.itemName && <p>{errors.itemName.message}</p>}
+              {errors.Item_Name && <p className="text-red-500">{errors.Item_Name.message}</p>}
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Select Category">
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field}>
-                    <Option value="category1">Category 1</Option>
-                    <Option value="category2">Category 2</Option>
-                    <Option value="category3">Category 3</Option>
-                  </Select>
-                )}
-              />
-              {errors.category && <p>{errors.category.message}</p>}
-            </Form.Item>
-          </Col>
+  <Form.Item label="Select Category">
+    <Controller
+      name="Category_Id"
+      control={control}
+      render={({ field }) => (
+        <Select {...field}>
+        {categories?.map((category) => (
+          <Option key={category._id } value={category._id}>
+            {category.title}
+          </Option>
+        ))}
+      </Select>
+      
+      )}
+    />
+    {errors.Category_Id && <p className="text-red-500">{errors.Category_Id.message}</p>}
+  </Form.Item>
+</Col>
+
         </Row>
+
         <Row gutter={20}>
           <Col span={12}>
             <Form.Item label="Select Vendor">
               <Controller
-                name="vendor"
+                name="Vendor"
                 control={control}
                 render={({ field }) => (
                   <Select {...field}>
-                    <Option value="vendor1">Vendor 1</Option>
-                    <Option value="vendor2">Vendor 2</Option>
-                    <Option value="vendor3">Vendor 3</Option>
-                  </Select>
+                  {vendors?.map((vendor) => (
+                    <Option key={vendor._id} value={vendor._id}>
+                      {vendor.Vendor_Name}
+                    </Option>
+                  ))}
+                </Select>
+                
                 )}
               />
-              {errors.vendor && <p>{errors.vendor.message}</p>}
+              {errors.Vendor && <p className="text-red-500">{errors.Vendor.message}</p>}
             </Form.Item>
           </Col>
+
           <Col span={12}>
             <Form.Item label="Food Type">
               <Controller
-                name="foodType"
+                name="Food_Type"
                 control={control}
                 render={({ field }) => (
                   <Radio.Group {...field}>
-                    <Radio value="Veg">Veg</Radio>
-                    <Radio value="Non-Veg">Non-Veg</Radio>
+                    <Radio value="veg">Veg</Radio>
+                    <Radio value="non-veg">Non-Veg</Radio>
                   </Radio.Group>
                 )}
               />
-              {errors.foodType && <p>{errors.foodType.message}</p>}
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={20}>
-          <Col span={12}>
-            <Form.Item label="Price">
-              <Controller
-                name="price"
-                control={control}
-                render={({ field }) => <Input type="number" {...field} />}
-              />
-              {errors.price && <p>{errors.price.message}</p>}
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Discount (%)">
-              <Controller
-                name="discount"
-                control={control}
-                render={({ field }) => <Input type="number" {...field} />}
-              />
-              {errors.discount && <p>{errors.discount.message}</p>}
+              {errors.Food_Type && <p className="text-red-500">{errors.Food_Type.message}</p>}
             </Form.Item>
           </Col>
         </Row>
 
-        <Col>
-          <Form.Item label="Image">
-            <Controller
-              name="image"
-              control={control}
-              render={({ field }) => (
-                <Dragger
-                  {...field}
-                  listType="picture-card"
-                  fileList={fileList}
-                  onChange={handleChange}
-                  onPreview={handlePreview}
-                  beforeUpload={() => false}
-                >
-                  {fileList.length >= 1 ? null : (
-                    <>
-                      <p className="ant-upload-drag-icon">
-                        <InboxOutlined />
-                      </p>
-                      <p className="ant-upload-text">
-                        Click or drag file to this area to upload
-                      </p>
-                      <p className="ant-upload-hint">
-                        Support for a single or bulk upload.
-                      </p>
-                    </>
-                  )}
-                </Dragger>
-              )}
-            />
-            {errors.image && <p>{errors.image.message}</p>}
-          </Form.Item>
-        </Col>
-        <Col>
-          <Form.Item label="Description">
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => <Input.TextArea rows={4} {...field} />}
-            />
-            {errors.description && <p>{errors.description.message}</p>}
-          </Form.Item>
-        </Col>
+        <Row gutter={20}>
+          <Col span={12}>
+            <Form.Item label="Price">
+              <Controller
+                name="Price"
+                control={control}
+                render={({ field }) => <Input type="number" {...field} />}
+              />
+              {errors.Price && <p className="text-red-500">{errors.Price.message}</p>}
+            </Form.Item>
+          </Col>
+
+          <Col span={12}>
+            <Form.Item label="Discount (%)">
+              <Controller
+                name="Discount"
+                control={control}
+                render={({ field }) => <Input type="number" {...field} />}
+              />
+              {errors.Discount && <p className="text-red-500">{errors.Discount.message}</p>}
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item label="Image">
+          <Controller
+            name="image"
+            control={control}
+            render={({ field }) => (
+              <FileUploadComponent {...field} url={url} setUrl={setUrl} />
+            )}
+          />
+          {errors.image && <p className="text-red-500">{errors.image.message}</p>}
+        </Form.Item>
+
+        <Form.Item label="Description">
+          <Controller
+            name="Description"
+            control={control}
+            render={({ field }) => <Input.TextArea rows={4} {...field} />}
+          />
+          {errors.Description && <p className="text-red-500">{errors.Description.message}</p>}
+        </Form.Item>
       </Form>
-      {previewImage && (
-        <Image
-          wrapperStyle={{
-            display: "none",
-          }}
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-          }}
-          src={previewImage}
-        />
-      )}
     </Modal>
   );
 };
 
 export default MenuItemForm;
-
-

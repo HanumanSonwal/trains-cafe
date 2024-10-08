@@ -1,18 +1,13 @@
 // import React, { useState } from "react";
-// import { Upload, Button, message } from "antd";
+// import { Upload, message, Image, Button } from "antd";
 // import { UploadOutlined } from "@ant-design/icons";
 
-// const FileUploadComponent = ({url , setUrl}) => {
+// const FileUploadComponent = ({ url, setUrl }) => {
 //   const [fileList, setFileList] = useState([]);
 
-//   const handleFileUpload = async () => {
-//     if (fileList.length === 0) {
-//       message.error("Please select a file to upload");
-//       return;
-//     }
-
+//   const handleFileUpload = async (file) => {
 //     const formData = new FormData();
-//     formData.append("file", fileList[0].originFileObj); 
+//     formData.append("file", file);
 
 //     try {
 //       const response = await fetch("/api/fileUpload/local", {
@@ -24,8 +19,8 @@
 
 //       if (result.success) {
 //         message.success("File uploaded successfully");
-//         setUrl(result.url)
-//         console.log("File URL:", result.url); 
+//         setUrl(result.url); 
+//         console.log("File URL:", result.url);
 //       } else {
 //         message.error(result.message || "File upload failed");
 //       }
@@ -37,39 +32,72 @@
 
 //   const handleChange = ({ fileList: newFileList }) => {
 //     setFileList(newFileList);
+
+//     if (newFileList.length > 0) {
+//       handleFileUpload(newFileList[0].originFileObj);
+//     }
 //   };
 
 //   return (
 //     <div>
 //       <Upload
 //         listType="picture"
-//         beforeUpload={() => false} 
+//         beforeUpload={() => false}
 //         onChange={handleChange}
 //         fileList={fileList}
+//         showUploadList={false}
 //       >
 //         <Button icon={<UploadOutlined />}>Select File</Button>
 //       </Upload>
 
-//       <Button
-//         type="primary"
-//         onClick={handleFileUpload}
-//         style={{ marginTop: "16px" }}
-//       >
-//         Upload
-//       </Button>
+//       {url && ( 
+//         <div style={{ marginTop: "16px" }}>
+//           <h3>Uploaded Image:</h3>
+//           <Image
+//             src={url}
+//             alt="Uploaded Image"
+//             width={150} 
+            
+//           />
+//         </div>
+//       )}
 //     </div>
 //   );
 // };
 
 // export default FileUploadComponent;
 
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { PlusOutlined } from "@ant-design/icons";
 import { Upload, message, Image, Button } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+
+// Helper function to convert file to Base64 for preview
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 
 const FileUploadComponent = ({ url, setUrl }) => {
   const [fileList, setFileList] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+
+  // Update fileList when editing category with pre-existing image
+  useEffect(() => {
+    if (url) {
+      setFileList([
+        {
+          uid: "-1", // unique identifier for the file
+          name: "image.png", // You can set this to the actual image name if available
+          status: "done", // Status of the upload
+          url: url, // The image URL to display in preview
+        },
+      ]);
+    }
+  }, [url]);
 
   const handleFileUpload = async (file) => {
     const formData = new FormData();
@@ -85,7 +113,7 @@ const FileUploadComponent = ({ url, setUrl }) => {
 
       if (result.success) {
         message.success("File uploaded successfully");
-        setUrl(result.url); // Set the uploaded file URL
+        setUrl(result.url);
         console.log("File URL:", result.url);
       } else {
         message.error(result.message || "File upload failed");
@@ -99,33 +127,45 @@ const FileUploadComponent = ({ url, setUrl }) => {
   const handleChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
 
-    if (newFileList.length > 0) {
-      // Automatically upload the selected file
+    if (newFileList.length > 0 && newFileList[0].originFileObj) {
       handleFileUpload(newFileList[0].originFileObj);
     }
   };
 
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+
+  const uploadButton = (
+    <Button icon={<PlusOutlined />}>Upload</Button>
+  );
+
   return (
     <div>
       <Upload
-        listType="picture"
-        beforeUpload={() => false} // Prevent automatic upload by Ant Design
-        onChange={handleChange}
+        listType="picture-card"
         fileList={fileList}
-        showUploadList={false} // Hide the upload button list
+        onPreview={handlePreview}
+        onChange={handleChange}
+        beforeUpload={() => false} // Prevent auto-upload, handle it manually
       >
-        <Button icon={<UploadOutlined />}>Select File</Button>
+        {fileList.length >= 1 ? null : uploadButton}
       </Upload>
 
-      {url && ( // Conditionally render the uploaded image
-        <div style={{ marginTop: "16px" }}>
-          <h3>Uploaded Image:</h3>
-          <Image
-            src={url} // Use the uploaded image URL
-            alt="Uploaded Image"
-            width={200} // Adjust the size as needed
-          />
-        </div>
+      {previewImage && (
+        <Image
+          preview={{
+            visible: previewOpen,
+            onVisibleChange: (visible) => setPreviewOpen(visible),
+            afterOpenChange: (visible) => !visible && setPreviewImage(""),
+          }}
+          src={previewImage}
+          wrapperStyle={{ display: "none" }}
+        />
       )}
     </div>
   );
