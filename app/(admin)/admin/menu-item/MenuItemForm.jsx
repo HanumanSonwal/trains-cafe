@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Input, Col, Row, Select, Radio, message, Form } from "antd";
+import {
+  Modal,
+  Button,
+  Input,
+  Col,
+  Row,
+  Select,
+  Radio,
+  message,
+  Form,
+} from "antd";
 import { useForm, Controller } from "react-hook-form";
-import { postData, updateData } from "@/app/lib/ApiFuntions";
+import { fetchData, postData, updateData } from "@/app/lib/ApiFuntions";
 import FileUploadComponent from "@/app/componants/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import axios from 'axios'; 
 
 const { Option } = Select;
 const menuSchema = z.object({
   Item_Name: z.string().min(1, "Item Name is required"),
   Category_Id: z.string().min(1, "Category is required"),
   Vendor: z.string().min(1, "Vendor is required"),
-  Food_Type: z.enum(['veg', 'non-veg'], "Select a valid food type"), 
+  Station: z.string().min(1, "Station is required"), 
+  Food_Type: z.enum(["veg", "non-veg"], "Select a valid food type"),
   Price: z
     .number({ invalid_type_error: "Price must be a number" })
     .positive("Price must be greater than 0"),
@@ -20,11 +30,19 @@ const menuSchema = z.object({
     .number({ invalid_type_error: "Discount must be a number" })
     .min(0, "Discount cannot be negative")
     .max(100, "Discount cannot be more than 100"),
-  Description: z.string().min(5, "Description should be at least 5 characters long"),
-  image: z.string().min(1, "Image is required"), 
+  Description: z
+    .string()
+    .min(5, "Description should be at least 5 characters long"),
+  image: z.string().min(1, "Image is required"),
 });
 
-const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems }) => {
+const MenuItemForm = ({
+  open,
+  onCancel,
+  onSubmit,
+  initialValues,
+  fetchMenuItems,
+}) => {
   const {
     control,
     handleSubmit,
@@ -36,6 +54,7 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
       Item_Name: "",
       Category_Id: "",
       Vendor: "",
+      Station: "",
       Food_Type: "",
       Price: "",
       Discount: "",
@@ -44,36 +63,47 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
     },
   });
 
-  const [url, setUrl] = useState(""); 
+  const [url, setUrl] = useState("");
   const [categories, setCategories] = useState([]);
-  const [vendors, setVendors] = useState([]); 
+  const [vendors, setVendors] = useState([]);
+  const [stations, setStations] = useState([]);
 
-  console.log(categories,"categories")
+
 
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/api/categories');
-       
-        setCategories(response.data.data);
-      } catch (error) {
+      const response = await fetchData("/api/categories");
+      if (response.success !== false) {
+        setCategories(response.data);
+      } else {
         message.error("Failed to fetch categories");
       }
     };
-
+  
     const fetchVendors = async () => {
-      try {
-        const response = await axios.get('/api/vendors'); 
-        console.log(response,"response cata")
-        setVendors(response.data.data);
-      } catch (error) {
+      const response = await fetchData("/api/vendors");
+      if (response.success !== false) {
+        setVendors(response.data);
+      } else {
         message.error("Failed to fetch vendors");
       }
     };
-
+  
+    const fetchStations = async () => {
+      const response = await fetchData("/api/station");
+      if (response.success !== false) {
+        setStations(response.data);
+      } else {
+        message.error("Failed to fetch stations");
+      }
+    };
+  
+    // Call all the fetch functions
     fetchCategories();
     fetchVendors();
+    fetchStations();
   }, []);
+  
 
   useEffect(() => {
     if (initialValues) {
@@ -84,6 +114,7 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
         Item_Name: "",
         Category_Id: "",
         Vendor: "",
+        Station: "",
         Food_Type: "",
         Price: "",
         Discount: "",
@@ -102,25 +133,32 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
     formData.append("Item_Name", data.Item_Name);
     formData.append("Category_Id", data.Category_Id);
     formData.append("Vendor", data.Vendor);
+    formData.append("Station", data.Station);
     formData.append("Food_Type", data.Food_Type);
     formData.append("Price", data.Price);
     formData.append("Discount", data.Discount);
     formData.append("Description", data.Description);
-    formData.append("image", url); 
+    formData.append("image", url);
 
     const id = initialValues ? initialValues.id : null;
-    postCategory(formData, id); 
+    postCategory(formData, id);
   };
 
   const postCategory = async (formData, id) => {
-    const url = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
+    const url = initialValues
+      ? `/api/menu?id=${initialValues?._id}`
+      : "/api/menu";
     const method = initialValues ? updateData : postData;
 
     try {
       const response = await method(url, formData);
 
       if (response.success !== false) {
-        message.success(id ? "Menu item updated successfully!" : "Menu item added successfully!");
+        message.success(
+          id
+            ? "Menu item updated successfully!"
+            : "Menu item added successfully!"
+        );
         fetchMenuItems();
         onCancel();
       } else {
@@ -159,32 +197,56 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
                 control={control}
                 render={({ field }) => <Input {...field} />}
               />
-              {errors.Item_Name && <p className="text-red-500">{errors.Item_Name.message}</p>}
+              {errors.Item_Name && (
+                <p className="text-red-500">{errors.Item_Name.message}</p>
+              )}
             </Form.Item>
           </Col>
           <Col span={12}>
-  <Form.Item label="Select Category">
-    <Controller
-      name="Category_Id"
-      control={control}
-      render={({ field }) => (
-        <Select {...field}>
-        {categories?.map((category) => (
-          <Option key={category._id } value={category._id}>
-            {category.title}
-          </Option>
-        ))}
-      </Select>
-      
-      )}
-    />
-    {errors.Category_Id && <p className="text-red-500">{errors.Category_Id.message}</p>}
-  </Form.Item>
-</Col>
-
+            <Form.Item label="Select Category">
+              <Controller
+                name="Category_Id"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    {categories?.map((category) => (
+                      <Option key={category._id} value={category._id}>
+                        {category.title}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              />
+              {errors.Category_Id && (
+                <p className="text-red-500">{errors.Category_Id.message}</p>
+              )}
+            </Form.Item>
+          </Col>
         </Row>
 
         <Row gutter={20}>
+          <Col span={12}>
+            <Form.Item label="Select Station">
+              {" "}
+              {/* New field for Station */}
+              <Controller
+                name="Station"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field}>
+                    {stations?.map((station) => (
+                      <Option key={station._id} value={station._id}>
+                        {station.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              />
+              {errors.Station && (
+                <p className="text-red-500">{errors.Station.message}</p>
+              )}
+            </Form.Item>
+          </Col>
           <Col span={12}>
             <Form.Item label="Select Vendor">
               <Controller
@@ -192,32 +254,17 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
                 control={control}
                 render={({ field }) => (
                   <Select {...field}>
-                  {vendors?.map((vendor) => (
-                    <Option key={vendor._id} value={vendor._id}>
-                      {vendor.Vendor_Name}
-                    </Option>
-                  ))}
-                </Select>
-                
+                    {vendors?.map((vendor) => (
+                      <Option key={vendor._id} value={vendor._id}>
+                        {vendor.Vendor_Name}
+                      </Option>
+                    ))}
+                  </Select>
                 )}
               />
-              {errors.Vendor && <p className="text-red-500">{errors.Vendor.message}</p>}
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
-            <Form.Item label="Food Type">
-              <Controller
-                name="Food_Type"
-                control={control}
-                render={({ field }) => (
-                  <Radio.Group {...field}>
-                    <Radio value="veg">Veg</Radio>
-                    <Radio value="non-veg">Non-Veg</Radio>
-                  </Radio.Group>
-                )}
-              />
-              {errors.Food_Type && <p className="text-red-500">{errors.Food_Type.message}</p>}
+              {errors.Vendor && (
+                <p className="text-red-500">{errors.Vendor.message}</p>
+              )}
             </Form.Item>
           </Col>
         </Row>
@@ -230,41 +277,73 @@ const MenuItemForm = ({ open, onCancel, onSubmit, initialValues, fetchMenuItems 
                 control={control}
                 render={({ field }) => <Input type="number" {...field} />}
               />
-              {errors.Price && <p className="text-red-500">{errors.Price.message}</p>}
+              {errors.Price && (
+                <p className="text-red-500">{errors.Price.message}</p>
+              )}
             </Form.Item>
           </Col>
-
           <Col span={12}>
-            <Form.Item label="Discount (%)">
+            <Col span={12}>
+              <Form.Item label="Discount (%)">
+                <Controller
+                  name="Discount"
+                  control={control}
+                  render={({ field }) => <Input type="number" {...field} />}
+                />
+                {errors.Discount && (
+                  <p className="text-red-500">{errors.Discount.message}</p>
+                )}
+              </Form.Item>
+            </Col>
+          </Col>
+        </Row>
+
+        <Row gutter={20}>
+          <Col span={12}>
+            <Form.Item label="Food Type">
               <Controller
-                name="Discount"
+                name="Food_Type"
                 control={control}
-                render={({ field }) => <Input type="number" {...field} />}
+                render={({ field }) => (
+                  <Radio.Group {...field}>
+                    <Radio value="veg">Veg</Radio>
+                    <Radio value="non-veg">Non-Veg</Radio>
+                  </Radio.Group>
+                )}
               />
-              {errors.Discount && <p className="text-red-500">{errors.Discount.message}</p>}
+              {errors.Food_Type && (
+                <p className="text-red-500">{errors.Food_Type.message}</p>
+              )}
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Image">
+              <Controller
+                name="image"
+                control={control}
+                render={({ field }) => (
+                  <FileUploadComponent {...field} url={url} setUrl={setUrl} />
+                )}
+              />
+              {errors.image && (
+                <p className="text-red-500">{errors.image.message}</p>
+              )}
             </Form.Item>
           </Col>
         </Row>
 
-        <Form.Item label="Image">
-          <Controller
-            name="image"
-            control={control}
-            render={({ field }) => (
-              <FileUploadComponent {...field} url={url} setUrl={setUrl} />
+        <Col>
+          <Form.Item label="Description">
+            <Controller
+              name="Description"
+              control={control}
+              render={({ field }) => <Input.TextArea rows={3} {...field} />}
+            />
+            {errors.Description && (
+              <p className="text-red-500">{errors.Description.message}</p>
             )}
-          />
-          {errors.image && <p className="text-red-500">{errors.image.message}</p>}
-        </Form.Item>
-
-        <Form.Item label="Description">
-          <Controller
-            name="Description"
-            control={control}
-            render={({ field }) => <Input.TextArea rows={4} {...field} />}
-          />
-          {errors.Description && <p className="text-red-500">{errors.Description.message}</p>}
-        </Form.Item>
+          </Form.Item>
+        </Col>
       </Form>
     </Modal>
   );

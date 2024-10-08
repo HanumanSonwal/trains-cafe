@@ -125,10 +125,10 @@ const TablePage = () => {
         data: { id: key },
       });
   
-      // Destructure pagination values from tableParams
+    
       const { current, pageSize } = tableParams.pagination;
       
-      // Refetch menu items after deletion
+
       await fetchMenuItems(current, pageSize, searchText);
       
       message.success("Menu item deleted successfully");
