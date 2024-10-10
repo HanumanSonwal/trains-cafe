@@ -33,13 +33,13 @@ const VendorsManagement = () => {
       if (success) {
         setVendors(data);
         setFilteredVendors(data);
-        setTableParams((prev) => ({
+       setTableParams((prev) => ({
           ...prev,
           pagination: {
             ...prev.pagination,
             total,
           },
-        }));
+        })); 
       } else {
         message.error('Failed to fetch data');
       }
@@ -104,8 +104,8 @@ const VendorsManagement = () => {
     try {
       const status = checked ? 'Active' : 'Inactive';
       const response = await updateData(`/api/vendors/?id=${_id}`, { Status: status });
-
-      if (response.ok) {
+  
+      if (response.success) {
         const updatedVendors = vendors.map(vendor =>
           vendor._id === _id ? { ...vendor, Status: status } : vendor
         );
@@ -166,6 +166,36 @@ const VendorsManagement = () => {
       render: (contact) => contact || 'N/A',
     },
     {
+      title: 'Station',
+      dataIndex: 'Station',
+      key: 'Station',
+      render: (Station) => Station || 'N/A',
+    },
+    {
+      title: 'Food Type',
+      dataIndex: 'Food_Type',
+      key: 'Food_Type',
+      render: (Food_Type) => {
+        let color;
+        let displayText = Food_Type || 'N/A'; 
+        if (Food_Type === 'Non-Veg') {
+          color = 'red';
+        } else if (Food_Type === 'Veg') {
+          color = 'green'; 
+        } else if (Food_Type === 'Veg & Non-Veg') {
+          color = 'orange';
+        } else {
+          color = 'black';
+        }
+        return (
+          <span style={{ color }}>
+            {displayText}
+          </span>
+        );
+      },
+    },
+    
+    {
       title: 'Status',
       dataIndex: 'Status',
       key: 'status',
@@ -175,7 +205,8 @@ const VendorsManagement = () => {
           onChange={(checked) => handleStatusChange(checked, record._id)}
         />
       ),
-    },
+    }
+,    
     {
       title: 'Actions',
       key: 'actions',

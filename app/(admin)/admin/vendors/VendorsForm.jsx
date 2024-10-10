@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import dynamic from 'next/dynamic';
-import { fetchData, postData, updateData } from '@/app/lib/ApiFuntions';
+import { postData, updateData } from '@/app/lib/ApiFuntions';
 
 const { Option } = Select;
 
