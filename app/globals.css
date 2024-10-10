@@ -236,3 +236,7 @@
 :where(.css-dev-only-do-not-override-qnu6hi).ant-collapse{
   background-color: #D49929 !important;
 }
+
+/* :where(.css-dev-only-do-not-override-qnu6hi).ant-btn {
+  color: #fff !important;
+} */

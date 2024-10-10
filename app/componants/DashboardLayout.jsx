@@ -6,7 +6,7 @@ import DashHeader from './DashHeader';
 
 const { Content, Footer } = Layout;
 
-const  DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const toggleCollapsed = () => {
