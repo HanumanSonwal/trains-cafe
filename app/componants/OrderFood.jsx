@@ -27,7 +27,9 @@ const OrderFood = () => {
       if (response.ok) {
         message.success("PNR found! Redirecting...");
         // router.push(`/pnr-details?pnr=${pnr}`);
-        router.push(`/station/${pnr}`);
+        // router.push(`/station/${pnr}`);
+        router.push('/station');
+
       } else {
         throw new Error(result.message);
       }
@@ -47,7 +49,9 @@ const OrderFood = () => {
       if (response.ok) {
         message.success("Train found! Redirecting...");
         // router.push(`/train-details?train=${trainNumber}`);
-        router.push(`/train-details/${trainNumber}`);
+        // router.push(`/train-details/${trainNumber}`);
+        router.push('/station');
+
 
       } else {
         throw new Error(result.message);
