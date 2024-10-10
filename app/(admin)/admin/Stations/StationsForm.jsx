@@ -3,6 +3,7 @@ import { Modal, Button, Input } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import axios from 'axios';
 
 const stationSchema = z.object({
   name: z.string().nonempty('Please enter the station name'),
@@ -11,7 +12,7 @@ const stationSchema = z.object({
   address: z.string().nonempty('Please enter the address'),
 });
 
-const StationsForm = ({ open, onCancel, onSubmit, initialValues }) => {
+const StationsForm = ({ open, onCancel, initialValues, fetchStations }) => {
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(stationSchema),
     defaultValues: initialValues || { name: '', code: '', location: '', address: '' },
@@ -21,20 +22,29 @@ const StationsForm = ({ open, onCancel, onSubmit, initialValues }) => {
     reset(initialValues);
   }, [initialValues, reset]);
 
-  const handleFormSubmit = (data) => {
-    onSubmit(data);
-    reset({ name: '', code: '', location: '', address: '' });
+  const handleFormSubmit = async (data) => {
+    try {
+      if (initialValues && initialValues._id) {
+        await axios.put(`/api/station?id=${initialValues._id}`, data);
+      } else {
+        await axios.post('/api/stations', data);
+      }
+      fetchStations();
+      reset({ name: '', code: '', location: '', address: '' });
+      onCancel();
+    } catch (error) {
+      console.error("Failed to submit the form:", error);
+    }
   };
 
   return (
-    <Modal 
-      title={initialValues ? 'Edit Station' : 'Add Station'} 
-      open={open} 
+    <Modal
+      title={initialValues ? 'Edit Station' : 'Add Station'}
+      open={open}
       onCancel={onCancel}
       footer={[
-       
         <Button key="submit" type="primary" onClick={handleSubmit(handleFormSubmit)} style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}>
-      {initialValues ? 'Save' : 'Submit'} 
+          {initialValues ? 'Save' : 'Submit'}
         </Button>
       ]}
     >

@@ -1,118 +1,41 @@
 "use client";
-import { useState } from "react";
-import {
-  Table,
-  Button,
-  Input as AntdInput,
-  message,
-  Switch,
-  Popconfirm,
-} from "antd";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  DeleteFilled,
-  EditFilled,
-} from "@ant-design/icons";
+import { useState, useEffect } from "react";
+import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from "antd";
+import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from "@ant-design/icons";
 import StationsForm from "./StationsForm";
-
-const initialStations = [
-  {
-    key: "1",
-    name: "Aligarh Junction",
-    code: "ALJN",
-    location: "Aligarh",
-    address: "Aligarh Junction, Aligarh, Uttar Pradesh, India",
-    status: "1",
-  },
-  {
-    key: "2",
-    name: "Prayagraj Chheoki",
-    code: "PCOI",
-    location: "Prayagraj",
-    address: "Naini Gaon, Naini, Chak Imam Ali, Uttar Pradesh 211008",
-    status: "0",
-  },
-  {
-    key: "3",
-    name: "Zawar",
-    code: "ZW",
-    location: "Zawar",
-    address: "Naini Gaon, Naini, Chak Imam Ali, Uttar Pradesh 211008",
-    status: "1",
-  },
-  {
-    key: "4",
-    name: "Zarap",
-    code: "ZARP",
-    location: "Zarap",
-    address: "",
-    status: "0",
-  },
-  {
-    key: "5",
-    name: "Zangalapalle",
-    code: "ZPL",
-    location: "Zangalapalle",
-    address: "",
-    status: "1",
-  },
-  {
-    key: "6",
-    name: "Zampini",
-    code: "ZPI",
-    location: "Zampini",
-    address: "",
-    status: "1",
-  },
-  {
-    key: "7",
-    name: "Zamania",
-    code: "ZNA",
-    location: "Zamania",
-    address: "Naini Gaon, Naini, Chak Imam Ali, Uttar Pradesh 211008",
-    status: "0",
-  },
-  {
-    key: "8",
-    name: "Zahirabad",
-    code: "ZB",
-    location: "Zahirabad",
-    address: "",
-    status: "1",
-  },
-  {
-    key: "9",
-    name: "Zafarabad Junction",
-    code: "ZBD",
-    location: "Zafarabad Junction",
-    address: "",
-    status: "1",
-  },
-  {
-    key: "10",
-    name: "Yusufpur",
-    code: "YFP",
-    location: "Yusufpur",
-    address: "Naini Gaon, Naini, Chak Imam Ali, Uttar Pradesh 211008",
-    status: "0",
-  },
-  {
-    key: "11",
-    name: "Yevat",
-    code: "YT",
-    location: "Yevat",
-    address: "",
-    status: "1",
-  },
-];
+import axios from "axios";
 
 const StationManagement = () => {
-  const [stations, setStations] = useState(initialStations);
-  const [filteredStations, setFilteredStations] = useState(initialStations);
+  const [stations, setStations] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStation, setEditingStation] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+
+  useEffect(() => {
+    fetchStations();
+  }, [pagination.current, pagination.pageSize, searchText]);
+
+
+  const fetchStations = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/station?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
+      );
+      const { data, total } = response.data;
+
+      setStations(data);
+      setFilteredStations(data);
+      setPagination((prev) => ({
+        ...prev,
+        total,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch stations:", error);
+      message.error("Failed to fetch stations");
+    }
+  };
 
   const handleAdd = () => {
     setEditingStation(null);
@@ -124,67 +47,57 @@ const StationManagement = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (key) => {
-    setStations(stations.filter((station) => station.key !== key));
-    setFilteredStations(
-      filteredStations.filter((station) => station.key !== key)
-    );
-    message.success("Station deleted successfully");
+  const handleDelete = async (key) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/station/${key}`);
+      message.success("Station deleted successfully");
+      fetchStations(); 
+    } catch (error) {
+      console.error("Failed to delete station:", error);
+      message.error("Failed to delete station");
+    }
   };
 
-  const handleFormSubmit = (values) => {
-    if (editingStation) {
-      setStations(
-        stations.map((station) =>
-          station.key === editingStation.key
-            ? { ...values, key: editingStation.key }
-            : station
-        )
-      );
-      setFilteredStations(
-        filteredStations.map((station) =>
-          station.key === editingStation.key
-            ? { ...values, key: editingStation.key }
-            : station
-        )
-      );
-      message.success("Station updated successfully");
-    } else {
-      const newStation = { ...values, key: `${stations.length + 1}` };
-      setStations([...stations, newStation]);
-      setFilteredStations([...filteredStations, newStation]);
-      message.success("Station added successfully");
+  const handleFormSubmit = async (values) => {
+    try {
+      if (editingStation) {
+     
+        await axios.put(`http://localhost:3000/api/station/${editingStation.key}`, values);
+        message.success("Station updated successfully");
+      } else {
+        // Add new station
+        await axios.post("http://localhost:3000/api/station", values);
+        message.success("Station added successfully");
+      }
+      setIsModalOpen(false);
+      fetchStations(); 
+    } catch (error) {
+      console.error("Failed to save station:", error);
+      message.error("Failed to save station");
     }
-    setIsModalOpen(false);
   };
 
   const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearchText(value);
-    const filtered = stations.filter((station) =>
-      Object.values(station).some((val) =>
-        val.toLowerCase().includes(value.toLowerCase())
-      )
-    );
-    setFilteredStations(filtered);
+    setSearchText(e.target.value);
   };
 
-  const handleStatusChange = (checked, key) => {
-    setStations(
-      stations.map((station) =>
-        station.key === key
-          ? { ...station, status: checked ? "1" : "0" }
-          : station
-      )
-    );
-    setFilteredStations(
-      filteredStations.map((station) =>
-        station.key === key
-          ? { ...station, status: checked ? "1" : "0" }
-          : station
-      )
-    );
-    message.success("Station status updated successfully");
+  const handleStatusChange = async (checked, key) => {
+    try {
+      await axios.patch(`http://localhost:3000/api/station/${key}`, { status: checked ? "1" : "0" });
+      message.success("Station status updated successfully");
+      fetchStations(); 
+    } catch (error) {
+      console.error("Failed to update station status:", error);
+      message.error("Failed to update station status");
+    }
+  };
+
+  const handleTableChange = (pagination) => {
+    setPagination({
+      ...pagination,
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+    });
   };
 
   const columns = [
@@ -223,7 +136,6 @@ const StationManagement = () => {
         />
       ),
     },
-
     {
       title: "Actions",
       key: "actions",
@@ -234,10 +146,7 @@ const StationManagement = () => {
             onClick={() => handleEdit(record)}
             style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           />
-          <Popconfirm
-            title="Are you sure to delete?"
-            onConfirm={() => handleDelete(record.key)}
-          >
+          <Popconfirm title="Are you sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <Button icon={<DeleteFilled />} danger />
           </Popconfirm>
         </div>
@@ -278,10 +187,16 @@ const StationManagement = () => {
       <Table
         columns={columns}
         dataSource={filteredStations}
-        pagination={{ pageSize: 10 }}
+        pagination={{
+          ...pagination,
+          showSizeChanger: true,
+          position: ["bottomRight"],
+        }}
+        onChange={handleTableChange}
       />
 
       <StationsForm
+      fetchStations={fetchStations}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onSubmit={handleFormSubmit}
