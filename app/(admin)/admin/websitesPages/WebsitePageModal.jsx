@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input, Form } from 'antd';
+import { Modal, Input, Form, message, Select } from 'antd';
 import dynamic from "next/dynamic";
 
 const TextEditor = dynamic(() => import('../../../componants/TextEditor'), { ssr: false });
@@ -11,10 +11,11 @@ const WebsitePageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) 
   useEffect(() => {
     if (visible && initialValues) {
       form.setFieldsValue({
-        pageName: initialValues.name,
-        metaTitle: initialValues.metaTitle,
-        metaDescription: initialValues.metaDescription,
-        metaKeywords: initialValues.metaKeywords,
+        name: initialValues.name,
+        title: initialValues.title,
+        description: initialValues.description,
+        keywords: initialValues.keywords.join(', '),
+        status: initialValues.status || 'published',
       });
       setEditorContent(initialValues.pageData || '');
     } else {
@@ -23,13 +24,50 @@ const WebsitePageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) 
     }
   }, [visible, initialValues, form]);
 
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      onSubmit({
-        ...values,
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const submitData = {
+        name: values.name,
+        title: values.title,
+        description: values.description,
+        keywords: values.keywords.split(',').map(keyword => keyword.trim()),
+        status: mode === 'add' ? 'draft' : values.status,  // Default to "draft" on add
         pageData: editorContent,
-      });
-    });
+      };
+
+      console.log('Submit Data:', submitData); // Debugging
+
+      let response;
+      if (mode === 'add') {
+        response = await fetch('/api/web-pages/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(submitData),
+        });
+      } else {
+        response = await fetch(`/api/web-pages/update/${initialValues._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(submitData),
+        });
+      }
+
+      if (response.ok) {
+        const responseData = await response.json();
+        message.success(mode === 'add' ? 'Page added successfully' : 'Page updated successfully');
+        onSubmit(responseData);
+      } else {
+        throw new Error(mode === 'add' ? 'Failed to add page' : 'Failed to update page');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      message.error(mode === 'add' ? 'Failed to add page' : 'Failed to update page');
+    }
   };
 
   return (
@@ -42,33 +80,48 @@ const WebsitePageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) 
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          name="pageName"
+          name="name"
           label="Page name"
           rules={[{ required: true, message: 'Please input the page name!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name="metaTitle"
-          label="Meta title"
-          rules={[{ required: true, message: 'Please input the meta title!' }]}
+          name="title"
+          label="Title"
+          rules={[{ required: true, message: 'Please input the title!' }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name="metaDescription"
-          label="Meta description"
-          rules={[{ required: true, message: 'Please input the meta description!' }]}
+          name="description"
+          label="Description"
+          rules={[{ required: true, message: 'Please input the description!' }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
-          name="metaKeywords"
-          label="Meta keywords"
-          rules={[{ required: true, message: 'Please input the meta keywords!' }]}
+          name="keywords"
+          label="Keywords"
+          rules={[{ required: true, message: 'Please input the keywords!' }]}
         >
-          <Input />
+          <Input placeholder="Enter keywords separated by commas" />
         </Form.Item>
+
+        {/* Only show the status selection during edit mode */}
+        {mode !== 'add' && (
+          <Form.Item
+            name="status"
+            label="Status"
+            rules={[{ required: true, message: 'Please select the status!' }]}
+          >
+            <Select placeholder="Select status">
+              <Option value="published">Published</Option>
+              <Option value="draft">Draft</Option>
+            </Select>
+          </Form.Item>
+        )}
+
         <Form.Item
           label="Page data"
           rules={[{ required: true, message: 'Please input the page content!' }]}
