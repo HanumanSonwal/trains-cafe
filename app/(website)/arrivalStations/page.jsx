@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'; // Import useRouter
 
 const { Panel } = Collapse;
 
-const arrivalStations = () => {
+const ArrivalStations = () => {  // Renamed to start with an uppercase letter
   const [activeKey, setActiveKey] = useState(null);
   const router = useRouter(); // Initialize useRouter
 
@@ -65,7 +65,7 @@ const arrivalStations = () => {
         </div>
       </div>
       <button 
-        className="mt-4  px-4 py-2 rounded foot-menu-btn transition duration-300"
+        className="mt-4 px-4 py-2 rounded foot-menu-btn transition duration-300"
         onClick={handleRedirect} // Trigger redirection when button is clicked
       >
         Food Menu
@@ -108,4 +108,4 @@ const arrivalStations = () => {
   );
 };
 
-export default arrivalStations;
+export default ArrivalStations; // Export the component

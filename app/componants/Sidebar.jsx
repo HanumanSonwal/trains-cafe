@@ -16,29 +16,6 @@ const Sidebar = ({ collapsed ,width}) => (
 
 export default Sidebar;
 
-// import Image from 'next/image';
-// import Menubar from './Menubar';
-
-// const Sidebar = ({ collapsed }) => (
-//   <div 
-//     className={`bg-white h-screen transition-all duration-300 ease-in-out fixed top-0 ${
-//       collapsed ? 'w-30' : 'w-[256px]'
-//     }`}
-//   >
-//     <div className="flex justify-center items-center p-4">
-//       <Image 
-//         src="/images/logo2.jpg" 
-//         alt="Logo" 
-//         width={collapsed ? 40 : 80} 
-//         height={collapsed ? 40 : 80}
-//         className="transition-all duration-300 ease-in-out"
-//       />
-//     </div>
-//     <Menubar collapsed={collapsed} />
-//   </div>
-// );
-
-// export default Sidebar;
 
 
 

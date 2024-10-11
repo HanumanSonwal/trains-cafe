@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Input, Form, message, Select } from 'antd';
+
+const { Option } = Select;
 import dynamic from "next/dynamic";
 
 const TextEditor = dynamic(() => import('../../../componants/TextEditor'), { ssr: false });
