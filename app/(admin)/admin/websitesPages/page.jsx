@@ -27,7 +27,7 @@ export default function WebsitesPages() {
   const fetchPages = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`);
+      const response = await fetch(`/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`);
       const data = await response.json();
       setPages(data.docs);
       setTotalPages(data.totalPages);
@@ -40,7 +40,7 @@ export default function WebsitesPages() {
   const handleToggleChange = async (id, currentStatus) => {
     const newStatus = currentStatus === 'published' ? 'draft' : 'published';
     try {
-      await fetch(`http://localhost:3000/api/web-pages/${id}`, {
+      await fetch(`/api/web-pages/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export default function WebsitesPages() {
   const handleSubmit = async (values) => {
     try {
       if (modalMode === 'add') {
-        await fetch('http://localhost:3000/api/web-pages', {
+        await fetch('/api/web-pages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export default function WebsitesPages() {
           body: JSON.stringify(values),
         });
       } else {
-        await fetch(`http://localhost:3000/api/web-pages/${editingPage._id}`, {
+        await fetch(`/api/web-pages/${editingPage._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export default function WebsitesPages() {
       cancelText: 'No',
       onOk: async () => {
         try {
-          await fetch(`http://localhost:3000/api/web-pages/delete/${pageId}`, {
+          await fetch(`/api/web-pages/delete/${pageId}`, {
             method: 'DELETE',
           });
           fetchPages(); // Refresh the page list

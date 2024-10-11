@@ -21,7 +21,7 @@ const StationManagement = () => {
   const fetchStations = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/station?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
+        `/api/station?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
       );
       const { data, total } = response.data;
 
@@ -49,7 +49,7 @@ const StationManagement = () => {
 
   const handleDelete = async (key) => {
     try {
-      await axios.delete(`http://localhost:3000/api/station/${key}`);
+      await axios.delete(`/api/station/${key}`);
       message.success("Station deleted successfully");
       fetchStations(); 
     } catch (error) {
@@ -62,11 +62,11 @@ const StationManagement = () => {
     try {
       if (editingStation) {
      
-        await axios.put(`http://localhost:3000/api/station/${editingStation.key}`, values);
+        await axios.put(`/api/station/${editingStation.key}`, values);
         message.success("Station updated successfully");
       } else {
         // Add new station
-        await axios.post("http://localhost:3000/api/station", values);
+        await axios.post("/api/station", values);
         message.success("Station added successfully");
       }
       setIsModalOpen(false);
@@ -83,7 +83,7 @@ const StationManagement = () => {
 
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.patch(`http://localhost:3000/api/station/${key}`, { status: checked ? "1" : "0" });
+      await axios.patch(`/api/station/${key}`, { status: checked ? "1" : "0" });
       message.success("Station status updated successfully");
       fetchStations(); 
     } catch (error) {

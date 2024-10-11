@@ -20,7 +20,7 @@ const ManagerList = () => {
   const fetchManagers = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/manager?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
+        `/api/manager?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
       );
       const { data, total } = response.data;
 
@@ -48,7 +48,7 @@ const ManagerList = () => {
 
   const handleDelete = async (key) => {
     try {
-      await axios.delete(`http://localhost:3000/api/manager/${key}`);
+      await axios.delete(`/api/manager/${key}`);
       message.success("Manager deleted successfully");
       fetchManagers(); 
     } catch (error) {
@@ -60,11 +60,11 @@ const ManagerList = () => {
   const handleFormSubmit = async (values) => {
     try {
       if (editingManager) {
-        await axios.put(`http://localhost:3000/api/manager/${editingManager.key}`, values);
+        await axios.put(`/api/manager/${editingManager.key}`, values);
         message.success("Manager updated successfully");
       } else {
         // Add new manager
-        await axios.post("http://localhost:3000/api/manager", values);
+        await axios.post("/api/manager", values);
         message.success("Manager added successfully");
       }
       setIsModalOpen(false);
@@ -81,7 +81,7 @@ const ManagerList = () => {
 
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.patch(`http://localhost:3000/api/manager/${key}`, { status: checked ? "1" : "0" });
+      await axios.patch(`/api/manager/${key}`, { status: checked ? "1" : "0" });
       message.success("Manager status updated successfully");
       fetchManagers(); 
     } catch (error) {
