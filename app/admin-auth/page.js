@@ -38,23 +38,30 @@ export default function Login() {
   const onSubmit = async (data) => {
     setLoading(true);
     setError("");
-
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
-
-    setLoading(false);
-
-    if (result?.error) {
-      setError(result.error);
-      message.error(result.error); 
-    } else {
-      message.success("Login successful");
-      router.push('/admin/dashboard');
+  
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+  
+      setLoading(false);
+  
+      if (result?.error) {
+        setError(result.error);
+        message.error(result.error); 
+      } else {
+        message.success("Login successful");
+        router.push(`${process.env.NEXT_PUBLIC_URL}/admin/dashboard`);
+      }
+    } catch (error) {
+      setLoading(false);
+      setError("An unexpected error occurred.");
+      message.error("An unexpected error occurred."); 
     }
   };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
