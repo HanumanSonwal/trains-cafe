@@ -53,7 +53,6 @@ export default function Login() {
         message.error(result.error); 
       } else {
         message.success("Login successful");
-        // URL को सीधे नेविगेट करना
         router.push(`${process.env.NEXT_PUBLIC_URL}/admin/dashboard`);
       }
     } catch (error) {
