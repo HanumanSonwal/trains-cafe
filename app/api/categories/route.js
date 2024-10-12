@@ -3,22 +3,6 @@ import dbConnect from '../../lib/dbConnect';
 import CategoryModel from '../../models/category';
 import { requireRole } from '../../utils/auth';
 
-// export async function handler(req, res) {
-//   if (await requireRole(req, res, 'ADMIN')) {
-//     // Your protected logic here
-//     res.status(200).json({ message: 'Welcome Admin' });
-//   }
-// }
-
-// export async function GET(req, res) {
-//     try {
-//       await dbConnect();
-//       const categories = await CategoryModel.find({});
-//       return new Response(JSON.stringify(categories), { status: 200 });
-//     } catch (error) {
-//       return new Response(JSON.stringify({ message: 'Error fetching categories' }), { status: 500 });
-//     }
-// }
 
 export async function GET(req) {
   try {
@@ -64,57 +48,21 @@ export async function GET(req) {
   }
 }
 
-async function generateCategoryId() {
-  const lastCategory = await CategoryModel.findOne().sort({ Category_Id: -1 }).exec();
-  
-  if (!lastCategory) {
-      return 'c1'; // Start with 'c1' if no categories exist
-  }
-
-  // Extract the numeric part and convert it to an integer
-  const lastId = parseInt(lastCategory.Category_Id.slice(1), 10); // Get the number after 'c'
-  let nextId = lastId + 1; // Increment the numeric part
-  let newCategoryId = `c${nextId}`; // Use let for newCategoryId
-  
-  while (await CategoryModel.exists({ Category_Id: newCategoryId })) {
-      nextId++;
-      newCategoryId = `c${nextId}`; // Create a new ID with the incremented number
-  }
-
-  return newCategoryId; // Return the new unique Category_Id
-}
-
-export async function POST(req) {
-  try {
+export async function POST(req, res) {
+    try {
+      //const body = await req.json();
       const formData = await req.formData();
       const body = Object.fromEntries(formData.entries());
       
+
       await dbConnect();
-      // Generate new Category_Id
-      body.Category_Id = await generateCategoryId();
-      
       const newCategory = new CategoryModel(body);
       await newCategory.save();
       return new Response(JSON.stringify(newCategory), { status: 201 });
-  } catch (error) {
+    } catch (error) {
       return new Response(JSON.stringify({ message: error.message }), { status: 500 });
-  }
+    }
 }
-// export async function POST(req, res) {
-//     try {
-//       //const body = await req.json();
-//       const formData = await req.formData();
-//       const body = Object.fromEntries(formData.entries());
-      
-
-//       await dbConnect();
-//       const newCategory = new CategoryModel(body);
-//       await newCategory.save();
-//       return new Response(JSON.stringify(newCategory), { status: 201 });
-//     } catch (error) {
-//       return new Response(JSON.stringify({ message: error.message }), { status: 500 });
-//     }
-// }
 
 
 export async function PUT(req) {
