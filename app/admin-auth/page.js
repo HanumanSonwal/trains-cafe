@@ -53,7 +53,7 @@ export default function Login() {
         message.error(result.error); 
       } else {
         message.success("Login successful");
-        router.push(`${process.env.NEXT_PUBLIC_URL}/admin/dashboard`);
+        router.push(`${process.env.NEXT_PUBLIC_URL}admin/dashboard`);
       }
     } catch (error) {
       setLoading(false);
