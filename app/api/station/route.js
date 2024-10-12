@@ -14,11 +14,56 @@
 import dbConnect from '@/app/lib/dbConnect';
 import StationModel from '@/app/models/station';
 
+// export async function GET(req) {
+//     try {
+//         const url = new URL(req.url);
+//         const search = url.searchParams.get('search') || '';
+        
+//         const page = parseInt(url.searchParams.get('page'), 10) || 1;
+//         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+
+//         await dbConnect();
+
+//         // Create search criteria
+//         const searchCriteria = search ? {
+//             $or: [
+//                 { name: { $regex: search, $options: 'i' } },
+//                 { code: { $regex: search, $options: 'i' } }
+//             ]
+//         } : {};
+
+//         // Calculate pagination
+//         const skip = (page - 1) * limit;
+
+//         const stations = await StationModel.find(searchCriteria)
+//             .limit(limit)
+//             .skip(skip);
+
+//         const total = await StationModel.countDocuments(searchCriteria);
+
+//         return new Response(
+//             JSON.stringify({
+//                 success: true,
+//                 data: stations,
+//                 total,
+//                 page,
+//                 totalPages: Math.ceil(total / limit)
+//             }),
+//             { status: 200 }
+//         );
+//     } catch (error) {
+//         return new Response(
+//             JSON.stringify({ success: false, message: 'Error fetching vendors' }),
+//             { status: 500 }
+//         );
+//     }
+// }
 export async function GET(req) {
     try {
         const url = new URL(req.url);
         const search = url.searchParams.get('search') || '';
-        const page = parseInt(url.searchParams.get('page'), 10) || 1;
+        
+        const page = parseInt(url.searchParams.get('page'), 10) ;
         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
 
         await dbConnect();
@@ -31,14 +76,26 @@ export async function GET(req) {
             ]
         } : {};
 
-        // Calculate pagination
-        const skip = (page - 1) * limit;
+        let stations;
+        let total;
 
-        const stations = await StationModel.find(searchCriteria)
-            .limit(limit)
-            .skip(skip);
+        if (page === 0) {
+            // Fetch all data without pagination
+            stations = await StationModel.find(searchCriteria);
+            total = stations.length; // Total records when fetching all
+        } else {
+            // Calculate pagination
+            const skip = (page - 1) * limit;
 
-        const total = await StationModel.countDocuments(searchCriteria);
+            stations = await StationModel.find(searchCriteria)
+                .limit(limit)
+                .skip(skip);
+                
+            total = await StationModel.countDocuments(searchCriteria);
+        }
+
+        console.log('Search Criteria:', searchCriteria);
+        console.log('Stations Retrieved:', stations.length);
 
         return new Response(
             JSON.stringify({
@@ -46,7 +103,7 @@ export async function GET(req) {
                 data: stations,
                 total,
                 page,
-                totalPages: Math.ceil(total / limit)
+                totalPages: page === 0 ? 1 : Math.ceil(total / limit)
             }),
             { status: 200 }
         );
@@ -57,6 +114,8 @@ export async function GET(req) {
         );
     }
 }
+
+
 
 
 export async function POST(req) {
