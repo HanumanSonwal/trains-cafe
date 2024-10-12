@@ -12,13 +12,14 @@ const StationManagement = () => {
   const [editingStation, setEditingStation] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
     fetchStations();
   }, [pagination.current, pagination.pageSize, searchText]);
 
-
   const fetchStations = async () => {
+    setLoading(true); 
     try {
       const response = await axios.get(
         `/api/station?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
@@ -34,6 +35,8 @@ const StationManagement = () => {
     } catch (error) {
       console.error("Failed to fetch stations:", error);
       message.error("Failed to fetch stations");
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -83,7 +86,7 @@ const StationManagement = () => {
 
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.patch(`/api/station/${key}`, { status: checked ? "1" : "0" });
+      await axios.put(`/api/station?id=${key}`, { status: checked ? true : false });
       message.success("Station status updated successfully");
       fetchStations(); 
     } catch (error) {
@@ -130,8 +133,8 @@ const StationManagement = () => {
       key: "status",
       render: (status, record) => (
         <Switch
-          checked={status === "1"}
-          onChange={(checked) => handleStatusChange(checked, record.key)}
+          checked={status === true}
+          onChange={(checked) => handleStatusChange(checked, record._id)}
           className={status === "1" ? "ant-switch-checked" : "ant-switch"}
         />
       ),
@@ -146,7 +149,7 @@ const StationManagement = () => {
             onClick={() => handleEdit(record)}
             style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           />
-          <Popconfirm title="Are you sure to delete?" onConfirm={() => handleDelete(record.key)}>
+          <Popconfirm title="Are you sure to delete?" onConfirm={() => handleDelete(record._id)}>
             <Button icon={<DeleteFilled />} danger />
           </Popconfirm>
         </div>
@@ -193,6 +196,7 @@ const StationManagement = () => {
           position: ["bottomRight"],
         }}
         onChange={handleTableChange}
+        loading={loading}
       />
 
       <StationsForm

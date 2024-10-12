@@ -6,6 +6,7 @@ const StationSchema = new mongoose.Schema({
     location: { type: String, required: true },
     address: { type: String, required: true },
     status: { type: Boolean, default: true }
+    
  
 });
 

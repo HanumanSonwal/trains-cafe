@@ -27,7 +27,7 @@ const StationsForm = ({ open, onCancel, initialValues, fetchStations }) => {
       if (initialValues && initialValues._id) {
         await axios.put(`/api/station?id=${initialValues._id}`, data);
       } else {
-        await axios.post('/api/stations', data);
+        await axios.post('/api/station', data);
       }
       fetchStations();
       reset({ name: '', code: '', location: '', address: '' });
