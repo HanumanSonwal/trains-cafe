@@ -41,10 +41,12 @@ export async function GET(req) {
           'x-rapidapi-key': process.env.RAPID_API_KEY,
         }
     });
-    const thirdPartyData = await thirdPartyResponse.json();
+    const data = await thirdPartyResponse.json();
     return NextResponse.json({
-      message: 'Data received successfully',
-      data: { thirdPartyData },
+      data: data?.data? data.data: "",
+      success: data?.status ? data.status: "",
+      Timestamp: data?.Timestamp ? data.Timestamp: "",
+      message: data?.message ? data.message: ""
     });
   } catch (error) {
     return NextResponse.json({

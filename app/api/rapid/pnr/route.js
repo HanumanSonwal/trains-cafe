@@ -22,7 +22,7 @@ export async function GET(req) {
     });
     const thirdPartyData = await thirdPartyResponse.json();
 
-    console.log(thirdPartyData, "third");
+    //console.log(thirdPartyData, "third");
     
 
     const timestamp = thirdPartyData.timestamp; // Example timestamp (in milliseconds)
@@ -41,11 +41,12 @@ export async function GET(req) {
       }
     });
 
-    const liveData = await liveTrainStatus.json();
+    const data = await liveTrainStatus.json();
   
     return NextResponse.json({
-      message: 'Data received successfully',
-      data: { liveData },
+      data: data?.data ? data.data: "",
+      success: true,
+      message: data?.message ? data.message: ""
     });
   } catch (error) {
     return NextResponse.json({
