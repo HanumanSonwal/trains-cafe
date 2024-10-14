@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Input, Select, Row, Col } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import dynamic from 'next/dynamic';
-import { postData, updateData } from '@/app/lib/ApiFuntions';
+import { fetchData, postData, updateData } from '@/app/lib/ApiFuntions';
 
 const { Option } = Select;
 
@@ -26,6 +26,7 @@ const vendorSchema = z.object({
 });
 
 const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
+  const [stations, setStations] = useState([]);
   console.log(initialValues,"initialValues")
   const { control, handleSubmit, reset, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(vendorSchema),
@@ -45,6 +46,21 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
     },
   });
 
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await fetchData('/api/station?search=&page=0'); // Replace with your actual endpoint
+        console.log(response,"responseresponse")
+        if (response && response.success !== false) {
+          setStations(response.data); // Assuming response.data contains the list of stations
+        }
+      } catch (error) {
+        console.error('Error fetching stations:', error);
+      }
+    };
+
+    fetchStations();
+  }, []);
 
   useEffect(() => {
     if (initialValues) {
@@ -137,10 +153,21 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
               render={({ field }) => (
                 <div className="mb-4">
                   <label className="block mb-1">Station</label>
-                  <Select {...field} style={{ width: '100%' }}>
-                    <Option value="Station 1">Station 1</Option>
-                    <Option value="Station 2">Station 2</Option>
-                    <Option value="Station 3">Station 3</Option>
+                  <Select
+                    {...field}
+                    showSearch
+                    placeholder="Select a station"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    style={{ width: '100%' }}
+                  >
+                    {stations.map(station => (
+                      <Option key={station.id} value={station.name}>
+                        {station.name}
+                      </Option>
+                    ))}
                   </Select>
                   {errors.Station && <p className="text-red-500">{errors.Station.message}</p>}
                 </div>

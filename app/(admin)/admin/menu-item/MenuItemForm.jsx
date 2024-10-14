@@ -17,24 +17,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 const { Option } = Select;
-const menuSchema = z.object({
-  Item_Name: z.string().min(1, "Item Name is required"),
-  Category_Id: z.string().min(1, "Category is required"),
-  Vendor: z.string().min(1, "Vendor is required"),
-  Station: z.string().min(1, "Station is required"), 
-  Food_Type: z.enum(["veg", "non-veg"], "Select a valid food type"),
-  Price: z
-    .number({ invalid_type_error: "Price must be a number" })
-    .positive("Price must be greater than 0"),
-  Discount: z
-    .number({ invalid_type_error: "Discount must be a number" })
-    .min(0, "Discount cannot be negative")
-    .max(100, "Discount cannot be more than 100"),
-  Description: z
-    .string()
-    .min(5, "Description should be at least 5 characters long"),
-  image: z.string().min(1, "Image is required"),
-});
 
 const MenuItemForm = ({
   open,
@@ -49,7 +31,6 @@ const MenuItemForm = ({
     reset,
     formState: { errors },
   } = useForm({
-    // resolver: zodResolver(menuSchema),
     defaultValues: {
       Item_Name: "",
       Category_Id: "",
@@ -67,8 +48,7 @@ const MenuItemForm = ({
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [stations, setStations] = useState([]);
-
-
+  const [selectedStationName, setSelectedStationName] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -79,32 +59,48 @@ const MenuItemForm = ({
         message.error("Failed to fetch categories");
       }
     };
-  
-    const fetchVendors = async () => {
-      const response = await fetchData("/api/vendors");
-      if (response.success !== false) {
-        setVendors(response.data);
-      } else {
-        message.error("Failed to fetch vendors");
-      }
-    };
-  
+
     const fetchStations = async () => {
-      const response = await fetchData("/api/station");
+      const response = await fetchData("/api/station?search=&page=0");
       if (response.success !== false) {
         setStations(response.data);
       } else {
         message.error("Failed to fetch stations");
       }
     };
-  
-    // Call all the fetch functions
+
     fetchCategories();
-    fetchVendors();
     fetchStations();
   }, []);
-  
 
+  // Fetch vendors whenever selectedStationName changes
+  useEffect(() => {
+    console.log("Selected station name changed:", selectedStationName);
+    if (selectedStationName) {
+      fetchVendors(selectedStationName);
+    }
+  }, [selectedStationName]);
+  
+  
+  const fetchVendors = async (stationName) => {
+    try {
+      console.log("Station name for vendor fetch:", stationName);
+      const response = await fetchData(`/api/vendors?page=1&limit=10&search=${stationName}`);
+      console.log("Vendor fetch response:", response);
+  
+      if (response && response.success !== false) {
+        setVendors(response.data);
+      } else {
+        console.error("Failed to fetch vendors:", response?.error);
+        message.error("Failed to fetch vendors");
+      }
+    } catch (error) {
+      console.error("Error fetching vendors:", error);
+      message.error("An error occurred while fetching vendors");
+    }
+  };
+  
+  
   useEffect(() => {
     if (initialValues) {
       setUrl(initialValues.image || "");
@@ -225,28 +221,40 @@ const MenuItemForm = ({
         </Row>
 
         <Row gutter={20}>
-          <Col span={12}>
-            <Form.Item label="Select Station">
-              {" "}
-              {/* New field for Station */}
-              <Controller
-                name="Station"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field}>
-                    {stations?.map((station) => (
-                      <Option key={station._id} value={station._id}>
-                        {station.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              />
-              {errors.Station && (
-                <p className="text-red-500">{errors.Station.message}</p>
-              )}
-            </Form.Item>
-          </Col>
+        <Col span={12}>
+  <Form.Item label="Select Station">
+    <Controller
+      name="Station"
+      control={control}
+      render={({ field }) => (
+        <Select
+        {...field}
+        onChange={(value) => {
+          setSelectedStationName(value); // Update the selected station name
+          field.onChange(value);
+        }}
+        showSearch
+        placeholder="Search for a station"
+        optionFilterProp="children"
+        filterOption={(input, option) =>
+          option?.children.toLowerCase().includes(input.toLowerCase())
+        }
+      >
+        {stations?.map((station) => (
+          <Option key={station._id} value={station.name}>
+            {station.name}
+          </Option>
+        ))}
+      </Select>
+      
+      )}
+    />
+    {errors.Station && (
+      <p className="text-red-500">{errors.Station.message}</p>
+    )}
+  </Form.Item>
+</Col>
+
           <Col span={12}>
             <Form.Item label="Select Vendor">
               <Controller
@@ -300,21 +308,23 @@ const MenuItemForm = ({
 
         <Row gutter={20}>
           <Col span={12}>
-            <Form.Item label="Food Type">
-              <Controller
-                name="Food_Type"
-                control={control}
-                render={({ field }) => (
-                  <Radio.Group {...field}>
-                    <Radio value="veg">Veg</Radio>
-                    <Radio value="non-veg">Non-Veg</Radio>
-                  </Radio.Group>
-                )}
-              />
-              {errors.Food_Type && (
-                <p className="text-red-500">{errors.Food_Type.message}</p>
-              )}
-            </Form.Item>
+          <Form.Item label="Food Type">
+  <Controller
+    name="Food_Type"
+    control={control}
+    render={({ field }) => (
+      <Radio.Group {...field}>
+        <Radio value="Vegetarian">Veg</Radio>
+        <Radio value="Non-Vegetarian">Non-Veg</Radio>
+        <Radio value="Vegan">Vegan</Radio>
+      </Radio.Group>
+    )}
+  />
+  {errors.Food_Type && (
+    <p className="text-red-500">{errors.Food_Type.message}</p>
+  )}
+</Form.Item>
+
           </Col>
           <Col span={12}>
             <Form.Item label="Image">
