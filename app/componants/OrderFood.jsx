@@ -1,21 +1,19 @@
 "use client";
-import { Input, Button, Tabs, message } from "antd";
+import { Input, Button, Tabs, message, DatePicker } from "antd";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-
-
+import moment from "moment";
 
 const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("1");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const router = useRouter();
 
   const handleTabChange = (key) => {
     setActiveKey(key);
   };
-
   const searchPNR = async () => {
     if (!pnr) {
       return message.error("Please enter a valid PNR number.");
@@ -23,13 +21,10 @@ const OrderFood = () => {
     try {
       const response = await fetch(`/api/rapid/pnr?query=${pnr}`);
       const result = await response.json();
-
+  
       if (response.ok) {
         message.success("PNR found! Redirecting...");
-        // router.push(`/pnr-details?pnr=${pnr}`);
-        // router.push(`/station/${pnr}`);
-        router.push('/station');
-
+        router.push(`/arrivalStations?pnr=${pnr}&trainNo=${result.data.train_number}&trainName=${result.data.train_name}`);
       } else {
         throw new Error(result.message);
       }
@@ -39,20 +34,23 @@ const OrderFood = () => {
   };
 
   const searchTrain = async () => {
-    if (!trainNumber) {
-      return message.error("Please enter a valid train number.");
+    if (!trainNumber || !selectedDate) {
+      return message.error("Please enter a valid train number and date.");
     }
     try {
-      const response = await fetch(`/api/rapid/train?query=${trainNumber}`);
+      const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+      const response = await fetch(
+        `/api/rapid/live?trainNo=${trainNumber}&date=${formattedDate}`
+      );
       const result = await response.json();
-
+      console.log(result, "result");
+  
       if (response.ok) {
         message.success("Train found! Redirecting...");
-        // router.push(`/train-details?train=${trainNumber}`);
-        // router.push(`/train-details/${trainNumber}`);
-        router.push('/station');
-
-
+        // Include the selected date in the query parameters
+        router.push(
+          `/arrivalStations?trainNo=${result.data.train_number}&trainName=${result.data.train_name}&date=${formattedDate}`
+        );
       } else {
         throw new Error(result.message);
       }
@@ -60,7 +58,7 @@ const OrderFood = () => {
       message.error(`Error: ${error.message}`);
     }
   };
-
+  
   const handleSearch = () => {
     if (activeKey === "1") {
       searchPNR();
@@ -100,6 +98,11 @@ const OrderFood = () => {
             className="flex-grow"
             value={trainNumber}
             onChange={(e) => setTrainNumber(e.target.value)}
+          />
+          <DatePicker
+            className="flex-grow"
+            placeholder="Select Date"
+            onChange={(date) => setSelectedDate(date)}
           />
           <Button
             onClick={handleSearch}
