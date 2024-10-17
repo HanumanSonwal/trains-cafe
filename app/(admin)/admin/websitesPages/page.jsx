@@ -1,13 +1,12 @@
-'use client'
+"use client";
 
-import { Table, Switch, Button, Input, Select, Modal } from 'antd';
+import { Table, Switch, Button, Input, Select, Modal, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import WebsitePageModal from './WebsitePageModal';
 
 const { Search } = Input;
 const { Option } = Select;
-const { confirm } = Modal;
 
 export default function WebsitesPages() {
   const [pages, setPages] = useState([]);
@@ -27,7 +26,9 @@ export default function WebsitesPages() {
   const fetchPages = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`);
+      const response = await fetch(
+        `http://localhost:3000/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`
+      );
       const data = await response.json();
       setPages(data.docs);
       setTotalPages(data.totalPages);
@@ -37,15 +38,17 @@ export default function WebsitesPages() {
     setLoading(false);
   };
 
-  const handleToggleChange = async (id, currentStatus) => {
-    const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+  const handleToggleChange = async (record) => {
+    const newStatus = record.status === 'published' ? 'draft' : 'published';
+    const updatedPage = { ...record, status: newStatus };
+
     try {
-      await fetch(`/api/web-pages/${id}`, {
-        method: 'PATCH',
+      await fetch(`http://localhost:3000/api/web-pages/update/${record._id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(updatedPage),
       });
       fetchPages(); // Refresh the page list
     } catch (error) {
@@ -91,25 +94,15 @@ export default function WebsitesPages() {
     }
   };
 
-  const handleDelete = (pageId) => {
-    confirm({
-      title: 'Are you sure you want to delete this page?',
-      icon: <ExclamationCircleOutlined />,
-      content: 'This action cannot be undone.',
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
-      onOk: async () => {
-        try {
-          await fetch(`/api/web-pages/delete/${pageId}`, {
-            method: 'DELETE',
-          });
-          fetchPages(); // Refresh the page list
-        } catch (error) {
-          console.error('Error deleting page:', error);
-        }
-      },
-    });
+  const handleDelete = async (pageId) => {
+    try {
+      await fetch(`http://localhost:3000/api/web-pages/delete/${pageId}`, {
+        method: 'DELETE',
+      });
+      fetchPages(); // Refresh the page list
+    } catch (error) {
+      console.error('Error deleting page:', error);
+    }
   };
 
   const columns = [
@@ -126,7 +119,7 @@ export default function WebsitesPages() {
       width: '50%',
     },
     {
-      title: 'STATUS',
+      title: 'Status',
       dataIndex: 'status',
       key: 'status',
       width: '20%',
@@ -134,7 +127,7 @@ export default function WebsitesPages() {
         <div className="flex space-x-4">
           <Switch
             checked={status === 'published'}
-            onChange={() => handleToggleChange(record._id, status)}
+            onChange={() => handleToggleChange(record)} // Pass the entire record
             size="small"
           />
           <span>{status === 'published' ? 'Published' : 'Draft'}</span>
@@ -142,14 +135,30 @@ export default function WebsitesPages() {
       ),
     },
     {
-      title: 'ACTION',
+      title: 'Action',
       dataIndex: 'action',
       key: 'action',
       width: '20%',
       render: (_, record) => (
         <div className="flex space-x-2">
-          <Button icon={<EditOutlined />} onClick={() => showModal('edit', record)} type="primary" style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}/>
-          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record._id)} type="danger" style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }} />
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => showModal('edit', record)}
+            type="primary"
+            style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
+          />
+          <Popconfirm
+            title="Are you sure you want to delete this page?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              icon={<DeleteOutlined />}
+              type="danger"
+              style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
+            />
+          </Popconfirm>
         </div>
       ),
     },
