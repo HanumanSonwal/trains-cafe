@@ -30,12 +30,12 @@ const MenuSchema = new mongoose.Schema({
         }
     },
     Category_Id: { 
-        type: mongoose.Schema.Types.ObjectId, // Change to ObjectId if referencing another model
+        type: String, // Change to ObjectId if referencing another model
         required: true,
         ref: 'Category' // Ensure you have a Category model
     },
     Vendor: { 
-        type: mongoose.Schema.Types.ObjectId, // Change to ObjectId if referencing another model
+        type: String, // Change to ObjectId if referencing another model
         required: true,
         ref: 'Vendor' // Ensure you have a Vendor model
     },

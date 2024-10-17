@@ -36,9 +36,9 @@
 
 
 // app/api/signup/route.js
-import bcrypt from 'bcryptjs';
 import dbConnect from '../../../lib/dbConnect';
 import User from '@/app/models/user';
+
 
 
 export async function POST(req) {
