@@ -1,15 +1,19 @@
 import dbConnect from '@/app/lib/dbConnect';
 import WebPage from '@/app/models/webPage';
 import { NextResponse } from 'next/server';
+import slugify from 'slugify';
 
 export async function POST(req) { 
     try {
-               await dbConnect();
+            await dbConnect();
 
         const { name, title, description, keywords, pageData } = await req.json();
+
+        const slug = slugify(title, { lower: true, strict: true });
         
         const webPage = new WebPage({
             name,
+            slug,
             title,
             description,
             keywords,
