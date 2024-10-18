@@ -78,12 +78,12 @@ const MobileFooter = () => {
               <Link href="/profile" className="block text-sm font-bold" onClick={closeMenu}>Profile</Link>
               <Link href="/orders" className="block text-sm font-bold" onClick={closeMenu}>My Orders</Link>
               <Link href="/groupOrder" className="block text-sm font-bold" onClick={closeMenu}>Group Order</Link>
-              <Link href="/contactus" className="block text-sm font-bold" onClick={closeMenu}>Contact Us</Link>
-              <Link href="/about" className="block text-sm font-bold" onClick={closeMenu}>About Us</Link>
+              <Link href="/web-pages/contact-us" className="block text-sm font-bold" onClick={closeMenu}>Contact Us</Link>
+              <Link href="/web-pages/about-us" className="block text-sm font-bold" onClick={closeMenu}>About Us</Link>
               <Link href="/blog" className="block text-sm font-bold" onClick={closeMenu}>Blog</Link>
               <Link href="/faq" className="block text-sm font-bold" onClick={closeMenu}>FAQ</Link>
-              <Link href="/terms" className="block text-sm font-bold" onClick={closeMenu}>Terms & Conditions</Link>
-              <Link href="/privacy" className="block text-sm font-bold" onClick={closeMenu}>Privacy Policy</Link>
+              <Link href="/web-pages/terms-conditions" className="block text-sm font-bold" onClick={closeMenu}>Terms & Conditions</Link>
+              <Link href="/web-pages/privacy-policy" className="block text-sm font-bold" onClick={closeMenu}>Privacy Policy</Link>
               <Link href="/cancellation" className="block text-sm font-bold" onClick={closeMenu}>Cancellation Policy</Link>
               <Link href="/feedback" className="block text-sm font-bold" onClick={closeMenu}>Feedback</Link>
               

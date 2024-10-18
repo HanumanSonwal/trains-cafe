@@ -76,12 +76,12 @@ export default function Header() {
                     <div ref={menuRef} className="absolute top-16 right-0 bg-white shadow-md rounded-md p-4 w-full z-10">
                         <ul className="text-center">
                             <li>
-                                <Link href="/about" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
+                                <Link href="/web-pages/about-us" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
                                     About
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contactus" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
+                                <Link href="/web-pages/contact-us" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
                                     Contact Us
                                 </Link>
                             </li>
