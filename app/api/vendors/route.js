@@ -115,6 +115,6 @@ export async function DELETE(req) {
 
         return new Response(JSON.stringify({ success: true, message: 'Vendor deleted successfully' }), { status: 200 });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
-    }
+        return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+    }
 }
