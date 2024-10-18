@@ -6,7 +6,12 @@ const WebPageSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    title: { type: String, required: true },
+    title: {
+        type: String,
+        unique: true,
+        required: true
+    }   ,
+    slug: { type: String, unique: true, required: true },
     description: { type: String, required: true },
     keywords: { type: [], required: true },
     pageData: { type: String, required: true },

@@ -1,5 +1,6 @@
 import dbConnect from "@/app/lib/dbConnect";
 import WebPage from "@/app/models/webPage";
+import slugify from "slugify";
 
 const { NextResponse } = require("next/server");
 
@@ -14,6 +15,8 @@ export async function PUT(req, context) {
 
         const { name, title, description, keywords, pageData, status } = await req.json();
 
+        const slug = slugify(title, { lower: true, strict: true });
+
         const webPage = await WebPage.findById(id);
         if (!webPage) {
             return NextResponse.json({
@@ -23,6 +26,7 @@ export async function PUT(req, context) {
       
         webPage.name = name;
         webPage.title = title;
+        webPage.slug = slug;
         webPage.description = description;
         webPage.keywords = keywords;
         webPage.pageData = pageData;
