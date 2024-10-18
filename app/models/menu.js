@@ -30,14 +30,14 @@ const MenuSchema = new mongoose.Schema({
         }
     },
     Category_Id: { 
-        type: String, // Change to ObjectId if referencing another model
+        type: mongoose.Schema.Types.ObjectId, // Change to ObjectId for referencing
         required: true,
-        ref: 'Category' // Ensure you have a Category model
+        ref: 'Category' // Use correct model name (capitalized)
     },
     Vendor: { 
-        type: mongoose.Schema.Types.ObjectId,// Change to ObjectId if referencing another model
+        type: mongoose.Schema.Types.ObjectId, // Change to ObjectId for referencing
         required: true,
-        ref: 'vendor' // Ensure you have a Vendor model
+        ref: 'Vendor' // Use correct model name (capitalized)
     },
     Price: { 
         type: Number, // Changed to Number for price calculations
@@ -53,6 +53,11 @@ const MenuSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: FoodTypeEnum // Enforce specific food types
+    },
+    Station: { 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Station' // Enforce specific food types
     },
     Description: { type: String, required: true },
 }, {

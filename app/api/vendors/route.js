@@ -11,62 +11,52 @@
 //     }
 // }
 
-import dbConnect from '../../lib/dbConnect';
-import MenuModel from '../../models/menu';
+import dbConnect from '@/app/lib/dbConnect';
+import VendorModel from '@/app/models/vendor';
 
 export async function GET(req) {
-  try {
-    const url = new URL(req.url);
-    const search = url.searchParams.get('search') || '';
-    const page = parseInt(url.searchParams.get('page'), 10) || 1;
-    const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+    try {
+        const url = new URL(req.url);
+        const search = url.searchParams.get('search') || '';
+        const page = parseInt(url.searchParams.get('page'), 10) || 1;
+        const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
 
-    await dbConnect();
+        await dbConnect();
 
-    // Create search criteria
-    const searchCriteria = search ? {
-      $or: [
-        { Item_Name: { $regex: search, $options: 'i' } },
-        { Station: { $regex: search, $options: 'i' } },
-        { Category_Id: { $regex: search, $options: 'i' } }
-      ]
-    } : {};
+        // Create search criteria
+        const searchCriteria = search ? {
+            $or: [
+                { Vendor_Name: { $regex: search, $options: 'i' } },
+                { Station: { $regex: search, $options: 'i' } }
+            ]
+        } : {};
 
-    // Calculate pagination
-    const skip = (page - 1) * limit;
+        // Calculate pagination
+        const skip = (page - 1) * limit;
 
-    // Fetch menu items and populate vendor name
-    const menu = await MenuModel.find(searchCriteria)
-      .populate('Vendor', '_id Vendor_Name') // Populate the Vendor field
-      .skip(skip)
-      .limit(limit);
+        const vendors = await VendorModel.find(searchCriteria)
+            .skip(skip)
+            .limit(limit);
 
-    const total = await MenuModel.countDocuments(searchCriteria);
+        const total = await VendorModel.countDocuments(searchCriteria);
 
-    // Format the response to include vendor name as a string
-    const formattedMenu = menu.map(item => ({
-      ...item.toObject(),
-      Vendor: item.Vendor ? item.Vendor.Vendor_Name : null // Set Vendor to Vendor_Name
-    }));
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: formattedMenu,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit)
-      }),
-      { status: 200 }
-    );
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ success: false, message: 'Error fetching menus' }),
-      { status: 500 }
-    );
-  }
+        return new Response(
+            JSON.stringify({
+                success: true,
+                data: vendors,
+                total,
+                page,
+                totalPages: Math.ceil(total / limit)
+            }),
+            { status: 200 }
+        );
+    } catch (error) {
+        return new Response(
+            JSON.stringify({ success: false, message: 'Error fetching vendors' }),
+            { status: 500 }
+        );
+    }
 }
-
 
 
 export async function POST(req) {
@@ -125,6 +115,6 @@ export async function DELETE(req) {
 
         return new Response(JSON.stringify({ success: true, message: 'Vendor deleted successfully' }), { status: 200 });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
-    }
+        return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+    }
 }
