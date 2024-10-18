@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 import MenuItemForm from "./MenuItemForm";
 import BulkImportMenu from "./BulkImportMenu";
+import Spinner from "@/app/componants/spinner/Spinner";
 
 const TablePage = () => {
   const [data, setData] = useState([]);
@@ -282,6 +283,9 @@ const TablePage = () => {
           </Button>
         </div>
       </div>
+      {loading ? (
+      <Spinner color="#D6872A" />
+    ) : (
       <Table
         columns={columns}
         dataSource={filteredData}
@@ -289,6 +293,7 @@ const TablePage = () => {
         loading={loading}
         onChange={handleTableChange}
       />
+    )}
       <MenuItemForm
       fetchMenuItems={fetchMenuItems}
         open={isMenuItemModalOpen}

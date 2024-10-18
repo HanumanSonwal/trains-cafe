@@ -49,10 +49,10 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const response = await fetchData('/api/station?search=&page=0'); // Replace with your actual endpoint
+        const response = await fetchData('/api/station?search=&page=0');
         console.log(response,"responseresponse")
         if (response && response.success !== false) {
-          setStations(response.data); // Assuming response.data contains the list of stations
+          setStations(response.data); 
         }
       } catch (error) {
         console.error('Error fetching stations:', error);
@@ -164,7 +164,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
                     style={{ width: '100%' }}
                   >
                     {stations.map(station => (
-                      <Option key={station.id} value={station.name}>
+                      <Option key={station._id} value={station._id}>
                         {station.name}
                       </Option>
                     ))}

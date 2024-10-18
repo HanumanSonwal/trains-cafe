@@ -4,6 +4,7 @@ import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from "
 import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from "@ant-design/icons";
 import StationsForm from "./StationsForm";
 import axios from "axios";
+import Spinner from "@/app/componants/spinner/Spinner";
 
 const StationManagement = () => {
   const [stations, setStations] = useState([]);
@@ -12,14 +13,14 @@ const StationManagement = () => {
   const [editingStation, setEditingStation] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchStations();
   }, [pagination.current, pagination.pageSize, searchText]);
 
   const fetchStations = async () => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await axios.get(
         `/api/station?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
@@ -36,7 +37,7 @@ const StationManagement = () => {
       console.error("Failed to fetch stations:", error);
       message.error("Failed to fetch stations");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -54,7 +55,7 @@ const StationManagement = () => {
     try {
       await axios.delete(`/api/station/${key}`);
       message.success("Station deleted successfully");
-      fetchStations(); 
+      fetchStations();
     } catch (error) {
       console.error("Failed to delete station:", error);
       message.error("Failed to delete station");
@@ -64,16 +65,14 @@ const StationManagement = () => {
   const handleFormSubmit = async (values) => {
     try {
       if (editingStation) {
-     
         await axios.put(`/api/station/${editingStation.key}`, values);
         message.success("Station updated successfully");
       } else {
-        // Add new station
         await axios.post("/api/station", values);
         message.success("Station added successfully");
       }
       setIsModalOpen(false);
-      fetchStations(); 
+      fetchStations();
     } catch (error) {
       console.error("Failed to save station:", error);
       message.error("Failed to save station");
@@ -88,7 +87,7 @@ const StationManagement = () => {
     try {
       await axios.put(`/api/station?id=${key}`, { status: checked ? true : false });
       message.success("Station status updated successfully");
-      fetchStations(); 
+      fetchStations();
     } catch (error) {
       console.error("Failed to update station status:", error);
       message.error("Failed to update station status");
@@ -158,56 +157,63 @@ const StationManagement = () => {
   ];
 
   return (
-    <div
-      className="p-4"
-      style={{
-        backgroundColor: "#FAF3CC",
-        borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
-        Station Management
-      </h2>
-      <div className="flex items-center mb-4 justify-between">
-        <AntdInput
-          placeholder="Search"
-          style={{ width: 300, borderColor: "#D6872A" }}
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={handleSearch}
+
+    <>
+ 
+      <div
+        className="p-4"
+        style={{
+          backgroundColor: "#FAF3CC",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+          Station Management
+        </h2>
+        <div className="flex items-center mb-4 justify-between">
+          <AntdInput
+            placeholder="Search"
+            style={{ width: 300, borderColor: "#D6872A" }}
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={handleSearch}
+          />
+          <Button
+            type="primary"
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+          >
+            Add Station
+          </Button>
+        </div>
+        {loading ? (
+      <Spinner color="#D6872A" />
+    ) : (
+        <Table
+          columns={columns}
+          dataSource={filteredStations}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            position: ["bottomRight"],
+          }}
+          onChange={handleTableChange}
+          loading={loading}
         />
-        <Button
-          type="primary"
-          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-          icon={<PlusOutlined />}
-          onClick={handleAdd}
-        >
-          Add Station
-        </Button>
+            )}
+        <StationsForm
+          fetchStations={fetchStations}
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          onSubmit={handleFormSubmit}
+          initialValues={editingStation}
+        />
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={filteredStations}
-        pagination={{
-          ...pagination,
-          showSizeChanger: true,
-          position: ["bottomRight"],
-        }}
-        onChange={handleTableChange}
-        loading={loading}
-      />
-
-      <StationsForm
-      fetchStations={fetchStations}
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        onSubmit={handleFormSubmit}
-        initialValues={editingStation}
-      />
-    </div>
-  );
+  </>
+);
 };
 
 export default StationManagement;

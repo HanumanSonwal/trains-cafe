@@ -230,7 +230,7 @@ const MenuItemForm = ({
         <Select
         {...field}
         onChange={(value) => {
-          setSelectedStationName(value); // Update the selected station name
+          setSelectedStationName(value); 
           field.onChange(value);
         }}
         showSearch
@@ -241,7 +241,7 @@ const MenuItemForm = ({
         }
       >
         {stations?.map((station) => (
-          <Option key={station._id} value={station.name}>
+          <Option key={station._id} value={station._id}>
             {station.name}
           </Option>
         ))}

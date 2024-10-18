@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
+import { Table, Button, Input as AntdInput, message, Switch, Popconfirm, Spin } from 'antd';
+import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled, LoadingOutlined } from '@ant-design/icons';
 import VendorsForm from './VendorsForm';
 import axios from 'axios';
 import { updateData , deleteData } from '@/app/lib/ApiFuntions';
+import Spinner from '@/app/componants/spinner/Spinner';
 
 const VendorsManagement = () => {
   const [vendors, setVendors] = useState([]);
@@ -249,6 +250,10 @@ const VendorsManagement = () => {
         </Button>
       </div>
 
+      {loading ? (
+      <Spinner color="#D6872A" />
+    ) : (
+
       <Table
         columns={vendorColumns}
         dataSource={filteredVendors}
@@ -256,13 +261,14 @@ const VendorsManagement = () => {
         loading={loading}
         onChange={handleTableChange}
       />
-
+    )}
       <VendorsForm
         open={isVendorModalOpen}
         onCancel={() => setIsVendorModalOpen(false)}
         onSubmit={handleVendorFormSubmit}
         initialValues={editingVendor}
       />
+      
     </div>
   );
 };

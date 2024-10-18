@@ -4,6 +4,7 @@ import { Table, Button, Input as AntdInput, message, Popconfirm } from 'antd';
 import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
 import axios from 'axios';
 import CategoriesForm from './CategriesForm';
+import Spinner from '@/app/componants/spinner/Spinner';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -134,6 +135,11 @@ const CategoryManagement = () => {
           Add Category
         </Button>
       </div>
+
+      
+      {loading ? (
+      <Spinner color="#D6872A" />
+    ) : (
       <Table
         columns={columns}
         dataSource={categories.map((category) => ({ ...category, key: category._id }))}
@@ -145,6 +151,7 @@ const CategoryManagement = () => {
         loading={loading}
         onChange={handleTableChange}
       />
+    )}
       <CategoriesForm
       fetchCategories={fetchCategories}
         open={isCategoryModalOpen}
