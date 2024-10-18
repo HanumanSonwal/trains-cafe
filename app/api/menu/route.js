@@ -126,7 +126,7 @@
 
 
 
-// app/api/users/route.js
+//app/api/users/route.js
 import dbConnect from '../../lib/dbConnect';
 import MenuModel from '../../models/menu';
 import { requireRole } from '../../utils/auth';
@@ -175,6 +175,7 @@ export async function GET(req) {
     );
   }
 }
+
 
 export async function POST(req) {
   try {

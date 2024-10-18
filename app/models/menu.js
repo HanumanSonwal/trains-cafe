@@ -35,9 +35,9 @@ const MenuSchema = new mongoose.Schema({
         ref: 'Category' // Ensure you have a Category model
     },
     Vendor: { 
-        type: String, // Change to ObjectId if referencing another model
+        type: mongoose.Schema.Types.ObjectId,// Change to ObjectId if referencing another model
         required: true,
-        ref: 'Vendor' // Ensure you have a Vendor model
+        ref: 'vendor' // Ensure you have a Vendor model
     },
     Price: { 
         type: Number, // Changed to Number for price calculations
