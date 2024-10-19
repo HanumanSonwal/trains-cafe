@@ -87,7 +87,7 @@ const Footer = () => {
                 <ul className="space-y-0">
                   <li>
                     <a
-                      href="/about"
+                      href="/web-pages/about-us"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       About Us
@@ -95,7 +95,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="/contactus"
+                      href="/web-pages/contact-us"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Contact Us
@@ -135,7 +135,7 @@ const Footer = () => {
                 <ul className="space-y-0">
                   <li>
                     <a
-                      href="#"
+                      href="/web-pages/terms-conditions"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Terms & Conditions
@@ -143,7 +143,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/web-pages/privacy-policy"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Privacy Policy

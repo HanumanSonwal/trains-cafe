@@ -5,7 +5,7 @@ import { Collapse, Button, InputNumber, Badge, Switch } from "antd";
 import { ArrowRightOutlined, PlusOutlined, MinusOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
-import { addItemToCart, removeItemFromCart } from "@/app/redux/cartSlice";
+import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 import { menuItems } from "@/app/redux/menuItems";
 
 const { Panel } = Collapse;
@@ -41,8 +41,14 @@ const MenuPage = () => {
   };
 
   const handleRemoveFromCart = (item) => {
-    dispatch(removeItemFromCart({ id: item.id }));
+    const currentQuantity = cartItems[item.id];
+    if (currentQuantity > 1) {
+      dispatch(updateItemQuantity({ id: item.id, quantity: currentQuantity - 1 }));
+    } else {
+      dispatch(updateItemQuantity({ id: item.id, quantity: 0 })); // This will remove the item
+    }
   };
+  
 
   const handleCategoryToggle = (checked) => {
     setIsVegCategory(checked);

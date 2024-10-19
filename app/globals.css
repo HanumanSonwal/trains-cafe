@@ -240,3 +240,24 @@
 /* :where(.css-dev-only-do-not-override-qnu6hi).ant-btn {
   color: #fff !important;
 } */
+
+
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: inherit !important;
+}
+li{
+  margin: 8px 0;
+}
