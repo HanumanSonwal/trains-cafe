@@ -48,7 +48,9 @@ export async function GET(req) {
       Timestamp: data?.Timestamp ? data.Timestamp: "",
       message: data?.message ? data.message: ""
     });
+    
   } catch (error) {
+    console.log(error,"error")
     return NextResponse.json({
       message: 'An error occurred',
       error: error.message,

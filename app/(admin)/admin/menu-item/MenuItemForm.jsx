@@ -66,7 +66,6 @@ const MenuItemForm = ({
     },
   });
 
-  console.log(errors,"errors")
 
   const [url, setUrl] = useState("");
   const [categories, setCategories] = useState([]);
@@ -74,6 +73,8 @@ const MenuItemForm = ({
   const [stations, setStations] = useState([]);
   const [selectedStationName, setSelectedStationName] = useState("");
   const [imageError, setImageError] = useState("");
+  const [isreset, setIsreset] = useState(false);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -147,6 +148,10 @@ const MenuItemForm = ({
     }
   }, [initialValues, reset]);
 
+  useEffect(()=>{
+    setIsreset(false)
+  },[])
+
   
     const handleFormSubmit = (data) => {
       if (!url) {
@@ -187,7 +192,7 @@ const MenuItemForm = ({
         );
         fetchMenuItems();
         reset();
-        setUrl( " ")
+        setIsreset(true)
         onCancel();
       } else {
         throw new Error(response.err || "Failed to save category");
@@ -367,7 +372,7 @@ const MenuItemForm = ({
                 name="image"
                 control={control}
                 render={({ field }) => (
-                  <FileUploadComponent {...field} url={url} setUrl={setUrl} setImageError={setImageError} />
+                  <FileUploadComponent {...field} url={url} setUrl={setUrl} isreset={isreset}  setImageError={setImageError} />
                 )}
               />
             {imageError && (

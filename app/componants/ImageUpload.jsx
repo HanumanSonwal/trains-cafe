@@ -195,15 +195,26 @@ const schema = z.object({
     }),
 });
 
-const FileUploadComponent = ({ url, setUrl  }) => {
+const FileUploadComponent = ({ url, setUrl ,isreset  }) => {
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+  
 
   const { control, handleSubmit, reset,  setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
   
+
+useEffect(()=> {
+if(isreset ) {
+  setPreviewImage("");
+  setFileList([]);
+  
+}
+
+},[isreset ])
+console.log(isreset , previewImage ,"image preview" )
 
   useEffect(() => {
     if (url) {
@@ -294,7 +305,7 @@ const FileUploadComponent = ({ url, setUrl  }) => {
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(""),
+            afterOpenChange: (visible) => !visible && setPreviewImage("") ,
           }}
           src={previewImage}
           wrapperStyle={{ display: "none" }}

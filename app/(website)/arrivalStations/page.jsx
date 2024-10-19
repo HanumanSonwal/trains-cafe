@@ -217,12 +217,19 @@ import VendorCard from "./VendorCard";
 
 const { Panel } = Collapse;
 
+
 const ArrivalStations = () => {
   const searchParams = useSearchParams();
   const trainNo = searchParams.get("trainNo");
   const trainName = searchParams.get("trainName");
   const journeyDate = searchParams.get("date");
-  const [upcomingStations, setUpcomingStations] = useState([]);
+  const [upcomingStations, setUpcomingStations] = useState([
+    {
+      station_name: "jaipur",
+      station_code: "CEN",
+      eta: "10:30 AM"
+    },
+  ]);
   const [activeKey, setActiveKey] = useState(null);
 
   useEffect(() => {
@@ -249,7 +256,7 @@ const ArrivalStations = () => {
     };
 
     if (trainNo) {
-      fetchUpcomingStations();
+      // fetchUpcomingStations();
     }
   }, [trainNo, journeyDate]);
 
@@ -268,7 +275,7 @@ const ArrivalStations = () => {
         activeKey={activeKey} 
         onChange={setActiveKey}
       >
-        {upcomingStations.map((station, index) => (
+        {upcomingStations?.map((station, index) => (
           <Panel 
             key={index} 
             header={
