@@ -329,18 +329,18 @@ export async function GET(req) {
   try {
     const url = new URL(req.url);
     const search = (url.searchParams.get('search') || '').trim();
-    // const categoryName = url.searchParams.get('categoryName');
-    // const vendorname = url.searchParams.get('vendorname'); // Get categoryName from query params
+    const categoryName = url.searchParams.get('categoryName');
+    const vendorname = url.searchParams.get('vendorname'); // Get categoryName from query params
     const page = parseInt(url.searchParams.get('page'), 10) || 1;
     const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
     
-    // console.log(`Search: ${search}, CategoryName: ${categoryName}, Page: ${page}, Limit: ${limit}`);
-    // console.log(`Search: ${search}, VendorName: ${vendorname}, Page: ${page}, Limit: ${limit}`);
+    console.log(`Search: ${search}, CategoryName: ${categoryName}, Page: ${page}, Limit: ${limit}`);
+    console.log(`Search: ${search}, VendorName: ${vendorname}, Page: ${page}, Limit: ${limit}`);
 
     await dbConnect();
 
     // Create search criteria for the menu items
-    let searchCriteria = {};
+      let searchCriteria = {};
 
     if (search) {
       // Check if the search term matches a category
