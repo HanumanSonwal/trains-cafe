@@ -182,36 +182,45 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // Define your Zod schema
 const schema = z.object({
-  files: z.array(z.instanceof(File)).min(1, "At least one file is required").refine((files) => files.every(file => file.size <= 2 * 1024 * 1024), {
-    message: "Each file must be less than 2MB",
-  }).refine((files) => files.every(file => ["image/jpeg", "image/png", "image/gif"].includes(file.type)), {
-    message: "Only .jpeg, .png, and .gif formats are supported",
-  }),
+  file: z
+    .instanceof(File)
+    .refine((file) => file.size <= 2 * 1024 * 1024, {
+      message: "File size must be less than 2MB",
+    })
+    .refine((file) => {
+      const validTypes = ["image/jpeg", "image/png", "image/gif"];
+      return validTypes.includes(file.type);
+    }, {
+      message: "Only .jpeg, .png and .gif formats are supported",
+    }),
 });
 
-const FileUploadComponent = ({ url, setUrl, reset }) => {
+const FileUploadComponent = ({ url, setUrl  }) => {
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm({
+  const { control, handleSubmit, reset,  setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
+  
 
   useEffect(() => {
     if (url) {
-      setFileList(url.map((fileUrl, index) => ({
-        uid: index.toString(),
-        name: `image-${index}.png`,
-        status: "done",
-        url: fileUrl,
-      })));
+      setFileList([
+        {
+          uid: "-1",
+          name: "image.png",
+          status: "done",
+          url: url,
+        },
+      ]);
     }
   }, [url]);
 
-  const handleFileUpload = async (files) => {
+  const handleFileUpload = async (file) => {
     const formData = new FormData();
-    files.forEach(file => formData.append("files", file));
+    formData.append("file", file);
 
     try {
       const response = await fetch("/api/fileUpload/local", {
@@ -222,25 +231,28 @@ const FileUploadComponent = ({ url, setUrl, reset }) => {
       const result = await response.json();
 
       if (result.success) {
-        message.success("Files uploaded successfully");
-        setUrl(result.urls); // Assume the response contains an array of URLs
-        console.log("File URLs:", result.urls);
+        message.success("File uploaded successfully");
+        setUrl(result.url);
+        console.log("File URL:", result.url);
       } else {
         message.error(result.message || "File upload failed");
       }
     } catch (error) {
-      message.error("Error uploading files");
+      message.error("Error uploading file");
       console.error(error);
     }
   };
 
   const onSubmit = (data) => {
-    handleFileUpload(data.files);
+    handleFileUpload(data.file[0]);
   };
 
   const handleChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    setValue("files", newFileList.map(file => file.originFileObj));
+    setValue("file", newFileList); // Update the file field in the form
+    if (newFileList.length > 0 && newFileList[0].originFileObj) {
+      handleFileUpload(newFileList[0].originFileObj);
+    }
   };
 
   const handlePreview = async (file) => {
@@ -258,7 +270,7 @@ const FileUploadComponent = ({ url, setUrl, reset }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller
-        name="files"
+        name="file"
         control={control}
         render={({ field }) => (
           <Upload
@@ -267,16 +279,15 @@ const FileUploadComponent = ({ url, setUrl, reset }) => {
             onPreview={handlePreview}
             onChange={(info) => {
               handleChange(info);
-              field.onChange(info.fileList.map(file => file.originFileObj));
+              field.onChange(info.fileList); 
             }}
             beforeUpload={() => false}
-            multiple
           >
-            {fileList.length >= 5 ? null : uploadButton} {/* Limit to 5 images */}
+            {fileList.length >= 1 ? null : uploadButton}
           </Upload>
         )}
       />
-      {errors.files && <p style={{ color: "red" }}>{errors.files.message}</p>}
+      {errors.file && <p style={{ color: "red" }}>{errors.file.message}</p>}
 
       {previewImage && (
         <Image
@@ -294,4 +305,3 @@ const FileUploadComponent = ({ url, setUrl, reset }) => {
 };
 
 export default FileUploadComponent;
-
