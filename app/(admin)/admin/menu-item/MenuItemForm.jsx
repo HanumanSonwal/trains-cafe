@@ -18,10 +18,31 @@ import { z } from "zod";
 
 const { Option } = Select;
 
+const schema = z.object({
+  Item_Name: z.string().min(1, "Item name is required"),
+  Category_Id: z.string().min(1, "Category is required"),
+  Vendor: z.string().min(1, "Vendor is required"),
+  Station: z.string().min(1, "Station is required"),
+  Food_Type: z.enum(["Vegetarian", "Non-Vegetarian", "Vegan"], {
+    required_error: "Food type is required",
+  }),
+  Price: z.string()
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val >= 0, {
+      message: "Price must be a valid number and should be 0 or more",
+    }),
+  Discount: z.string()
+    .transform((val) => parseFloat(val)) 
+    .refine((val) => !isNaN(val) && val >= 0, {
+      message: "Discount must be a valid number and should be 0 or more",
+    }),
+  Description: z.string().optional(),
+});
+
+
 const MenuItemForm = ({
   open,
   onCancel,
-  onSubmit,
   initialValues,
   fetchMenuItems,
 }) => {
@@ -31,6 +52,7 @@ const MenuItemForm = ({
     reset,
     formState: { errors },
   } = useForm({
+    resolver: zodResolver(schema),
     defaultValues: {
       Item_Name: "",
       Category_Id: "",
@@ -44,11 +66,14 @@ const MenuItemForm = ({
     },
   });
 
+  console.log(errors,"errors")
+
   const [url, setUrl] = useState("");
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [stations, setStations] = useState([]);
   const [selectedStationName, setSelectedStationName] = useState("");
+  const [imageError, setImageError] = useState("");
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -62,6 +87,7 @@ const MenuItemForm = ({
 
     const fetchStations = async () => {
       const response = await fetchData("/api/station?search=&page=0");
+      console.log(response.data.name,"response")
       if (response.success !== false) {
         setStations(response.data);
       } else {
@@ -73,7 +99,7 @@ const MenuItemForm = ({
     fetchStations();
   }, []);
 
-  // Fetch vendors whenever selectedStationName changes
+
   useEffect(() => {
     console.log("Selected station name changed:", selectedStationName);
     if (selectedStationName) {
@@ -86,6 +112,7 @@ const MenuItemForm = ({
     try {
       console.log("Station name for vendor fetch:", stationName);
       const response = await fetchData(`/api/vendors?page=1&limit=10&search=${stationName}`);
+
       console.log("Vendor fetch response:", response);
   
       if (response && response.success !== false) {
@@ -120,11 +147,14 @@ const MenuItemForm = ({
     }
   }, [initialValues, reset]);
 
-  const handleFormSubmit = (data) => {
-    if (!url) {
-      message.error("Please upload an image.");
-      return;
-    }
+  
+    const handleFormSubmit = (data) => {
+      if (!url) {
+        setImageError("Please upload an image."); 
+        return;
+      } else {
+        setImageError(""); 
+      }
     const formData = new FormData();
     formData.append("Item_Name", data.Item_Name);
     formData.append("Category_Id", data.Category_Id);
@@ -156,6 +186,8 @@ const MenuItemForm = ({
             : "Menu item added successfully!"
         );
         fetchMenuItems();
+        reset();
+        setUrl( " ")
         onCancel();
       } else {
         throw new Error(response.err || "Failed to save category");
@@ -222,16 +254,18 @@ const MenuItemForm = ({
 
         <Row gutter={20}>
         <Col span={12}>
-  <Form.Item label="Select Station">
-    <Controller
-      name="Station"
-      control={control}
-      render={({ field }) => (
-        <Select
+<Form.Item label="Select Station">
+  <Controller
+    name="Station"
+    control={control}
+    render={({ field }) => (
+      <Select
         {...field}
         onChange={(value) => {
-          setSelectedStationName(value); 
+          // Update the selected station name and field value
           field.onChange(value);
+          const selectedStation = stations.find(station => station._id === value);
+          setSelectedStationName(selectedStation?.name || '');
         }}
         showSearch
         placeholder="Search for a station"
@@ -241,18 +275,18 @@ const MenuItemForm = ({
         }
       >
         {stations?.map((station) => (
-          <Option key={station._id} value={station._id}>
+          <Select.Option key={station._id} value={station._id}>
             {station.name}
-          </Option>
+          </Select.Option>
         ))}
       </Select>
-      
-      )}
-    />
-    {errors.Station && (
-      <p className="text-red-500">{errors.Station.message}</p>
     )}
-  </Form.Item>
+  />
+  {errors.Station && (
+    <p className="text-red-500">{errors.Station.message}</p>
+  )}
+</Form.Item>
+
 </Col>
 
           <Col span={12}>
@@ -281,6 +315,7 @@ const MenuItemForm = ({
           <Col span={12}>
             <Form.Item label="Price">
               <Controller
+              type="number"
                 name="Price"
                 control={control}
                 render={({ field }) => <Input type="number" {...field} />}
@@ -332,11 +367,11 @@ const MenuItemForm = ({
                 name="image"
                 control={control}
                 render={({ field }) => (
-                  <FileUploadComponent {...field} url={url} setUrl={setUrl} />
+                  <FileUploadComponent {...field} url={url} setUrl={setUrl} setImageError={setImageError} />
                 )}
               />
-              {errors.image && (
-                <p className="text-red-500">{errors.image.message}</p>
+            {imageError && (
+                <p className="text-red-500">{imageError}</p>
               )}
             </Form.Item>
           </Col>

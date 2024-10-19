@@ -94,7 +94,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
         <Button
           key="submit"
           type="primary"
-          onClick={handleSubmit(handleFormSubmit)} // Ensure single submission
+          onClick={handleSubmit(handleFormSubmit)} 
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           {initialValues ? "Save" : "Submit"}

@@ -169,14 +169,17 @@ const TablePage = () => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchText(value);
-    fetchMenuItems(1, pageSize, value); 
+    const { pageSize } = tableParams.pagination; 
+    fetchMenuItems(1, pageSize, value);
   };
+  
 
   const columns = [
     {
       title: "Item Name",
       dataIndex: "Item_Name",
       key: "Item_Name",
+      render: (Item_Name) => <strong>{Item_Name}</strong>, 
     },
     {
       title: "Image",
@@ -188,23 +191,35 @@ const TablePage = () => {
     },
     {
       title: "Category",
-      dataIndex: "Category",
+      dataIndex: "Category_Name",
+      key: "Category",
+    },
+    {
+      title: "Food Type",
+      dataIndex: "Food_Type",
       key: "Category",
     },
     {
       title: "Vendor",
-      dataIndex: "Vendor",
+      dataIndex: "Vendor_Name",
       key: "Vendor",
     },
     {
       title: "Price",
       dataIndex: "Price",
       key: "Price",
+      render: (price) => (
+        <>
+          <strong style={{ color: 'green' ,fontSize:"16px" }}>₹</strong> {price}
+        </>
+      ),
     },
+    
     {
       title: "Discount",
       dataIndex: "Discount",
       key: "Discount",
+      render: (discount) => `${discount}%`, // Add percentage sign
     },
     {
       title: "Status",
@@ -238,6 +253,7 @@ const TablePage = () => {
       ),
     },
   ];
+  
 
   return (
     <div

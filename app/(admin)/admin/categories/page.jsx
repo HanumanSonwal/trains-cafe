@@ -56,16 +56,15 @@ const CategoryManagement = () => {
         data: { id: key },
       });
       message.success('Category deleted successfully');
-      fetchCategories(pagination.current, pagination.pageSize, searchText); 
+      fetchCategories(pagination.current, pagination.pageSize, searchText);
     } catch (error) {
       message.error('Failed to delete category');
     }
   };
 
   const handleCategoryFormSubmit = () => {
-    
     setIsCategoryModalOpen(false);
-    fetchCategories(pagination.current, pagination.pageSize, searchText); 
+    fetchCategories(pagination.current, pagination.pageSize, searchText);
   };
 
   const handleSearch = (e) => {
@@ -136,27 +135,28 @@ const CategoryManagement = () => {
         </Button>
       </div>
 
-      
       {loading ? (
-      <Spinner color="#D6872A" />
-    ) : (
-      <Table
-        columns={columns}
-        dataSource={categories.map((category) => ({ ...category, key: category._id }))}
-        pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: pagination.total,
-        }}
-        loading={loading}
-        onChange={handleTableChange}
-      />
-    )}
+        <Spinner color="#D6872A" />
+      ) : (
+        <Table
+          columns={columns}
+          dataSource={categories.map((category) => ({ ...category, key: category._id }))}
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+            showSizeChanger: true,
+            pageSizeOptions: [10, 20, 30],  // Keep these as numbers
+          }}
+          loading={loading}
+          onChange={handleTableChange}
+        />
+      )}
       <CategoriesForm
-      fetchCategories={fetchCategories}
+        fetchCategories={fetchCategories}
         open={isCategoryModalOpen}
         onCancel={() => setIsCategoryModalOpen(false)}
-        onSubmit={handleCategoryFormSubmit} 
+        onSubmit={handleCategoryFormSubmit}
         initialValues={editingCategory}
       />
     </div>
