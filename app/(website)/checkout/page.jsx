@@ -2,7 +2,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Button, Input, Radio } from "antd";
-import { menuItems } from "@/app/redux/menuItems";
 
 const CheckoutPage = () => {
   const cartItems = useSelector((state) => state.cart.items);
@@ -12,9 +11,8 @@ const CheckoutPage = () => {
     console.log("Order placed");
   };
 
-  const totalAmount = Object.keys(cartItems).reduce((total, id) => {
-    const item = menuItems.find((item) => item.id === parseInt(id));
-    return total + item.price * cartItems[id];
+  const totalAmount = cartItems.reduce((total, item) => {
+    return total + parseInt(item.price, 10) * parseInt(item.quantity, 10);
   }, 0);
 
   const gstAmount = totalAmount * 0.05;
@@ -92,14 +90,15 @@ const CheckoutPage = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.keys(cartItems).map((id) => {
-                const item = menuItems.find((item) => item.id === parseInt(id));
+              {cartItems.map((item, idx) => {
                 return (
-                  <tr key={id} className="border-b">
+                  <tr key={idx} className="border-b">
                     <td className="py-2">{item.name}</td>
-                    <td className="py-2">{cartItems[id]}</td>
+                    <td className="py-2">{item.quantity}</td>
                     <td className="py-2">₹ {item.price}</td>
-                    <td className="py-2">₹ {item.price * cartItems[id]}</td>
+                    <td className="py-2">
+                      ₹ {parseInt(item.price, 10) * parseInt(item.quantity, 10)}
+                    </td>
                   </tr>
                 );
               })}

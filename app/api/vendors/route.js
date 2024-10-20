@@ -108,7 +108,9 @@ export async function DELETE(req) {
         }
 
         await dbConnect();
+        
         const deletedVendor = await VendorModel.findByIdAndDelete(id);
+        
         if (!deletedVendor) {
             return new Response(JSON.stringify({ success: false, message: 'Vendor not found' }), { status: 404 });
         }
