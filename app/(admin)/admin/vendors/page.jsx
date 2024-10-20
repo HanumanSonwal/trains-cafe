@@ -171,7 +171,7 @@ const VendorsManagement = () => {
     },
     {
       title: 'Station',
-      dataIndex: 'Station',
+      dataIndex: 'Station_Name',
       key: 'station',
       render: (Station) => Station || 'N/A',
     },
