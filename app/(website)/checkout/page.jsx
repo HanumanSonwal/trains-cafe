@@ -2,13 +2,38 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Button, Input, Radio } from "antd";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+
+const schema = z.object({
+  mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address").optional(),
+  alternateMobile: z.string().optional(),
+  pnr: z.string().length(10, "PNR must be exactly 10 digits"),
+  coach: z.string().optional(),
+  seatNo: z.string().optional(),
+  instructions: z.string().optional(),
+});
 
 const CheckoutPage = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const [paymentMethod, setPaymentMethod] = React.useState("PAYTM");
 
-  const handlePlaceOrder = () => {
-    console.log("Order placed");
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const handlePlaceOrder = (data) => {
+    reset();
+    console.log("Order placed with data:", data);
   };
 
   const totalAmount = cartItems.reduce((total, item) => {
@@ -24,56 +49,124 @@ const CheckoutPage = () => {
         Your Order at <span className="text-purple-600">Jaipur</span> from{" "}
         <span className="text-purple-600">Trains Cafe</span>
       </h1>
-      <div className=" gap-4">
+      <div className="gap-4">
         <div className="bg-white shadow rounded-lg p-4 mb-4">
           <h2 className="text-lg font-bold mb-4 text-gray-800">
             Customer Details
           </h2>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Mobile Number</label>
-            <Input placeholder="Mobile Number" />
-          </div>
+          <Controller
+            name="mobile"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1">Mobile Number</label>
+                <Input placeholder="Mobile Number" {...field} />
+                {errors.mobile && (
+                  <span className="text-red-500">{errors.mobile.message}</span>
+                )}
+              </div>
+            )}
+          />
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Name</label>
-            <Input placeholder="Name" />
-          </div>
+          <Controller
+            name="name"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1">Name</label>
+                <Input placeholder="Name" {...field} />
+                {errors.name && (
+                  <span className="text-red-500">{errors.name.message}</span>
+                )}
+              </div>
+            )}
+          />
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Email</label>
-            <Input placeholder="Enter Your Email" />
-          </div>
+          <Controller
+            name="email"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1">Email</label>
+                <Input placeholder="Enter Your Email" {...field} />
+                {errors.email && (
+                  <span className="text-red-500">{errors.email.message}</span>
+                )}
+              </div>
+            )}
+          />
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">
-              Alternate Mobile (Optional)
-            </label>
-            <Input placeholder="Alternate Mobile (Optional)" />
-          </div>
+          <Controller
+            name="alternateMobile"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1">
+                  Alternate Mobile (Optional)
+                </label>
+                <Input placeholder="Alternate Mobile (Optional)" {...field} />
+              </div>
+            )}
+          />
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">PNR</label>
-            <Input placeholder="Enter 10 Digit PNR" />
-          </div>
+          <Controller
+            name="pnr"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1">PNR</label>
+                <Input placeholder="Enter 10 Digit PNR" {...field} />
+                {errors.pnr && (
+                  <span className="text-red-500">{errors.pnr.message}</span>
+                )}
+              </div>
+            )}
+          />
 
           <div className="flex gap-2 mb-4">
-            <div className="w-1/2">
-              <label className="block text-gray-700 mb-1">Coach</label>
-              <Input placeholder="Coach" />
-            </div>
-            <div className="w-1/2">
-              <label className="block text-gray-700 mb-1">Seat No.</label>
-              <Input placeholder="Seat No." />
-            </div>
+            <Controller
+              name="coach"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <div className="w-1/2">
+                  <label className="block text-gray-700 mb-1">Coach</label>
+                  <Input placeholder="Coach" {...field} />
+                </div>
+              )}
+            />
+            <Controller
+              name="seatNo"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <div className="w-1/2">
+                  <label className="block text-gray-700 mb-1">Seat No.</label>
+                  <Input placeholder="Seat No." {...field} />
+                </div>
+              )}
+            />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1">
-              Optional Instructions
-            </label>
-            <Input.TextArea placeholder="Optional Instructions" />
-          </div>
+          <Controller
+            name="instructions"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1">
+                  Optional Instructions
+                </label>
+                <Input.TextArea placeholder="Optional Instructions" {...field} />
+              </div>
+            )}
+          />
         </div>
 
         <div className="bg-white shadow rounded-lg p-6">
@@ -90,18 +183,16 @@ const CheckoutPage = () => {
               </tr>
             </thead>
             <tbody>
-              {cartItems.map((item, idx) => {
-                return (
-                  <tr key={idx} className="border-b">
-                    <td className="py-2">{item.name}</td>
-                    <td className="py-2">{item.quantity}</td>
-                    <td className="py-2">₹ {item.price}</td>
-                    <td className="py-2">
-                      ₹ {parseInt(item.price, 10) * parseInt(item.quantity, 10)}
-                    </td>
-                  </tr>
-                );
-              })}
+              {cartItems.map((item, idx) => (
+                <tr key={idx} className="border-b">
+                  <td className="py-2">{item.name}</td>
+                  <td className="py-2">{item.quantity}</td>
+                  <td className="py-2">₹ {item.price}</td>
+                  <td className="py-2">
+                    ₹ {parseInt(item.price, 10) * parseInt(item.quantity, 10)}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
           <hr className="border-black border-t-2 mb-2" />
@@ -144,12 +235,12 @@ const CheckoutPage = () => {
         <Radio.Group
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
-          className=" gap-5"
+          className="gap-5"
         >
           <Radio value="PAYTM">
             PAYTM (UPI + ATM/ Debit/ Credit Cards + Net Banking)
           </Radio>
-          <Radio value="PhonePe">PhonePe (UPI / Debit & Credit Cards)</Radio>{" "}
+          <Radio value="PhonePe">PhonePe (UPI / Debit & Credit Cards)</Radio>
           <br />
           <Radio value="COD">Cash on Delivery</Radio>
         </Radio.Group>
@@ -157,9 +248,8 @@ const CheckoutPage = () => {
 
       <Button
         type="primary"
-        style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-        className="w-full bg-blue-500 text-white py-3 text-lg font-semibold rounded-md mt-4"
-        onClick={handlePlaceOrder}
+        className="mt-6 w-full"
+        onClick={handleSubmit(handlePlaceOrder)}
       >
         Place Order
       </Button>

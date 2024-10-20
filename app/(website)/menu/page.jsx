@@ -23,13 +23,15 @@ const MenuPage = () => {
   const [categories, setCategories] = useState([]);
   const cartItems = useSelector((state) => state.cart.items);
   const totalUniqueItems = cartItems.length;
-  const totalPrice = cartItems.reduce(
+
+  
+  const totalPrice = cartItems.length > 0 ?  cartItems?.reduce(
     (total, item) =>
       total +
       parseInt(item?.quantity || 0, 10) * parseInt(item?.price || 0, 10),
     0
-  );
-
+  ) : 0
+  
   const searchParams = useSearchParams();
   const vendorId = searchParams.get("vendor");
 
@@ -161,7 +163,9 @@ const MenuPage = () => {
 };
 
 const CartComp = ({ cartItems, item }) => {
-  const cartItem = cartItems.find((cartItem) => cartItem._id === item._id);
+  const cartItem = Array.isArray(cartItems) 
+  ? cartItems.find((cartItem) => cartItem._id === item._id)
+  : undefined;
 
   const dispatch = useDispatch();
 
@@ -176,7 +180,7 @@ const CartComp = ({ cartItems, item }) => {
         updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 })
       );
     } else {
-      dispatch(updateItemQuantity({ id: item._id, quantity: 0 })); // This will remove the item
+      dispatch(updateItemQuantity({ id: item._id, quantity: 0 })); 
     }
   };
 
