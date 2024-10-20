@@ -22,10 +22,20 @@ const ContactUsPage = () => {
 </div>
 
 
-      {/* Form Section */}
+      {/* Contact Details Section */}
+      <div className="flex flex-col items-center py-8">
+        <Title level={3} style={{color:'#704D25',fontWeight:'bold'}} className="text-xl  mb-4">Company Contact Details</Title>
+        <div className="text-center">
+          <p className='text-sm'><strong>Phone:</strong> +123 456 7890</p>
+          <p className='text-sm'><strong>Email:</strong> contact@company.com</p>
+          <p className='text-sm'><strong>Address:</strong> 123 Business Rd, Business City, BC 12345</p>
+        </div>
+      </div>
+
+      {/* Form Section */} 
       <div className="flex items-center justify-center py-8">
         <div className="max-w-md w-full bg-white p-4 rounded-lg shadow-lg">
-          <Title level={2} className="text-3xl font-semibold mb-6 text-center">Get in Touch</Title>
+          <Title style={{color:'#704D25'}} level={2} className="text-3xl font-semibold mb-6 text-center">Get in Touch</Title>
           <Form
             layout="vertical"
           >
@@ -62,21 +72,11 @@ const ContactUsPage = () => {
         </div>
       </div>
 
-      {/* Contact Details Section */}
-      <div className="flex flex-col items-center py-8">
-        <Title level={3} className="text-xl font-semibold mb-4">Company Contact Details</Title>
-        <div className="text-center">
-          <p className='text-sm'><strong>Phone:</strong> +123 456 7890</p>
-          <p className='text-sm'><strong>Email:</strong> contact@company.com</p>
-          <p className='text-sm'><strong>Address:</strong> 123 Business Rd, Business City, BC 12345</p>
-        </div>
-      </div>
-
       {/* Map Section */}
       <Divider className='m-0' />
       <div className="flex items-center justify-center py-8">
         <div className="w-full max-w-4xl">
-          <Title level={3} className="text-2xl font-semibold mb-4 text-center">Our Location</Title>
+          <Title level={3} style={{color:'#704D25'}} className="text-2xl font-semibold mb-4 text-center">Our Location</Title>
           <iframe
             title="Company Location"
             src={mapSrc}

@@ -72,7 +72,7 @@ export default function Page({ params }) {
       {/* Page Content */}
       <div className="relative max-w-4xl mx-auto p-6 bg-white shadow-lg z-10">
         <div className="relative z-10">
-          <h2 className="text-2xl font-semibold mb-4">{page.title || "No Title Provided"}</h2>
+          <h2 style={{color:'#704D25',fontWeight:'bold'}} className="text-2xl font-semibold mb-4">{page.title || "No Title Provided"}</h2>
           {/* <p className="text-sm mb-4 text-justify">{page.description || "No Description Provided"}</p> */}
 
           {/* Render HTML content safely */}
@@ -86,7 +86,7 @@ export default function Page({ params }) {
           )}
 
           {/* Call to Action */}
-          <Link href="/web-pages/contact-us" passHref>
+          <Link href="/contactus" passHref>
             <Button
           type="btn"
            className='order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]'
