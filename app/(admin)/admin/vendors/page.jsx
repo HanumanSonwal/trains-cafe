@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { Table, Button, Input as AntdInput, message, Switch, Popconfirm, Spin } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled, LoadingOutlined } from '@ant-design/icons';
+import { PlusOutlined,SearchOutlined, DeleteFilled, EditFilled,CloseCircleOutlined,  LoadingOutlined } from '@ant-design/icons';
 import VendorsForm from './VendorsForm';
 import axios from 'axios';
 import { updateData , deleteData } from '@/app/lib/ApiFuntions';
-import Spinner from '@/app/componants/spinner/Spinner';
+
 
 const VendorsManagement = () => {
   const [vendors, setVendors] = useState([]);
@@ -130,6 +130,9 @@ const VendorsManagement = () => {
     );
     setFilteredVendors(filtered);
   };
+  const clearSearch = () => {
+    setSearchText("");
+  };
 
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams((prev) => ({
@@ -168,21 +171,21 @@ const VendorsManagement = () => {
     },
     {
       title: 'Station',
-      dataIndex: 'Station',
-      key: 'Station',
+      dataIndex: 'Station_Name',
+      key: 'station',
       render: (Station) => Station || 'N/A',
     },
     {
       title: 'Food Type',
       dataIndex: 'Food_Type',
-      key: 'Food_Type',
+      key: 'food_type',
       render: (Food_Type) => {
         let color;
-        let displayText = Food_Type || 'N/A'; 
+        let displayText = Food_Type || 'N/A';
         if (Food_Type === 'Non-Veg') {
           color = 'red';
         } else if (Food_Type === 'Veg') {
-          color = 'green'; 
+          color = 'green';
         } else if (Food_Type === 'Veg & Non-Veg') {
           color = 'orange';
         } else {
@@ -195,7 +198,20 @@ const VendorsManagement = () => {
         );
       },
     },
-    
+
+
+    {
+      title: 'Weekly Off',
+      dataIndex: 'Weekly_Off',
+      key: 'weekly_off',
+      render: (day) => day || 'N/A',
+    },
+    {
+      title: 'Working Time',
+      dataIndex: 'Working_Time',
+      key: 'working_time',
+      render: (time) => time || 'N/A',
+    },
     {
       title: 'Status',
       dataIndex: 'Status',
@@ -206,8 +222,7 @@ const VendorsManagement = () => {
           onChange={(checked) => handleStatusChange(checked, record._id)}
         />
       ),
-    }
-,    
+    },
     {
       title: 'Actions',
       key: 'actions',
@@ -228,18 +243,30 @@ const VendorsManagement = () => {
       ),
     },
   ];
+  
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
     <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
       <h2 className="text-lg font-semibold mb-4" style={{ color: '#6F4D27' }}>Vendors Management</h2>
-      <div className="flex items-center mb-4 justify-between">
-        <AntdInput
-          placeholder="Search"
-          style={{ width: 300, borderColor: '#D6872A' }}
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={handleSearch}
-        />
+      <div className="flex items-center my-5 justify-between">
+      <div style={{ display: "flex", alignItems: "center" }}>
+            <AntdInput
+              placeholder="Search"
+              style={{ width: 300, borderColor: "#D6872A" }}
+              prefix={<SearchOutlined />}
+              suffix={
+                searchText && (
+                  <CloseCircleOutlined
+                    onClick={clearSearch}
+                    style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
+                  />
+                )
+              }
+              value={searchText}
+              onChange={handleSearch}
+            />
+          </div>
         <Button
           type="primary"
           style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
@@ -250,18 +277,16 @@ const VendorsManagement = () => {
         </Button>
       </div>
 
-      {loading ? (
-      <Spinner color="#D6872A" />
-    ) : (
+      <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
 
       <Table
         columns={vendorColumns}
         dataSource={filteredVendors}
         pagination={tableParams.pagination}
-        loading={loading}
+        // loading={loading}
         onChange={handleTableChange}
       />
-    )}
+   </Spin>
       <VendorsForm
         open={isVendorModalOpen}
         onCancel={() => setIsVendorModalOpen(false)}

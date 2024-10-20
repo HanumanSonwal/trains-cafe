@@ -1,7 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Table, Button, Input as AntdInput, message, Switch, Popconfirm } from "antd";
-import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from "@ant-design/icons";
+import {
+  Table,
+  Button,
+  Input as AntdInput,
+  message,
+  Switch,
+  Popconfirm,
+  Spin,
+} from "antd";
+import {
+  PlusOutlined,
+  SearchOutlined,
+  DeleteFilled,
+  EditFilled,
+  CloseCircleOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import StationsForm from "./StationsForm";
 import axios from "axios";
 import Spinner from "@/app/componants/spinner/Spinner";
@@ -12,7 +27,11 @@ const StationManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStation, setEditingStation] = useState(null);
   const [searchText, setSearchText] = useState("");
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -83,9 +102,15 @@ const StationManagement = () => {
     setSearchText(e.target.value);
   };
 
+  const clearSearch = () => {
+    setSearchText("");
+  };
+
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.put(`/api/station?id=${key}`, { status: checked ? true : false });
+      await axios.put(`/api/station?id=${key}`, {
+        status: checked ? true : false,
+      });
       message.success("Station status updated successfully");
       fetchStations();
     } catch (error) {
@@ -148,18 +173,20 @@ const StationManagement = () => {
             onClick={() => handleEdit(record)}
             style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           />
-          <Popconfirm title="Are you sure to delete?" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm
+            title="Are you sure to delete?"
+            onConfirm={() => handleDelete(record._id)}
+          >
             <Button icon={<DeleteFilled />} danger />
           </Popconfirm>
         </div>
       ),
     },
   ];
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
-
     <>
- 
       <div
         className="p-4"
         style={{
@@ -171,14 +198,25 @@ const StationManagement = () => {
         <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
           Station Management
         </h2>
-        <div className="flex items-center mb-4 justify-between">
-          <AntdInput
-            placeholder="Search"
-            style={{ width: 300, borderColor: "#D6872A" }}
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={handleSearch}
-          />
+        <div className="flex items-center my-5 justify-between">
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <AntdInput
+              placeholder="Search"
+              style={{ width: 300, borderColor: "#D6872A" }}
+              prefix={<SearchOutlined />}
+              suffix={
+                searchText && (
+                  <CloseCircleOutlined
+                    onClick={clearSearch}
+                    style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
+                  />
+                )
+              }
+              value={searchText}
+              onChange={handleSearch}
+            />
+          </div>
+
           <Button
             type="primary"
             style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
@@ -188,21 +226,20 @@ const StationManagement = () => {
             Add Station
           </Button>
         </div>
-        {loading ? (
-      <Spinner color="#D6872A" />
-    ) : (
-        <Table
-          columns={columns}
-          dataSource={filteredStations}
-          pagination={{
-            ...pagination,
-            showSizeChanger: true,
-            position: ["bottomRight"],
-          }}
-          onChange={handleTableChange}
-          loading={loading}
-        />
-            )}
+
+        <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
+          <Table
+            columns={columns}
+            dataSource={filteredStations}
+            pagination={{
+              ...pagination,
+              showSizeChanger: true,
+              position: ["bottomRight"],
+            }}
+            onChange={handleTableChange}
+          />
+        </Spin>
+
         <StationsForm
           fetchStations={fetchStations}
           open={isModalOpen}
@@ -211,9 +248,8 @@ const StationManagement = () => {
           initialValues={editingStation}
         />
       </div>
-
-  </>
-);
+    </>
+  );
 };
 
 export default StationManagement;
