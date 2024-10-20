@@ -20,7 +20,7 @@ const ManagerList = () => {
   const fetchManagers = async () => {
     try {
       const response = await axios.get(
-        `/api/manager?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
+        `/api/user?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
       );
       const { data, total } = response.data;
 
@@ -101,7 +101,7 @@ const ManagerList = () => {
   const columns = [
     {
       title: "Full Name",
-      dataIndex: "fullName",
+      dataIndex: "name",
       key: "fullName",
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },

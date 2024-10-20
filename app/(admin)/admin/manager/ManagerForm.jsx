@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
 
-
 const userSchema = z.object({
   name: z.string().nonempty('Please enter your name'),
   mobile: z.string().nonempty('Please enter your mobile number'),
@@ -23,15 +22,13 @@ const RegistrationForm = ({ open, onCancel, fetchUsers, initialValues }) => {
   const handleFormSubmit = async (data) => {
     try {
       if (initialValues && initialValues._id) {
-
         await axios.put(`/api/user/edit/${initialValues._id}`, data);
       } else {
-     
-        await axios.post('/api/user/register', data);
+        await axios.post('/api/auth/signup', data);
       }
       fetchUsers();
       reset();
-      onCancel(); 
+      onCancel();
     } catch (error) {
       console.error("Failed to submit the form:", error);
     }
@@ -54,7 +51,6 @@ const RegistrationForm = ({ open, onCancel, fetchUsers, initialValues }) => {
       ]}
     >
       <form>
-       
         <Controller
           name="name"
           control={control}
@@ -66,7 +62,7 @@ const RegistrationForm = ({ open, onCancel, fetchUsers, initialValues }) => {
             </div>
           )}
         />
-  
+
         <Controller
           name="mobile"
           control={control}
@@ -78,7 +74,7 @@ const RegistrationForm = ({ open, onCancel, fetchUsers, initialValues }) => {
             </div>
           )}
         />
-        
+
         <Controller
           name="email"
           control={control}
@@ -90,7 +86,7 @@ const RegistrationForm = ({ open, onCancel, fetchUsers, initialValues }) => {
             </div>
           )}
         />
-      
+
         <Controller
           name="password"
           control={control}
@@ -102,14 +98,14 @@ const RegistrationForm = ({ open, onCancel, fetchUsers, initialValues }) => {
             </div>
           )}
         />
-      
+
         <Controller
           name="role"
           control={control}
           render={({ field }) => (
             <div className="mb-4">
               <label className="block mb-1">Role</label>
-              <Select {...field} defaultValue={initialValues?.role || 'subadmin'}>
+              <Select {...field} value={field.value} onChange={field.onChange}>
                 <Select.Option value="admin">Admin</Select.Option>
                 <Select.Option value="subadmin">Subadmin</Select.Option>
               </Select>

@@ -28,9 +28,9 @@ const ContactInfo = () => {
   };
 
   return (
-    <div className="contact-info-container card" >
-      <h2>Contact Info</h2>
-      <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+  <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
+      <h2 className="text-lg font-semibold my-5" style={{ color: '#6F4D27' }}>Contact Info</h2>
+      <Form className="mt-5" layout="vertical" onFinish={handleSubmit(onSubmit)}>
         <Form.Item label="Email ID">
           <Input
             placeholder="Enter your email"

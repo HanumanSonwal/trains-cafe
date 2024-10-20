@@ -26,19 +26,17 @@ const schema = z.object({
   Food_Type: z.enum(["Vegetarian", "Non-Vegetarian", "Vegan"], {
     required_error: "Food type is required",
   }),
-  Price: z.string()
-    .transform((val) => parseFloat(val))
-    .refine((val) => !isNaN(val) && val >= 0, {
-      message: "Price must be a valid number and should be 0 or more",
-    }),
-  Discount: z.string()
-    .transform((val) => parseFloat(val)) 
-    .refine((val) => !isNaN(val) && val >= 0 && val < 100 , {
-      message: "Discount must be a valid number and should be 0 or more",
-    }),
-  Description: z.string().optional(),
+  price: z
+    .number()
+    .positive("Price must be a positive number")
+    .min(0.01, "Price must be at least 0.01"),
+  discount: z
+    .number()
+    .min(0, "Discount cannot be less than 0")
+    .max(100, "Discount cannot be more than 100")
+    .optional(),
+  Description: z.string().optional(), // Ensure this is part of the object
 });
-
 
 const MenuItemForm = ({
   open,
