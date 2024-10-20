@@ -25,7 +25,10 @@ const OrderSchema = new mongoose.Schema({
         required: false
     },
     payment: {
-    
+        rp_payement_id: {
+            type: String,
+            required: false
+        },
         payment_method: {
             type: String,
             enum: ["COD", "UPI", "Card", "Netbanking"],

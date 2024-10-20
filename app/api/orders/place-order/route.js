@@ -26,7 +26,8 @@ export async function POST(req, context) {
             paymentBody.payment_status = "pending",
             paymentBody.amount = total,
             paymentBody.tax =  tax,
-            paymentBody.vpa =  ""
+            paymentBody.vpa = "",
+            paymentBody.rp_payement_id = ""
         } else {
             // create an order on razorpay
         }
