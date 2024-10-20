@@ -3,6 +3,7 @@ import dbConnect from '../../lib/dbConnect';
 import MenuModel from '../../models/menu';
 import CategoryModel from '../../models/category';
 import VendorModel from '../../models/vendor';
+import StationModel from '../../models/station';
 import mongoose from 'mongoose';
 
 export async function GET(req) {
@@ -43,6 +44,14 @@ export async function GET(req) {
             const vendorIds = vendors.map(vendor => new mongoose.Types.ObjectId(vendor._id));
             searchCriteria.$or.push({ Vendor: { $in: vendorIds } });
         }
+      //   const stations = await StationModel.find({
+      //     Station_Name: { $regex: search, $options: 'i' }
+      // });
+
+      // if (stations.length > 0) {
+      //     const StationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
+      //     searchCriteria.$or.push({ Station: { $in: stations } });
+      // }
 
         // Always search by Item_Name if there's a search term
         searchCriteria.$or.push({ Item_Name: { $regex: search, $options: 'i' } });
@@ -77,13 +86,15 @@ export async function GET(req) {
             .skip(skip)
             .limit(limit)
             .populate('Category_Id', 'title')
-            .populate('Vendor', 'Vendor_Name');
+            .populate('Vendor', 'Vendor_Name')
+            .populate('Station', 'name');
     } else {
         // Find menu items with the search criteria
         menu = await MenuModel.find(searchCriteria)
             .skip(skip)
             .limit(limit)
             .populate('Category_Id', 'title')
+            .populate('Station', 'name')
             .populate('Vendor', 'Vendor_Name');
     }
 
@@ -106,6 +117,8 @@ export async function GET(req) {
         Category_Name: item.Category_Id?.title || 'Unknown',
         Vendor: item.Vendor?._id || 'Unknown',
         Vendor_Name: item.Vendor?.Vendor_Name || 'Unknown',
+        Station: item.Station?._id || 'Unknown',
+        Station_Name: item.Station?.name || 'Unknown',
     }));
 
     // Get total number of matching documents for pagination
