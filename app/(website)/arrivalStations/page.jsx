@@ -13,26 +13,26 @@
 //   const router = useRouter(); // Initialize useRouter
 
 //   const stations = [
-//     { 
-//       name: 'Ajmer Jn', 
-//       code: 'AII', 
+//     {
+//       name: 'Ajmer Jn',
+//       code: 'AII',
 //       arrivalTime: '6:40 AM',
 //       vendors: [
 //         { name: 'NAKSHATRA FOOD AND BEV', rating: 4.5, reviews: 4000, servingTime: '05:00 to 23:15', minOrder: 149, preparationTime: 45 },
 //         { name: 'Ajmer Special Foods', rating: 4.2, reviews: 2000, servingTime: '06:00 to 22:00', minOrder: 99, preparationTime: 30 },
 //       ]
 //     },
-//     { 
-//       name: 'Marwar Jn', 
-//       code: 'MJ', 
+//     {
+//       name: 'Marwar Jn',
+//       code: 'MJ',
 //       arrivalTime: '8:50 AM',
 //       vendors: [
 //         { name: 'Marwar Delights', rating: 4.3, reviews: 3000, servingTime: '07:00 to 21:00', minOrder: 129, preparationTime: 40 },
 //       ]
 //     },
-//     { 
-//       name: 'Abu Road', 
-//       code: 'ABR', 
+//     {
+//       name: 'Abu Road',
+//       code: 'ABR',
 //       arrivalTime: '11:20 AM',
 //       vendors: [
 //         { name: 'Abu Road Treats', rating: 4.6, reviews: 5000, servingTime: '06:30 to 23:30', minOrder: 159, preparationTime: 35 },
@@ -65,7 +65,7 @@
 //           </div>
 //         </div>
 //       </div>
-//       <button 
+//       <button
 //         className="mt-4 px-4 py-2 rounded foot-menu-btn transition duration-300"
 //         onClick={handleRedirect} // Trigger redirection when button is clicked
 //       >
@@ -77,19 +77,19 @@
 //   return (
 //     <div className="max-w-3xl mx-auto p-4">
 //       <h1 className="text-2xl font-bold mb-4">Order Food in AII-ADI INTERCITY EXPRESS (19412) Train</h1>
-      
+
 //       <div className="bg-gray-100 p-2 mb-4">
 //         <span className="font-semibold">Journey Date:</span> 01-Oct-2024
 //       </div>
-      
-//       <Collapse 
-//         accordion 
-//         activeKey={activeKey} 
+
+//       <Collapse
+//         accordion
+//         activeKey={activeKey}
 //         onChange={setActiveKey}
 //       >
 //         {stations.map((station, index) => (
-//           <Panel 
-//             key={index} 
+//           <Panel
+//             key={index}
 //             header={
 //               <div className="flex justify-between items-center">
 //                 <div>
@@ -106,8 +106,6 @@
 //         ))}
 //       </Collapse>
 
-      
-      
 //       <VendorCard/>
 //     </div>
 //   );
@@ -208,15 +206,13 @@
 
 // export default ArrivalStations;
 
-
-'use client';
+"use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { message, Collapse } from "antd";
 import VendorCard from "./VendorCard";
 
 const { Panel } = Collapse;
-
 
 const ArrivalStations = () => {
   const searchParams = useSearchParams();
@@ -227,7 +223,7 @@ const ArrivalStations = () => {
     {
       station_name: "jaipur",
       station_code: "CEN",
-      eta: "10:30 AM"
+      eta: "10:30 AM",
     },
   ]);
   const [activeKey, setActiveKey] = useState(null);
@@ -270,26 +266,27 @@ const ArrivalStations = () => {
         <span className="font-semibold">Journey Date:</span> {journeyDate}
       </div>
 
-      <Collapse 
-        accordion 
-        activeKey={activeKey} 
-        onChange={setActiveKey}
-      >
+      <Collapse accordion activeKey={activeKey} onChange={setActiveKey}>
         {upcomingStations?.map((station, index) => (
-          <Panel 
-            key={index} 
+          <Panel
+            key={index}
             header={
               <div className="flex justify-between items-center">
                 <div>
-                  <span className="font-semibold">{station.station_name}</span> ({station.station_code})
+                  <span className="font-semibold">{station.station_name}</span>{" "}
+                  ({station.station_code})
                 </div>
-                <div className="text-sm">
-                  Arrival: {station.eta}
-                </div>
+                <div className="text-sm">Arrival: {station.eta}</div>
               </div>
             }
           >
-            <VendorCard stationName={station.station_name} />
+            <VendorCard
+              train={{
+                trainNo,
+                trainName,
+              }}
+              station={station}
+            />
           </Panel>
         ))}
       </Collapse>
@@ -298,4 +295,3 @@ const ArrivalStations = () => {
 };
 
 export default ArrivalStations;
-

@@ -309,6 +309,7 @@ console.log(isreset , previewImage ,"image preview" )
           }}
           src={previewImage}
           wrapperStyle={{ display: "none" }}
+          alt="Preview"
         />
       )}
     </form>
