@@ -166,7 +166,7 @@ export default function WebsitesPages() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center my-5">
         <div className="flex items-center space-x-4">
           <label>Show</label>
           <Select

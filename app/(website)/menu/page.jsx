@@ -62,7 +62,7 @@ const MenuPage = () => {
       </h1>
 
       <div className="bg-white shadow rounded-lg mb-6 p-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center my-5">
           <div>
             <h2 className="text-lg font-bold">Swadesi Food Villa</h2>
             <p className="text-gray-500">Pure Veg | Min Order ₹99 | 30 MIN</p>

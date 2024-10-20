@@ -33,7 +33,7 @@ const schema = z.object({
     }),
   Discount: z.string()
     .transform((val) => parseFloat(val)) 
-    .refine((val) => !isNaN(val) && val >= 0, {
+    .refine((val) => !isNaN(val) && val >= 0 && val < 100 , {
       message: "Discount must be a valid number and should be 0 or more",
     }),
   Description: z.string().optional(),
@@ -66,6 +66,8 @@ const MenuItemForm = ({
     },
   });
 
+  console.log(errors,"errors")
+  console.log(initialValues,"initialValues")
 
   const [url, setUrl] = useState("");
   const [categories, setCategories] = useState([]);
@@ -267,7 +269,6 @@ const MenuItemForm = ({
       <Select
         {...field}
         onChange={(value) => {
-          // Update the selected station name and field value
           field.onChange(value);
           const selectedStation = stations.find(station => station._id === value);
           setSelectedStationName(selectedStation?.name || '');

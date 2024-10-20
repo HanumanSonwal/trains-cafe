@@ -108,7 +108,7 @@ const TablePage = () => {
 
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.put(`/api/menu/${key}/status`, { status: checked ? "1" : "0" });
+      await axios.put(`/api/menu/${key}/status`, { status: checked ? true : false });
       const updatedData = data.map((item) =>
         item.key === key ? { ...item, status: checked ? "1" : "0" } : item
       );
@@ -227,8 +227,8 @@ const TablePage = () => {
       key: "status",
       render: (status, record) => (
         <Switch
-          checked={status === "1"}
-          onChange={(checked) => handleStatusChange(checked, record.key)}
+          checked={status === true}
+          onChange={(checked) => handleStatusChange(checked, record._id)}
           className={status === "1" ? "ant-switch-checked" : "ant-switch"}
         />
       ),
@@ -264,10 +264,10 @@ const TablePage = () => {
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
     >
-      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+      <h2 className="text-lg font-semibold mb-5" style={{ color: "#6F4D27", marginBottom:"20px" }}>
         Menu-Item Management
       </h2>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center my-5">
         <AntdInput
           placeholder="Search Menu Items"
           prefix={<SearchOutlined />}

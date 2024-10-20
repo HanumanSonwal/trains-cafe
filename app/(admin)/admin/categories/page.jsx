@@ -117,7 +117,7 @@ const CategoryManagement = () => {
   return (
     <div className="p-4" style={{ backgroundColor: '#FAF3CC', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}>
       <h2 className="text-lg font-semibold mb-4" style={{ color: '#6F4D27' }}>Categories Management</h2>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center my-5">
         <AntdInput
           placeholder="Search Categories"
           prefix={<SearchOutlined />}
