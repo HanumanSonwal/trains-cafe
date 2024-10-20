@@ -4,7 +4,11 @@ const VendorSchema = new mongoose.Schema({
     Vendor_Name: { type: String, required: true },
     Contact_No: { type: String, required: true },
     Alternate_Contact_No: { type: String, required: true },
-    Station: { type: String, required: true },
+    Station: { 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Station' // Enforce specific food types
+    },
     Delivery_Charges: { type: Number, required: true },
     Min_Order_Value: { type: Number, required: true },
     Min_Order_Time: { type: Number, required: true },

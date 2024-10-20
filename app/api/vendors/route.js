@@ -11,34 +11,197 @@
 //     }
 // }
 
+// import dbConnect from '@/app/lib/dbConnect';
+// import VendorModel from '@/app/models/vendor';
+// import StationModel from '../../models/station';
+
+// export async function GET(req) {
+//     try {
+//         const url = new URL(req.url);
+//         const search = (url.searchParams.get('search') || '').trim();
+//         const Stationname = url.searchParams.get('stationname');
+//         const vendorname = url.searchParams.get('vendorname');
+//         const page = parseInt(url.searchParams.get('page'), 10) || 1;
+//         const limit = parseInt(url.searchParams.get('limit'), 10) || 10; 
+
+//         console.log(`Search: ${search}, stationname: ${Stationname}, Page: ${page}, Limit: ${limit}`);
+//         console.log(`Search: ${search}, VendorName: ${vendorname}, Page: ${page}, Limit: ${limit}`);
+//         await dbConnect();
+
+//         // Create search criteria
+       
+//         let searchCriteria = { $or: [] };
+
+//         // Check if any search parameters are provided
+//         if (search) {
+//             // Check if the search term matches a category using regex for fuzzy matching
+//             const stations = await StationModel.find({
+//                 name: { $regex: search, $options: 'i' }
+//             });
+    
+//             if (stations.length > 0) {
+//                 const stationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
+//                 searchCriteria.$or.push({ Station: { $in: stationIds } });
+//             }
+    
+//             searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
+//         }
+
+//         // Calculate pagination
+//         const skip = Math.max((page - 1) * limit, 0);
+//         console.log('Skip:', skip);
+    
+//         // If no search criteria are set, return all menu items
+//         let vendor;
+//         if (searchCriteria.$or.length === 0) {
+//             vendor = await VendorModel.find({})
+//                 .skip(skip)
+//                 .limit(limit)
+//                 .populate('Staions', 'name');
+               
+//         } else {
+//             // Find menu items with the search criteria
+//             vendor = await StationModel.find(searchCriteria)
+//                 .skip(skip)
+//                 .limit(limit)
+//                 .populate('Station', 'name');
+                
+//         }
+    
+//         console.log('Menu Staion:', vendor);
+    
+//         if (vendor.length === 0) {
+//             return new Response(
+//                 JSON.stringify({
+//                     success: false,
+//                     message: 'No items found for the search criteria',
+//                 }),
+//                 { status: 404 }
+//             );
+//         }
+    
+//         // Map the response
+//         vendor = vendor.map(item => ({
+//             ...item.toObject(),
+          
+//             Station: item.Station?._id || 'Unknown',
+//             Station_Name: item.Station?.name || 'Unknown',
+//         }));
+    
+//         // Get total number of matching documents for pagination
+//         const total = await StationModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
+//         console.log('Total Count:', total);
+
+//         return new Response(
+//             JSON.stringify({
+//                 success: true,
+//                 data: vendor,
+//                 total,
+//                 page,
+//                 totalPages: Math.ceil(total / limit)
+//             }),
+//             { status: 200 }
+//         );
+//     } catch (error) {
+//         return new Response(
+//             JSON.stringify({ success: false, message: 'Error fetching vendors' }),
+//             { status: 500 }
+//         );
+//     }
+// }
+
 import dbConnect from '@/app/lib/dbConnect';
 import VendorModel from '@/app/models/vendor';
+import StationModel from '@/app/models/station';
+import mongoose from 'mongoose';
 
 export async function GET(req) {
     try {
         const url = new URL(req.url);
-        const search = url.searchParams.get('search') || '';
+        const search = (url.searchParams.get('search') || '').trim(); // Extract search term
+        const stationname = url.searchParams.get('stationname');
+        const vendorname = url.searchParams.get('vendorname');
         const page = parseInt(url.searchParams.get('page'), 10) || 1;
         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+
+        console.log(`Search: ${search}, stationname: ${stationname}, Page: ${page}, Limit: ${limit}`);
+        console.log(`Search: ${search}, VendorName: ${vendorname}, Page: ${page}, Limit: ${limit}`);
 
         await dbConnect();
 
         // Create search criteria
-        const searchCriteria = search ? {
-            $or: [
-                { Vendor_Name: { $regex: search, $options: 'i' } },
-                { Station: { $regex: search, $options: 'i' } }
-            ]
-        } : {};
+        let searchCriteria = { $or: [] };
+
+        // Check if any search parameters are provided
+        if (search) {
+            // Check if the search term matches a station using regex for fuzzy matching
+            const stations = await StationModel.find({
+                name: { $regex: search, $options: 'i' }
+            });
+
+            if (stations.length > 0) {
+                const stationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
+                searchCriteria.$or.push({ Station: { $in: stationIds } });
+            }
+
+            // Fuzzy match for Vendor_Name
+            searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
+        }
+
+        // If stationname is provided
+        if (stationname) {
+            const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
+            if (station) {
+                searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+            }
+        }
+
+        // If vendorname is provided
+        if (vendorname) {
+            searchCriteria.$or.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
+        }
 
         // Calculate pagination
-        const skip = (page - 1) * limit;
+        const skip = Math.max((page - 1) * limit, 0);
+        console.log('Skip:', skip);
 
-        const vendors = await VendorModel.find(searchCriteria)
-            .skip(skip)
-            .limit(limit);
+        let vendors;
+        if (searchCriteria.$or.length === 0) {
+            // Return all vendors if no search criteria
+            vendors = await VendorModel.find({})
+                .skip(skip)
+                .limit(limit)
+                .populate('Station', 'name');
+        } else {
+            // Apply search criteria
+            vendors = await VendorModel.find(searchCriteria)
+                .skip(skip)
+                .limit(limit)
+                .populate('Station', 'name');
+        }
 
-        const total = await VendorModel.countDocuments(searchCriteria);
+        console.log('Vendors:', vendors);
+
+        if (vendors.length === 0) {
+            return new Response(
+                JSON.stringify({
+                    success: false,
+                    message: 'No items found for the search criteria',
+                }),
+                { status: 404 }
+            );
+        }
+
+        // Map the response
+        vendors = vendors.map(item => ({
+            ...item.toObject(),
+            Station: item.Station?._id || 'Unknown',
+            Station_Name: item.Station?.name || 'Unknown',
+        }));
+
+        // Get total number of matching documents for pagination
+        const total = await VendorModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
+        console.log('Total Count:', total);
 
         return new Response(
             JSON.stringify({
@@ -46,18 +209,18 @@ export async function GET(req) {
                 data: vendors,
                 total,
                 page,
-                totalPages: Math.ceil(total / limit)
+                totalPages: Math.ceil(total / limit),
             }),
             { status: 200 }
         );
     } catch (error) {
+        console.error('Error fetching vendors:', error);
         return new Response(
             JSON.stringify({ success: false, message: 'Error fetching vendors' }),
             { status: 500 }
         );
     }
 }
-
 
 export async function POST(req) {
     try {
