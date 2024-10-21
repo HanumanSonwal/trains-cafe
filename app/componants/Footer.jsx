@@ -95,7 +95,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="/web-pages/contact-us"
+                      href="/contactus"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Contact Us
@@ -111,7 +111,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Bulk Food Order in Train
@@ -119,7 +119,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Order
@@ -135,7 +135,7 @@ const Footer = () => {
                 <ul className="space-y-0">
                   <li>
                     <a
-                      href="/web-pages/terms-conditions"
+                      href="/web-pages/terms-and-conditions"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Terms & Conditions
@@ -151,7 +151,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Help & Support
@@ -159,7 +159,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Request Call Back
@@ -167,7 +167,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Complained and Feedback
@@ -175,7 +175,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/web-pages/cancellation-policy"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Cancellation Policy
@@ -190,7 +190,7 @@ const Footer = () => {
                 <ul className="space-y-0">
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       PNR Status Check
@@ -198,7 +198,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="//comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Train Coach Position
@@ -206,7 +206,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       IRCTC Train Schedule
@@ -214,7 +214,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Platform Locator
@@ -222,7 +222,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Check PNR Status on Whatsapp
@@ -230,7 +230,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Live Train Running Status
