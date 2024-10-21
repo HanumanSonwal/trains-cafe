@@ -2,7 +2,7 @@
 import { Input, Button, Tabs, message, DatePicker } from "antd";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("1");
@@ -10,10 +10,16 @@ const OrderFood = () => {
   const [trainNumber, setTrainNumber] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const router = useRouter();
+  console.log(selectedDate, "selectedDate");
 
   const handleTabChange = (key) => {
     setActiveKey(key);
   };
+
+  const formatDate = (date) => {
+    return dayjs(date).format("YYYY-MM-DD");
+  };
+
   const searchPNR = async () => {
     if (!pnr) {
       return message.error("Please enter a valid PNR number.");
@@ -21,10 +27,12 @@ const OrderFood = () => {
     try {
       const response = await fetch(`/api/rapid/pnr?query=${pnr}`);
       const result = await response.json();
-  
+
       if (response.ok) {
         message.success("PNR found! Redirecting...");
-        router.push(`/arrivalStations?pnr=${pnr}&trainNo=${result.data.train_number}&trainName=${result.data.train_name}`);
+        router.push(
+          `/arrivalStations?pnr=${pnr}&trainNo=${result.data.train_number}&trainName=${result.data.train_name}`
+        );
       } else {
         throw new Error(result.message);
       }
@@ -38,16 +46,14 @@ const OrderFood = () => {
       return message.error("Please enter a valid train number and date.");
     }
     try {
-      const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+      const formattedDate = formatDate(selectedDate);
       const response = await fetch(
         `/api/rapid/live?trainNo=${trainNumber}&date=${formattedDate}`
       );
       const result = await response.json();
-      console.log(result, "result");
-  
+
       if (response.ok) {
         message.success("Train found! Redirecting...");
-        // Include the selected date in the query parameters
         router.push(
           `/arrivalStations?trainNo=${result.data.train_number}&trainName=${result.data.train_name}&date=${formattedDate}`
         );
@@ -58,7 +64,7 @@ const OrderFood = () => {
       message.error(`Error: ${error.message}`);
     }
   };
-  
+
   const handleSearch = () => {
     if (activeKey === "1") {
       searchPNR();
@@ -102,7 +108,8 @@ const OrderFood = () => {
           <DatePicker
             className="flex-grow"
             placeholder="Select Date"
-            onChange={(date) => setSelectedDate(date)}
+            value={selectedDate ? dayjs(selectedDate) : null}
+            onChange={(date) => setSelectedDate(date ? date.toDate() : null)}
           />
           <Button
             onClick={handleSearch}
