@@ -7,9 +7,11 @@ import {
   message,
   Popconfirm,
   Switch,
+  Spin,
 } from "antd";
 import {
   PlusOutlined,
+  LoadingOutlined ,
   SearchOutlined,
   DeleteFilled,
   EditFilled,
@@ -254,7 +256,7 @@ const TablePage = () => {
     },
   ];
   
-
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
   return (
     <div
       className="p-4"
@@ -299,17 +301,15 @@ const TablePage = () => {
           </Button>
         </div>
       </div>
-      {loading ? (
-      <Spinner color="#D6872A" />
-    ) : (
+      <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
       <Table
         columns={columns}
         dataSource={filteredData}
         pagination={tableParams.pagination}
-        loading={loading}
+        // loading={loading}
         onChange={handleTableChange}
       />
-    )}
+      </Spin>
       <MenuItemForm
       fetchMenuItems={fetchMenuItems}
         open={isMenuItemModalOpen}
