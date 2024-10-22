@@ -11,7 +11,7 @@ const ComingSoonPage = () => {
       <div className="p-6 rounded-lg shadow-lg bg-white-800">
         <Title className="text-5xl font-bold  hover:text-red-800 transition duration-800">Coming Soon!</Title>
         <Paragraph className="text-lg mt-4 hover:text-red-600 transition duration-600">
-          We're working hard to bring you something amazing. Stay tuned for updates!
+          We are working hard to bring you something amazing. Stay tuned for updates!
         </Paragraph>
         <Button
           type="primary"

@@ -1,6 +1,7 @@
 import { cartCalculation } from '@/app/lib';
-import Order from '@/models/order';
-import OrderItems from '@/models/orderItems';
+import order from '@/app/models/order';
+import orderItems from '@/app/models/orderItems';
+
 
 
 export async function POST(req, context) {
@@ -33,7 +34,7 @@ export async function POST(req, context) {
         }
 
         // Create a new order
-        const order = new Order({
+        const order = new order({
             vendor: vendor._id,
             station: station._id,
             total,
@@ -47,7 +48,7 @@ export async function POST(req, context) {
         await order.save();
 
         // Create an array of order items
-        const orderItems = cart.map((item) => ({
+        const OrderItems = cart.map((item) => ({
             Order_Id: order._id,
             Item_Id: item._id,
             Quantity: item.quantity,
