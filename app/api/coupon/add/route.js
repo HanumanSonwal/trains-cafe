@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req, context) {
  try {
-     const { code, title, startDate, endDate, discount, status, maximumAmount } = await req.json();
+     const { code, title, startDate, endDate, discount, status, minimumAmount } = await req.json();
      
-     if (!code || !title || !startDate || !endDate || !discount || !status || !maximumAmount) {
+     if (!code || !title || !startDate || !endDate || !discount || !status || !minimumAmount) {
          return NextResponse.json({
                 success: false,
                 message: "All fields are required"
@@ -23,7 +23,7 @@ export async function POST(req, context) {
             endDate,
             discount,
             status,
-            maximumAmount
+            minimumAmount
         });
      
      await coupon.save();

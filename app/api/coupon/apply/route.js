@@ -70,18 +70,12 @@ export async function POST(req, res) {
     // validate cart and perform calculations
     const { discount, subTotal, total, tax } = cartCalculation(cart, coupon);
     
-    if(coupon.maximumAmount < subTotal) {
+    if(coupon.minimumAmount > subTotal) {
         return NextResponse.json({
             success: false,
-            message: "Cart amount is greater than maximum amount allowed for this coupon" 
+            message: "Cart total is less than minimum amount required for this coupon" 
         })
     }
-
-    const couponUsage = new CouponUsage({
-        code, email, phone
-    });
-
-    await couponUsage.save();
 
     return NextResponse.json({
         success: true,

@@ -12,7 +12,7 @@ export async function PUT(req, context) {
             endDate,
             discount,
             status, 
-            maximumAmount
+            minimumAmount
         } = await req.json();
 
         const { id } = context.params;
@@ -24,7 +24,7 @@ export async function PUT(req, context) {
             });
         }
 
-        if (!code || !title || !startDate || !endDate || !discount || !status || !maximumAmount) {
+        if (!code || !title || !startDate || !endDate || !discount || !status || !minimumAmount) {
             return NextResponse.json({
                 success: false,
                 message: "All fields are required"
@@ -41,7 +41,7 @@ export async function PUT(req, context) {
             endDate,
             discount,
             status,
-            maximumAmount
+            minimumAmount
         });
 
         if (!coupon) {

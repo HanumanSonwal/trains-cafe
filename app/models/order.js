@@ -18,6 +18,11 @@ const OrderSchema = new mongoose.Schema({
         required: false,
         min: 0
     },
+    couponAmount: {
+        type: Number,
+        required: false,
+        min: 0
+    },
     user_details: {},
     rpOrderId: {
         type: String,
