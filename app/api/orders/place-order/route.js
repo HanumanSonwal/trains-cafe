@@ -76,6 +76,13 @@ export async function POST(req, context) {
 
         // validate cart and perform calculations
         const { subTotal, tax, total, discount } = cartCalculation(cart, coupon);
+
+        if(coupon && coupon.minimumAmount > subTotal) {
+            return NextResponse.json({
+                success: false,
+                message: "Minimum amount not reached for coupon"
+            })
+        }
         
         let paymentBody = {}
         if (payment.method == 'COD') { 
