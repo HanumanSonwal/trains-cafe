@@ -24,7 +24,7 @@ export async function POST(req, context) {
             };
         }
 
-        const { email, phone } = user_details;
+        const { email, mobile } = user_details;
 
         let coupon = null
 
@@ -36,7 +36,7 @@ export async function POST(req, context) {
                 })
             }
 
-            if (!isValidNumber(phone)) {
+            if (!isValidNumber(mobile)) {
                 return NextResponse.json({
                     success: false,
                     message: "Invalid phone number for applying coupon"
@@ -44,7 +44,8 @@ export async function POST(req, context) {
             }
 
             const isCouponUsed = await CouponUsage.findOne({
-                code: couponCode, email, phone
+                code: couponCode, email,           phone:  mobile
+
             })
 
             if (isCouponUsed) {
@@ -137,7 +138,7 @@ export async function POST(req, context) {
         const couponUsage = new CouponUsage({
             code: couponCode,
             email,
-            phone
+          phone:  mobile
         });
 
         await couponUsage.save();
