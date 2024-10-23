@@ -1,13 +1,15 @@
 import { cartCalculation } from '@/app/lib';
-import order from '@/app/models/order';
-import orderItems from '@/app/models/orderItems';
+import Order from '@/app/models/order';
+import OrderItems from '@/app/models/orderItems';
+import Station from '@/app/models/station';
+import { NextResponse } from 'next/server';
 
 
 
 export async function POST(req, context) {
     try {
 
-        const { vendor, station, train, payment, cart } = await req.json();
+        const { vendor, station, train, payment, cart, user_details } = await req.json();
 
         if (!vendor || !station || !train || !payment) {
             return {
@@ -22,8 +24,8 @@ export async function POST(req, context) {
         const { subTotal, tax, total } = cartCalculation(cart)
         
         let paymentBody = {}
-        if (payment.method !== 'COD') { 
-            paymentBody.payment_method = payment.method,
+        if (payment.method == 'COD') { 
+            paymentBody.payment_method = "COD",
             paymentBody.payment_status = "pending",
             paymentBody.amount = total,
             paymentBody.tax =  tax,
@@ -33,13 +35,25 @@ export async function POST(req, context) {
             // create an order on razorpay
         }
 
+        const stationRes = await Station.findOne({
+            code: station.station_code
+        })
+
+        if (!stationRes) {
+            return NextResponse.json({
+                success: false,
+                message: "Invalid station"
+            })
+        }
+
         // Create a new order
-        const order = new order({
+        const order = new Order({
             vendor: vendor._id,
-            station: station._id,
+            station: stationRes._id,
             total,
             subTotal,
             train,
+            user_details,
             payment : paymentBody,
             status: "pending"
         });
@@ -48,7 +62,7 @@ export async function POST(req, context) {
         await order.save();
 
         // Create an array of order items
-        const OrderItems = cart.map((item) => ({
+        const orderItems = cart.map((item) => ({
             Order_Id: order._id,
             Item_Id: item._id,
             Quantity: item.quantity,
@@ -58,20 +72,18 @@ export async function POST(req, context) {
         // Save the order items
         await OrderItems.insertMany(orderItems);
 
-        return {
-            status: 200,
-            body: {
-                message: "Order placed successfully"
-            }
-        };
+       return NextResponse.json({
+            success: true,
+            message: "Order placed successfully",
+            data: order
+        }   
+       )
         
     } catch (error) {
         console.error("Error placing order:", error);
-        return {
-            status: 500,
-            body: {
-                message: "Error placing order"
-            }
-        };
+    return    NextResponse.json({
+            success: false,
+            message: error.message
+        })
     }
 }

@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { useSelector } from "react-redux";
-import { Button, Input, Radio } from "antd";
+import { Button, Input, message, Radio } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { placeOrder } from "@/services/orders";
 
 const schema = z.object({
   mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
@@ -19,7 +19,7 @@ const schema = z.object({
 });
 
 const CheckoutPage = () => {
-  const cartItems = useSelector((state) => state.cart.items);
+  const { items, vendor, train, station } = useSelector((state) => state.cart);
   const [paymentMethod, setPaymentMethod] = React.useState("PAYTM");
 
   const {
@@ -31,12 +31,24 @@ const CheckoutPage = () => {
     resolver: zodResolver(schema),
   });
 
-  const handlePlaceOrder = (data) => {
-    reset();
-    console.log("Order placed with data:", data);
+  const handlePlaceOrder = async (data) => {
+    try {
+      const payment = {
+        method: paymentMethod,
+      };
+
+      await placeOrder(vendor, station, train, payment, items, data);
+
+      reset();
+
+      message.success("Order placed successfully!");
+    } catch (error) {
+      message.error("Error placing order. Please try again.");
+      console.error("Error placing order:", error);
+    }
   };
 
-  const totalAmount = cartItems.reduce((total, item) => {
+  const totalAmount = items.reduce((total, item) => {
     return total + parseInt(item.price, 10) * parseInt(item.quantity, 10);
   }, 0);
 
@@ -61,7 +73,9 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Mobile Number</label>
+                <label className="block text-gray-700 mb-1">
+                  Mobile Number
+                </label>
                 <Input placeholder="Mobile Number" {...field} />
                 {errors.mobile && (
                   <span className="text-red-500">{errors.mobile.message}</span>
@@ -163,7 +177,10 @@ const CheckoutPage = () => {
                 <label className="block text-gray-700 mb-1">
                   Optional Instructions
                 </label>
-                <Input.TextArea placeholder="Optional Instructions" {...field} />
+                <Input.TextArea
+                  placeholder="Optional Instructions"
+                  {...field}
+                />
               </div>
             )}
           />
@@ -183,7 +200,7 @@ const CheckoutPage = () => {
               </tr>
             </thead>
             <tbody>
-              {cartItems.map((item, idx) => (
+              {items.map((item, idx) => (
                 <tr key={idx} className="border-b">
                   <td className="py-2">{item.name}</td>
                   <td className="py-2">{item.quantity}</td>
@@ -237,10 +254,7 @@ const CheckoutPage = () => {
           onChange={(e) => setPaymentMethod(e.target.value)}
           className="gap-5"
         >
-          <Radio value="PAYTM">
-            PAYTM (UPI + ATM/ Debit/ Credit Cards + Net Banking)
-          </Radio>
-          <Radio value="PhonePe">PhonePe (UPI / Debit & Credit Cards)</Radio>
+          <Radio value="PhonePe">Razorpay (UPI / Debit & Credit Cards)</Radio>
           <br />
           <Radio value="COD">Cash on Delivery</Radio>
         </Radio.Group>

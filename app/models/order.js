@@ -17,9 +17,7 @@ const OrderSchema = new mongoose.Schema({
         required: false,
         min: 0
     },
-    user_details: {
-        
-    },
+    user_details: {},
     rpOrderId: {
         type: String,
         required: false

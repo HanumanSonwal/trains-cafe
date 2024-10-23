@@ -220,11 +220,11 @@ const ArrivalStations = () => {
   const trainName = searchParams.get("trainName");
   const journeyDate = searchParams.get("date");
   const [upcomingStations, setUpcomingStations] = useState([
-    // {
-    //   station_name: "jaipur",
-    //   station_code: "CEN",
-    //   eta: "10:30 AM",
-    // },
+    {
+      station_name: "jaipur",
+      station_code: "CEN",
+      eta: "10:30 AM",
+    },
   ]);
   const [activeKey, setActiveKey] = useState(null);
 
