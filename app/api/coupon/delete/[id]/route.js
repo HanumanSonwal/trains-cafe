@@ -1,44 +1,39 @@
-import { NextResponse } from "next/server";
-import Coupon from "@/app/models/coupon";
-import mongoose from "mongoose";
-import dbConnect from "@/app/lib/dbConnect";
+import dbConnect from '@/app/lib/dbConnect';
+import Coupon from '@/app/models/coupon'
+import { NextResponse } from 'next/server';
 
-export async function GET(req, context) {
+export async function DELETE(req, context) {
     try {
         const { id } = context.params;
 
-        if(!id) {
+        if (!id) {
             return NextResponse.json({
                 success: false,
                 message: "Coupon id is required"
-            })
+            });
         }
 
         await dbConnect();
 
+        const coupon = await Coupon.findByIdAndDelete(id);
 
-        const coupon = await Coupon.findById({
-            _id: new mongoose.Types.ObjectId(id)
-        });
-
-        if(!coupon) {
+        if (!coupon) {
             return NextResponse.json({
                 success: false,
                 message: "Coupon not found"
-            })
+            });
         }
 
         return NextResponse.json({
             success: true,
-            coupon
+            message: "Coupon deleted successfully"
         })
 
-
     } catch (error) {
-        
         return NextResponse.json({
             success: false,
             message: error.message
         })
     }
 }
+

@@ -1,19 +1,32 @@
+import dbConnect from "@/app/lib/dbConnect";
 import Coupon from "@/app/models/coupon"
 import { NextResponse } from "next/server";
 
 export async function GET(req) { 
     try { 
-        const coupons = await Coupon.find()
+        const { searchParams } = new URL(req.url);
+        const page = searchParams.get("page") || 1;
+        const limit = searchParams.get("limit") || 10;        
 
-        if(!coupons || coupons.length === 0) { 
+        await dbConnect();
+
+    const options = {
+       page: parseInt(page, 10),
+       limit: parseInt(limit, 10),
+       sort: { createdAt: -1 }, 
+     };
+
+     const coupons = await Coupon.paginate({}, options);
+
+    if(!coupons || coupons.docs.length === 0) { 
             return NextResponse.json({ 
                 success: false, 
-                message: "Coupon not found" 
+                message: "Coupons not found" 
             }) 
         } 
         return NextResponse.json({ 
             success: true, 
-            coupons 
+            ...coupons 
         }) 
     } catch (error) { 
         return NextResponse.json({ 

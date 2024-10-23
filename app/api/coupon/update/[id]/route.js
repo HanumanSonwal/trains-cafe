@@ -1,3 +1,4 @@
+import dbConnect from "@/app/lib/dbConnect";
 import Coupon from "@/app/models/coupon";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
@@ -12,7 +13,7 @@ export async function PUT(req, context) {
             discount,
             status, 
             maximumAmount
-        } = req.json();
+        } = await req.json();
 
         const { id } = context.params;
 
@@ -23,14 +24,17 @@ export async function PUT(req, context) {
             });
         }
 
-        if (!code || !title || !startDate || !endDate || !discount || !status, !maximumAmount) {
+        if (!code || !title || !startDate || !endDate || !discount || !status || !maximumAmount) {
             return NextResponse.json({
                 success: false,
                 message: "All fields are required"
             });
         }
 
-        const coupon = await Coupon.findByIdAndUpdate(mongoose.Types.ObjectId(id), {
+        await dbConnect();
+
+
+        const coupon = await Coupon.findByIdAndUpdate(new mongoose.Types.ObjectId(id), {
             code,
             title,
             startDate,

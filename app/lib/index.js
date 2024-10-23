@@ -21,8 +21,7 @@ export const cartCalculation = (cart, coupon = null) => {
             discount = coupon.discount.value;
         }
     }
-    
-    
+
     tax = subTotal * 0.05;
 
     total = subTotal + tax - discount;

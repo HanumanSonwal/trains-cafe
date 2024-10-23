@@ -2,14 +2,16 @@ import mongoose from "mongoose";
 
 const couponUsageSchema = new mongoose.Schema(
     {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+        email: {
+            type: String,
             required: true,
         },
-        couponId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Coupon",
+        phone: {
+            type: String,
+            required: true,
+        },
+        code: {
+            type: String,
             required: true,
         },
     },

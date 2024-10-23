@@ -2,20 +2,43 @@ import { cartCalculation } from "@/app/lib";
 import CouponUsage from "@/app/models/couponUsage";
 import Coupon from "@/app/models/coupon";
 import { NextResponse } from "next/server";
+import dbConnect from "@/app/lib/dbConnect";
+import { isValidNumber } from "libphonenumber-js";
+import * as EmailValidator from 'email-validator';
+
 
 export async function POST(req, res) {
   try {
-    const {code, userId, cart} = await req.json();
+    const {code, email, phone, cart} = await req.json();
 
-  if (!code || !userId) {
+  if (!code || !email || !phone) {
       return NextResponse.json({
             success: false,
             message: "All fields are required"
       })
-  }
+      }
+      
+      
+    if (!isValidNumber(phone)) {
+        return NextResponse.json({
+            success: false,
+            message: "Invalid phone number"
+        })
+      }
+      
+      if (!EmailValidator.validate(email)) {
+        return NextResponse.json({
+            success: false,
+            message: "Invalid email"
+        })
+      }
 
-    const isCouponUsed = await CouponUsage.findOne({
-        code, userId
+
+      await dbConnect();
+
+      
+      const isCouponUsed = await CouponUsage.findOne({
+        code, email, phone
     })
     
     if (isCouponUsed) {
@@ -26,8 +49,9 @@ export async function POST(req, res) {
     }
 
     const coupon = await Coupon.findOne({
-        code
+        code, status: "published"
     })
+      
 
     if (!coupon) {
         return NextResponse.json({
@@ -41,21 +65,20 @@ export async function POST(req, res) {
             success: false,
             message: "Coupon is expired"
         })
-      }
+    }
       
     // validate cart and perform calculations
     const { discount, subTotal, total, tax } = cartCalculation(cart, coupon);
     
-    if(coupon.maximumAmount > subTotal) {
+    if(coupon.maximumAmount < subTotal) {
         return NextResponse.json({
             success: false,
-            message: "Maximum amount for applying this coupon is reached"
+            message: "Cart amount is greater than maximum amount allowed for this coupon" 
         })
     }
 
     const couponUsage = new CouponUsage({
-        code,
-        userId
+        code, email, phone
     });
 
     await couponUsage.save();

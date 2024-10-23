@@ -1,3 +1,4 @@
+import dbConnect from "@/app/lib/dbConnect";
 import Coupon from "@/app/models/coupon"
 import { NextResponse } from "next/server";
 
@@ -11,6 +12,9 @@ export async function POST(req, context) {
                 message: "All fields are required"
         })
      }
+
+     await dbConnect();
+
 
         const coupon = new Coupon({
             code,

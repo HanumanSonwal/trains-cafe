@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const couponSchema = new mongoose.Schema(
     {
@@ -43,6 +44,9 @@ const couponSchema = new mongoose.Schema(
         }
     },
 );
+
+couponSchema.plugin(mongoosePaginate);
+
 
 export default mongoose.models.Coupon ||
     mongoose.model("Coupon", couponSchema);
