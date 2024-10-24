@@ -37,7 +37,7 @@ const CheckoutPage = () => {
         method: paymentMethod,
       };
 
-      await placeOrder(vendor, station, train, payment, items, data);
+      await placeOrder(vendor, station, train, payment, items, data, couponCode);
 
       reset();
 
