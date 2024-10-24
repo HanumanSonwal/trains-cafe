@@ -4,8 +4,7 @@ export const placeOrder = async (
     train,
     payment,
     cart,
-    user_details,
-    couponCode
+    user_details
 ) => {
     try {
         const response = await fetch("/api/orders/place-order", {
@@ -19,8 +18,7 @@ export const placeOrder = async (
                 train: train,
                 payment: payment,
                 cart: cart,
-                user_details: user_details,
-                couponCode :couponCode
+                user_details: user_details
             }),
         });
 
