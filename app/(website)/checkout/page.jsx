@@ -44,14 +44,14 @@ const CheckoutPage = () => {
   const payableAmount = totalAmount + gstAmount;
 
   return (
-    <div className="max-w-[1024px] mx-auto p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Your Order at <span className="text-purple-600">Jaipur</span> from{" "}
-        <span className="text-purple-600">Trains Cafe</span>
+    <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">    
+      <h1 className="text-xl font-bold mb-6 text-center text-gray-800">
+        Your Order at <span style={{color:'#704d25'}}>Jaipur</span> from{" "}
+        <span style={{color:'#704d25'}}>Trains Cafe</span>
       </h1>
       <div className="gap-4">
         <div className="bg-white shadow rounded-lg p-4 mb-4">
-          <h2 className="text-lg font-bold mb-4 text-gray-800">
+          <h2 className="text-md font-bold mb-4 text-gray-800">
             Customer Details
           </h2>
 
@@ -61,7 +61,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Mobile Number</label>
+                <label className="block text-sm text-gray-700 mb-1">Mobile Number</label>
                 <Input placeholder="Mobile Number" {...field} />
                 {errors.mobile && (
                   <span className="text-red-500">{errors.mobile.message}</span>
@@ -76,7 +76,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Name</label>
+                <label className="block text-sm text-gray-700 mb-1">Name</label>
                 <Input placeholder="Name" {...field} />
                 {errors.name && (
                   <span className="text-red-500">{errors.name.message}</span>
@@ -91,7 +91,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Email</label>
+                <label className="block text-sm text-gray-700 mb-1">Email</label>
                 <Input placeholder="Enter Your Email" {...field} />
                 {errors.email && (
                   <span className="text-red-500">{errors.email.message}</span>
@@ -106,7 +106,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">
+                <label className="block text-sm text-gray-700 mb-1">
                   Alternate Mobile (Optional)
                 </label>
                 <Input placeholder="Alternate Mobile (Optional)" {...field} />
@@ -120,7 +120,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">PNR</label>
+                <label className="block text-sm text-gray-700 mb-1">PNR</label>
                 <Input placeholder="Enter 10 Digit PNR" {...field} />
                 {errors.pnr && (
                   <span className="text-red-500">{errors.pnr.message}</span>
@@ -136,7 +136,7 @@ const CheckoutPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <div className="w-1/2">
-                  <label className="block text-gray-700 mb-1">Coach</label>
+                  <label className="block text-sm text-gray-700 mb-1">Coach</label>
                   <Input placeholder="Coach" {...field} />
                 </div>
               )}
@@ -147,7 +147,7 @@ const CheckoutPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <div className="w-1/2">
-                  <label className="block text-gray-700 mb-1">Seat No.</label>
+                  <label className="block text-sm text-gray-700 mb-1">Seat No.</label>
                   <Input placeholder="Seat No." {...field} />
                 </div>
               )}
@@ -160,7 +160,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">
+                <label className="block text-sm text-gray-700 mb-1">
                   Optional Instructions
                 </label>
                 <Input.TextArea placeholder="Optional Instructions" {...field} />
@@ -170,7 +170,7 @@ const CheckoutPage = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-bold mb-6 text-gray-800">
+          <h2 className="text-md font-bold mb-6 text-gray-800">
             Order Details
           </h2>
           <table className="w-full mb-6">
@@ -185,10 +185,10 @@ const CheckoutPage = () => {
             <tbody>
               {cartItems.map((item, idx) => (
                 <tr key={idx} className="border-b">
-                  <td className="py-2">{item.name}</td>
-                  <td className="py-2">{item.quantity}</td>
-                  <td className="py-2">₹ {item.price}</td>
-                  <td className="py-2">
+                  <td className="py-2 text-sm">{item.name}</td>
+                  <td className="py-2 text-sm">{item.quantity}</td>
+                  <td className="py-2 text-sm">₹ {item.price}</td>
+                  <td className="py-2 text-sm">
                     ₹ {parseInt(item.price, 10) * parseInt(item.quantity, 10)}
                   </td>
                 </tr>
@@ -212,7 +212,7 @@ const CheckoutPage = () => {
               </span>
               <span className="text-green-600">Free</span>
             </div>
-            <div className="flex justify-between text-lg font-bold border-t pt-2">
+            <div className="flex justify-between text-md font-bold border-t pt-2">
               <span>Total</span>
               <span>₹ {payableAmount.toFixed(2)}</span>
             </div>
@@ -223,13 +223,13 @@ const CheckoutPage = () => {
       <div className="bg-white shadow rounded-lg p-4 mt-4">
         <Input
           placeholder="COUPON CODE"
-          className="mb-4"
-          suffix={<Button className="text-green-600">Apply</Button>}
+          className="mb-4 "
+          suffix={<Button className="order-btn">Apply</Button>}
         />
       </div>
 
       <div className="bg-white shadow rounded-lg p-4 mt-4">
-        <h2 className="text-lg font-bold mb-4 text-gray-800">
+        <h2 className="text-md font-bold mb-4 text-gray-800">
           Payment Options
         </h2>
         <Radio.Group
@@ -248,7 +248,7 @@ const CheckoutPage = () => {
 
       <Button
         type="primary"
-        className="mt-6 w-full"
+        className="mt-6  order-btn"
         onClick={handleSubmit(handlePlaceOrder)}
       >
         Place Order

@@ -262,3 +262,10 @@ pre {
   margin: 8px 0;
 } */
 
+:where(.css-dev-only-do-not-override-qnu6hi).ant-input-outlined:hover{
+  border-color: #704D25 !important;
+}
+:where(.css-dev-only-do-not-override-qnu6hi).ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover{
+  outline: none !important;
+  border: none !important;
+}
