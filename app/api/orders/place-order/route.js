@@ -44,8 +44,7 @@ export async function POST(req, context) {
             }
 
             const isCouponUsed = await CouponUsage.findOne({
-                code: couponCode, email,           phone:  mobile
-
+                code: couponCode, email,  phone:  mobile
             })
 
             if (isCouponUsed) {
@@ -72,7 +71,14 @@ export async function POST(req, context) {
                     message: "Coupon is expired"
                 })
             }
-            
+
+            const couponUsage = new CouponUsage({
+                code: couponCode,
+                email,
+                phone:  mobile
+            });
+    
+            await couponUsage.save();
         }
 
         // validate cart and perform calculations
@@ -134,14 +140,6 @@ export async function POST(req, context) {
 
         // Save the order items
         await OrderItems.insertMany(orderItems);
-
-        const couponUsage = new CouponUsage({
-            code: couponCode,
-            email,
-          phone:  mobile
-        });
-
-        await couponUsage.save();
 
        return NextResponse.json({
             success: true,
