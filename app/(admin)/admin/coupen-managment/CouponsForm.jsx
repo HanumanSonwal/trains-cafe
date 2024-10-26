@@ -4,12 +4,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 const couponSchema = z.object({
   title: z.string().nonempty('Please enter the coupon title'),
   code: z.string().nonempty('Please enter the coupon code'),
-  startDate: z.date().refine((val) => val instanceof Date, 'Please select a valid start date'),
-  endDate: z.date().refine((val) => val instanceof Date, 'Please select a valid end date'),
+  startDate: z.date().refine((val) => !isNaN(val.getTime()), 'Please select a valid start date'),
+  endDate: z.date().refine((val) => !isNaN(val.getTime()), 'Please select a valid end date'),
   minimumAmount: z.number().min(1, 'Minimum amount must be greater than zero'),
   discountType: z.enum(['percentage', 'flat'], 'Please select a discount type'),
   discountValue: z.number().min(1, 'Please enter a valid discount value'),
@@ -17,8 +18,9 @@ const couponSchema = z.object({
 });
 
 const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
+  console.log(initialValues,"initialValues")
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
-    resolver: zodResolver(couponSchema),
+    // resolver: zodResolver(couponSchema),
     defaultValues: initialValues || {
       title: '',
       code: '',
@@ -26,7 +28,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
       endDate: null,
       minimumAmount: 0,
       discountType: 'percentage',
-      discountValue: 0,
+      value: 0,
       status: 'published',
     },
   });
@@ -39,12 +41,12 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
     const payload = {
       title: data.title,
       code: data.code,
-      startDate: data.startDate.toISOString(),
-      endDate: data.endDate.toISOString(),
+      startDate: data.startDate instanceof Date ? data.startDate.toISOString() : new Date(data.startDate).toISOString(),
+      endDate: data.endDate instanceof Date ? data.endDate.toISOString() : new Date(data.endDate).toISOString(),
       minimumAmount: data.minimumAmount,
       discount: {
         type: data.discountType,
-        value: data.discountValue,
+        value: data.value,
       },
       status: data.status,
     };
@@ -102,28 +104,46 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
             </div>
           )}
         />
-        <Controller
-          name="startDate"
-          control={control}
-          render={({ field }) => (
-            <div className="mb-4">
-              <label className="block mb-1">Start Date</label>
-              <DatePicker {...field} />
-              {errors.startDate && <p className="text-red-500">{errors.startDate.message}</p>}
-            </div>
-          )}
-        />
-        <Controller
-          name="endDate"
-          control={control}
-          render={({ field }) => (
-            <div className="mb-4">
-              <label className="block mb-1">End Date</label>
-              <DatePicker {...field} />
-              {errors.endDate && <p className="text-red-500">{errors.endDate.message}</p>}
-            </div>
-          )}
-        />
+       import dayjs from 'dayjs';
+
+// ...
+
+<Controller
+  name="startDate"
+  control={control}
+  render={({ field }) => (
+    <div className="mb-4">
+      <label className="block mb-1">Start Date</label>
+      <DatePicker
+        {...field}
+        onChange={(date) => {
+          field.onChange(date ? dayjs(date).toDate() : null); // dayjs का सही उपयोग
+        }}
+        value={field.value ? dayjs(field.value) : null} // सुनिश्चित करें कि सही प्रारूप में हो
+      />
+      {errors.startDate && <p className="text-red-500">{errors.startDate.message}</p>}
+    </div>
+  )}
+/>
+
+<Controller
+  name="endDate"
+  control={control}
+  render={({ field }) => (
+    <div className="mb-4">
+      <label className="block mb-1">End Date</label>
+      <DatePicker
+        {...field}
+        onChange={(date) => {
+          field.onChange(date ? dayjs(date).toDate() : null); // dayjs का सही उपयोग
+        }}
+        value={field.value ? dayjs(field.value) : null} // सुनिश्चित करें कि सही प्रारूप में हो
+      />
+      {errors.endDate && <p className="text-red-500">{errors.endDate.message}</p>}
+    </div>
+  )}
+/>
+
         <Controller
           name="minimumAmount"
           control={control}
@@ -150,7 +170,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
           )}
         />
         <Controller
-          name="discountValue"
+          name="value"
           control={control}
           render={({ field }) => (
             <div className="mb-4">

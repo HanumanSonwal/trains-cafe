@@ -54,6 +54,7 @@ const CheckoutPage = () => {
 
       reset();
       dispatch(resetCart());
+  
       message.success("Order placed successfully!");
       setIsCouponApplied(false);
     } catch (error) {
@@ -353,12 +354,12 @@ const CheckoutPage = () => {
       </div>
 
       <Button
-        type="primary"
-        className="mt-6 w-full"
-        onClick={handleSubmit(handlePlaceOrder)}
-      >
-        Place Order
-      </Button>
+  type="primary"
+  className="mt-6 w-full"
+  onClick={handleSubmit(handlePlaceOrder)}
+>
+  Place Order
+</Button>
     </div>
   );
 };
