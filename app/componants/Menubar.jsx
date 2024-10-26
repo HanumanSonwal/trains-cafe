@@ -240,6 +240,12 @@ const Menubar = () => {
       label: <Link href="/admin/menu-item">Menu Items</Link>,
       path: '/admin/menu-item',
     },
+     {
+      key: '',
+      icon: <MenuOutlined />,
+      label: <Link href="/admin/coupen-managment">Coupen Managment</Link>,
+      path: '/admin/coupen-managment',
+    },
     {
       key: '7',
       icon: <FileTextOutlined />,

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const OrderSchema = new mongoose.Schema({
     vendor: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "vendors" },
@@ -17,9 +18,12 @@ const OrderSchema = new mongoose.Schema({
         required: false,
         min: 0
     },
-    user_details: {
-        
+    couponAmount: {
+        type: Number,
+        required: false,
+        min: 0
     },
+    user_details: {},
     rpOrderId: {
         type: String,
         required: false
@@ -53,7 +57,6 @@ const OrderSchema = new mongoose.Schema({
             type: String,
             required: false
         },
-    
     },
     status: {
         type: String, required: false,
@@ -61,5 +64,7 @@ const OrderSchema = new mongoose.Schema({
         default: "pending"
      },
 })
+
+OrderSchema.plugin(mongoosePaginate)
 
 export default mongoose.models.Order || mongoose.model("Order", OrderSchema);
