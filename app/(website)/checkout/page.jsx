@@ -9,7 +9,7 @@ import { placeOrder } from "@/services/orders";
 import { CSSTransition } from "react-transition-group"; 
 import {resetCart} from '@/app/redux/cartSlice';
 import { useDispatch } from "react-redux";
-
+import { useRouter } from 'next/navigation';
 
 const schema = z.object({
   mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
@@ -29,6 +29,7 @@ const CheckoutPage = () => {
   const [discount, setDiscount] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState(false);
+  const router = useRouter(); 
 
   const dispatch = useDispatch();
 
@@ -43,25 +44,29 @@ const CheckoutPage = () => {
   });
 
 
-  const handlePlaceOrder = async (data) => {
-    console.log(data,"ggg")
+
+
+  const handlePlaceOrder = async (data) => {  
+    console.log(data, "ggg");
     try {
       const payment = {
         method: paymentMethod,
       };
-
-      await placeOrder(vendor, station, train, payment, items, data, couponCode );
-
+  
+      await placeOrder(vendor, station, train, payment, items, data, couponCode);
+  
       reset();
       dispatch(resetCart());
       message.success("Order placed successfully!");
       setIsCouponApplied(false);
+  
+      router.push("/order-confirmation"); // Redirect to the order confirmation page
     } catch (error) {
       message.error("Error placing order. Please try again.");
       console.error("Error placing order:", error);
     }
   };
-
+  
   const handleApplyCoupon = async () => {
     const { email, mobile } = getValues();
 
@@ -211,7 +216,7 @@ const CheckoutPage = () => {
           <Controller
             name="pnr"
             control={control}
-            defaultValue=""
+            defaultValue="y"
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block text-sm text-gray-700 mb-1">PNR</label>
