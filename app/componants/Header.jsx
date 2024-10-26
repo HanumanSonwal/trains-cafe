@@ -1,51 +1,59 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { PhoneOutlined, WhatsAppOutlined, MenuOutlined } from '@ant-design/icons';
-import { Badge } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import { PhoneOutlined, WhatsAppOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Badge, Modal, Button } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
+import {
+    addItemToCart,
+    updateItemQuantity,
+} from '@/app/redux/cartSlice'; 
 
 export default function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuRef = useRef(null);
-
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
+    const totalUniqueItems = cartItems.length;
 
-    // // Count total quantity for the cart badge icon in the header
-    // const cartItemCount = Object.values(cartItems).reduce((acc, count) => acc + count, 0);
-
-    // Count total unique items for the cart icon in the cart section
-    const totalUniqueItems = Object.keys(cartItems).length;
-
-    const toggleMenu = () => {
-        setIsMenuOpen(prev => !prev);
+    const toggleCart = () => {
+        setIsCartOpen(prev => !prev);
     };
 
-    const handleClickOutside = (event) => {
-        if (menuRef.current && !menuRef.current.contains(event.target) && !event.target.closest('.menu-button')) {
-            setIsMenuOpen(false);
+    const handleClose = () => {
+        setIsCartOpen(false);
+    };
+
+    const handleIncreaseQuantity = (item) => {
+        dispatch(addItemToCart(item));
+    };
+
+    const handleDecreaseQuantity = (item) => {
+        const currentQuantity = item.quantity;
+
+        if (currentQuantity > 1) {
+            dispatch(updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 }));
+        } else if (currentQuantity === 1) {
+            if (window.confirm("Do you want to remove this item from the cart?")) {
+                dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
+            }
         }
     };
 
-    useEffect(() => {
-        if (isMenuOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
+    const totalPrice = cartItems.reduce((total, item) => {
+        return total + (item.price * item.quantity);
+    }, 0);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isMenuOpen]);
+    const handleGoToCart = () => {
+        handleClose(); 
+    };
 
-    const handleMenuItemClick = () => {
-        setIsMenuOpen(false);
+    const handleCheckout = () => {
+        handleClose();
     };
 
     return (
         <div>
-            {/* Top Header */}
             <div className="bg-gray-100 flex justify-center gap-4 p-2 text-center text-sm">
                 <Link href='tel:090909090' className="transition-transform transform hover:scale-105 hover:shadow-md flex items-center justify-center bg-white border border-gray-300 rounded-lg px-2 py-1 text-blue-600 hover:bg-blue-50">
                     <PhoneOutlined className="mr-2" />
@@ -57,43 +65,76 @@ export default function Header() {
                 </Link>
             </div>
 
-            {/* Header */}
             <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
                 <div className="flex justify-between items-center w-full">
                     <Link href="/">
                         <img src="/images/logo.svg" alt="Logo" className="h-10" />
                     </Link>
 
-                    {/* Cart icon in header showing total quantity */}
-                    <Link href="/cart">
-                        <Badge count={totalUniqueItems} showZero={true}>
-                            <ShoppingCartOutlined style={{ fontSize: '24px' }} />
-                        </Badge>
-                    </Link>
+                    <div className="relative">
+                        <button className="cart-button" onClick={toggleCart}>
+                            <Badge count={totalUniqueItems} showZero={true}>
+                                <ShoppingCartOutlined style={{ fontSize: '24px' }} />
+                            </Badge>
+                        </button>
+                    </div>
                 </div>
+            </header>
 
-                {isMenuOpen && (
-                    <div ref={menuRef} className="absolute top-16 right-0 bg-white shadow-md rounded-md p-4 w-full z-10">
-                        <ul className="text-center">
-                            <li>
-                                <Link href="/web-pages/about-us" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
-                                    About
-                                </Link>
+            <Modal
+                title="Cart Items"
+                visible={isCartOpen}
+                onCancel={handleClose}
+                footer={null}
+                width={400}
+            >
+                <ul>
+                    {totalUniqueItems > 0 ? (
+                        cartItems.map(item => (
+                            <li key={item._id} className="flex justify-between items-center py-2 border-b border-gray-300">
+                                <div className="flex flex-col">
+                                    <span className="font-bold">{item.name}</span>
+                                    <span className="text-sm text-gray-500">Price: ₹{item.price}</span>
+                                    <span className="text-sm text-gray-500">Total: ₹{(item.price * item.quantity).toFixed(2)}</span>
+                                </div>
+                                <div className="flex items-center">
+                                    <Button
+                                        onClick={() => handleDecreaseQuantity(item)}
+                                        className="border-blue-500 text-blue-500 mr-2"
+                                        size="small"
+                                    >
+                                        -
+                                    </Button>
+                                    <span className="mx-2">{item.quantity}</span>
+                                    <Button
+                                        onClick={() => handleIncreaseQuantity(item)}
+                                        className="border-blue-500 text-blue-500"
+                                        size="small"
+                                    >
+                                        +
+                                    </Button>
+                                </div>
                             </li>
-                            <li>
-                                <Link href="/web-pages/contact-us" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
-                                    Contact Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/blog" className="block py-2 hover:text-[#704d25]" onClick={handleMenuItemClick}>
-                                    Blog
-                                </Link>
-                            </li>
-                        </ul>
+                        ))
+                    ) : (
+                        <p>No items in the cart.</p>
+                    )}
+                </ul>
+                {totalUniqueItems > 0 && (
+                    <div className="mt-4">
+                        <span className="text-xl font-bold">Total: ₹ {totalPrice.toFixed(2)}</span>
+                        <div className="flex justify-between mt-4">
+                            <Link href="/cart">
+                                <Button type="primary" className="w-full mr-2" onClick={handleGoToCart}>Go to Cart</Button>
+                            </Link>
+                            <Link href="/checkout">
+                                <Button type="primary" className="w-full" onClick={handleCheckout}>Checkout</Button>
+                            </Link>
+                        </div>
                     </div>
                 )}
-            </header>
+            </Modal>
         </div>
     );
 }
+

@@ -6,19 +6,21 @@ import { z } from 'zod';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
+
 const couponSchema = z.object({
   title: z.string().nonempty('Please enter the coupon title'),
   code: z.string().nonempty('Please enter the coupon code'),
   startDate: z.date().refine((val) => !isNaN(val.getTime()), 'Please select a valid start date'),
   endDate: z.date().refine((val) => !isNaN(val.getTime()), 'Please select a valid end date'),
   minimumAmount: z.number().min(1, 'Minimum amount must be greater than zero'),
-  discountType: z.enum(['percentage', 'flat'], 'Please select a discount type'),
-  discountValue: z.number().min(1, 'Please enter a valid discount value'),
+  discount: z.object({
+    type: z.enum(['percentage', 'flat'], 'Please select a discount type'),
+    value: z.number().min(1, 'Please enter a valid discount value'),
+  }),
   status: z.enum(['published', 'draft'], 'Please select a status'),
 });
 
 const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
-  console.log(initialValues,"initialValues")
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     // resolver: zodResolver(couponSchema),
     defaultValues: initialValues || {
@@ -27,8 +29,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
       startDate: null,
       endDate: null,
       minimumAmount: 0,
-      discountType: 'percentage',
-      value: 0,
+      discount: { type: 'percentage', value: 0 },
       status: 'published',
     },
   });
@@ -44,10 +45,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
       startDate: data.startDate instanceof Date ? data.startDate.toISOString() : new Date(data.startDate).toISOString(),
       endDate: data.endDate instanceof Date ? data.endDate.toISOString() : new Date(data.endDate).toISOString(),
       minimumAmount: data.minimumAmount,
-      discount: {
-        type: data.discountType,
-        value: data.value,
-      },
+      discount: data.discount, 
       status: data.status,
     };
 
@@ -56,34 +54,28 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
         await axios.put(`/api/coupon/update/${initialValues._id}`, payload);
       } else {
         await axios.post('/api/coupon/add', payload);
-      }
-      fetchCoupons();
+      } 
       reset();
+      fetchCoupons();
+
       onCancel();
     } catch (error) {
       console.error('Failed to submit the form:', error);
     }
   };
-  const handleCancel = () => {
-    reset();  // फॉर्म को रीसेट करें
-    onCancel(); // मॉडेल बंद करें
-  };
 
+  const handleCancel = () => {
+    reset(); 
+    onCancel();
+  };
   return (
     <Modal
       title={initialValues ? 'Edit Coupon' : 'Add Coupon'}
       open={open}
       onCancel={handleCancel}
-      footer={[
-        <Button
-          key="submit"
-          type="primary"
-          onClick={handleSubmit(handleFormSubmit)}
-          style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
-        >
-          {initialValues ? 'Save' : 'Submit'}
-        </Button>,
-      ]}
+      footer={[<Button key="submit" type="primary" onClick={handleSubmit(handleFormSubmit)} style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}>
+        {initialValues ? 'Save' : 'Submit'}
+      </Button>]}
     >
       <form>
         <Controller
@@ -92,7 +84,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
           render={({ field }) => (
             <div className="mb-4">
               <label className="block mb-1">Coupon Title</label>
-              <Input {...field} />
+              <Input {...field} style={{ width: '100%' }} />
               {errors.title && <p className="text-red-500">{errors.title.message}</p>}
             </div>
           )}
@@ -103,62 +95,60 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
           render={({ field }) => (
             <div className="mb-4">
               <label className="block mb-1">Coupon Code</label>
-              <Input {...field} />
+              <Input {...field} style={{ width: '100%' }} />
               {errors.code && <p className="text-red-500">{errors.code.message}</p>}
             </div>
           )}
         />
-
-
-<Controller
-  name="startDate"
-  control={control}
-  render={({ field }) => (
-    <div className="mb-4">
-      <label className="block mb-1">Start Date</label>
-      <DatePicker
-        {...field}
-        onChange={(date) => {
-          field.onChange(date ? dayjs(date).toDate() : null); // dayjs का सही उपयोग
-        }}
-        value={field.value ? dayjs(field.value) : null} // सुनिश्चित करें कि सही प्रारूप में हो
-      />
-      {errors.startDate && <p className="text-red-500">{errors.startDate.message}</p>}
-    </div>
-  )}
-/>
-
-<Controller
-  name="endDate"
-  control={control}
-  render={({ field }) => (
-    <div className="mb-4">
-      <label className="block mb-1">End Date</label>
-      <DatePicker
-        {...field}
-        onChange={(date) => {
-          field.onChange(date ? dayjs(date).toDate() : null); // dayjs का सही उपयोग
-        }}
-        value={field.value ? dayjs(field.value) : null} // सुनिश्चित करें कि सही प्रारूप में हो
-      />
-      {errors.endDate && <p className="text-red-500">{errors.endDate.message}</p>}
-    </div>
-  )}
-/>
-
+        <Controller
+          name="startDate"
+          control={control}
+          render={({ field }) => (
+            <div className="mb-4">
+              <label className="block mb-1">Start Date</label>
+              <DatePicker
+                {...field}
+                onChange={(date) => {
+                  field.onChange(date ? dayjs(date).toDate() : null);
+                }}
+                value={field.value ? dayjs(field.value) : null}
+                style={{ width: '100%' }} 
+              />
+              {errors.startDate && <p className="text-red-500">{errors.startDate.message}</p>}
+            </div>
+          )}
+        />
+        <Controller
+          name="endDate"
+          control={control}
+          render={({ field }) => (
+            <div className="mb-4">
+              <label className="block mb-1">End Date</label>
+              <DatePicker
+                {...field}
+                onChange={(date) => {
+                  field.onChange(date ? dayjs(date).toDate() : null);
+                }}
+                value={field.value ? dayjs(field.value) : null}
+                style={{ width: '100%' }} 
+              />
+              {errors.endDate && <p className="text-red-500">{errors.endDate.message}</p>}
+            </div>
+          )}
+        />
         <Controller
           name="minimumAmount"
           control={control}
           render={({ field }) => (
             <div className="mb-4">
               <label className="block mb-1">Minimum Amount</label>
-              <InputNumber {...field} min={1} />
+              <InputNumber {...field} min={1} style={{ width: '100%' }} />
               {errors.minimumAmount && <p className="text-red-500">{errors.minimumAmount.message}</p>}
             </div>
           )}
         />
         <Controller
-          name="discountType"
+          name="discount.type"
           control={control}
           render={({ field }) => (
             <div className="mb-4">
@@ -166,19 +156,19 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
               <Select {...field} options={[
                 { value: 'percentage', label: 'Percentage' },
                 { value: 'flat', label: 'Flat' },
-              ]} />
-              {errors.discountType && <p className="text-red-500">{errors.discountType.message}</p>}
+              ]} style={{ width: '100%' }} />
+              {errors.discount?.type && <p className="text-red-500">{errors.discount.type.message}</p>}
             </div>
           )}
         />
         <Controller
-          name="value"
+          name="discount.value"
           control={control}
           render={({ field }) => (
             <div className="mb-4">
               <label className="block mb-1">Discount Value</label>
-              <InputNumber {...field} min={1} />
-              {errors.discountValue && <p className="text-red-500">{errors.discountValue.message}</p>}
+              <InputNumber {...field} min={1} style={{ width: '100%' }} />
+              {errors.discount?.value && <p className="text-red-500">{errors.discount.value.message}</p>}
             </div>
           )}
         />
@@ -191,7 +181,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
               <Select {...field} options={[
                 { value: 'published', label: 'Published' },
                 { value: 'draft', label: 'Draft' },
-              ]} />
+              ]} style={{ width: '100%' }} />
               {errors.status && <p className="text-red-500">{errors.status.message}</p>}
             </div>
           )}

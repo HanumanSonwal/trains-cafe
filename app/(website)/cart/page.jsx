@@ -1,13 +1,12 @@
 "use client";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Badge } from "antd";
+import { Button } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   addItemToCart,
-  updateItemQuantity, // Updated this action
+  updateItemQuantity,
 } from "@/app/redux/cartSlice";
-import { menuItems } from "@/app/redux/menuItems";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -18,20 +17,20 @@ const CartPage = () => {
 
   console.log({ cartItems });
 
-  // Handle the proceed to checkout
+
   const handleProceedToCheckout = () => {
     router.push("/checkout");
   };
 
-  // Increase item quantity
+
   const handleIncreaseQuantity = (item) => {
     dispatch(addItemToCart({ ...item }));
   };
 
-  // Decrease item quantity but prevent removing the product until the quantity is 0
+
   const handleDecreaseQuantity = (item) => {
     const currentQuantity = cartItems.find(
-      (cartItem) => cartItem.id === item.id
+      (cartItem) => cartItem._id === item._id
     ).quantity;
 
     if (currentQuantity > 1) {
@@ -39,14 +38,14 @@ const CartPage = () => {
         updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 })
       );
     } else if (currentQuantity === 1) {
-      // Confirm removal of product
+
       if (window.confirm("Do you want to remove this item from the cart?")) {
-        dispatch(updateItemQuantity({ id: item._id, quantity: 0 })); // Quantity will be zero and item will be removed
+        dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
       }
     }
   };
 
-  // Calculate total price
+
   const totalPrice = cartItems.reduce((total, item) => {
     return total + parseInt(item.price, 10) * parseInt(item.quantity, 10);
   }, 0);
@@ -57,7 +56,7 @@ const CartPage = () => {
         Your <span className="text-green-600">Cart</span>
       </h1>
 
-      {Object.keys(cartItems).length > 0 ? (
+      {cartItems.length > 0 ? (
         <>
           {cartItems.map((item) => {
             return (

@@ -14,10 +14,6 @@ const cartSlice = createSlice({
     addItemToCart: (state, action) => {
       const item = action.payload;
 
-      if (!Array.isArray(state.items)) {
-        state.items = [];
-      }
-
       const existingItem = state.items.find(
         (cartItem) => cartItem._id === item._id
       );
@@ -38,7 +34,7 @@ const cartSlice = createSlice({
         if (quantity > 0) {
           state.items[itemIndex].quantity = quantity;
         } else {
-          state.items.splice(itemIndex, 1); // Remove item if quantity is zero or less
+          state.items.splice(itemIndex, 1); 
         }
       }
     },
@@ -51,7 +47,6 @@ const cartSlice = createSlice({
     addTrainDetails: (state, action) => {
       state.train = action.payload;
     },
-
     resetCart: (state) => {
       state.items = [];
       state.vendor = {};
@@ -61,15 +56,13 @@ const cartSlice = createSlice({
   },
 });
 
-
 export const {
   addItemToCart,
   updateItemQuantity,
-  addStationDetails,
-  addUserDetails,
   addVendorDetails,
-  removeItemFromCart, 
-  resetCart ,
+  addStationDetails,
   addTrainDetails,
+  resetCart,
 } = cartSlice.actions;
+
 export default cartSlice.reducer;
