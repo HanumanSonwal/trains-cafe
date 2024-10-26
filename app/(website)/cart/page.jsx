@@ -52,8 +52,8 @@ const CartPage = () => {
 
   return (
     <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Your <span className="text-green-600">Cart</span>
+      <h1 className="text-xl font-bold mb-6 text-center">
+        Your <span style={{color:"#704d25"}}>Cart</span>
       </h1>
 
       {cartItems.length > 0 ? (
@@ -73,10 +73,10 @@ const CartPage = () => {
                     className="w-16 h-16 object-cover rounded mr-4"
                   />
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-800">
+                    <h3 className="text-lg font-semibold text-[#704D25]">
                       {item.name}
                     </h3>
-                    <div className="text-gray-700 text-lg font-bold">
+                    <div className="text-gray-700 text-md font-bold">
                       ₹{" "}
                       {(
                         parseInt(item.price, 10) * parseInt(item.quantity, 10)
@@ -113,7 +113,7 @@ const CartPage = () => {
           <Button
             type="primary"
             style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-            className="w-full text-white py-3 text-lg font-semibold rounded-md"
+            className="w-full text-white py-3 order-btn text-lg font-semibold rounded-md"
             onClick={handleProceedToCheckout}
           >
             Proceed

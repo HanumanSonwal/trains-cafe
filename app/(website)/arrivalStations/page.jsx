@@ -258,12 +258,12 @@ const ArrivalStations = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">
+      <h1 className="text-2xl font-bold text-center mb-4" style={{color:'#704d25'}}>
         Order Food in {trainName} ({trainNo}) Train
       </h1>
 
       <div className="bg-gray-100 p-2 mb-4">
-        <span className="font-semibold">Journey Date:</span> {journeyDate}
+        <span className="font-semibold" style={{color:'#704d25'}}>Journey Date:</span> {journeyDate}
       </div>
 
       <Collapse accordion activeKey={activeKey} onChange={setActiveKey}>

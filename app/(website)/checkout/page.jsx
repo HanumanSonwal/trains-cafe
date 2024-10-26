@@ -9,7 +9,7 @@ import { placeOrder } from "@/services/orders";
 import { CSSTransition } from "react-transition-group"; 
 import {resetCart} from '@/app/redux/cartSlice';
 import { useDispatch } from "react-redux";
-
+import { useRouter } from 'next/navigation';
 
 const schema = z.object({
   mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
@@ -29,6 +29,7 @@ const CheckoutPage = () => {
   const [discount, setDiscount] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState(false);
+  const router = useRouter(); 
 
   const dispatch = useDispatch();
 
@@ -128,10 +129,10 @@ const CheckoutPage = () => {
 
   
   return (
-    <div className="max-w-[1024px] mx-auto p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Your Order at <span className="text-purple-600">Jaipur</span> from{" "}
-        <span className="text-purple-600">Trains Cafe</span>
+    <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">    
+      <h1 className="text-xl font-bold mb-6 text-center text-gray-800">
+        Your Order at <span style={{color:'#704d25'}}>Jaipur</span> from{" "}
+        <span style={{color:'#704d25'}}>Trains Cafe</span>
       </h1>
       <div className="gap-4">
         <div className="bg-white shadow rounded-lg p-4 mb-4">
@@ -144,7 +145,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Mobile Number</label>
+                <label className="block text-sm text-gray-700 mb-1">Mobile Number</label>
                 <Input placeholder="Mobile Number" {...field} />
                 {errors.mobile && <span className="text-red-500">{errors.mobile.message}</span>}
               </div>
@@ -179,7 +180,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Name</label>
+                <label className="block text-sm text-gray-700 mb-1">Name</label>
                 <Input placeholder="Name" {...field} />
                 {errors.name && <span className="text-red-500">{errors.name.message}</span>}
               </div>
@@ -192,7 +193,7 @@ const CheckoutPage = () => {
             defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Email</label>
+                <label className="block text-sm text-gray-700 mb-1">Email</label>
                 <Input placeholder="Enter Your Email" {...field} />
                 {errors.email && <span className="text-red-500">{errors.email.message}</span>}
               </div>
@@ -214,10 +215,10 @@ const CheckoutPage = () => {
           <Controller
             name="pnr"
             control={control}
-            defaultValue=""
+            defaultValue="y"
             render={({ field }) => (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1">PNR</label>
+                <label className="block text-sm text-gray-700 mb-1">PNR</label>
                 <Input placeholder="Enter 10 Digit PNR" {...field} />
                 {errors.pnr && <span className="text-red-500">{errors.pnr.message}</span>}
               </div>
@@ -231,7 +232,7 @@ const CheckoutPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <div className="w-1/2">
-                  <label className="block text-gray-700 mb-1">Coach</label>
+                  <label className="block text-sm text-gray-700 mb-1">Coach</label>
                   <Input placeholder="Coach" {...field} />
                 </div>
               )}
@@ -242,7 +243,7 @@ const CheckoutPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <div className="w-1/2">
-                  <label className="block text-gray-700 mb-1">Seat No.</label>
+                  <label className="block text-sm text-gray-700 mb-1">Seat No.</label>
                   <Input placeholder="Seat No." {...field} />
                 </div>
               )}
@@ -303,7 +304,7 @@ const CheckoutPage = () => {
               <span className="font-semibold text-gray-700">Delivery Charge</span>
               <span className="text-green-600">Free</span>
             </div>
-            <div className="flex justify-between text-lg font-bold border-t pt-2">
+            <div className="flex justify-between text-md font-bold border-t pt-2">
               <span>Total</span>
               <span>₹ {payableAmount}</span>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Collapse, Button, InputNumber, Badge, Switch } from "antd";
+import { Collapse, Button, InputNumber, Badge, Switch, Modal } from "antd";
 import {
   ArrowRightOutlined,
   PlusOutlined,
@@ -23,6 +23,9 @@ const MenuPage = () => {
   const [categories, setCategories] = useState([]);
   const cartItems = useSelector((state) => state.cart.items);
   const totalUniqueItems = cartItems.length;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
 
   
   const totalPrice = cartItems.length > 0 ?  cartItems?.reduce(
@@ -55,6 +58,16 @@ const MenuPage = () => {
     setIsVegCategory(checked);
   };
 
+  const handleReadMore = (item) => {
+    setSelectedItem(item);
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setSelectedItem(null);
+  };
+
   return (
     <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">
       {/* Header showing selected station and vendor */}
@@ -72,6 +85,7 @@ const MenuPage = () => {
               {categories.length > 0 ? categories[0].vendor : "N/A"}
             </h2>
             <p className="text-gray-500">Pure Veg | Min Order ₹99 | 30 MIN</p>
+             
           </div>
           <div>
             {/* <span className="text-grey-600">{isVegCategory ? "VEG" : "NON-VEG"}</span> */}
@@ -96,13 +110,19 @@ const MenuPage = () => {
                     key={item.id}
                     className="bg-white shadow rounded-lg mb-4 p-4"
                   >
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex justify-between items-start mb-2 gap-2">
                       <div>
                         <h3 className="text-lg font-semibold text-[#d6872a]">
                           {item.name}
                         </h3>
-                        <p className="text-gray-600 text-sm mb-1">
-                          ₹ {item.price}
+                        <p className="text-sm text-gray-600 mb-2">
+                          {item.description.split(" ").slice(0, 8).join(" ")}...
+                          <button
+                            onClick={() => handleReadMore(item)}
+                            className="text-[#d6872a] underline"
+                          >
+                            View Details
+                          </button>
                         </p>
                       </div>
                       <Image
@@ -112,14 +132,16 @@ const MenuPage = () => {
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded"
                       />
+                      
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {item.description}
-                    </p>
+                    
                     <p className="text-xs text-green-500 mb-2">
                       {item.availability}
                     </p>
-                    <div className="flex justify-end items-center">
+                    <div className="flex justify-between items-center">
+                   <div> <p style={{color:"#704d25",fontWeight:'bold'}} className="text-lg mb-1">
+                          ₹ {item.price}
+                        </p></div>
                       <CartComp cartItems={cartItems} item={item} key={idx} />
                     </div>
                   </div>
@@ -134,30 +156,35 @@ const MenuPage = () => {
         ))}
       </Collapse>
 
-      {/* Cart Section */}
-      <div className="flex items-center justify-between space-x-4 mt-6">
-        <Link href="/cart">
-          <div className="flex items-center space-x-2 cursor-pointer">
-            <Badge count={totalUniqueItems} showZero={true}>
-              <ShoppingCartOutlined style={{ fontSize: "24px" }} />
-            </Badge>
-            <span>{totalUniqueItems} Item(s) in cart</span>
-            <span className="text-gray-500">
-              ({`₹${totalPrice.toFixed(2)}`})
-            </span>
+      <Modal
+        visible={isModalVisible}
+        onCancel={handleModalClose}
+        footer={null}
+        className="max-w-[300px] mx-auto p-4 bg-white rounded-lg"
+      >
+        {selectedItem && (
+          <div className="text-center">
+            <Image
+              width={100}
+              height={100}
+              src={selectedItem.image}
+              alt={selectedItem.name}
+              className="w-32 h-32 object-cover rounded mx-auto"
+            />
+            <h3 className="text-xl font-semibold text-[#d6872a] mt-4">
+              {selectedItem.name}
+            </h3>
+            <p className="text-gray-600 my-4">{selectedItem.description}</p>
+          
+            <div className="flex justify-between items-center">
+                   <div> <p style={{color:"#704d25",fontWeight:'bold'}} className="text-lg mb-1">
+                   ₹ {selectedItem.price}
+                        </p></div>
+                        <CartComp cartItems={cartItems} item={selectedItem} />
+                    </div>
           </div>
-        </Link>
-        <Link href="/cart">
-          <Button
-            type="primary"
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-            className="w-full text-white py-3 text-lg font-semibold rounded-md"
-          >
-            View Cart{" "}
-            <ArrowRightOutlined style={{ color: "white", marginLeft: "8px" }} />
-          </Button>
-        </Link>
-      </div>
+        )}
+      </Modal>
     </div>
   );
 };
