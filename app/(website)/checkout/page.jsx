@@ -44,29 +44,28 @@ const CheckoutPage = () => {
   });
 
 
-
-
-  const handlePlaceOrder = async (data) => {  
-    console.log(data, "ggg");
+  const handlePlaceOrder = async (data) => {
+    console.log("Form Data:", data);
     try {
-      const payment = {
-        method: paymentMethod,
-      };
-  
-      await placeOrder(vendor, station, train, payment, items, data, couponCode);
-  
-      reset();
-      dispatch(resetCart());
-      message.success("Order placed successfully!");
-      setIsCouponApplied(false);
-  
-      router.push("/order-confirmation"); // Redirect to the order confirmation page
+        const payment = {
+            method: paymentMethod,
+        };
+
+        const orderResponse = await placeOrder(vendor, station, train, payment, items, data, couponCode);
+
+        reset();
+        dispatch(resetCart());
+        handleRemoveCoupon();
+
+        message.success("Order placed successfully!");
+        setIsCouponApplied(false);
     } catch (error) {
-      message.error("Error placing order. Please try again.");
-      console.error("Error placing order:", error);
+        message.error(error.message || "Error placing order. Please try again.");
+        console.error("Error placing order:", error);
     }
-  };
-  
+};
+
+
   const handleApplyCoupon = async () => {
     const { email, mobile } = getValues();
 
@@ -358,12 +357,12 @@ const CheckoutPage = () => {
       </div>
 
       <Button
-        type="primary"
-        className="mt-6  order-btn"
-        onClick={handleSubmit(handlePlaceOrder)}
-      >
-        Place Order
-      </Button>
+  type="primary"
+  className="mt-6 w-full"
+  onClick={handleSubmit(handlePlaceOrder)}
+>
+  Place Order
+</Button>
     </div>
   );
 };

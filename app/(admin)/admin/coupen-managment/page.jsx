@@ -32,7 +32,6 @@ const CouponManagement = () => {
     total: 0,
   });
   const [loading, setLoading] = useState(false);
-//   console.log(coupons,)
 
   useEffect(() => {
     fetchCoupons();
@@ -41,25 +40,26 @@ const CouponManagement = () => {
   const fetchCoupons = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `/api/coupon?page=${pagination.current}&limit=${pagination.pageSize}&search=${searchText}`
-      );
+        const response = await axios.get(
+            `/api/coupon?page=${pagination.current}&limit=${pagination.pageSize}&search=${searchText}`
+        );
 
-      console.log(response.data.docs,"response")
-      const { data, total } = response.data;
-      setCoupons(data.docs);
-      setFilteredCoupons(data.docs);
-      setPagination((prev) => ({
-        ...prev,
-        total,
-      }));
+        console.log(response.data.docs, "response");
+        const { docs, totalDocs } = response.data; 
+        setCoupons(docs);
+        setFilteredCoupons(docs);
+        setPagination((prev) => ({
+            ...prev,
+            total: totalDocs, 
+        }));
     } catch (error) {
-      console.error('Failed to fetch coupons:', error);
-      message.error('Failed to fetch coupons');
+        console.error('Failed to fetch coupons:', error);
+        message.error('Failed to fetch coupons');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
 
   const handleAdd = () => {
     setEditingCoupon(null);
@@ -92,74 +92,78 @@ const CouponManagement = () => {
 
   const columns = [
     {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
+        title: 'Title',
+        dataIndex: 'title',
+        key: 'title',
     },
     {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
+        title: 'Code',
+        dataIndex: 'code',
+        key: 'code',
     },
     {
-      title: 'Start Date',
-      dataIndex: 'startDate',
-      key: 'startDate',
+        title: 'Start Date',
+        dataIndex: 'startDate',
+        key: 'startDate',
+        render: (date) => new Date(date).toLocaleDateString(), 
     },
     {
-      title: 'End Date',
-      dataIndex: 'endDate',
-      key: 'endDate',
+        title: 'End Date',
+        dataIndex: 'endDate',
+        key: 'endDate',
+        render: (date) => new Date(date).toLocaleDateString(), 
     },
     {
-      title: 'Discount',
-      dataIndex: 'discountValue',
-      key: 'discountValue',
+        title: 'Discount',
+        dataIndex: 'discount', 
+        key: 'discount',
+        render: (discount) => `${discount.value}%`, 
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (text, record) => (
-        <Switch
-          checked={record.status === 'published'}
-          onChange={async (checked) => {
-            try {
-              await axios.put(`/api/coupon/status/${record._id}`, {
-                status: checked ? 'published' : 'draft',
-              });
-              message.success(`Coupon ${checked ? 'published' : 'drafted'}`);
-              fetchCoupons();
-            } catch (error) {
-              console.error('Failed to update status:', error);
-              message.error('Failed to update status');
-            }
-          }}
-        />
-      ),
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        render: (text, record) => (
+            <Switch
+                checked={record.status === 'published'}
+                onChange={async (checked) => {
+                    try {
+                        await axios.put(`/api/coupon/update/${record._id}`, {
+                            status: checked ? 'published' : 'draft',
+                        });
+                        message.success(`Coupon ${checked ? 'published' : 'drafted'}`);
+                        fetchCoupons();
+                    } catch (error) {
+                        console.error('Failed to update status:', error);
+                        message.error('Failed to update status');
+                    }
+                }}
+            />
+        ),
     },
     {
-      title: 'Action',
-      key: 'action',
-      render: (text, record) => (
-        <div className="flex space-x-2">
-          <Button
-            type="primary"
-            icon={<EditFilled />}
-            onClick={() => handleEdit(record)}
-          />
-          <Popconfirm
-            title="Are you sure to delete this coupon?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button danger icon={<DeleteFilled />} />
-          </Popconfirm>
-        </div>
-      ),
+        title: 'Action',
+        key: 'action',
+        render: (text, record) => (
+            <div className="flex space-x-2">
+                <Button
+                    type="primary"
+                    icon={<EditFilled />}
+                    onClick={() => handleEdit(record)}
+                />
+                <Popconfirm
+                    title="Are you sure to delete this coupon?"
+                    onConfirm={() => handleDelete(record._id)}
+                    okText="Yes"
+                    cancelText="No"
+                >
+                    <Button danger icon={<DeleteFilled />} />
+                </Popconfirm>
+            </div>
+        ),
     },
-  ];
+];
+
 
   return (
     <>
