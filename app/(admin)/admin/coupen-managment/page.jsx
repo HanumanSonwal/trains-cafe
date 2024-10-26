@@ -32,7 +32,6 @@ const CouponManagement = () => {
     total: 0,
   });
   const [loading, setLoading] = useState(false);
-//   console.log(coupons,)
 
   useEffect(() => {
     fetchCoupons();
@@ -46,12 +45,12 @@ const CouponManagement = () => {
         );
 
         console.log(response.data.docs, "response");
-        const { docs, totalDocs } = response.data; // Use docs and totalDocs
+        const { docs, totalDocs } = response.data; 
         setCoupons(docs);
         setFilteredCoupons(docs);
         setPagination((prev) => ({
             ...prev,
-            total: totalDocs, // Use totalDocs for total count
+            total: totalDocs, 
         }));
     } catch (error) {
         console.error('Failed to fetch coupons:', error);
@@ -106,19 +105,19 @@ const CouponManagement = () => {
         title: 'Start Date',
         dataIndex: 'startDate',
         key: 'startDate',
-        render: (date) => new Date(date).toLocaleDateString(), // Format the date
+        render: (date) => new Date(date).toLocaleDateString(), 
     },
     {
         title: 'End Date',
         dataIndex: 'endDate',
         key: 'endDate',
-        render: (date) => new Date(date).toLocaleDateString(), // Format the date
+        render: (date) => new Date(date).toLocaleDateString(), 
     },
     {
         title: 'Discount',
-        dataIndex: 'discount', // Use 'discount' as the data index
+        dataIndex: 'discount', 
         key: 'discount',
-        render: (discount) => `${discount.value}%`, // Display discount value
+        render: (discount) => `${discount.value}%`, 
     },
     {
         title: 'Status',
@@ -129,7 +128,7 @@ const CouponManagement = () => {
                 checked={record.status === 'published'}
                 onChange={async (checked) => {
                     try {
-                        await axios.put(`/api/coupon/status/${record._id}`, {
+                        await axios.put(`/api/coupon/update/${record._id}`, {
                             status: checked ? 'published' : 'draft',
                         });
                         message.success(`Coupon ${checked ? 'published' : 'drafted'}`);

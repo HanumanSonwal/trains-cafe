@@ -44,24 +44,26 @@ const CheckoutPage = () => {
 
 
   const handlePlaceOrder = async (data) => {
-    console.log(data,"ggg")
+    console.log("Form Data:", data);
     try {
-      const payment = {
-        method: paymentMethod,
-      };
+        const payment = {
+            method: paymentMethod,
+        };
 
-      await placeOrder(vendor, station, train, payment, items, data, couponCode );
+        const orderResponse = await placeOrder(vendor, station, train, payment, items, data, couponCode);
 
-      reset();
-      dispatch(resetCart());
-  
-      message.success("Order placed successfully!");
-      setIsCouponApplied(false);
+        reset();
+        dispatch(resetCart());
+        handleRemoveCoupon();
+
+        message.success("Order placed successfully!");
+        setIsCouponApplied(false);
     } catch (error) {
-      message.error("Error placing order. Please try again.");
-      console.error("Error placing order:", error);
+        message.error(error.message || "Error placing order. Please try again.");
+        console.error("Error placing order:", error);
     }
-  };
+};
+
 
   const handleApplyCoupon = async () => {
     const { email, mobile } = getValues();

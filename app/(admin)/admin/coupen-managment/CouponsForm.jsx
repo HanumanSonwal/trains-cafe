@@ -64,12 +64,16 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
       console.error('Failed to submit the form:', error);
     }
   };
+  const handleCancel = () => {
+    reset();  // फॉर्म को रीसेट करें
+    onCancel(); // मॉडेल बंद करें
+  };
 
   return (
     <Modal
       title={initialValues ? 'Edit Coupon' : 'Add Coupon'}
       open={open}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       footer={[
         <Button
           key="submit"
@@ -104,9 +108,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
             </div>
           )}
         />
-       import dayjs from 'dayjs';
 
-// ...
 
 <Controller
   name="startDate"
