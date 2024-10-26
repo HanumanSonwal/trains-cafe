@@ -4,7 +4,7 @@ const ContactRequestSchema = new mongoose.Schema({
   slug: {
     type: String,
     required: true,
-    enum: ['Hotel', 'Coolie', 'BulkOrder'], // Only allow these slugs
+    enum: ['Hotel', 'Coolie', 'BulkOrder','ContactUs'], // Only allow these slugs
   },
   Name: {
     type: String,

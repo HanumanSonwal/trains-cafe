@@ -7,7 +7,7 @@ export async function POST(req) {
     console.log('POST request received. URL:', req.url);
     console.log('Extracted slug:', slug);
 
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder'];
+    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
     if (!validSlugs.includes(slug)) {
       console.error('Invalid slug:', slug);
       return new Response(
@@ -122,7 +122,7 @@ export async function GET(req) {
     const url = new URL(req.url);
     //const slug = url.pathname.split('/').pop();
     const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder'];
+    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
     if (!validSlugs.includes(slug)) {
       return new Response(
         JSON.stringify({ success: false, message: 'Invalid slug' }),
@@ -155,7 +155,7 @@ export async function PUT(req) {
     //const slug = url.pathname.split('/').pop();
     const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
     const requestId = url.searchParams.get('id');
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder'];
+    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
     if (!validSlugs.includes(slug)) {
       return new Response(
         JSON.stringify({ success: false, message: 'Invalid slug' }),
@@ -208,7 +208,7 @@ export async function DELETE(req) {
     //const slug = url.pathname.split('/').pop();
     const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
     const requestId = url.searchParams.get('id');
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder'];
+    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder' ,'ContactUs'];
     if (!validSlugs.includes(slug)) {
       return new Response(
         JSON.stringify({ success: false, message: 'Invalid slug' }),
