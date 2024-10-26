@@ -35,7 +35,7 @@ const schema = z.object({
     .min(0, "Discount cannot be less than 0")
     .max(100, "Discount cannot be more than 100")
     .optional(),
-  Description: z.string().optional(), // Ensure this is part of the object
+  Description: z.string().optional(), 
 });
 
 const MenuItemForm = ({
@@ -50,7 +50,7 @@ const MenuItemForm = ({
     reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    // resolver: zodResolver(schema),
     defaultValues: {
       Item_Name: "",
       Category_Id: "",
@@ -152,14 +152,17 @@ const MenuItemForm = ({
     setIsreset(false)
   },[])
 
-  
-    const handleFormSubmit = (data) => {
-      if (!url) {
+ 
+  const handleFormSubmit = (data) => {
+    if (!url) {
         setImageError("Please upload an image."); 
         return;
-      } else {
+    } else {
         setImageError(""); 
-      }
+    }
+
+    console.log(data);
+
     const formData = new FormData();
     formData.append("Item_Name", data.Item_Name);
     formData.append("Category_Id", data.Category_Id);
@@ -173,34 +176,29 @@ const MenuItemForm = ({
 
     const id = initialValues ? initialValues.id : null;
     postCategory(formData, id);
-  };
+};
 
-  const postCategory = async (formData, id) => {
-    const url = initialValues
-      ? `/api/menu?id=${initialValues?._id}`
-      : "/api/menu";
+
+const postCategory = async (formData, id) => {
+    const url = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
     const method = initialValues ? updateData : postData;
 
     try {
-      const response = await method(url, formData);
-
-      if (response.success !== false) {
-        message.success(
-          id
-            ? "Menu item updated successfully!"
-            : "Menu item added successfully!"
-        );
-        fetchMenuItems();
-        reset();
-        setIsreset(true)
-        onCancel();
-      } else {
-        throw new Error(response.err || "Failed to save category");
-      }
+        const response = await method(url, formData);
+        if (response.success !== false) {
+            message.success(id ? "Menu item updated successfully!" : "Menu item added successfully!");
+            fetchMenuItems();
+            reset();
+            setIsreset(true);
+            onCancel();
+        } else {
+            throw new Error(response.err || "Failed to save category");
+        }
     } catch (error) {
-      message.error(error.message || "Something went wrong");
+        message.error(error.message || "Something went wrong");
     }
-  };
+};
+
 
   return (
     <Modal

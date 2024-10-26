@@ -243,7 +243,7 @@ const Menubar = () => {
      {
       key: '',
       icon: <MenuOutlined />,
-      label: <Link href="/admin/menu-item">Coupen Managment</Link>,
+      label: <Link href="/admin/coupen-managment">Coupen Managment</Link>,
       path: '/admin/coupen-managment',
     },
     {

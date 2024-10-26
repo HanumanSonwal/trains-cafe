@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 import {
   Table,
@@ -31,6 +32,7 @@ const CouponManagement = () => {
     total: 0,
   });
   const [loading, setLoading] = useState(false);
+//   console.log(coupons,)
 
   useEffect(() => {
     fetchCoupons();
@@ -42,9 +44,11 @@ const CouponManagement = () => {
       const response = await axios.get(
         `/api/coupon?page=${pagination.current}&limit=${pagination.pageSize}&search=${searchText}`
       );
+
+      console.log(response.data.docs,"response")
       const { data, total } = response.data;
-      setCoupons(data);
-      setFilteredCoupons(data);
+      setCoupons(data.docs);
+      setFilteredCoupons(data.docs);
       setPagination((prev) => ({
         ...prev,
         total,
@@ -159,13 +163,28 @@ const CouponManagement = () => {
 
   return (
     <>
-      <div className="flex justify-between mb-4">
+      <div
+        className="p-4"
+        style={{
+          backgroundColor: "#FAF3CC",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+
+<h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+          Station Management
+        </h2>
+        <div className="flex items-center my-5 justify-between">
+          <div style={{ display: "flex", alignItems: "center" }}>
+        
         <AntdInput
           placeholder="Search by title"
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={handleSearch}
         />
+         </div>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -174,8 +193,8 @@ const CouponManagement = () => {
         >
           Add Coupon
         </Button>
-      </div>
 
+        </div>
       <Spin
         spinning={loading}
         indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
@@ -197,6 +216,7 @@ const CouponManagement = () => {
         initialValues={editingCoupon}
         fetchCoupons={fetchCoupons}
       />
+            </div>
     </>
   );
 };

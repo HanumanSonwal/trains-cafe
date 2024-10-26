@@ -7,6 +7,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { placeOrder } from "@/services/orders";
 import { CSSTransition } from "react-transition-group"; 
+import {resetCart} from '@/app/redux/cartSlice';
+import { useDispatch } from "react-redux";
 
 
 const schema = z.object({
@@ -23,10 +25,12 @@ const schema = z.object({
 const CheckoutPage = () => {
   const { items, vendor, train, station } = useSelector((state) => state.cart);
   const [paymentMethod, setPaymentMethod] = useState("PAYTM");
-  const [couponCode, setCouponCode] = useState("COD");
+  const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState(false);
+
+  const dispatch = useDispatch();
 
   const {
     control,
@@ -46,9 +50,10 @@ const CheckoutPage = () => {
         method: paymentMethod,
       };
 
-      await placeOrder(vendor, station, train, payment, items, data, couponCode);
+      await placeOrder(vendor, station, train, payment, items, data, couponCode );
 
       reset();
+      dispatch(resetCart());
       message.success("Order placed successfully!");
       setIsCouponApplied(false);
     } catch (error) {
