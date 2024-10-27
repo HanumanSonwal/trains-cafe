@@ -85,7 +85,7 @@ const MobileFooter = () => {
               <Link href="/web-pages/terms-and-conditions" className="block text-sm font-bold" onClick={closeMenu}>Terms & Conditions</Link>
               <Link href="/web-pages/privacy-policy" className="block text-sm font-bold" onClick={closeMenu}>Privacy Policy</Link>
               <Link href="/web-pages/cancellation-policy" className="block text-sm font-bold" onClick={closeMenu}>Cancellation Policy</Link>
-              <Link href="/comingsoon" className="block text-sm font-bold" onClick={closeMenu}>Feedback</Link>
+              <Link href="/web-pages/complained-and-feedback" className="block text-sm font-bold" onClick={closeMenu}>Feedback</Link>
               
               <div className="mt-4">
                 <p className="text-sm font-bold">Contact Info</p>

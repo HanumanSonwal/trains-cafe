@@ -269,3 +269,15 @@ pre {
   outline: none !important;
   border: none !important;
 }
+:where(.css-dev-only-do-not-override-qnu6hi).ant-input-number{
+  width: 50px !important;
+}
+:where(.css-dev-only-do-not-override-qnu6hi).ant-switch.ant-switch-checked{
+  background-color: #D49929 !important;
+}
+:where(.css-dev-only-do-not-override-qnu6hi).ant-modal{
+  padding: 0 !important;
+}
+/* .anticon{
+color: #704D25 !important;
+} */

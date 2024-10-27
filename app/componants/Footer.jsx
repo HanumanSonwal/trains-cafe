@@ -167,7 +167,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="/comingsoon"
+                      href="/web-pages/complained-and-feedback"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Complained and Feedback
