@@ -27,7 +27,7 @@ export default function WebsitesPages() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3000/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`
+        `/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`
       );
       const data = await response.json();
       setPages(data.docs);
@@ -43,7 +43,7 @@ export default function WebsitesPages() {
     const updatedPage = { ...record, status: newStatus };
 
     try {
-      await fetch(`http://localhost:3000/api/web-pages/update/${record._id}`, {
+      await fetch(`/api/web-pages/update/${record._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export default function WebsitesPages() {
 
   const handleDelete = async (pageId) => {
     try {
-      await fetch(`http://localhost:3000/api/web-pages/delete/${pageId}`, {
+      await fetch(`/api/web-pages/delete/${pageId}`, {
         method: 'DELETE',
       });
       fetchPages(); // Refresh the page list
