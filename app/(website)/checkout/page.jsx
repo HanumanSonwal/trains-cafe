@@ -9,7 +9,9 @@ import { placeOrder } from "@/services/orders";
 import { CSSTransition } from "react-transition-group"; 
 import {resetCart} from '@/app/redux/cartSlice';
 import { useDispatch } from "react-redux";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+
+
 
 const schema = z.object({
   mobile: z.string().min(10, "Mobile number must be at least 10 digits"),
@@ -29,9 +31,10 @@ const CheckoutPage = () => {
   const [discount, setDiscount] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState(false);
-  const router = useRouter(); 
 
   const dispatch = useDispatch();
+  const router = useRouter();
+
 
   const {
     control,
@@ -45,26 +48,26 @@ const CheckoutPage = () => {
 
 
   const handlePlaceOrder = async (data) => {
-    console.log("Form Data:", data);
+    console.log(data,"ggg")
     try {
-        const payment = {
-            method: paymentMethod,
-        };
+      const payment = {
+        method: paymentMethod,
+      };
 
-        const orderResponse = await placeOrder(vendor, station, train, payment, items, data, couponCode);
+      const response = await placeOrder(vendor, station, train, payment, items, data, couponCode);
+      localStorage.setItem("orderData", JSON.stringify(response.data));
 
-        reset();
-        dispatch(resetCart());
-        handleRemoveCoupon();
+      reset();
+      dispatch(resetCart());
+      message.success("Order placed successfully!");
+      router.push("/orderconfirmation");
 
-        message.success("Order placed successfully!");
-        setIsCouponApplied(false);
+      setIsCouponApplied(false);
     } catch (error) {
-        message.error(error.message || "Error placing order. Please try again.");
-        console.error("Error placing order:", error);
+      message.error("Error placing order. Please try again.");
+      console.error("Error placing order:", error);
     }
-};
-
+  };
 
   const handleApplyCoupon = async () => {
     const { email, mobile } = getValues();
@@ -215,7 +218,7 @@ const CheckoutPage = () => {
           <Controller
             name="pnr"
             control={control}
-            defaultValue="y"
+            defaultValue=""
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block text-sm text-gray-700 mb-1">PNR</label>
@@ -357,12 +360,12 @@ const CheckoutPage = () => {
       </div>
 
       <Button
-  type="primary"
-  className="mt-6 w-full"
-  onClick={handleSubmit(handlePlaceOrder)}
->
-  Place Order
-</Button>
+        type="primary"
+        className="mt-6  order-btn"
+        onClick={handleSubmit(handlePlaceOrder)}
+      >
+        Place Order
+      </Button>
     </div>
   );
 };

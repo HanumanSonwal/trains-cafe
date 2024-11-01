@@ -117,6 +117,7 @@ const MenuPage = () => {
                         </h3>
                         <p className="text-sm text-gray-600 mb-2">
                           {item.description.split(" ").slice(0, 8).join(" ")}...
+                          <br></br>
                           <button
                             onClick={() => handleReadMore(item)}
                             className="text-[#d6872a] underline"
