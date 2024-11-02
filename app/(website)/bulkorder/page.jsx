@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { SendOutlined, UserOutlined, PhoneOutlined, MailOutlined, MessageOutlined } from '@ant-design/icons';
@@ -18,11 +18,11 @@ const BulkOrderForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          mobile: values.contactNumber,
-          message: values.message,
-          type: 'BulkOrder'
+          Name: values.Name,
+          Email: values.Email,
+          ContactNumber: values.ContactNumber,
+          Message: values.Message,
+          slug: 'BulkOrder'  // Use the `slug` field to indicate it's a BulkOrder
         })
       });
 
@@ -43,10 +43,9 @@ const BulkOrderForm = () => {
   };
 
   return (
-    <div className="min-h-screen  p-4 flex items-center justify-center">
+    <div className="min-h-screen p-4 flex items-center justify-center">
       <div className="w-full max-w-[575px] mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 animate-fadeIn">
-          {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl sm:text-xl font-bold text-gray-800 mb-2">
               Drop Us A Message For Bulk Order
@@ -56,7 +55,6 @@ const BulkOrderForm = () => {
             </p>
           </div>
 
-          {/* Form */}
           <Form
             form={form}
             layout="vertical"
@@ -64,9 +62,8 @@ const BulkOrderForm = () => {
             className="space-y-4"
             requiredMark={false}
           >
-            {/* Name Input */}
             <Form.Item
-              name="name"
+              name="Name"
               rules={[{ required: true, message: 'Please enter your name' }]}
             >
               <Input
@@ -77,9 +74,8 @@ const BulkOrderForm = () => {
               />
             </Form.Item>
 
-            {/* Contact Number */}
             <Form.Item
-              name="contactNumber"
+              name="ContactNumber"
               rules={[
                 { required: true, message: 'Please enter your contact number' },
                 { pattern: /^[0-9]{10}$/, message: 'Please enter a valid 10-digit number' }
@@ -94,9 +90,8 @@ const BulkOrderForm = () => {
               />
             </Form.Item>
 
-            {/* Email */}
             <Form.Item
-              name="email"
+              name="Email"
               rules={[
                 { required: true, message: 'Please enter your email' },
                 { type: 'email', message: 'Please enter a valid email' }
@@ -110,9 +105,8 @@ const BulkOrderForm = () => {
               />
             </Form.Item>
 
-            {/* Message */}
             <Form.Item
-              name="message"
+              name="Message"
               rules={[
                 { required: true, message: 'Please enter your message' },
                 { min: 10, message: 'Message must be at least 10 characters' }
@@ -128,7 +122,6 @@ const BulkOrderForm = () => {
               />
             </Form.Item>
 
-            {/* Submit Button */}
             <Form.Item>
               <Button
                 type="primary"
@@ -144,7 +137,6 @@ const BulkOrderForm = () => {
           </Form>
         </div>
 
-        {/* Contact Info */}
         <div className="mt-6 text-center text-white">
           <p className="text-sm">
             Need immediate assistance? Call us at: <br />
