@@ -182,6 +182,8 @@ import {
   FileTextOutlined,
   UserOutlined,
   SettingOutlined,
+  OrderedListOutlined,
+  MessageOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 
@@ -272,6 +274,7 @@ const Menubar = () => {
         label: <Link href="/admin/manager">Manager</Link>,
         path: '/admin/manager',
       },
+
     // ] : []),
     {
       key: 'sub1',
@@ -294,6 +297,12 @@ const Menubar = () => {
           path: '/admin/order/cancelled',
         },
       ],
+    },
+    {
+      key: '14',
+      icon: <MessageOutlined />,
+      label: <Link href="/admin/bulkorder">Bulk Order</Link>,
+      path: '/admin/manager',
     },
     // {
     //   key: 'sub2',
