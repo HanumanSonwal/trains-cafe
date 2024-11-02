@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Collapse, Button, InputNumber, Badge, Switch, Modal } from "antd";
+import { Collapse, Button, InputNumber, Badge, Switch, Modal, Spin } from "antd";
 import {
   ArrowRightOutlined,
+  LoadingOutlined,
   PlusOutlined,
   MinusOutlined,
   ShoppingCartOutlined,
@@ -11,7 +12,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
-import { menuItems } from "@/app/redux/menuItems";
 import { useSearchParams } from "next/navigation";
 import { getVendorCategoriesAndMenuItems } from "@/services/vendors";
 import Image from "next/image";
@@ -21,34 +21,20 @@ const { Panel } = Collapse;
 const MenuPage = () => {
   const [isVegCategory, setIsVegCategory] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
   const cartItems = useSelector((state) => state.cart.items);
-  const totalUniqueItems = cartItems.length;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-
-  
-  const totalPrice = cartItems.length > 0 ?  cartItems?.reduce(
-    (total, item) =>
-      total +
-      parseInt(item?.quantity || 0, 10) * parseInt(item?.price || 0, 10),
-    0
-  ) : 0
-  
   const searchParams = useSearchParams();
   const vendorId = searchParams.get("vendor");
 
   useEffect(() => {
     const getVendorMenus = async () => {
-      const response = await getVendorCategoriesAndMenuItems(
-        vendorId,
-        isVegCategory
-      );
-      if (response && response.length > 0) {
-        setCategories(response);
-      } else {
-        setCategories([]);
-      }
+      setLoading(true);
+      const response = await getVendorCategoriesAndMenuItems(vendorId, isVegCategory);
+      setCategories(response || []);
+      setLoading(false);
     };
 
     getVendorMenus();
@@ -67,10 +53,10 @@ const MenuPage = () => {
     setIsModalVisible(false);
     setSelectedItem(null);
   };
+  const antIcon = <LoadingOutlined style={{ fontSize: 48, color: "#D6872A" }} spin />;
 
   return (
-    <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">
-      {/* Header showing selected station and vendor */}
+    <div className="max-w-[575px] mx-auto p-4 bg-gray-100 ">
       <h1 className="text-2xl font-bold mb-6 text-center text-[#704D25]">
         Ordering Food at{" "}
         <span className="text-[#d6872a]">
@@ -85,77 +71,72 @@ const MenuPage = () => {
               {categories.length > 0 ? categories[0].vendor : "N/A"}
             </h2>
             <p className="text-gray-500">Pure Veg | Min Order ₹99 | 30 MIN</p>
-             
           </div>
-          <div>
-            {/* <span className="text-grey-600">{isVegCategory ? "VEG" : "NON-VEG"}</span> */}
-            <Switch
-              checked={isVegCategory}
-              onChange={handleCategoryToggle}
-              checkedChildren="VEG"
-              unCheckedChildren="NON-VEG"
-            />
-          </div>
+          <Switch
+            checked={isVegCategory}
+            onChange={handleCategoryToggle}
+            checkedChildren="VEG"
+            unCheckedChildren="NON-VEG"
+          />
         </div>
       </div>
 
-      {/* Accordion for Menu Categories */}
-      <Collapse accordion>
-        {categories.map((category, idx) => (
-          <Panel header={category.categoryName} key={category.categoryName}>
-            <div className="max-h-[400px] overflow-y-auto">
-              {category.items.length > 0 ? (
-                category.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white shadow rounded-lg mb-4 p-4"
-                  >
-                    <div className="flex justify-between items-start mb-2 gap-2">
-                      <div>
-                        <h3 className="text-lg font-semibold text-[#d6872a]">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-2">
-                          {item.description.split(" ").slice(0, 8).join(" ")}...
-                          <br></br>
-                          <button
-                            onClick={() => handleReadMore(item)}
-                            className="text-[#d6872a] underline"
-                          >
-                            View Details
-                          </button>
-                        </p>
+
+      {loading ? (
+          <div className="flex justify-center items-center ">
+          <Spin indicator={antIcon} />
+        </div>
+      ) : categories.length === 0 ? (
+        <p className="text-center text-gray-600">No menu available for this vendor.</p>
+      ) : (
+        <Collapse accordion>
+          {categories.map((category) => (
+            <Panel header={category.categoryName} key={category.categoryName}>
+              <div className="max-h-[400px] overflow-y-auto">
+                {category.items.length > 0 ? (
+                  category.items.map((item) => (
+                    <div key={item.id} className="bg-white shadow rounded-lg mb-4 p-4">
+                      <div className="flex justify-between items-start mb-2 gap-2">
+                        <div>
+                          <h3 className="text-lg font-semibold text-[#d6872a]">
+                            {item.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2">
+                            {item.description.split(" ").slice(0, 8).join(" ")}...
+                            <br />
+                            <button
+                              onClick={() => handleReadMore(item)}
+                              className="text-[#d6872a] underline"
+                            >
+                              View Details
+                            </button>
+                          </p>
+                        </div>
+                        <Image
+                          width={80}
+                          height={80}
+                          src={item.image}
+                          alt={item.name}
+                          className="w-20 h-20 object-cover rounded"
+                        />
                       </div>
-                      <Image
-                        width={80}
-                        height={80}
-                        src={item.image}
-                        alt={item.name}
-                        className="w-20 h-20 object-cover rounded"
-                      />
-                      
-                    </div>
-                    
-                    <p className="text-xs text-green-500 mb-2">
-                      {item.availability}
-                    </p>
-                    <div className="flex justify-between items-center">
-                   <div> <p style={{color:"#704d25",fontWeight:'bold'}} className="text-lg mb-1">
+                      <p className="text-xs text-green-500 mb-2">{item.availability}</p>
+                      <div className="flex justify-between items-center">
+                        <p style={{ color: "#704d25", fontWeight: "bold" }} className="text-lg mb-1">
                           ₹ {item.price}
-                        </p></div>
-                      <CartComp cartItems={cartItems} item={item} key={idx} />
+                        </p>
+                        <CartComp cartItems={cartItems} item={item} />
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-600">
-                  No items available in this category.
-                </p>
-              )}
-            </div>
-          </Panel>
-        ))}
-      </Collapse>
+                  ))
+                ) : (
+                  <p className="text-center text-gray-600">No items available in this category.</p>
+                )}
+              </div>
+            </Panel>
+          ))}
+        </Collapse>
+      )}
 
       <Modal
         visible={isModalVisible}
@@ -176,13 +157,12 @@ const MenuPage = () => {
               {selectedItem.name}
             </h3>
             <p className="text-gray-600 my-4">{selectedItem.description}</p>
-          
             <div className="flex justify-between items-center">
-                   <div> <p style={{color:"#704d25",fontWeight:'bold'}} className="text-lg mb-1">
-                   ₹ {selectedItem.price}
-                        </p></div>
-                        <CartComp cartItems={cartItems} item={selectedItem} />
-                    </div>
+              <p style={{ color: "#704d25", fontWeight: "bold" }} className="text-lg mb-1">
+                ₹ {selectedItem.price}
+              </p>
+              <CartComp cartItems={cartItems} item={selectedItem} />
+            </div>
           </div>
         )}
       </Modal>
@@ -192,8 +172,8 @@ const MenuPage = () => {
 
 const CartComp = ({ cartItems, item }) => {
   const cartItem = Array.isArray(cartItems) 
-  ? cartItems.find((cartItem) => cartItem._id === item._id)
-  : undefined;
+    ? cartItems.find((cartItem) => cartItem._id === item._id)
+    : undefined;
 
   const dispatch = useDispatch();
 
@@ -204,11 +184,9 @@ const CartComp = ({ cartItems, item }) => {
   const handleRemoveFromCart = (item) => {
     const currentQuantity = cartItem.quantity;
     if (currentQuantity > 1) {
-      dispatch(
-        updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 })
-      );
+      dispatch(updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 }));
     } else {
-      dispatch(updateItemQuantity({ id: item._id, quantity: 0 })); 
+      dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
     }
   };
 

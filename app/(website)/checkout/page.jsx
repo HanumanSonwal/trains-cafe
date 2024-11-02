@@ -155,27 +155,6 @@ const CheckoutPage = () => {
             )}
           />
 
-          {/* <Controller
-  name="mobile"
-  control={control}
-  defaultValue=""
-  render={({ field }) => (
-    <div className="mb-4">
-      <label className="block text-gray-700 mb-1">Mobile Number</label>
-      <Input
-        addonBefore={
-          <select defaultValue="+91" className="w-20">
-            <option value="+91">+91</option>
-          </select>
-        }
-        placeholder="Mobile Number"
-        {...field}
-      />
-      {errors.mobile && <span className="text-red-500">{errors.mobile.message}</span>}
-    </div>
-  )}
-/> */}
-
 
           <Controller
             name="name"
