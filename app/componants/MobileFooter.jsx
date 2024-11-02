@@ -77,10 +77,13 @@ const MobileFooter = () => {
             <nav className="space-y-4">
               <Link href="/profile" className="block text-sm font-bold" onClick={closeMenu}>Profile</Link>
               <Link href="/comingsoon" className="block text-sm font-bold" onClick={closeMenu}>My Orders</Link>
-              <Link href="/comingsoon" className="block text-sm font-bold" onClick={closeMenu}>Group Order</Link>
+              <Link href="/bulkorder" className="block text-sm font-bold" onClick={closeMenu}>Group Order</Link>
               <Link href="/contactus" className="block text-sm font-bold" onClick={closeMenu}>Contact Us</Link>
               <Link href="/web-pages/about-us" className="block text-sm font-bold" onClick={closeMenu}>About Us</Link>
               <Link href="/blog" className="block text-sm font-bold" onClick={closeMenu}>Blog</Link>
+              <Link href="/online-coolie-booking" className="block text-sm font-bold" onClick={closeMenu}>Online Coolie Services</Link>
+              <Link href="/online-hotel-booking" className="block text-sm font-bold" onClick={closeMenu}>Online Hotel Booking Services
+</Link>
               <Link href="/web-pages/faq" className="block text-sm font-bold" onClick={closeMenu}>FAQ</Link>
               <Link href="/web-pages/terms-and-conditions" className="block text-sm font-bold" onClick={closeMenu}>Terms & Conditions</Link>
               <Link href="/web-pages/privacy-policy" className="block text-sm font-bold" onClick={closeMenu}>Privacy Policy</Link>

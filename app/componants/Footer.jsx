@@ -111,10 +111,25 @@ const Footer = () => {
                   </li>
                   <li>
                     <a
-                      href="/comingsoon"
+                      href="/bulkorder"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Bulk Food Order in Train
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/online-coolie-booking"
+                      className="text-gray-600 text-sm hover:text-gray-800"
+                    >
+Online Coolie Services                   </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/online-hotel-booking"
+                      className="text-gray-600 text-sm hover:text-gray-800"
+                    >
+                      Online Hotel Booking Services
                     </a>
                   </li>
                   <li>

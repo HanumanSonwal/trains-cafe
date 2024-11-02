@@ -5,14 +5,14 @@ import { SendOutlined, UserOutlined, PhoneOutlined, MailOutlined, MessageOutline
 
 const { TextArea } = Input;
 
-const BulkOrderForm = () => {
+const OnlineCoolieBooking = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/contact?slug=BulkOrder', {
+      const response = await fetch('http://localhost:3000/api/contact?slug=Coolie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ const BulkOrderForm = () => {
           Email: values.Email,
           ContactNumber: values.ContactNumber,
           Message: values.Message,
-          slug: 'BulkOrder' 
+          slug: 'Coolie'  
         })
       });
 
@@ -48,10 +48,9 @@ const BulkOrderForm = () => {
         <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8 animate-fadeIn">
           <div className="text-center mb-4">
             <h1 style={{color:'#704d25'}} className="text-2xl sm:text-xl font-bold  mb-2">
-              Drop Us A Message For Bulk Order
-            </h1>
+              Drop Us A Message For Coolie Services</h1>
             <p className="text-gray-600">
-              We'll get back to you with The Best Bulk Order Options
+              We'll get back to you with The Best Coolie Services
             </p>
           </div>
 
@@ -150,4 +149,4 @@ const BulkOrderForm = () => {
   );
 };
 
-export default BulkOrderForm;
+export default OnlineCoolieBooking;
