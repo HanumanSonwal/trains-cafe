@@ -67,8 +67,8 @@ const Menubar = () => {
     {
       key: '6',
       icon: <PercentageOutlined />,
-      label: <Link href="/admin/coupon-management">Coupon Management</Link>,
-      path: '/admin/coupon-management',
+      label: <Link href="/admin/coupen-managment">Coupon Management</Link>,
+      path: '/admin/coupen-managment',
     },
     {
       key: '7',
