@@ -56,7 +56,7 @@ export default function Page({ params }) {
   return (
     <div>
       {/* Banner Section */}
-      <div className="relative md:h-60 h-40 mb-4">
+      <div className="relative md:h-60 h-40">
         <img
           src="/images/section-bg.webp"
           alt="Banner"
@@ -70,7 +70,7 @@ export default function Page({ params }) {
       </div>
 
       {/* Page Content */}
-      <div className="relative max-w-4xl mx-auto p-6 bg-white shadow-lg z-10">
+      <div className="relative max-w-4xl mx-auto p-6 z-10" style={{background:'#fcfcfc'}}>
         <div className="relative z-10">
           <h2 style={{color:'#704D25',fontWeight:'bold'}} className="text-2xl font-semibold mb-4">{page.title || "No Title Provided"}</h2>
           {/* <p className="text-sm mb-4 text-justify">{page.description || "No Description Provided"}</p> */}

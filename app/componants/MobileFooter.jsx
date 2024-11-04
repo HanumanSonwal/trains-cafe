@@ -58,7 +58,7 @@ const MobileFooter = () => {
       {isMenuOpen && (
         <div
           ref={menuRef}
-          className="fixed top-0 bottom-0 bg-white z-30 shadow-lg overflow-y-auto"
+          className="fixed top-0 bottom-0 bg-white z-50 shadow-lg overflow-y-auto"
           style={{
             width: '50%',
             maxWidth: '287.5px',
