@@ -64,7 +64,7 @@ export default function Page({ params }) {
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <h1 className="text-white text-2xl md:text-4xl font-bold">
-            {page.name || "No Name Provided"} 
+            {page.title || "No Name Provided"} 
           </h1>
         </div>
       </div>
