@@ -163,7 +163,7 @@ const CouponManagement = () => {
         ),
     },
 ];
-
+const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
     <>
@@ -177,7 +177,7 @@ const CouponManagement = () => {
       >
 
 <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
-          Station Management
+          Coupen Management
         </h2>
         <div className="flex items-center my-5 justify-between">
           <div style={{ display: "flex", alignItems: "center" }}>
@@ -199,10 +199,7 @@ const CouponManagement = () => {
         </Button>
 
         </div>
-      <Spin
-        spinning={loading}
-        indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-      >
+        <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
         <Table
           columns={columns}
           dataSource={filteredCoupons}

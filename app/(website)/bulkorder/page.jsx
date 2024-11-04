@@ -12,7 +12,7 @@ const BulkOrderForm = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/contact?slug=BulkOrder', {
+      const response = await fetch('/api/contact?slug=BulkOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const BulkOrderForm = () => {
               Drop Us A Message For Bulk Order
             </h1>
             <p className="text-gray-600">
-              We'll get back to you with The Best Bulk Order Options
+              We all get back to you with the best bulk order options
             </p>
           </div>
 

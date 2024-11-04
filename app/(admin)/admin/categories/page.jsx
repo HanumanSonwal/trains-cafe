@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Table, Button, Input as AntdInput, message, Popconfirm } from 'antd';
-import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
+import { Table, Button, Input as AntdInput, message, Popconfirm ,Spin } from 'antd';
+import { PlusOutlined, SearchOutlined, DeleteFilled, EditFilled,LoadingOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import CategoriesForm from './CategriesForm';
 import Spinner from '@/app/componants/spinner/Spinner';
@@ -79,6 +79,8 @@ const CategoryManagement = () => {
     });
   };
 
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
+
   const columns = [
     {
       title: 'Category Thumbnail',
@@ -135,9 +137,7 @@ const CategoryManagement = () => {
         </Button>
       </div>
 
-      {loading ? (
-        <Spinner color="#D6872A" />
-      ) : (
+      <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
         <Table
           columns={columns}
           dataSource={categories.map((category) => ({ ...category, key: category._id }))}
@@ -148,10 +148,10 @@ const CategoryManagement = () => {
             showSizeChanger: true,
             pageSizeOptions: [10, 20, 30],  // Keep these as numbers
           }}
-          loading={loading}
+          // loading={loading}
           onChange={handleTableChange}
         />
-      )}
+   </Spin>
       <CategoriesForm
         fetchCategories={fetchCategories}
         open={isCategoryModalOpen}
