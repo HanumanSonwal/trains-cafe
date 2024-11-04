@@ -50,7 +50,7 @@ const OnlineCoolieBooking = () => {
             <h1 style={{color:'#704d25'}} className="text-2xl sm:text-xl font-bold  mb-2">
               Drop Us A Message For Coolie Services</h1>
             <p className="text-gray-600">
-              We'll get back to you with The Best Coolie Services
+              We all get back to you with The Best Coolie Services
             </p>
           </div>
 
