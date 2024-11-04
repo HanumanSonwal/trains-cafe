@@ -86,59 +86,59 @@ const Footer = () => {
                 <h4 className="text-md font-semibold mb-4">Quick Links</h4>
                 <ul className="space-y-0">
                   <li>
-                    <a
+                    <Link
                       href="/web-pages/about-us"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       About Us
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/contactus"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Contact Us
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/blog"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Blogs
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/bulkorder"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Bulk Food Order in Train
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/online-coolie-booking"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
-Online Coolie Services                   </a>
+Online Coolie Services                   </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/online-hotel-booking"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Online Hotel Booking Services
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Order
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -149,52 +149,52 @@ Online Coolie Services                   </a>
                 <h4 className="text-md font-semibold mb-4">Important Links</h4>
                 <ul className="space-y-0">
                   <li>
-                    <a
+                    <Link
                       href="/web-pages/terms-and-conditions"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Terms & Conditions
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/web-pages/privacy-policy"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Privacy Policy
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Help & Support
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Request Call Back
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/web-pages/complained-and-feedback"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Complained and Feedback
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/web-pages/cancellation-policy"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Cancellation Policy
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -204,52 +204,52 @@ Online Coolie Services                   </a>
                 </h4>
                 <ul className="space-y-0">
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       PNR Status Check
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="//comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Train Coach Position
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       IRCTC Train Schedule
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Platform Locator
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Check PNR Status on Whatsapp
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Live Train Running Status
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -266,7 +266,7 @@ Online Coolie Services                   </a>
 
             <div className="flex justify-center md:justify-end items-center space-x-4">
               {showTopNavigation && (
-                <a
+                <Link
                   href="#"
                   className="text-white top-navigation hover:bg-[#D49929] p-2 bg-[#704D25] rounded-full"
                   onClick={(e) => {
@@ -275,7 +275,7 @@ Online Coolie Services                   </a>
                   }}
                 >
                   <ArrowUpOutlined className="text-lg" />
-                </a>
+                </Link>
               )}
             </div>
           </div>

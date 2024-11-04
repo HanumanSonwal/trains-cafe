@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
+import Link from 'next/link';
 
 
 const signupSchema = z.object({
@@ -142,9 +143,9 @@ export default function Signup() {
 
         <p className="mt-4 text-center">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-500 hover:underline">
+          <Link href="/login" className="text-blue-500 hover:underline">
             Log in
-          </a>
+          </Link>
         </p>
       </div>
     </div>
