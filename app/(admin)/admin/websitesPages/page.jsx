@@ -1,12 +1,11 @@
 "use client";
 
-import { Table, Switch, Button, Input, Select, Modal, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Table, Switch, Button, Input, Modal, Popconfirm, Spin } from 'antd';
+import { EditFilled, DeleteOutlined, PlusOutlined, DeleteFilled , LoadingOutlined, SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import WebsitePageModal from './WebsitePageModal';
 
 const { Search } = Input;
-const { Option } = Select;
 
 export default function WebsitesPages() {
   const [pages, setPages] = useState([]);
@@ -105,6 +104,16 @@ export default function WebsitesPages() {
     }
   };
 
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
+  };
+
+  const clearSearch = () => {
+    setSearchText('');
+    setCurrentPage(1); // Reset to first page
+  };
+
   const columns = [
     {
       title: 'ID',
@@ -127,13 +136,14 @@ export default function WebsitesPages() {
         <div className="flex space-x-4">
           <Switch
             checked={status === 'published'}
-            onChange={() => handleToggleChange(record)} // Pass the entire record
-            size="small"
+            onChange={() => handleToggleChange(record)}
+         
           />
           <span>{status === 'published' ? 'Published' : 'Draft'}</span>
         </div>
       ),
     },
+    
     {
       title: 'Action',
       dataIndex: 'action',
@@ -141,60 +151,52 @@ export default function WebsitesPages() {
       width: '20%',
       render: (_, record) => (
         <div className="flex space-x-2">
-          <Button
-            icon={<EditOutlined />}
+           <Button
+            icon={<EditFilled />}
             onClick={() => showModal('edit', record)}
-            type="primary"
-            style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           />
-          <Popconfirm
-            title="Are you sure you want to delete this page?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Yes"
-            cancelText="No"
+            <Popconfirm
+            title="Are you sure to delete?"
+            onConfirm={() => handleDelete( record._id)}
           >
-            <Button
-              icon={<DeleteOutlined />}
-              type="danger"
-              style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
-            />
+            <Button icon={<DeleteFilled />} danger />
           </Popconfirm>
         </div>
       ),
     },
   ];
 
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex justify-between items-center my-5">
-        <div className="flex items-center space-x-4">
-          <label>Show</label>
-          <Select
-            value={pageSize}
-            onChange={(value) => {
-              setPageSize(value);
-              setCurrentPage(1);
-            }}
-            className="w-24"
-          >
-            <Option value={5}>5</Option>
-            <Option value={10}>10</Option>
-            <Option value={15}>15</Option>
-            <Option value={20}>20</Option>
-          </Select>
-          <label>entries</label>
-        </div>
-
-        <Search
-          placeholder="Search by name"
-          onSearch={(value) => {
-            setSearchText(value);
-            setCurrentPage(1);
-          }}
-          style={{ width: 200 }}
-          allowClear
+    <div
+      className="p-4"
+      style={{
+        backgroundColor: "#FAF3CC",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+      Website Pages Management
+      </h2>
+      <div className="flex items-center my-5 justify-between">
+      <Input
+          placeholder="Search"
+          style={{ width: 300, borderColor: "#D6872A" }}
+          prefix={<SearchOutlined />}
+          suffix={
+            searchText && (
+              <CloseCircleOutlined
+                onClick={clearSearch}
+                style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
+              />
+            )
+          }
+          value={searchText}
+          onChange={handleSearch}
         />
-
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -205,19 +207,24 @@ export default function WebsitesPages() {
           Add New Page
         </Button>
       </div>
-
-      <Table
-        columns={columns}
-        dataSource={pages}
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: totalPages * pageSize,
-          onChange: (page) => setCurrentPage(page),
-        }}
-        rowKey="_id"
-        loading={loading}
-      />
+      <Spin spinning={loading} indicator={antIcon}>
+        <Table
+          columns={columns}
+          dataSource={pages}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalPages * pageSize, // Correctly set the total count
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50'],
+            onChange: (page, pageSize) => {
+              setCurrentPage(page);
+              setPageSize(pageSize);
+            },
+          }}
+          rowKey="_id"
+        />
+      </Spin>
 
       <WebsitePageModal
         visible={isModalVisible}

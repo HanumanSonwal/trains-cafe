@@ -117,13 +117,46 @@ export async function POST(req) {
 //     );
 //   }
 // }
+// export async function GET(req) {
+//   try {
+//     const url = new URL(req.url);
+//     //const slug = url.pathname.split('/').pop();
+//     const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
+//     const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
+//     if (!validSlugs.includes(slug)) {
+//       return new Response(
+//         JSON.stringify({ success: false, message: 'Invalid slug' }),
+//         { status: 400 }
+//       );
+//     }
+
+//     await dbConnect();
+
+//     const contactRequests = await ContactRequestModel.find({ slug });
+
+//     return new Response(
+//       JSON.stringify({
+//         success: true,
+//         data: contactRequests,
+//       }),
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     return new Response(
+//       JSON.stringify({ success: false, message: 'Error fetching contact requests' }),
+//       { status: 500 }
+//     );
+//   }
+// }
 export async function GET(req) {
   try {
     const url = new URL(req.url);
-    //const slug = url.pathname.split('/').pop();
-    const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
-    if (!validSlugs.includes(slug)) {
+    let slug = url.searchParams.get('slug')?.trim(); // Get slug only from query parameters, and trim whitespace
+
+    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder', 'ContactUs'];
+
+    // If slug is provided (non-empty) and is not in the valid list, return an error
+    if (slug && !validSlugs.includes(slug)) {
       return new Response(
         JSON.stringify({ success: false, message: 'Invalid slug' }),
         { status: 400 }
@@ -132,7 +165,10 @@ export async function GET(req) {
 
     await dbConnect();
 
-    const contactRequests = await ContactRequestModel.find({ slug });
+    // If slug is empty or undefined, retrieve all data; otherwise, filter by slug
+    const contactRequests = slug
+      ? await ContactRequestModel.find({ slug })
+      : await ContactRequestModel.find({});
 
     return new Response(
       JSON.stringify({
@@ -144,11 +180,10 @@ export async function GET(req) {
   } catch (error) {
     return new Response(
       JSON.stringify({ success: false, message: 'Error fetching contact requests' }),
-      { status: 500 }
-    );
-  }
+      { status: 500 }
+    );
+  }
 }
-
 export async function PUT(req) {
   try {
     const url = new URL(req.url);

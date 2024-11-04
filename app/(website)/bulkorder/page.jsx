@@ -51,7 +51,7 @@ const BulkOrderForm = () => {
               Drop Us A Message For Bulk Order
             </h1>
             <p className="text-gray-600">
-              We'll get back to you with the best bulk order options
+              We all get back to you with the best bulk order options
             </p>
           </div>
 
