@@ -64,7 +64,7 @@ import { NextResponse } from 'next/server';
 // GET request handler
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.nextUrl);
+    const { searchParams } = req.nextUrl;
     const query = searchParams.get('query');
 
     // Construct query parameters
