@@ -53,7 +53,7 @@ export default function Header() {
     };
 
     return (
-        <div>
+        <div className='sticky top-0 z-50 mx-auto'>
             <div className="bg-gray-100 flex justify-center gap-4 p-2 text-center text-sm">
                 <Link href='tel:090909090' className="transition-transform transform hover:scale-105 hover:shadow-md flex items-center justify-center bg-white border border-gray-300 rounded-lg px-2 py-1 text-blue-600 hover:bg-blue-50">
                     <PhoneOutlined className="mr-2" />

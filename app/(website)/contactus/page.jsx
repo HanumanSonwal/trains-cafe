@@ -63,8 +63,8 @@ const ContactUsPage = () => {
       </div>
 
       {/* Form Section */}
-      <div className="flex items-center justify-center py-8 px-2">
-        <div className="max-w-md w-full bg-white p-4 rounded-lg shadow-lg">
+      <div className="flex items-center justify-center py-4 px-2 shadow-lg">
+        <div className="max-w-md w-full bg-white p-4 rounded-lg ">
           <Title style={{ color: '#704D25' }} level={2} className="text-3xl font-semibold mb-6 text-center">
             Get in Touch
           </Title>
