@@ -57,3 +57,56 @@ export async function GET(req) {
     }, { status: 500 });
   }
 }
+
+
+// import { NextResponse } from 'next/server';
+
+// export async function GET(req) {
+//   try {
+//     const { searchParams } = new URL(req.url);
+//     const trainNo = searchParams.get('trainNo');
+
+//     if (!trainNo) {
+//       return new Response(JSON.stringify({ error: "Train number is missing from query parameters" }), { status: 400 });
+//     }
+
+//     // Construct query parameters
+//     const queryParams = new URLSearchParams({
+//       trainNo: trainNo
+//     }).toString();
+
+//     // Fetch train schedule data from the IRCTC API
+//     const thirdPartyResponse = await fetch(`https://irctc1.p.rapidapi.com/api/v1/getTrainSchedule?${queryParams}`, {
+//       method: 'GET',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'x-rapidapi-host': 'irctc1.p.rapidapi.com',
+//         'x-rapidapi-key': process.env.RAPID_API_KEY, // Ensure to add your RapidAPI key in environment variables
+//       },
+//     });
+
+//     const data = await thirdPartyResponse.json();
+
+//     // Check if data is valid and return the response
+//     if (!data || !data.data) {
+//       return NextResponse.json({
+//         message: 'Train schedule not found or invalid data returned',
+//       }, { status: 404 });
+//     }
+
+//     return NextResponse.json({
+//       data: data?.data ? data.data : "",
+//       success: data?.status ? data.status : "",
+//       Timestamp: data?.Timestamp ? data.Timestamp : "",
+//       message: data?.message ? data.message : ""
+//     });
+
+//   } catch (error) {
+//     console.error(error, "error");
+//     return NextResponse.json({
+//       message: 'An error occurred while fetching train schedule',
+//       error: error.message,
+//     }, { status: 500 });
+//   }
+// }
+

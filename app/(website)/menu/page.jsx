@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Collapse, Button, InputNumber, Badge, Switch, Modal, Spin } from "antd";
+import {
+  Collapse,
+  Button,
+  InputNumber,
+  Badge,
+  Switch,
+  Modal,
+  Spin,
+} from "antd";
 import {
   ArrowRightOutlined,
   LoadingOutlined,
@@ -26,13 +34,18 @@ const MenuPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const totalUniqueItems = cartItems.length;
+
   const searchParams = useSearchParams();
   const vendorId = searchParams.get("vendor");
 
   useEffect(() => {
     const getVendorMenus = async () => {
       setLoading(true);
-      const response = await getVendorCategoriesAndMenuItems(vendorId, isVegCategory);
+      const response = await getVendorCategoriesAndMenuItems(
+        vendorId,
+        isVegCategory
+      );
       setCategories(response || []);
       setLoading(false);
     };
@@ -56,7 +69,9 @@ const MenuPage = () => {
 
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  const antIcon = <LoadingOutlined style={{ fontSize: 48, color: "#D6872A" }} spin />;
+  const antIcon = (
+    <LoadingOutlined style={{ fontSize: 48, color: "#D6872A" }} spin />
+  );
 
   return (
     <div className="max-w-[575px] mx-auto p-4 bg-gray-100 ">
@@ -89,7 +104,9 @@ const MenuPage = () => {
           <Spin indicator={antIcon} />
         </div>
       ) : categories.length === 0 ? (
-        <p className="text-center text-gray-600">No menu available for this vendor.</p>
+        <p className="text-center text-gray-600">
+          No menu available for this vendor.
+        </p>
       ) : (
         <Collapse accordion>
           {categories.map((category) => (
@@ -97,14 +114,25 @@ const MenuPage = () => {
               <div className="max-h-[400px] overflow-y-auto">
                 {category.items.length > 0 ? (
                   category.items.map((item) => (
-                    <div key={item.id} className="bg-white shadow rounded-lg mb-4 p-4">
+                    <div
+                      key={item._id}
+                      className="bg-white shadow rounded-lg mb-4 p-4"
+                    >
                       <div className="flex justify-between items-start mb-2 gap-2">
-                        <div>
+                      <Image
+                          width={80}
+                          height={80}
+                          src={item.image}
+                          alt={item.name}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <div className="w-3/4">
                           <h3 className="text-lg font-semibold text-[#d6872a]">
                             {item.name}
                           </h3>
                           <p className="text-sm text-gray-600 mb-2">
-                            {item.description.split(" ").slice(0, 8).join(" ")}...
+                            {item.description.split(" ").slice(0, 8).join(" ")}
+                            ...
                             <br />
                             <button
                               onClick={() => handleReadMore(item)}
@@ -113,18 +141,48 @@ const MenuPage = () => {
                               View Details
                             </button>
                           </p>
+                          <div className="flex gap-2 items-center">
+                            {/* Discount Tag */}
+                            {item.discount > 0 && (
+                              <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                                {item.discount}% OFF
+                              </span>
+                            )}
+                            {/* Food Type (Veg, Non-Veg, or Both) */}
+                            <div className="flex space-x-1">
+                              {item.foodType === "Vegetarian" && (
+                                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                  V
+                                </span>
+                              )}
+                              {item.foodType === "Non-Vegetarian" && (
+                                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                  N
+                                </span>
+                              )}
+                              {item.foodType === "Both" && (
+                                <>
+                                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                    V
+                                  </span>
+                                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                    N
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <Image
-                          width={80}
-                          height={80}
-                          src={item.image}
-                          alt={item.name}
-                          className="w-20 h-20 object-cover rounded"
-                        />
+                      
                       </div>
-                      <p className="text-xs text-green-500 mb-2">{item.availability}</p>
+                      <p className="text-xs text-green-500 mb-2">
+                        {item.availability}
+                      </p>
                       <div className="flex justify-between items-center">
-                        <p style={{ color: "#704d25", fontWeight: "bold" }} className="text-lg mb-1">
+                        <p
+                          style={{ color: "#704d25", fontWeight: "bold" }}
+                          className="text-lg mb-1"
+                        >
                           ₹ {item.price}
                         </p>
                         <CartComp cartItems={cartItems} item={item} />
@@ -132,7 +190,9 @@ const MenuPage = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-center text-gray-600">No items available in this category.</p>
+                  <p className="text-center text-gray-600">
+                    No items available in this category.
+                  </p>
                 )}
               </div>
             </Panel>
@@ -141,25 +201,23 @@ const MenuPage = () => {
       )}
 
       {/* Go to Cart Button with Quantity Badge */}
-{/* Go to Cart Button with Quantity Badge */}
-<div className="flex items-center justify-between mt-6 w-full">
-  <Badge count={totalQuantity} offset={[0, 0]}>
-    <ShoppingCartOutlined className="text-2xl text-green-500" />
-  </Badge>
-  
-  <Link href="/cart" passHref>
-    <Button
-      type="primary"
-      style={{ backgroundColor: "#D6872A", color: "white" }}
-      className="w-full  py-2 text-white hover:bg-opacity-90 flex items-center justify-center rounded-lg"
-    >
-      <span>Go to Cart</span>
-      <ArrowRightOutlined className="ml-2" />
-    </Button>
-  </Link>
-</div>
+      {/* Go to Cart Button with Quantity Badge */}
+      <div className="flex items-center justify-between mt-6 w-full">
+        <Badge count={totalUniqueItems} offset={[0, 0]}>
+          <ShoppingCartOutlined className="text-2xl text-green-500" />
+        </Badge>
 
-
+        <Link href="/cart" passHref>
+          <Button
+            type="primary"
+            style={{ backgroundColor: "#D6872A", color: "white" }}
+            className="w-full  py-2 text-white hover:bg-opacity-90 flex items-center justify-center rounded-lg"
+          >
+            <span>Go to Cart</span>
+            <ArrowRightOutlined className="ml-2" />
+          </Button>
+        </Link>
+      </div>
 
       <Modal
         visible={isModalVisible}
@@ -181,7 +239,10 @@ const MenuPage = () => {
             </h3>
             <p className="text-gray-600 my-4">{selectedItem.description}</p>
             <div className="flex justify-between items-center">
-              <p style={{ color: "#704d25", fontWeight: "bold" }} className="text-lg mb-1">
+              <p
+                style={{ color: "#704d25", fontWeight: "bold" }}
+                className="text-lg mb-1"
+              >
                 ₹ {selectedItem.price}
               </p>
               <CartComp cartItems={cartItems} item={selectedItem} />
@@ -194,7 +255,7 @@ const MenuPage = () => {
 };
 
 const CartComp = ({ cartItems, item }) => {
-  const cartItem = Array.isArray(cartItems) 
+  const cartItem = Array.isArray(cartItems)
     ? cartItems.find((cartItem) => cartItem._id === item._id)
     : undefined;
 
@@ -207,7 +268,9 @@ const CartComp = ({ cartItems, item }) => {
   const handleRemoveFromCart = (item) => {
     const currentQuantity = cartItem.quantity;
     if (currentQuantity > 1) {
-      dispatch(updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 }));
+      dispatch(
+        updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 })
+      );
     } else {
       dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
     }
