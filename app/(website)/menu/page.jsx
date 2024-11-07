@@ -21,7 +21,7 @@ const { Panel } = Collapse;
 const MenuPage = () => {
   const [isVegCategory, setIsVegCategory] = useState(true);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const cartItems = useSelector((state) => state.cart.items);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -53,6 +53,9 @@ const MenuPage = () => {
     setIsModalVisible(false);
     setSelectedItem(null);
   };
+
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   const antIcon = <LoadingOutlined style={{ fontSize: 48, color: "#D6872A" }} spin />;
 
   return (
@@ -81,9 +84,8 @@ const MenuPage = () => {
         </div>
       </div>
 
-
       {loading ? (
-          <div className="flex justify-center items-center ">
+        <div className="flex justify-center items-center ">
           <Spin indicator={antIcon} />
         </div>
       ) : categories.length === 0 ? (
@@ -137,6 +139,27 @@ const MenuPage = () => {
           ))}
         </Collapse>
       )}
+
+      {/* Go to Cart Button with Quantity Badge */}
+{/* Go to Cart Button with Quantity Badge */}
+<div className="flex items-center justify-between mt-6 w-full">
+  <Badge count={totalQuantity} offset={[0, 0]}>
+    <ShoppingCartOutlined className="text-2xl text-green-500" />
+  </Badge>
+  
+  <Link href="/cart" passHref>
+    <Button
+      type="primary"
+      style={{ backgroundColor: "#D6872A", color: "white" }}
+      className="w-full  py-2 text-white hover:bg-opacity-90 flex items-center justify-center rounded-lg"
+    >
+      <span>Go to Cart</span>
+      <ArrowRightOutlined className="ml-2" />
+    </Button>
+  </Link>
+</div>
+
+
 
       <Modal
         visible={isModalVisible}
