@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from 'react';
-import { PhoneOutlined, WhatsAppOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { PhoneOutlined, WhatsAppOutlined, ShoppingCartOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Badge, Modal, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
 import {
     addItemToCart,
     updateItemQuantity,
-} from '@/app/redux/cartSlice'; 
+} from '@/app/redux/cartSlice';
 
 export default function Header() {
     const [isCartOpen, setIsCartOpen] = useState(false);
@@ -29,14 +29,18 @@ export default function Header() {
     };
 
     const handleDecreaseQuantity = (item) => {
-        const currentQuantity = item.quantity;
-
-        if (currentQuantity > 1) {
-            dispatch(updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 }));
-        } else if (currentQuantity === 1) {
+        if (item.quantity > 1) {
+            dispatch(updateItemQuantity({ id: item._id, quantity: item.quantity - 1 }));
+        } else if (item.quantity === 1) {
             if (window.confirm("Do you want to remove this item from the cart?")) {
                 dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
             }
+        }
+    };
+
+    const handleDeleteItem = (item) => {
+        if (window.confirm("Are you sure you want to delete this item?")) {
+            dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
         }
     };
 
@@ -44,16 +48,8 @@ export default function Header() {
         return total + (item.price * item.quantity);
     }, 0);
 
-    const handleGoToCart = () => {
-        handleClose(); 
-    };
-
-    const handleCheckout = () => {
-        handleClose();
-    };
-
     return (
-        <div className='sticky top-0 z-50 mx-auto'>
+        <div className="sticky top-0 z-50 mx-auto">
             <div className="bg-gray-100 flex justify-center gap-4 p-2 text-center text-sm">
                 <Link href='tel:090909090' className="transition-transform transform hover:scale-105 hover:shadow-md flex items-center justify-center bg-white border border-gray-300 rounded-lg px-2 py-1 text-blue-600 hover:bg-blue-50">
                     <PhoneOutlined className="mr-2" />
@@ -83,7 +79,7 @@ export default function Header() {
 
             <Modal
                 title="Cart Items"
-                visible={isCartOpen}
+                open={isCartOpen}
                 onCancel={handleClose}
                 footer={null}
                 width={400}
@@ -100,7 +96,8 @@ export default function Header() {
                                 <div className="flex items-center">
                                     <Button
                                         onClick={() => handleDecreaseQuantity(item)}
-                                        className="border-blue-500 text-blue-500 mr-2"
+                                        className="border-0 text-white mr-2"
+                                        style={{ backgroundColor: '#D6872A' }}
                                         size="small"
                                     >
                                         -
@@ -108,11 +105,18 @@ export default function Header() {
                                     <span className="mx-2">{item.quantity}</span>
                                     <Button
                                         onClick={() => handleIncreaseQuantity(item)}
-                                        className="border-blue-500 text-blue-500"
+                                        className="border-0 text-white"
+                                        style={{ backgroundColor: '#D6872A' }}
                                         size="small"
                                     >
                                         +
                                     </Button>
+                                    <Button
+                                        onClick={() => handleDeleteItem(item)}
+                                        className="ml-2"
+                                        icon={<DeleteOutlined />}
+                                        style={{ color: '#6F4D27', border: 'none' }}
+                                    />
                                 </div>
                             </li>
                         ))
@@ -125,10 +129,24 @@ export default function Header() {
                         <span className="text-xl font-bold">Total: ₹ {totalPrice.toFixed(2)}</span>
                         <div className="flex justify-between mt-4">
                             <Link href="/cart">
-                                <Button type="primary" className="w-full mr-2" onClick={handleGoToCart}>Go to Cart</Button>
+                                <Button
+                                    type="primary"
+                                    className="w-full mr-2"
+                                    onClick={handleClose}
+                                    style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                                >
+                                    Go to Cart
+                                </Button>
                             </Link>
                             <Link href="/checkout">
-                                <Button type="primary" className="w-full" onClick={handleCheckout}>Checkout</Button>
+                                <Button
+                                    type="primary"
+                                    className="w-full"
+                                    onClick={handleClose}
+                                    style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                                >
+                                    Checkout
+                                </Button>
                             </Link>
                         </div>
                     </div>
@@ -137,4 +155,3 @@ export default function Header() {
         </div>
     );
 }
-

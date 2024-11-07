@@ -109,95 +109,92 @@ const MenuPage = () => {
         </p>
       ) : (
         <Collapse accordion>
-          {categories.map((category) => (
-            <Panel header={category.categoryName} key={category.categoryName}>
-              <div className="max-h-[400px] overflow-y-auto">
-                {category.items.length > 0 ? (
-                  category.items.map((item) => (
-                    <div
-                      key={item._id}
-                      className="bg-white shadow rounded-lg mb-4 p-4"
-                    >
-                      <div className="flex justify-between items-start mb-2 gap-2">
+        {categories.map((category) => (
+          <Panel header={category.categoryName} key={category.categoryName}>
+            <div className="max-h-[400px] overflow-y-auto">
+              {category.items.length > 0 ? (
+                category.items.map((item) => (
+                  <div
+                    key={item._id}
+                    className="bg-white shadow rounded-lg mb-4 p-4"
+                  >
+                    <div className="flex flex-col md:flex-row justify-between items-start mb-2 gap-4">
                       <Image
-                          width={80}
-                          height={80}
-                          src={item.image}
-                          alt={item.name}
-                          className="w-20 h-20 object-cover rounded"
-                        />
-                        <div className="w-3/4">
-                          <h3 className="text-lg font-semibold text-[#d6872a]">
-                            {item.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-2">
-                            {item.description.split(" ").slice(0, 8).join(" ")}
-                            ...
-                            <br />
-                            <button
-                              onClick={() => handleReadMore(item)}
-                              className="text-[#d6872a] underline"
-                            >
-                              View Details
-                            </button>
-                          </p>
-                          <div className="flex gap-2 items-center">
-                            {/* Discount Tag */}
-                            {item.discount > 0 && (
-                              <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-                                {item.discount}% OFF
+                        width={80}
+                        height={80}
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full md:w-20 h-auto md:h-20 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-[#d6872a]">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-2">
+                          {item.description.split(" ").slice(0, 8).join(" ")}...
+                          <br />
+                          <button
+                            onClick={() => handleReadMore(item)}
+                            className="text-[#d6872a] underline"
+                          >
+                            View Details
+                          </button>
+                        </p>
+                        <div className="flex flex-wrap gap-2 items-center">
+                          {/* Discount Tag */}
+                          {item.discount > 0 && (
+                            <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                              {item.discount}% OFF
+                            </span>
+                          )}
+                          {/* Food Type (Veg, Non-Veg, or Both) */}
+                          <div className="flex space-x-1">
+                            {item.foodType === "Vegetarian" && (
+                              <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                V
                               </span>
                             )}
-                            {/* Food Type (Veg, Non-Veg, or Both) */}
-                            <div className="flex space-x-1">
-                              {item.foodType === "Vegetarian" && (
+                            {item.foodType === "Non-Vegetarian" && (
+                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                N
+                              </span>
+                            )}
+                            {item.foodType === "Both" && (
+                              <>
                                 <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                                   V
                                 </span>
-                              )}
-                              {item.foodType === "Non-Vegetarian" && (
                                 <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                                   N
                                 </span>
-                              )}
-                              {item.foodType === "Both" && (
-                                <>
-                                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                                    V
-                                  </span>
-                                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                    N
-                                  </span>
-                                </>
-                              )}
-                            </div>
+                              </>
+                            )}
                           </div>
                         </div>
-                      
-                      </div>
-                      <p className="text-xs text-green-500 mb-2">
-                        {item.availability}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <p
-                          style={{ color: "#704d25", fontWeight: "bold" }}
-                          className="text-lg mb-1"
-                        >
-                          ₹ {item.price}
-                        </p>
-                        <CartComp cartItems={cartItems} item={item} />
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-center text-gray-600">
-                    No items available in this category.
-                  </p>
-                )}
-              </div>
-            </Panel>
-          ))}
-        </Collapse>
+                    <p className="text-xs text-green-500 mb-2">{item.availability}</p>
+                    <div className="flex justify-between items-center">
+                      <p
+                        style={{ color: "#704d25", fontWeight: "bold" }}
+                        className="text-lg mb-1"
+                      >
+                        ₹ {item.price}
+                      </p>
+                      <CartComp cartItems={cartItems} item={item} />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600">
+                  No items available in this category.
+                </p>
+              )}
+            </div>
+          </Panel>
+        ))}
+      </Collapse>
+      
       )}
 
       {/* Go to Cart Button with Quantity Badge */}

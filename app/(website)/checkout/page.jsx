@@ -138,116 +138,115 @@ const CheckoutPage = () => {
         <span style={{color:'#704d25'}}>Trains Cafe</span>
       </h1>
       <div className="gap-4">
-        <div className="bg-white shadow rounded-lg p-4 mb-4">
-          <h2 className="text-lg font-bold mb-4 text-gray-800">Customer Details</h2>
+      <div className="bg-white shadow rounded-lg p-4 sm:p-6 mb-4 max-w-lg lg:max-w-2xl mx-auto">
+  <h2 className="text-lg font-bold mb-4 text-gray-800 text-center sm:text-left">Customer Details</h2>
 
+  <Controller
+    name="mobile"
+    control={control}
+    defaultValue=""
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block text-sm text-gray-700 mb-1">Mobile Number</label>
+        <Input placeholder="Mobile Number" className="w-full" {...field} />
+        {errors.mobile && <span className="text-red-500 text-xs">{errors.mobile.message}</span>}
+      </div>
+    )}
+  />
 
-          <Controller
-            name="mobile"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div className="mb-4">
-                <label className="block text-sm text-gray-700 mb-1">Mobile Number</label>
-                <Input placeholder="Mobile Number" {...field} />
-                {errors.mobile && <span className="text-red-500">{errors.mobile.message}</span>}
-              </div>
-            )}
-          />
+  <Controller
+    name="name"
+    control={control}
+    defaultValue=""
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block text-sm text-gray-700 mb-1">Name</label>
+        <Input placeholder="Name" className="w-full" {...field} />
+        {errors.name && <span className="text-red-500 text-xs">{errors.name.message}</span>}
+      </div>
+    )}
+  />
 
+  <Controller
+    name="email"
+    control={control}
+    defaultValue=""
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block text-sm text-gray-700 mb-1">Email</label>
+        <Input placeholder="Enter Your Email" className="w-full" {...field} />
+        {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
+      </div>
+    )}
+  />
 
-          <Controller
-            name="name"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div className="mb-4">
-                <label className="block text-sm text-gray-700 mb-1">Name</label>
-                <Input placeholder="Name" {...field} />
-                {errors.name && <span className="text-red-500">{errors.name.message}</span>}
-              </div>
-            )}
-          />
+  <Controller
+    name="alternateMobile"
+    control={control}
+    defaultValue=""
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block text-sm text-gray-700 mb-1">Alternate Mobile (Optional)</label>
+        <Input placeholder="Alternate Mobile (Optional)" className="w-full" {...field} />
+      </div>
+    )}
+  />
 
-          <Controller
-            name="email"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div className="mb-4">
-                <label className="block text-sm text-gray-700 mb-1">Email</label>
-                <Input placeholder="Enter Your Email" {...field} />
-                {errors.email && <span className="text-red-500">{errors.email.message}</span>}
-              </div>
-            )}
-          />
+  <Controller
+    name="pnr"
+    control={control}
+    defaultValue=""
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block text-sm text-gray-700 mb-1">PNR</label>
+        <Input placeholder="Enter 10 Digit PNR" className="w-full" {...field} />
+        {errors.pnr && <span className="text-red-500 text-xs">{errors.pnr.message}</span>}
+      </div>
+    )}
+  />
 
-          <Controller
-            name="alternateMobile"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Alternate Mobile (Optional)</label>
-                <Input placeholder="Alternate Mobile (Optional)" {...field} />
-              </div>
-            )}
-          />
-
-          <Controller
-            name="pnr"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div className="mb-4">
-                <label className="block text-sm text-gray-700 mb-1">PNR</label>
-                <Input placeholder="Enter 10 Digit PNR" {...field} />
-                {errors.pnr && <span className="text-red-500">{errors.pnr.message}</span>}
-              </div>
-            )}
-          />
-
-          <div className="flex gap-2 mb-4">
-            <Controller
-              name="coach"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <div className="w-1/2">
-                  <label className="block text-sm text-gray-700 mb-1">Coach</label>
-                  <Input placeholder="Coach" {...field} />
-                </div>
-              )}
-            />
-            <Controller
-              name="seatNo"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <div className="w-1/2">
-                  <label className="block text-sm text-gray-700 mb-1">Seat No.</label>
-                  <Input placeholder="Seat No." {...field} />
-                </div>
-              )}
-            />
-          </div>
-
-          <Controller
-            name="instructions"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-1">Optional Instructions</label>
-                <Input.TextArea placeholder="Optional Instructions" {...field} />
-              </div>
-            )}
-          />
+  <div className="flex flex-col sm:flex-row gap-2 mb-4">
+    <Controller
+      name="coach"
+      control={control}
+      defaultValue=""
+      render={({ field }) => (
+        <div className="w-full sm:w-1/2">
+          <label className="block text-sm text-gray-700 mb-1">Coach</label>
+          <Input placeholder="Coach" className="w-full" {...field} />
         </div>
+      )}
+    />
+    <Controller
+      name="seatNo"
+      control={control}
+      defaultValue=""
+      render={({ field }) => (
+        <div className="w-full sm:w-1/2">
+          <label className="block text-sm text-gray-700 mb-1">Seat No.</label>
+          <Input placeholder="Seat No." className="w-full" {...field} />
+        </div>
+      )}
+    />
+  </div>
 
-        <div className="bg-white shadow rounded-lg p-6">
+  <Controller
+    name="instructions"
+    control={control}
+    defaultValue=""
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block text-sm text-gray-700 mb-1">Optional Instructions</label>
+        <Input.TextArea placeholder="Optional Instructions" className="w-full" {...field} />
+      </div>
+    )}
+  />
+</div>
+
+
+        <div className="bg-white shadow rounded-lg p-6 lg:p-8">
           <h2 className="text-lg font-bold mb-6 text-gray-800">Order Details</h2>
-          <table className="w-full mb-6">
+          <table className="w-full mb-6 text-sm lg:text-base">
             <thead>
               <tr className="text-left border-b">
                 <th className="pb-2">Items</th>
@@ -262,14 +261,12 @@ const CheckoutPage = () => {
                   <td className="py-2">{item.name}</td>
                   <td className="py-2">{item.quantity}</td>
                   <td className="py-2">₹ {item.price}</td>
-                  <td className="py-2">₹ {parseInt(item.price, 10) * parseInt(item.quantity, 10)}</td>
+                  <td className="py-2">₹ {parseInt(item.price) * parseInt(item.quantity, 10)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <hr className="border-black border-t-2 mb-2" />
-
-          <div className="space-y-2 ">
+          <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-semibold text-gray-700">Sub Total</span>
               <span>₹ {totalAmount.toFixed(2)}</span>
@@ -288,13 +285,13 @@ const CheckoutPage = () => {
             </div>
             <div className="flex justify-between text-md font-bold border-t pt-2">
               <span>Total</span>
-              <span>₹ {payableAmount}</span>
+              <span>₹ {payableAmount.toFixed(2)}</span>
             </div>
           </div>
         </div>
       </div>
        <div className="bg-white shadow rounded-lg p-4 mt-4">
-          <CSSTransition
+       <CSSTransition
             in={isCouponApplied}
             timeout={300}
             classNames="fade"
@@ -302,40 +299,33 @@ const CheckoutPage = () => {
           >
             <div className="flex justify-between items-center">
               <span>Coupon applied: {couponCode}</span>
-              <Button type="link" onClick={handleRemoveCoupon}>
-                Remove
-              </Button>
+              <Button type="link" onClick={handleRemoveCoupon}>Remove</Button>
             </div>
           </CSSTransition>
-
           {!isCouponApplied && (
             <div className="flex">
-             <Input
-          placeholder="COUPON CODE"
-          className="mb-4"
-          value={couponCode}
-          onChange={(e) => setCouponCode(e.target.value)}
-          suffix={<Button className="text-green-600" onClick={handleApplyCoupon}>Apply</Button>}
-        />
+              <Input
+                placeholder="COUPON CODE"
+                className="mb-4"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                suffix={<Button className="text-green-600" onClick={handleApplyCoupon}>Apply</Button>}
+              />
             </div>
           )}
-
-          {couponError && (
-            <span className="text-red-500">Invalid coupon code. Please try again.</span>
-          )}
+          {couponError && <span className="text-red-500">Invalid coupon code. Please try again.</span>}
         </div>
 
       <div className="bg-white shadow rounded-lg p-4 mt-4">
-        <h2 className="text-lg font-bold mb-4 text-gray-800">Payment Options</h2>
-        <Radio.Group
-          value={paymentMethod}
-          onChange={(e) => setPaymentMethod(e.target.value)}
-          className="gap-5"
-        >
-          <Radio value="PAYTM">Razorpay (UPI / Debit & Credit Cards)</Radio>
-          <br />
-          <Radio value="COD">Cash on Delivery</Radio>
-        </Radio.Group>
+      <h2 className="text-lg font-bold mb-4 text-gray-800">Payment Options</h2>
+          <Radio.Group
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="flex flex-col gap-2"
+          >
+            <Radio value="PAYTM">Razorpay (UPI / Debit & Credit Cards)</Radio>
+            <Radio value="COD">Cash on Delivery</Radio>
+          </Radio.Group>
       </div>
 
       <Button
