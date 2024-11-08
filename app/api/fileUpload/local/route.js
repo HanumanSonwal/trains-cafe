@@ -36,13 +36,11 @@ import path from 'path';
 
 const pump = promisify(pipeline);
 
-export async function POST(req, res) {
+export async function POST(req) {
     try {
         const formData = await req.formData();
         const file = formData.getAll('file')[0];
-        console.log(formData);
-        const imageName = file.name;
-        
+
         const extension = path.extname(file.name); // Get the file extension
         
         // Generate a unique name for the file
@@ -57,12 +55,16 @@ export async function POST(req, res) {
         }
 
         const filePath = path.join(uploadsDir, uniqueName); // Path to save the file
-        const url = `${process.env.NEXT_PUBLIC_URL}/uploads/${uniqueName}`;
+        
+        // Dynamic URL generation based on environment
+        const baseURL = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+        const url = `${baseURL}/uploads/${uniqueName}`;
+        console.log(url, "url");
 
         // Save the file to the uploads directory
         await pump(file.stream(), fs.createWriteStream(filePath));
 
-        return NextResponse.json({ success: true, name: imageName, url });
+        return NextResponse.json({ success: true, name: file.name, url });
     } catch (error) {
         return NextResponse.json({ success: false, message: error.message });
     }
