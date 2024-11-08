@@ -12,7 +12,7 @@ const OnlineCoolieBooking = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/contact?slug=Coolie', {
+      const response = await fetch('/api/contact?slug=Coolie', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
