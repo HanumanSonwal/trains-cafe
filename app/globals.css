@@ -220,6 +220,9 @@
   border-radius: 9999px !important;
   background-color: #fff !important;
 }
+.common-btn-outline:hover{
+  color: #000 !important;
+}
 }
 :where(.css-dev-only-do-not-override-d2lrxs).ant-card .ant-card-body {
   padding: 16px !important;
