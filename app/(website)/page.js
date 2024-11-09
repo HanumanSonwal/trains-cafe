@@ -1,4 +1,3 @@
-import AdvertiseBanner from "../componants/AdvertiseBanner";
 import Articles from "../componants/Article";
 import BlogSection from "../componants/BlogSection";
 import CustomerReviewSlider from "../componants/CustomerReviewSlider";
@@ -19,7 +18,6 @@ export default function Home() {
       <PromoBanner/>
       <RecentOrders/>
       <CustomerReviewSlider/>
-      <AdvertiseBanner/>
       <BlogSection/>
       <Articles/>
       
