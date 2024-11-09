@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { SendOutlined, UserOutlined, PhoneOutlined, MailOutlined, MessageOutlined } from '@ant-design/icons';
+import { SendOutlined, UserOutlined, PhoneOutlined, MailOutlined, MessageOutlined, PhoneFilled } from '@ant-design/icons';
+import Link from 'next/link';
 
 const { TextArea } = Input;
 
@@ -22,7 +23,7 @@ const BulkOrderForm = () => {
           Email: values.Email,
           ContactNumber: values.ContactNumber,
           Message: values.Message,
-          slug: 'BulkOrder' 
+          slug: 'BulkOrder'
         })
       });
 
@@ -45,13 +46,13 @@ const BulkOrderForm = () => {
   return (
     <div className="min-h-screen p-2 flex items-center justify-center">
       <div className="w-full max-w-[575px] mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-8 animate-fadeIn">
+        <div className="bg-white rounded-2xl shadow-md p-4 sm:p-8 animate-fadeIn">
           <div className="text-center mb-4">
-            <h1 style={{color:'#704d25'}} className="text-2xl sm:text-xl font-bold  mb-2">
+            <h1 style={{ color: '#704d25' }} className="text-2xl sm:text-xl font-bold mb-2">
               Drop Us A Message For Bulk Order
             </h1>
             <p className="text-gray-600">
-              We all get back to you with the best bulk order options
+              We will get back to you with the best bulk order options.
             </p>
           </div>
 
@@ -135,6 +136,26 @@ const BulkOrderForm = () => {
               </Button>
             </Form.Item>
           </Form>
+
+          {/* Call Now Button */}
+          <div className="text-center mt-4">
+          <Link href={"tel:+911234567890"}>
+          <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                // icon={<SendOutlined />}
+                loading={loading}
+                className="w-full h-12 order-btn text-base transition-all duration-300 transform hover:scale-[1.02]"
+              >
+              
+                {/* {loading ? 'Sending...' : 'Submit'} */}
+                <PhoneFilled style={{ marginRight: '8px', fontSize: '18px' }} />
+              Call Now for Instant Order
+              </Button>
+              </Link>
+           
+          </div>
         </div>
 
         <div className="mt-6 text-center text-white">

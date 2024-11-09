@@ -31,9 +31,7 @@ const Footer = () => {
     const startTime = performance.now();
 
     const easeInOutQuad = (t) => {
-      return t < 0.5
-        ? 2 * t * t
-        : -1 + (4 - 2 * t) * t;
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     };
 
     const scrollStep = (currentTime) => {
@@ -69,12 +67,12 @@ const Footer = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="sm:text-left">
-              <Link href="/"> 
-                <img
-                  src="/images/logo.svg"
-                  alt="Company Logo"
-                  className="w-24  sm:mx-0 mb-4"
-                />
+                <Link href="/">
+                  <img
+                    src="/images/logo.svg"
+                    alt="Company Logo"
+                    className="w-24  sm:mx-0 mb-4"
+                  />
                 </Link>
                 <p className="text-sm text-[#3A3A3A]">
                   We are dedicated to providing the best food service for
@@ -85,14 +83,7 @@ const Footer = () => {
               <div>
                 <h4 className="text-md font-semibold mb-4">Quick Links</h4>
                 <ul className="space-y-0">
-                  <li>
-                    <Link
-                      href="/web-pages/about-us"
-                      className="text-gray-600 text-sm hover:text-gray-800"
-                    >
-                      About Us
-                    </Link>
-                  </li>
+                 
                   <li>
                     <Link
                       href="/contactus"
@@ -122,7 +113,8 @@ const Footer = () => {
                       href="/online-coolie-booking"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
-Online Coolie Services                   </Link>
+                      Online Coolie Services{" "}
+                    </Link>
                   </li>
                   <li>
                     <Link
@@ -148,6 +140,14 @@ Online Coolie Services                   </Link>
               <div>
                 <h4 className="text-md font-semibold mb-4">Important Links</h4>
                 <ul className="space-y-0">
+                <li>
+                    <Link
+                      href="/web-pages/about-us"
+                      className="text-gray-600 text-sm hover:text-gray-800"
+                    >
+                      About Us
+                    </Link>
+                  </li>
                   <li>
                     <Link
                       href="/web-pages/terms-and-conditions"
