@@ -143,6 +143,14 @@ const BlogManagement = () => {
 
   const columns = [
     {
+      title: 'Blog Image',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image) => (
+        <img src={image} alt="thumbnail" style={{ width: '70px', height: '50px', borderRadius: '8px' }} />
+      ),
+    },
+    {
       title: "Title",
       dataIndex: "title",
       key: "title",
@@ -188,9 +196,14 @@ const BlogManagement = () => {
           onChange={(checked) => handleStatusChange(checked, record._id)}
           checkedChildren="publish"
           unCheckedChildren="draft"
+          style={{
+            backgroundColor: status === "publish" ? "#D6872A" : "#B0B0B0",
+            borderColor: status === "publish" ? "#D6872A" : "#B0B0B0",
+          }}
         />
       ),
     },
+    
     {
       title: "Actions",
       key: "actions",
@@ -274,6 +287,7 @@ const BlogManagement = () => {
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
+        width={800}
       >
         <div dangerouslySetInnerHTML={{ __html: modalContent }} />
       </Modal>
