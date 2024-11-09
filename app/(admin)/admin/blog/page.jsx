@@ -33,8 +33,6 @@ const BlogManagement = () => {
     total: 0,
   });
   const [loading, setLoading] = useState(false);
-  console.log(filteredBlogs,"filteredBlogs")
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState("");
 
@@ -61,9 +59,6 @@ const BlogManagement = () => {
       const response = await axios.get(
         `/api/blog?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
       );
-
-      console.log("API response:", response.data);
-
       const { docs, totalDocs } = response.data;
       setBlogs(docs);
       setFilteredBlogs(docs);
@@ -91,7 +86,7 @@ const BlogManagement = () => {
 
   const handleDelete = async (key) => {
     try {
-      await axios.delete(`/api/blog/${key}`);
+      await axios.delete(`/api/blog?id=${key}`);
       message.success("Blog deleted successfully");
       fetchBlogs();
     } catch (error) {
@@ -152,16 +147,13 @@ const BlogManagement = () => {
       dataIndex: "title",
       key: "title",
       sorter: (a, b) => a.title.localeCompare(b.title),
+      width:300
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
-    },
-    {
-      title: "Keywords",
-      dataIndex: "metakeyword",
-      key: "metakeyword",
+      width:300
     },
     {
       title: "Content",
@@ -267,9 +259,7 @@ const BlogManagement = () => {
         <Spin spinning={loading} indicator={antIcon}>
           <Table
             columns={columns}
-            // dataSource={(filteredBlogs || []).map((blog) => ({ ...blog, key: blog._id }))}
             dataSource={filteredBlogs}
-
             pagination={{
               ...pagination,
               showSizeChanger: true,
