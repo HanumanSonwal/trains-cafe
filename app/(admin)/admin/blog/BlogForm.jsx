@@ -54,25 +54,23 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
     try {
       data.slug = slugify(data.title, { lower: true, strict: true });
       data.image = url;
-  
+
       if (initialValues?._id) {
         await axios.put(`/api/blog?id=${initialValues._id}`, data);
       } else {
         await axios.post("/api/blog", data);
       }
-  
-      fetchBlogs();      // Fetch the updated blog list
-      reset({});         // Clear form values
-      setUrl("");        // Clear image URL
-      onCancel();        // Close the modal or form
-      
-      // Optionally, clear initial values if they're linked to the form's state
-      setInitialValues(null); 
+
+      fetchBlogs();
+      reset({});
+      setUrl("");
+      onCancel();
+      setInitialValues(null);
     } catch (error) {
       console.error("Failed to submit the form:", error);
     }
   };
-  
+
   return (
     <Modal
       title={initialValues ? "Edit Blog" : "Add Blog"}

@@ -1,3 +1,5 @@
+// this sun editor intigration
+
 // import React, { useEffect, useState } from "react";
 // import SunEditor from "suneditor-react";
 // import "suneditor/dist/css/suneditor.min.css";
@@ -63,6 +65,11 @@
 // };
 
 // export default TextEditor;
+
+
+
+
+// this Jodit editor intigration
 
 import React, { useEffect, useState } from "react";
 import JoditEditor from "jodit-react";
@@ -153,6 +160,9 @@ export default TextEditor;
 
 
 
+// this CK editor intigration
+
+
 // import React, { useEffect, useState } from "react";
 // import { CKEditor } from "@ckeditor/ckeditor5-react";
 // import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -217,6 +227,9 @@ export default TextEditor;
 // };
 
 // export default TextEditor;
+
+
+// this CK editor with upload api intigration
 
 // import React, { useEffect, useState } from "react";
 // import { CKEditor } from "@ckeditor/ckeditor5-react";
