@@ -8,6 +8,7 @@ import {
   Switch,
   Popconfirm,
   Spin,
+  Modal
 } from "antd";
 import {
   PlusOutlined,
@@ -33,6 +34,22 @@ const BlogManagement = () => {
   });
   const [loading, setLoading] = useState(false);
   console.log(filteredBlogs,"filteredBlogs")
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+
+  const handleViewMore = (content) => {
+    setModalContent(content); 
+    setIsModalVisible(true); 
+  };
+
+  const truncateContent = (content, wordLimit) => {
+    const words = content.split(' ');
+    if (words.length > wordLimit) {
+      return `${words.slice(0, wordLimit).join(' ')}...`;
+    }
+    return content;
+  };
 
   useEffect(() => {
     fetchBlogs();
@@ -111,7 +128,7 @@ const BlogManagement = () => {
   const handleStatusChange = async (checked, key) => {
     try {
       await axios.put(`/api/blog?id=${key}`, {
-        status: checked ? "Published" : "Draft",
+        status: checked ? "publish" : "draft",
       });
       message.success("Blog status updated successfully");
       fetchBlogs();
@@ -148,19 +165,37 @@ const BlogManagement = () => {
     },
     {
       title: "Content",
-      dataIndex: "content",
       key: "content",
+      render: (text, record) => {
+        const truncatedContent = truncateContent(record.content, 8);
+
+        return (
+          <div>
+            <span dangerouslySetInnerHTML={{ __html: truncatedContent }} />
+            {record.content.split(' ').length > 20 && (
+              <Button 
+             className="text-[#D6872A] hover:underline"
+                type="link" 
+                onClick={() => handleViewMore(record.content)}
+              >
+                View More
+              </Button>
+            )}
+          </div>
+        );
+      },
     },
+    
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status, record) => (
         <Switch
-          checked={status === "Published"}
+          checked={status === "publish"}
           onChange={(checked) => handleStatusChange(checked, record._id)}
-          checkedChildren="Published"
-          unCheckedChildren="Draft"
+          checkedChildren="publish"
+          unCheckedChildren="draft"
         />
       ),
     },
@@ -243,6 +278,15 @@ const BlogManagement = () => {
             onChange={handleTableChange}
           />
         </Spin>
+
+        <Modal
+        title="Full Content"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+      >
+        <div dangerouslySetInnerHTML={{ __html: modalContent }} />
+      </Modal>
 
         <BlogForm
           fetchBlogs={fetchBlogs}

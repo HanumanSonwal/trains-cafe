@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Button, Input, Row, Col } from 'antd';
+import { Modal, Button, Input, Row, Select, Col } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,6 +23,7 @@ const blogSchema = z.object({
 const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
   console.log(initialValues,"initialValues")
   const [url, setUrl] = useState(initialValues?.image || '');
+  const { Option } = Select;
 
   const { control, handleSubmit, setValue, reset, formState: { errors } } = useForm({
     resolver: zodResolver(blogSchema),
@@ -98,18 +99,25 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
             />
           </Col>
           <Col span={12}>
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Status</label>
-                  <Input {...field} />
-                  {errors.status && <p className="text-red-500">{errors.status.message}</p>}
-                </div>
-              )}
-            />
-          </Col>
+  <Controller
+    name="status"
+    control={control}
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block mb-1">Status</label>
+        <Select 
+          {...field} 
+          placeholder="Select Status"
+          className="w-full"
+        >
+          <Option value="publish">Publish</Option>
+          <Option value="draft">Draft</Option>
+        </Select>
+        {errors.status && <p className="text-red-500">{errors.status.message}</p>}
+      </div>
+    )}
+  />
+</Col>
           <Col span={24}>
             <Controller
               name="description"
