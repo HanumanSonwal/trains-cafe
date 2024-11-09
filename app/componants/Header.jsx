@@ -1,7 +1,5 @@
-"use client";
-
 import { useState } from 'react';
-import { PhoneOutlined, WhatsAppOutlined, ShoppingCartOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PhoneOutlined, WhatsAppOutlined, ShoppingCartOutlined, DeleteFilled } from '@ant-design/icons';
 import { Badge, Modal, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
@@ -50,6 +48,7 @@ export default function Header() {
 
     return (
         <div className="sticky top-0 z-50 mx-auto">
+      
             <div className="bg-gray-100 flex justify-center gap-4 p-2 text-center text-sm">
                 <Link href='tel:090909090' className="transition-transform transform hover:scale-105 hover:shadow-md flex items-center justify-center bg-white border border-gray-300 rounded-lg px-2 py-1 text-blue-600 hover:bg-blue-50">
                     <PhoneOutlined className="mr-2" />
@@ -61,6 +60,7 @@ export default function Header() {
                 </Link>
             </div>
 
+       
             <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
                 <div className="flex justify-between items-center w-full">
                     <Link href="/">
@@ -87,43 +87,45 @@ export default function Header() {
                 <ul>
                     {totalUniqueItems > 0 ? (
                         cartItems.map(item => (
-                            <li key={item._id} className="flex justify-between items-center py-2 border-b border-gray-300">
+                            <li key={item._id} className="flex justify-between items-center py-4 border-b border-gray-300">
+                            <div className="flex items-center gap-4">
+                                <img src={item.image} alt={item.name} className="h-16 w-16 object-cover rounded-md" />
                                 <div className="flex flex-col">
-                                    <span className="font-bold">{item.name}</span>
-                                    <span className="text-sm text-gray-500">Price: ₹{item.price}</span>
-                                    <span className="text-sm text-gray-500">Total: ₹{(item.price * item.quantity).toFixed(2)}</span>
+                                    <span className="font-semibold " style={{color:"#6F4D27"}}>{item.name}</span>
+                                    <span className="text-sm text-gray-500">₹{item.price}</span>
+                                    <span className="text-sm text-gray-500 font-bold">Total: ₹{(item.price * item.quantity).toFixed(2)}</span>
                                 </div>
-                                <div className="flex items-center">
-                                    <Button
-                                        onClick={() => handleDecreaseQuantity(item)}
-                                        className="border-0 text-white mr-2"
-                                        style={{ backgroundColor: '#D6872A' }}
-                                        size="small"
-                                    >
-                                        -
-                                    </Button>
-                                    <span className="mx-2">{item.quantity}</span>
-                                    <Button
-                                        onClick={() => handleIncreaseQuantity(item)}
-                                        className="border-0 text-white"
-                                        style={{ backgroundColor: '#D6872A' }}
-                                        size="small"
-                                    >
-                                        +
-                                    </Button>
-                                    <Button
-                                        onClick={() => handleDeleteItem(item)}
-                                        className="ml-2"
-                                        icon={<DeleteOutlined />}
-                                        style={{ color: '#6F4D27', border: 'none' }}
-                                    />
-                                </div>
-                            </li>
+                            </div>
+                        
+                            <div className="flex items-center space-x-2">
+                                <Button
+                                style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                                    onClick={() => handleDecreaseQuantity(item)}
+                                    className="text-white bg-[#FAF3CC] hover:bg-[#D6872A] rounded-full w-8 h-8 flex justify-center items-center transition-all duration-300 transform hover:scale-110"
+                                    size="small"
+                                >
+                                    -
+                                </Button>
+                                <span className="mx-2 font-semibold">{item.quantity}</span>
+                                <Button
+                                style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                                    onClick={() => handleIncreaseQuantity(item)}
+                                    className="text-white bg-[#FAF3CC] hover:bg-[#D6872A] rounded-full w-8 h-8 flex justify-center items-center transition-all duration-300 transform hover:scale-110"
+                                    size="small"
+                                >
+                                    +
+                                </Button>
+                              
+                                 <Button  onClick={() => handleDeleteItem(item)} icon={<DeleteFilled />} danger />
+                            </div>
+                        </li>
+                        
                         ))
                     ) : (
                         <p>No items in the cart.</p>
                     )}
                 </ul>
+
                 {totalUniqueItems > 0 && (
                     <div className="mt-4">
                         <span className="text-xl font-bold">Total: ₹ {totalPrice.toFixed(2)}</span>

@@ -15,6 +15,11 @@ const BlogSchema = new mongoose.Schema({
     metakeyword: { type: String, required: true },
     metatitle: { type: String, required: true },
     metadescription: { type: String, required: true },
+    status: {
+        type: String,
+        enum: ['publish', 'draft'], // Allowed values for status
+        required: true               // Make status required
+    },
 }, {
     timestamps: true,
 });
