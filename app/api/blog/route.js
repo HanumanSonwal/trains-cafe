@@ -9,7 +9,7 @@ export async function POST(req) {
     try {
         await dbConnect();
 
-        const { title, description, image, content, metakeyword, metatitle, metadescription, status } = await req.json();
+        const { title, description, image, content, metakeyword, metatitle, metadescription, status ,category } = await req.json();
 
         // Validate that status is either "publish" or "draft"
         if (!status || !['publish', 'draft'].includes(status)) {
@@ -29,7 +29,8 @@ export async function POST(req) {
             metakeyword,
             metatitle,
             metadescription,
-            status
+            status ,
+            category
         });
         console.log('New blog request:', blog);
 
@@ -48,6 +49,36 @@ export async function POST(req) {
     }
 }
 
+// export async function GET(req) {
+//     try {
+//         await dbConnect();
+
+//         const { searchParams } = new URL(req.url);
+//         const page = parseInt(searchParams.get("page"), 10) || 1;
+//         const limit = parseInt(searchParams.get("limit"), 10) || 10;
+//         const status = searchParams.get("status"); // Retrieve the status parameter
+
+//         // Check if status is provided and only accept 'publish' or 'draft' values
+//         const filter = status ? { status: status === 'publish' ? 'publish' : 'draft' } : {};
+
+//         const options = {
+//            page,
+//            limit,
+//            sort: { createdAt: -1 }, 
+//         };
+
+//         // Execute paginated query with filtering
+//         const result = await Blog.paginate(filter, options);
+
+//         return NextResponse.json(result);
+//     } catch (error) {
+//         return NextResponse.json({
+//             message: 'An error occurred',
+//             error: error.message,
+//         }, { status: 500 });
+//     }
+// }
+
 export async function GET(req) {
     try {
         await dbConnect();
@@ -56,17 +87,28 @@ export async function GET(req) {
         const page = parseInt(searchParams.get("page"), 10) || 1;
         const limit = parseInt(searchParams.get("limit"), 10) || 10;
         const status = searchParams.get("status"); // Retrieve the status parameter
+        const category = searchParams.get("category"); // Retrieve the category parameter
 
-        // Check if status is provided and only accept 'publish' or 'draft' values
-        const filter = status ? { status: status === 'publish' ? 'publish' : 'draft' } : {};
+        // Initialize filter object
+        const filter = {};
+
+        // Apply status filter only if it's provided
+        if (status) {
+            filter.status = status;
+        }
+
+        // Apply category filter only if it's provided
+        if (category) {
+            filter.category = category;
+        }
 
         const options = {
-           page,
-           limit,
-           sort: { createdAt: -1 }, 
+            page,
+            limit,
+            sort: { createdAt: -1 },
         };
 
-        // Execute paginated query with filtering
+        // Execute paginated query with conditional filtering
         const result = await Blog.paginate(filter, options);
 
         return NextResponse.json(result);
@@ -77,6 +119,10 @@ export async function GET(req) {
         }, { status: 500 });
     }
 }
+
+
+
+
 
 export async function DELETE(req) {
     try {
@@ -176,7 +222,7 @@ export async function PUT(req) {
 
         const {
             name, title, description, keywords, pageData,
-            image, content, metakeyword, metatitle, metadescription, status
+            image, content, metakeyword, metatitle, metadescription, status, category
         } = await req.json();
 
         // Validate status for PUT method
@@ -189,8 +235,10 @@ export async function PUT(req) {
         // Prepare update fields dynamically
         const updateFields = {};
         if (name) updateFields.name = name;
-        if (title) updateFields.title = title;
-        if (title) updateFields.slug = slugify(title, { lower: true, strict: true });
+        if (title) {
+            updateFields.title = title;
+            updateFields.slug = slugify(title, { lower: true, strict: true });
+        }
         if (description) updateFields.description = description;
         if (keywords) updateFields.keywords = keywords;
         if (pageData) updateFields.pageData = pageData;
@@ -200,6 +248,7 @@ export async function PUT(req) {
         if (metatitle) updateFields.metatitle = metatitle;
         if (metadescription) updateFields.metadescription = metadescription;
         if (status) updateFields.status = status;
+        if (category) updateFields.category = category; // Add category to updateFields
 
         const blog = await Blog.findByIdAndUpdate(
             id,
@@ -225,3 +274,4 @@ export async function PUT(req) {
         }, { status: 500 });
     }
 }
+

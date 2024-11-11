@@ -18,10 +18,12 @@ const blogSchema = z.object({
   metadescription: z.string().nonempty("Please enter a meta description"),
   image: z.string().optional(),
   slug: z.string().optional(),
+  category: z.string().nonempty("Please select a category"),
 });
 
 const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
   const [url, setUrl] = useState(initialValues?.image || "");
+  const [isreset, setIsreset] = useState(false);
   const { Option } = Select;
 
   const {
@@ -41,6 +43,7 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
       metadescription: "",
       image: "",
       slug: "",
+      category: "",
       ...initialValues,
     },
   });
@@ -48,7 +51,13 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
   useEffect(() => {
     reset(initialValues);
     setUrl(initialValues?.image || "");
+    setIsreset(true);
   }, [initialValues, reset]);
+
+  useEffect(()=>{
+    setIsreset(false)
+  },[])
+
 
   const handleFormSubmit = async (data) => {
     try {
@@ -64,6 +73,7 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
       fetchBlogs();
       reset({});
       setUrl("");
+      setIsreset(true);
       onCancel();
       setInitialValues(null);
     } catch (error) {
@@ -123,6 +133,41 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
                   {errors.status && (
                     <p className="text-red-500">{errors.status.message}</p>
                   )}
+                </div>
+              )}
+            />
+          </Col>
+          <Col span={12}>
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-4">
+                  <label className="block mb-1">Category</label>
+                  <Select
+                    {...field}
+                    placeholder="Select Category"
+                    className="w-full"
+                  >
+                    <Option value="Food">Food</Option>
+                    <Option value="Health">Health</Option>
+                    <Option value="Travel">Travel</Option>
+                  </Select>
+                  {errors.category && (
+                    <p className="text-red-500">{errors.category.message}</p>
+                  )}
+                </div>
+              )}
+            />
+          </Col>
+          <Col span={12}>
+            <Controller
+              name="image"
+              control={control}
+              render={({ field }) => (
+                <div className="mb-4">
+                  <label className="block mb-1">Thumbnail Image</label>
+                  <FileUploadComponent {...field} url={url} isreset={isreset}  setUrl={setUrl} />
                 </div>
               )}
             />
@@ -211,18 +256,7 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               )}
             />
           </Col>
-          <Col span={24}>
-            <Controller
-              name="image"
-              control={control}
-              render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Thumbnail Image</label>
-                  <FileUploadComponent {...field} url={url} setUrl={setUrl} />
-                </div>
-              )}
-            />
-          </Col>
+        
         </Row>
       </form>
     </Modal>

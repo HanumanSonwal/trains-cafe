@@ -1,35 +1,31 @@
 import dbConnect from '@/app/lib/dbConnect';
 import Blog from '@/app/models/blog';
 import { NextResponse } from 'next/server';
-import slugify from 'slugify';
 
-
-
-
-export async function GET(req, context) {
+export async function GET(req, { params }) {
     try {
-        const { slug } = context.params;
+        const { slug } = params;
 
-        if(!slug) {
+        if (!slug) {
             return NextResponse.json({
-                message: 'Web page not found',
-            }, { status: 404 });
+                message: 'Slug parameter is missing',
+            }, { status: 400 });
         }
 
         await dbConnect();
 
         const result = await Blog.findOne({ slug, status: 'published' });
-
+        
         if (!result) {
             return NextResponse.json({
                 message: 'Web page not found',
             }, { status: 404 });
         }
 
-        return NextResponse.json(result)
+        return NextResponse.json(result);
 
-        
     } catch (error) {
+        console.error('Error fetching blog:', error);
         return NextResponse.json({
             message: 'An error occurred',
             error: error.message,

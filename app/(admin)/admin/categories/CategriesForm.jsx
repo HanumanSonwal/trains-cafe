@@ -28,6 +28,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
   });
 
   const [url, setUrl] = useState(""); 
+  const [isreset, setIsreset] = useState(false);
 
   
   useEffect(() => {
@@ -41,6 +42,11 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
       });
     }
   }, [initialValues, reset]);
+
+  useEffect(()=>{
+    setIsreset(false)
+  },[])
+
 
 
   const postCategory = async (formData, id, onSubmit = () => {}) => {
@@ -82,6 +88,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
       image: "",
     });
     setUrl(""); 
+    setIsreset(true);
   };
 
   return (
@@ -124,7 +131,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block mb-1">Thumbnail Image</label>
-                <FileUploadComponent {...field} url={url} setUrl={setUrl} />
+                <FileUploadComponent {...field} url={url} isreset={isreset}  setUrl={setUrl} />
               </div>
             )}
           />
