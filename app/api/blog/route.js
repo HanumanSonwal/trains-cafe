@@ -48,6 +48,36 @@ export async function POST(req) {
     }
 }
 
+// export async function GET(req) {
+//     try {
+//         await dbConnect();
+
+//         const { searchParams } = new URL(req.url);
+//         const page = parseInt(searchParams.get("page"), 10) || 1;
+//         const limit = parseInt(searchParams.get("limit"), 10) || 10;
+//         const status = searchParams.get("status"); // Retrieve the status parameter
+
+//         // Check if status is provided and only accept 'publish' or 'draft' values
+//         const filter = status ? { status: status === 'publish' ? 'publish' : 'draft' } : {};
+
+//         const options = {
+//            page,
+//            limit,
+//            sort: { createdAt: -1 }, 
+//         };
+
+//         // Execute paginated query with filtering
+//         const result = await Blog.paginate(filter, options);
+
+//         return NextResponse.json(result);
+//     } catch (error) {
+//         return NextResponse.json({
+//             message: 'An error occurred',
+//             error: error.message,
+//         }, { status: 500 });
+//     }
+// }
+
 export async function GET(req) {
     try {
         await dbConnect();
@@ -56,14 +86,21 @@ export async function GET(req) {
         const page = parseInt(searchParams.get("page"), 10) || 1;
         const limit = parseInt(searchParams.get("limit"), 10) || 10;
         const status = searchParams.get("status"); // Retrieve the status parameter
+        const slug = searchParams.get("slug"); // Retrieve the slug parameter
 
-        // Check if status is provided and only accept 'publish' or 'draft' values
-        const filter = status ? { status: status === 'publish' ? 'publish' : 'draft' } : {};
+        // Build filter object based on status and slug
+        const filter = {};
+        if (status) {
+            filter.status = status === 'publish' ? 'publish' : 'draft';
+        }
+        if (slug) {
+            filter.slug = slug;
+        }
 
         const options = {
            page,
            limit,
-           sort: { createdAt: -1 }, 
+           sort: { createdAt: -1 },
         };
 
         // Execute paginated query with filtering
@@ -77,6 +114,7 @@ export async function GET(req) {
         }, { status: 500 });
     }
 }
+
 
 export async function DELETE(req) {
     try {
