@@ -87,25 +87,21 @@ export async function GET(req) {
         const page = parseInt(searchParams.get("page"), 10) || 1;
         const limit = parseInt(searchParams.get("limit"), 10) || 10;
         const status = searchParams.get("status"); // Retrieve the status parameter
-        const category = searchParams.get("category"); // Retrieve the category parameter
+        const slug = searchParams.get("slug"); // Retrieve the slug parameter
 
-        // Initialize filter object
+        // Build filter object based on status and slug
         const filter = {};
-
-        // Apply status filter only if it's provided
         if (status) {
-            filter.status = status;
+            filter.status = status === 'publish' ? 'publish' : 'draft';
         }
-
-        // Apply category filter only if it's provided
-        if (category) {
-            filter.category = category;
+        if (slug) {
+            filter.slug = slug;
         }
 
         const options = {
-            page,
-            limit,
-            sort: { createdAt: -1 },
+           page,
+           limit,
+           sort: { createdAt: -1 },
         };
 
         // Execute paginated query with conditional filtering
@@ -119,9 +115,6 @@ export async function GET(req) {
         }, { status: 500 });
     }
 }
-
-
-
 
 
 export async function DELETE(req) {
