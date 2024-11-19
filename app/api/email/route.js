@@ -1,8 +1,8 @@
 import { getServerSession } from 'next-auth';
 import dbConnect from '@/app/lib/dbConnect';
 import sendMail from '../../lib/sendEmail';
-import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import OtpModel from '@/app/models/otp';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function POST(req) {
   try {
