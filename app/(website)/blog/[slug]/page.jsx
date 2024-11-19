@@ -1,15 +1,16 @@
 "use client";
 
-import { useRouter } from "next/router"; 
+// import { useRouter } from "next/router"; 
 import { useEffect, useState } from "react";
 import { Card } from "antd";
 import dayjs from "dayjs";
 
 const { Meta } = Card;
 
-const BlogPost = () => {
-  const router = useRouter();
-  const { slug } = router.query.slug; 
+const BlogPost = ({ params }) => {
+    const { slug } = params; 
+//   const router = useRouter();
+//   const { slug } = router.query.slug; 
   
   const [blogPost, setBlogPost] = useState(null);
 
@@ -19,7 +20,7 @@ const BlogPost = () => {
 
     const fetchBlogPost = async () => {
       try {
-        const response = await fetch(`/api/blog/${slug}`); 
+        const response = await fetch(`/api/blog?slug=${slug}`); 
         const data = await response.json();
         setBlogPost(data); 
       } catch (error) {
