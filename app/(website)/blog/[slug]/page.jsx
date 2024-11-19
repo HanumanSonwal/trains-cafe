@@ -14,6 +14,8 @@ const BlogPost = ({ params }) => {
   
   const [blogPost, setBlogPost] = useState(null);
 
+  console.log(blogPost,"blogPost")
+
 
   useEffect(() => {
     if (!slug) return; 
@@ -22,7 +24,7 @@ const BlogPost = ({ params }) => {
       try {
         const response = await fetch(`/api/blog?slug=${slug}`); 
         const data = await response.json();
-        setBlogPost(data); 
+        setBlogPost(data.docs[0]); 
       } catch (error) {
         console.error("Error fetching blog post:", error);
       }
@@ -45,7 +47,11 @@ const BlogPost = ({ params }) => {
           title={blogPost.title}
           description={`Published on ${dayjs(blogPost.updatedAt).format("DD MMM YYYY")}`} 
         />
-        <div className="mt-4 text-gray-700">{blogPost.content}</div> 
+     <div 
+  className="mt-4 text-gray-700" 
+  dangerouslySetInnerHTML={{ __html: blogPost.content }} 
+/>
+
       </Card>
     </div>
   );
