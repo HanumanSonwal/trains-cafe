@@ -1,5 +1,6 @@
 import dbConnect from '@/app/lib/dbConnect';
 import OtpModel from '@/app/models/otp';
+import { authOptions } from '../[...nextauth]/route';
 
 export async function POST(req) {
   try {

@@ -52,7 +52,7 @@ const BlogPage = () => {
 
   return (
     <div>
-      {/* Banner Section */}
+    
       <div className="relative md:h-60 h-40 mb-4">
         <img
           src="/images/section-bg.webp"
@@ -64,7 +64,6 @@ const BlogPage = () => {
         </div>
       </div>
 
-      {/* Category Tabs */}
       <div className="flex flex-col items-center mt-8">
         <Input.Search
           placeholder="Search blogs"
@@ -86,46 +85,60 @@ const BlogPage = () => {
         </Tabs>
       </div>
 
-      {/* Blog Cards */}
-      <div className="grid grid-cols-2 gap-6 mt-8 px-4">
-      {blogPosts.map((post) => (
-  <div key={post.id} className="w-full shadow-lg rounded-lg relative">
-    <Card hoverable cover={
-      <div className="relative">
-        <img alt={post.title} src={post.image} className="w-full h-40 object-cover" />
-        <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-sm px-2 py-1">
-          {post.category}
-        </div>
-      </div>
-    }>
-      <div className="flex justify-between items-center mb-2">
-        <p className="text-sm text-gray-400 blog-date">
-          {dayjs(post.updatedAt).format('DD MMM YYYY')}
-        </p>
-        <div className="flex items-center text-sm text-gray-400">
-          <img
-            src="/images/user-icon.png"
-            alt="Author"
-            className="w-4 h-4 mr-2"
+<div className="grid grid-cols-2 gap-6 mt-8 px-4">
+  {blogPosts.length > 0 ? (
+    blogPosts.map((post) => (
+      <div key={post.id} className="w-full shadow-lg rounded-lg relative">
+        <Card
+          hoverable
+          cover={
+            <div className="relative">
+              <img
+                alt={post.title}
+                src={post.image}
+                className="w-full h-40 object-cover"
+              />
+              <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-sm px-2 py-1">
+                {post.category}
+              </div>
+            </div>
+          }
+        >
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-sm text-gray-400 blog-date">
+              {dayjs(post.updatedAt).format('DD MMM YYYY')}
+            </p>
+            <div className="flex items-center text-sm text-gray-400">
+              <img
+                src="/images/user-icon.png"
+                alt="Author"
+                className="w-4 h-4 mr-2"
+              />
+              <p className="blog-author">By Admin</p>
+            </div>
+          </div>
+          <Meta
+            className="text-[#3A3A3A]"
+            title={post.title}
+            description={post.excerpt}
           />
-          <p className="blog-author">By Admin</p>
-        </div>
+          <div className="flex justify-between items-center mt-4">
+            <Link
+              href={`/blog/${post.slug}`}
+              className="blog-link flex items-center"
+            >
+              Read more <ArrowRightOutlined className="ml-1" />
+            </Link>
+          </div>
+        </Card>
       </div>
-      <Meta
-        className="text-[#3A3A3A]"
-        title={post.title}
-        description={post.excerpt}
-      />
-      <div className="flex justify-between items-center mt-4">
-      <Link href={`/blog/${post.slug}`} className="blog-link flex items-center">
-  Read more <ArrowRightOutlined className="ml-1" />
-</Link>
-
-      </div>
-    </Card>
-  </div>
-))}
-      </div>
+    ))
+  ) : (
+    <div className="col-span-2 text-center text-gray-500">
+      No blogs available for this category.
+    </div>
+  )}
+</div>
 
       <div className="mt-8 text-center flex justify-center mb-3">
         <Pagination
