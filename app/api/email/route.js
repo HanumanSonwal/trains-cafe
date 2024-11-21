@@ -1,4 +1,3 @@
-import { getServerSession } from 'next-auth';
 import dbConnect from '@/app/lib/dbConnect';
 import sendMail from '../../lib/sendEmail';
 import OtpModel from '@/app/models/otp';
@@ -8,22 +7,21 @@ export async function POST(req) {
   try {
     await dbConnect();
 
-    const session = await getServerSession(req, authOptions);
-    if (!session) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
+    // const session = await getServerSession(req, authOptions);
+    // if (!session) {
+    //   return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    // }
 
-    const userId = session.user.id;
+    // const userId = session.user.id;
 
     //OTP generation
-    await OtpModel.create({userId, otp});
-
-    console.log(`OTP for user ${userId}: ${otp}`);
-
-    const { to, type } = await req.json();
+    const { to, type} = await req.json();
     let subject, text;
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`OTP for user ${to}: ${otp}`);
+
+    await OtpModel.create({email :to, otp});
 
     //OTP generation done
     

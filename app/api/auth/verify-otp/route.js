@@ -1,4 +1,3 @@
-import { getServerSession } from 'next-auth';
 import dbConnect from '@/app/lib/dbConnect';
 import OtpModel from '@/app/models/otp';
 import { authOptions } from '../[...nextauth]/route';
@@ -7,14 +6,8 @@ export async function POST(req) {
   try {
     await dbConnect();
 
-    const session = await getServerSession(req, authOptions);
-    if (!session) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    }
-
-    const userId = session.user.id;
-    const { otp } = await req.json();
-    const otpRecord = await OtpModel.findOne({userId});
+    const { otp, email } = await req.json();
+    const otpRecord = await OtpModel.findOne({email});
 
     if(!otpRecord){
         return new Response(JSON.stringify({error: "OTP not found or expired"}),{
@@ -23,8 +16,9 @@ export async function POST(req) {
         });
     }
 
-    if(otpRecord.otp === otp){
-        await OtpModel.deleteOne({userId});
+    console.log(otpRecord.otp === otp, "bool");
+    if(otpRecord.otp == otp){
+        await OtpModel.deleteOne({email});
 
         return new Response(JSON.stringify({message: "OTP verified successful"}), {
             status: 200,
