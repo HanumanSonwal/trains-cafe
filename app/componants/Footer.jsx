@@ -12,7 +12,7 @@ const Footer = () => {
 
     const handleScroll = () => {
       const halfScrollHeight = document.documentElement.scrollHeight / 2;
-      const currentScrollPosition = window.scrollY + window.innerHeight;
+      const currentScrollPosition = document.documentElement.scrollY + document.documentElement.innerHeight;
   
       if (currentScrollPosition > halfScrollHeight) {
         setShowTopNavigation(true);
@@ -21,10 +21,10 @@ const Footer = () => {
       }
     };
   
-    window.addEventListener("scroll", handleScroll);
+    document.documentElement.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      document.documentElement.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
