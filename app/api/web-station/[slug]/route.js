@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import WebPage from "@/app/models/webPage";
+import WebStation from "@/app/models/webStation";
 import dbConnect from "@/app/lib/dbConnect";
 
 export async function GET(req, context) {
@@ -8,17 +8,17 @@ export async function GET(req, context) {
 
         if(!slug) {
             return NextResponse.json({
-                message: 'Web page not found',
+                message: 'Web station page not found',
             }, { status: 404 });
         }
 
         await dbConnect();
 
-        const result = await WebPage.findOne({ slug, status: 'published' });
+        const result = await WebStation.findOne({ slug, status: 'published' });
 
         if (!result) {
             return NextResponse.json({
-                message: 'Web page not found',
+                message: 'Web station not found',
             }, { status: 404 });
         }
 
