@@ -6,52 +6,53 @@ import Link from "next/link";
 const Footer = () => {
   const [showTopNavigation, setShowTopNavigation] = useState(false);
 
-  const handleScroll = () => {
-    const halfScrollHeight = document.documentElement.scrollHeight / 2;
-    const currentScrollPosition = window.scrollY + window.innerHeight;
 
-    if (currentScrollPosition > halfScrollHeight) {
-      setShowTopNavigation(true);
-    } else {
-      setShowTopNavigation(false);
-    }
-  };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+
+    const handleScroll = () => {
+      const halfScrollHeight = document.documentElement.scrollHeight / 2;
+      const currentScrollPosition = document.documentElement.scrollY + document.documentElement.innerHeight;
+  
+      if (currentScrollPosition > halfScrollHeight) {
+        setShowTopNavigation(true);
+      } else {
+        setShowTopNavigation(false);
+      }
+    };
+  
+    document.documentElement.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      document.documentElement.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
+  
   const scrollToTop = () => {
     const duration = 1000;
-    const start = window.scrollY;
+    const element = document.documentElement; 
+    const start = element.scrollTop; 
     const startTime = performance.now();
-
-    const easeInOutQuad = (t) => {
-      return t < 0.5
-        ? 2 * t * t
-        : -1 + (4 - 2 * t) * t;
-    };
-
+  
+    const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+  
     const scrollStep = (currentTime) => {
       const timeElapsed = currentTime - startTime;
       const progress = Math.min(timeElapsed / duration, 1);
       const easing = easeInOutQuad(progress);
       const scrollPosition = start - easing * start;
-
-      window.scrollTo(0, scrollPosition);
-
+  
+      element.scrollTo(0, scrollPosition); 
+  
       if (progress < 1) {
         requestAnimationFrame(scrollStep);
       }
     };
-
+  
     requestAnimationFrame(scrollStep);
   };
-
+  
   return (
     <>
       <footer

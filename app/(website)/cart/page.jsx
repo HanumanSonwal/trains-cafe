@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,10 @@ const CartPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
+
+  // State for the modal
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
 
   const handleProceedToCheckout = () => {
     router.push("/checkout");
@@ -30,10 +34,20 @@ const CartPage = () => {
         updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 })
       );
     } else if (currentQuantity === 1) {
-      if (window.confirm("Do you want to remove this item from the cart?")) {
-        dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
-      }
+      setItemToRemove(item);
+      setModalOpen(true);
     }
+  };
+
+  const handleConfirmRemove = () => {
+    dispatch(updateItemQuantity({ id: itemToRemove._id, quantity: 0 }));
+    setModalOpen(false);
+    setItemToRemove(null);
+  };
+
+  const handleCancelRemove = () => {
+    setModalOpen(false);
+    setItemToRemove(null);
   };
 
   const totalPrice = cartItems.reduce((total, item) => {
@@ -112,6 +126,19 @@ const CartPage = () => {
       ) : (
         <p className="text-center text-gray-600">Your cart is empty.</p>
       )}
+
+      {/* Modal for confirming item removal */}
+      <Modal
+        title="Confirm Removal"
+        visible={isModalOpen}
+        onOk={handleConfirmRemove}
+        onCancel={handleCancelRemove}
+        okText="Remove"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <p>Do you want to remove this item from the cart?</p>
+      </Modal>
     </div>
   );
 };
