@@ -4,7 +4,9 @@ const nextConfig = {
     images: {
 
         domains: ["localhost", "res.cloudinary.com"],
+
     },
+    swcMinify: true,
     output:"standalone"
 };
 
