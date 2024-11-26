@@ -1,162 +1,162 @@
 // this sun editor intigration
 
-// import React, { useEffect, useState } from "react";
-// import SunEditor from "suneditor-react";
-// import "suneditor/dist/css/suneditor.min.css";
+import React, { useEffect, useState } from "react";
+import SunEditor from "suneditor-react";
+import "suneditor/dist/css/suneditor.min.css";
 
-// const TextEditor = ({ previousValue = "a", updatedValue, height }) => {
-//   const [isClient, setIsClient] = useState(false);
+const TextEditor = ({ previousValue = "a", updatedValue, height }) => {
+  const [isClient, setIsClient] = useState(false);
 
-//   useEffect(() => {
-//     // This ensures the editor is only rendered on the client-side
-//     setIsClient(true);
-//   }, []);
+  useEffect(() => {
+    // This ensures the editor is only rendered on the client-side
+    setIsClient(true);
+  }, []);
 
-//   const handleChange = (content) => {
-//     updatedValue(content);
-//   };
+  const handleChange = (content) => {
+    updatedValue(content);
+  };
 
-//   if (!isClient) {
-//     return null; 
-//   }
+  if (!isClient) {
+    return null; 
+  }
 
-//   return (
-//     <SunEditor
-//       setContents={previousValue}
-//       onChange={handleChange}
-//       setOptions={{
-//         height: height || 200,
-//         buttonList: [
-//           ["undo", "redo", "font", "fontSize", "formatBlock", "align"],
-//           [
-//             "bold",
-//             "underline",
-//             "italic",
-//             "strike",
-//             "subscript",
-//             "superscript",
-//             "removeFormat",
-//           ],
-//           [
-//             "fontColor",
-//             "hiliteColor",
-//             "outdent",
-//             "indent",
-//             "align",
-//             "horizontalRule",
-//             "list",
-//             "table",
-//           ],
-//           [
-//             "link",
-//             "image",
-//             "video",
-//             "fullScreen",
-//             "showBlocks",
-//             "codeView",
-//             "preview",
-//             "print",
-//             "save",
-//           ],
-//         ],
-//       }}
-//     />
-//   );
-// };
+  return (
+    <SunEditor
+      setContents={previousValue}
+      onChange={handleChange}
+      setOptions={{
+        height: height || 200,
+        buttonList: [
+          ["undo", "redo", "font", "fontSize", "formatBlock", "align"],
+          [
+            "bold",
+            "underline",
+            "italic",
+            "strike",
+            "subscript",
+            "superscript",
+            "removeFormat",
+          ],
+          [
+            "fontColor",
+            "hiliteColor",
+            "outdent",
+            "indent",
+            "align",
+            "horizontalRule",
+            "list",
+            "table",
+          ],
+          [
+            "link",
+            "image",
+            "video",
+            "fullScreen",
+            "showBlocks",
+            "codeView",
+            "preview",
+            "print",
+            "save",
+          ],
+        ],
+      }}
+    />
+  );
+};
 
-// export default TextEditor;
+export default TextEditor;
 
 
 
 
 // this Jodit editor intigration
 
-import React, { useEffect, useState } from "react";
-import JoditEditor from "jodit-react";
+// import React, { useEffect, useState } from "react";
+// import JoditEditor from "jodit-react";
 
-const TextEditor = ({
-  value,
-  onChange,
-  onBlur,
-  name,
-  placeholder,
-  className,
-}) => {
-  const [editorData, setEditorData] = useState(value);
+// const TextEditor = ({
+//   value,
+//   onChange,
+//   onBlur,
+//   name,
+//   placeholder,
+//   className,
+// }) => {
+//   const [editorData, setEditorData] = useState(value);
 
-  useEffect(() => {
-    if (editorData) {
-      onChange({
-        target: { name, value: editorData },
-      });
-    }
-  }, [editorData]);
+//   useEffect(() => {
+//     if (editorData) {
+//       onChange({
+//         target: { name, value: editorData },
+//       });
+//     }
+//   }, [editorData]);
 
-  const editorConfig = {
-    readonly: false,
-    tabIndex: 1,
-    askBeforePasteHTML: false,
-    askBeforePasteFromWord: false,
-    defaultActionOnPaste: "insert_clear_html",
-    placeholder: placeholder,
-    beautyHTML: true,
-    toolbarButtonSize: "large",
-    buttons: [
-      "source",
-      "|",
-      "bold",
-      "italic",
-      "|",
-      "ul",
-      "ol",
-      "|",
-      "font",
-      "fontsize",
-      "brush",
-      "paragraph",
-      "|",
-      "video",
-      "table",
-      "link",
-      "|",
-      "left",
-      "center",
-      "right",
-      "justify",
-      "|",
-      "undo",
-      "redo",
-      "|",
-      "hr",
-      "eraser",
-      "fullsize",
-      "image",
-    ],
-    enableDragAndDropFileToEditor: true,
-    uploader: {
-      insertImageAsBase64URI: true,
-      imagesExtensions: ["jpg", "png", "jpeg", "gif"],
-      prepareData: (formData) => {
-        const alt = formData.get("alt") || "";
-        const file = formData.get("file");
-        const data = new FormData();
-        data.append("file", file, file.name);
-        data.append("alt", alt);
-        return data;
-      },
-    },
-  };
+//   const editorConfig = {
+//     readonly: false,
+//     tabIndex: 1,
+//     askBeforePasteHTML: false,
+//     askBeforePasteFromWord: false,
+//     defaultActionOnPaste: "insert_clear_html",
+//     placeholder: placeholder,
+//     beautyHTML: true,
+//     toolbarButtonSize: "large",
+//     buttons: [
+//       "source",
+//       "|",
+//       "bold",
+//       "italic",
+//       "|",
+//       "ul",
+//       "ol",
+//       "|",
+//       "font",
+//       "fontsize",
+//       "brush",
+//       "paragraph",
+//       "|",
+//       "video",
+//       "table",
+//       "link",
+//       "|",
+//       "left",
+//       "center",
+//       "right",
+//       "justify",
+//       "|",
+//       "undo",
+//       "redo",
+//       "|",
+//       "hr",
+//       "eraser",
+//       "fullsize",
+//       "image",
+//     ],
+//     enableDragAndDropFileToEditor: true,
+//     uploader: {
+//       insertImageAsBase64URI: true,
+//       imagesExtensions: ["jpg", "png", "jpeg", "gif"],
+//       prepareData: (formData) => {
+//         const alt = formData.get("alt") || "";
+//         const file = formData.get("file");
+//         const data = new FormData();
+//         data.append("file", file, file.name);
+//         data.append("alt", alt);
+//         return data;
+//       },
+//     },
+//   };
 
-  return (
-    <JoditEditor
-      value={value}
-      onBlur={(newContent) => setEditorData(newContent)}
-      config={editorConfig}
-    />
-  );
-};
+//   return (
+//     <JoditEditor
+//       value={value}
+//       onBlur={(newContent) => setEditorData(newContent)}
+//       config={editorConfig}
+//     />
+//   );
+// };
 
-export default TextEditor;
+// export default TextEditor;
 
 
 
