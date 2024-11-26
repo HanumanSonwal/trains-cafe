@@ -1,19 +1,23 @@
 import dbConnect from '@/app/lib/dbConnect';
 import sendMail from '../../lib/sendEmail';
 import OtpModel from '@/app/models/otp';
-import { authOptions } from '../auth/[...nextauth]/route';
+import sessionChecker from '@/app/lib/sessionPermission';
 
 export async function POST(req) {
   try {
+
+    // Check session and permissions
+    const isAuthorized = await sessionChecker(req, "targetApi", true);
+    
+    if (!isAuthorized) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     await dbConnect();
-
-    // const session = await getServerSession(req, authOptions);
-    // if (!session) {
-    //   return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-    // }
-
-    // const userId = session.user.id;
-
+    
     //OTP generation
     const { to, type} = await req.json();
     let subject, text;
