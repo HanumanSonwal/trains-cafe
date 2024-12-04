@@ -88,7 +88,7 @@ const Footer = () => {
                 <ul className="space-y-0">
                   <li>
                     <Link
-                      href="/web-pages/about-us"
+                      href="/about-us"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       About Us
@@ -108,6 +108,14 @@ const Footer = () => {
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Blogs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/stations"
+                      className="text-gray-600 text-sm hover:text-gray-800"
+                    >
+                      Stations
                     </Link>
                   </li>
                   <li>
@@ -151,7 +159,7 @@ Online Coolie Services                   </Link>
                 <ul className="space-y-0">
                   <li>
                     <Link
-                      href="/web-pages/terms-and-conditions"
+                      href="/terms-and-conditions"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Terms & Conditions
@@ -159,7 +167,7 @@ Online Coolie Services                   </Link>
                   </li>
                   <li>
                     <Link
-                      href="/web-pages/privacy-policy"
+                      href="/privacy-policy"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Privacy Policy
@@ -183,7 +191,7 @@ Online Coolie Services                   </Link>
                   </li>
                   <li>
                     <Link
-                      href="/web-pages/complained-and-feedback"
+                      href="/complained-and-feedback"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Complained and Feedback
@@ -191,7 +199,7 @@ Online Coolie Services                   </Link>
                   </li>
                   <li>
                     <Link
-                      href="/web-pages/cancellation-policy"
+                      href="/cancellation-policy"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Cancellation Policy

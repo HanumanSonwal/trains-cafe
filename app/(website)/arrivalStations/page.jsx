@@ -84,30 +84,33 @@ const ArrivalStations = () => {
         </div>
       )}
 
-      <Collapse accordion activeKey={activeKey} onChange={setActiveKey}>
-        {upcomingStations?.map((station, index) => (
-          <Panel
-            key={index}
-            header={
-              <div className="flex justify-between items-center">
-                <div>
-                  <span className="font-semibold">{station.station_name}</span>{" "}
-                  ({station.station_code})
-                </div>
-                <div className="text-sm">Arrival: {station.eta}</div>
-              </div>
-            }
-          >
-            <VendorCard
-              train={{
-                trainNo,
-                trainName,
-              }}
-              station={station}
-            />
-          </Panel>
-        ))}
-      </Collapse>
+<Collapse accordion activeKey={activeKey} onChange={setActiveKey}>
+  {upcomingStations
+    ?.filter(station => station.station_name?.trim()) // Exclude blank or empty station_name
+    .map((station, index) => (
+      <Panel
+        key={index}
+        header={
+          <div className="flex justify-between items-center">
+            <div>
+              <span className="font-semibold">{station.station_name}</span>{" "}
+              ({station.station_code})
+            </div>
+            <div className="text-sm">Arrival: {station.eta}</div>
+          </div>
+        }
+      >
+        <VendorCard
+          train={{
+            trainNo,
+            trainName,
+          }}
+          station={station}
+        />
+      </Panel>
+    ))}
+</Collapse>
+
 
       <RecentOrders />
     </div>

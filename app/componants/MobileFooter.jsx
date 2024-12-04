@@ -75,8 +75,8 @@ const MobileFooter = () => {
           </div>
           <div className="p-4">
             <nav className="space-y-4">
-              <Link href="/profile" className="block text-sm font-bold" onClick={closeMenu}>Profile</Link>
-              <Link href="/comingsoon" className="block text-sm font-bold" onClick={closeMenu}>My Orders</Link>
+              {/* <Link href="/profile" className="block text-sm font-bold" onClick={closeMenu}>Profile</Link> */}
+              {/* <Link href="/comingsoon" className="block text-sm font-bold" onClick={closeMenu}>My Orders</Link> */}
               <Link href="/bulkorder" className="block text-sm font-bold" onClick={closeMenu}>Group Order</Link>
               <Link href="/contactus" className="block text-sm font-bold" onClick={closeMenu}>Contact Us</Link>
               <Link href="/web-pages/about-us" className="block text-sm font-bold" onClick={closeMenu}>About Us</Link>

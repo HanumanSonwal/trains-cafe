@@ -28,7 +28,7 @@ function VendorCard({ station, train }) {
       setError(false);
       try {
         const response = await fetch(
-          `/api/vendors?search=${station.station_name}`
+          `/api/vendors?stationname=${station.station_name}`
         );
         const data = await response.json();
         if (data.data && data.data.length > 0) {

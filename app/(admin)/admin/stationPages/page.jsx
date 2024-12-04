@@ -3,11 +3,11 @@
 import { Table, Switch, Button, Input, Modal, Popconfirm, Spin ,Tooltip, message } from 'antd';
 import { EditFilled, DeleteOutlined, PlusOutlined, DeleteFilled , LoadingOutlined, SearchOutlined, CopyOutlined , CloseCircleOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
-import WebsitePageModal from './WebsitePageModal';
+import SattionPageModal from './WebsitePageModal';
 
 const { Search } = Input;
 
-export default function WebsitesPages() {
+export default function SattionsPages() {
   const [pages, setPages] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +26,7 @@ export default function WebsitesPages() {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/web-pages?page=${currentPage}&limit=${pageSize}&search=${searchText}`
+        `/api/web-station?page=${currentPage}&limit=${pageSize}&search=${searchText}`
       );
       const data = await response.json();
       setPages(data.docs);
@@ -42,7 +42,7 @@ export default function WebsitesPages() {
     const updatedPage = { ...record, status: newStatus };
 
     try {
-      await fetch(`/api/web-pages/update/${record._id}`, {
+      await fetch(`/api/web-station/update/${record._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export default function WebsitesPages() {
   const handleSubmit = async (values) => {
     try {
       if (modalMode === 'add') {
-        await fetch('/api/web-pages', {
+        await fetch('/api/web-station', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function WebsitesPages() {
           body: JSON.stringify(values),
         });
       } else {
-        await fetch(`/api/web-pages/${editingPage._id}`, {
+        await fetch(`/api/web-station/${editingPage._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export default function WebsitesPages() {
 
   const handleDelete = async (pageId) => {
     try {
-      await fetch(`/api/web-pages/delete/${pageId}`, {
+      await fetch(`/api/web-station/delete/${pageId}`, {
         method: 'DELETE',
       });
       fetchPages(); 
@@ -114,14 +114,14 @@ export default function WebsitesPages() {
     setCurrentPage(1); 
   };
   const baseURL = process.env.NEXT_PUBLIC_URL;
-
   const columns = [
+    
     {
       title: 'Slug',
       key: 'slug',
       width: '25%',
       render: (_, record) => {
-        const slugUrl = `${baseURL}/${record.slug}`;
+        const slugUrl = `${baseURL}/stations/${record.slug}`;
     
         const handleCopy = () => {
           navigator.clipboard.writeText(slugUrl);
@@ -144,7 +144,7 @@ export default function WebsitesPages() {
                 color: '#1890ff',
                 textDecoration: 'underline',
                 flexGrow: 1, 
-                marginRight: '8px',
+                marginRight: '5px',
               }}
             >
               {slugUrl}
@@ -155,7 +155,7 @@ export default function WebsitesPages() {
                 style={{
                   cursor: 'pointer',
                   color: '#D6872A',
-                  fontSize: '18px', 
+                  fontSize: '18px',
                 }}
               />
             </Tooltip>
@@ -226,7 +226,7 @@ export default function WebsitesPages() {
       }}
     >
       <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
-      Website Pages Management
+      Stations Pages Management
       </h2>
       <div className="flex items-center my-5 justify-between">
       <Input
@@ -261,7 +261,7 @@ export default function WebsitesPages() {
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: totalPages * pageSize, 
+            total: totalPages * pageSize,
             showSizeChanger: true,
             pageSizeOptions: ['10', '20', '50'],
             onChange: (page, pageSize) => {
@@ -273,7 +273,7 @@ export default function WebsitesPages() {
         />
       </Spin>
 
-      <WebsitePageModal
+      <SattionPageModal
         visible={isModalVisible}
         onCancel={handleCancel}
         onSubmit={handleSubmit}

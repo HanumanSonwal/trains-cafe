@@ -77,6 +77,12 @@ const Menubar = () => {
       path: '/admin/websitesPages',
     },
     {
+      key: '17',
+      icon: <FileTextOutlined />,
+      label: <Link href="/admin/stationPages">Station Pages</Link>,
+      path: '/admin/stationPages',
+    },
+    {
       key: '8',
       icon: <FileTextOutlined />,
       label: <Link href="/admin/blog">Blog</Link>,
