@@ -83,6 +83,12 @@ const Menubar = () => {
       path: '/admin/stationPages',
     },
     {
+      key: '18',
+      icon: <FileTextOutlined />,
+      label: <Link href="/admin/TrainPages">Train Pages</Link>,
+      path: '/admin/TrainPages',
+    },
+    {
       key: '8',
       icon: <FileTextOutlined />,
       label: <Link href="/admin/blog">Blog</Link>,
