@@ -26,7 +26,7 @@ export default function TrainsPages() {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/web-station?page=${currentPage}&limit=${pageSize}&search=${searchText}`
+        `/api/web-train?page=${currentPage}&limit=${pageSize}&search=${searchText}`
       );
       const data = await response.json();
       setPages(data.docs);
@@ -42,7 +42,7 @@ export default function TrainsPages() {
     const updatedPage = { ...record, status: newStatus };
 
     try {
-      await fetch(`/api/web-station/update/${record._id}`, {
+      await fetch(`/api/web-train/update/${record._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export default function TrainsPages() {
   const handleSubmit = async (values) => {
     try {
       if (modalMode === 'add') {
-        await fetch('/api/web-station', {
+        await fetch('/api/web-train', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ export default function TrainsPages() {
           body: JSON.stringify(values),
         });
       } else {
-        await fetch(`/api/web-station/${editingPage._id}`, {
+        await fetch(`/api/web-train/${editingPage._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ export default function TrainsPages() {
 
   const handleDelete = async (pageId) => {
     try {
-      await fetch(`/api/web-station/delete/${pageId}`, {
+      await fetch(`/api/web-train/delete/${pageId}`, {
         method: 'DELETE',
       });
       fetchPages(); 

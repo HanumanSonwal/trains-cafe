@@ -42,7 +42,7 @@ const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) =>
 
       let response;
       if (mode === 'add') {
-        response = await fetch('/api/web-station/add', {
+        response = await fetch('/api/web-train/add', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) =>
           body: JSON.stringify(submitData),
         });
       } else {
-        response = await fetch(`/api/web-station/update/${initialValues._id}`, {
+        response = await fetch(`/api/web-train/update/${initialValues._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
