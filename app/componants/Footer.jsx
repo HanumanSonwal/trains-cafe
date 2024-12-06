@@ -213,6 +213,14 @@ Online Coolie Services                   </Link>
                       Cancellation Policy
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      href="/vendors-ragistation"
+                      className="text-gray-600 text-sm hover:text-gray-800"
+                    >
+                     Vendor Registration
+                    </Link>
+                  </li>
                 </ul>
               </div>
               <div>

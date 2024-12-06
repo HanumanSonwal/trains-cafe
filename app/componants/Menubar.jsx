@@ -101,6 +101,12 @@ const Menubar = () => {
       path: '/admin/contact-info',
     },
     {
+      key: '19',
+      icon: <FileTextOutlined />,
+      label: <Link href="/admin/vendor-request">Vendor Request</Link>,
+      path: '/admin/vendor-request',
+    },
+    {
       key: '10',
       icon: <MessageOutlined />,
       label: <Link href="/admin/contact-inquiry">Contact Inquiry</Link>,
