@@ -33,25 +33,9 @@ const BlogManagement = () => {
     total: 0,
   });
   const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isContentModalVisible, setIsContentModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState("");
 
-  // Handle viewing full content of a blog
-  const handleViewMore = (content) => {
-    setModalContent(content);
-    setIsModalVisible(true);
-  };
-
-  // Truncate content for display purposes
-  const truncateContent = (content, wordLimit) => {
-    const words = content.split(" ");
-    if (words.length > wordLimit) {
-      return `${words.slice(0, wordLimit).join(" ")}...`;
-    }
-    return content;
-  };
-
-  // Fetch blogs with pagination and search
   useEffect(() => {
     fetchBlogs();
   }, [pagination.current, pagination.pageSize, searchText]);
@@ -65,10 +49,7 @@ const BlogManagement = () => {
       const { docs, totalDocs } = response.data;
       setBlogs(docs);
       setFilteredBlogs(docs);
-      setPagination((prev) => ({
-        ...prev,
-        total: totalDocs,
-      }));
+      setPagination((prev) => ({ ...prev, total: totalDocs }));
     } catch (error) {
       console.error("Failed to fetch blogs:", error);
       message.error("Failed to fetch blogs");
@@ -77,22 +58,19 @@ const BlogManagement = () => {
     }
   };
 
-  // Add new blog
   const handleAdd = () => {
     setEditingBlog(null);
     setIsModalOpen(true);
   };
 
-  // Edit an existing blog
   const handleEdit = (record) => {
     setEditingBlog(record);
     setIsModalOpen(true);
   };
 
-  // Delete a blog
-  const handleDelete = async (key) => {
+  const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/blog?id=${key}`);
+      await axios.delete(`/api/blog?id=${id}`);
       message.success("Blog deleted successfully");
       fetchBlogs();
     } catch (error) {
@@ -101,38 +79,17 @@ const BlogManagement = () => {
     }
   };
 
-  // Handle form submission for adding or updating blogs
-  const handleFormSubmit = async (values) => {
-    try {
-      if (editingBlog) {
-        await axios.put(`/api/blog/${editingBlog._id}`, values);
-        message.success("Blog updated successfully");
-      } else {
-        await axios.post("/api/blog", values);
-        message.success("Blog added successfully");
-      }
-      setIsModalOpen(false);
-      fetchBlogs();
-    } catch (error) {
-      console.error("Failed to save blog:", error);
-      message.error("Failed to save blog");
-    }
-  };
-
-  // Search functionality
   const handleSearch = (e) => {
     setSearchText(e.target.value);
   };
 
-  // Clear search
   const clearSearch = () => {
     setSearchText("");
   };
 
-  // Handle changing the blog status (publish/draft)
-  const handleStatusChange = async (checked, key) => {
+  const handleStatusChange = async (checked, id) => {
     try {
-      await axios.put(`/api/blog?id=${key}`, {
+      await axios.put(`/api/blog?id=${id}`, {
         status: checked ? "publish" : "draft",
       });
       message.success("Blog status updated successfully");
@@ -143,13 +100,29 @@ const BlogManagement = () => {
     }
   };
 
-  // Handle table pagination change
   const handleTableChange = (pagination) => {
-    setPagination({
-      ...pagination,
+    setPagination((prev) => ({
+      ...prev,
       current: pagination.current,
       pageSize: pagination.pageSize,
-    });
+    }));
+  };
+
+  const handleViewMore = (content) => {
+    setModalContent(content);
+    setIsContentModalVisible(true);
+  };
+
+  const truncateContent = (content, wordLimit) => {
+    const words = content.split(" ");
+    return words.length > wordLimit
+      ? `${words.slice(0, wordLimit).join(" ")}...`
+      : content;
+  };
+
+  const handleFormSubmit = () => {
+    fetchBlogs();
+    setIsModalOpen(false);
   };
 
   const columns = [
@@ -187,7 +160,7 @@ const BlogManagement = () => {
         return (
           <div>
             <span dangerouslySetInnerHTML={{ __html: truncatedContent }} />
-            {record.content.split(" ").length > 20 && (
+            {record.content.split(" ").length > 8 && (
               <Button
                 className="text-[#D6872A] hover:underline"
                 type="link"
@@ -208,8 +181,8 @@ const BlogManagement = () => {
         <Switch
           checked={status === "publish"}
           onChange={(checked) => handleStatusChange(checked, record._id)}
-          checkedChildren="publish"
-          unCheckedChildren="draft"
+          checkedChildren="Publish"
+          unCheckedChildren="Draft"
           style={{
             backgroundColor: status === "publish" ? "#D6872A" : "#B0B0B0",
             borderColor: status === "publish" ? "#D6872A" : "#B0B0B0",
@@ -241,108 +214,78 @@ const BlogManagement = () => {
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
-    <>
-      <div
-        className="p-4"
-        style={{
-          backgroundColor: "#FAF3CC",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
-          Blog Management
-        </h2>
-        <div className="flex items-center my-5 justify-between">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <AntdInput
-              placeholder="Search"
-              style={{ width: 300, borderColor: "#D6872A" }}
-              prefix={<SearchOutlined />}
-              suffix={
-                searchText && (
-                  <CloseCircleOutlined
-                    onClick={clearSearch}
-                    style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
-                  />
-                )
-              }
-              value={searchText}
-              onChange={handleSearch}
-            />
-          </div>
-
-          <Button
-            type="primary"
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-            icon={<PlusOutlined />}
-            onClick={handleAdd}
-          >
-            Add Blog
-          </Button>
+    <div
+      className="p-4"
+      style={{
+        backgroundColor: "#FAF3CC",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+        Blog Management
+      </h2>
+      <div className="flex items-center my-5 justify-between">
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <AntdInput
+            placeholder="Search"
+            style={{ width: 300, borderColor: "#D6872A" }}
+            prefix={<SearchOutlined />}
+            suffix={
+              searchText && (
+                <CloseCircleOutlined
+                  onClick={clearSearch}
+                  style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
+                />
+              )
+            }
+            value={searchText}
+            onChange={handleSearch}
+          />
         </div>
 
-        <Spin spinning={loading} indicator={antIcon}>
-          <Table
-            columns={columns}
-            dataSource={filteredBlogs}
-            pagination={{
-              ...pagination,
-              showSizeChanger: true,
-              position: ["bottomRight"],
-            }}
-            onChange={handleTableChange}
-          />
-        </Spin>
-
-        <Modal
-          title="Full Content"
-          visible={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
-          footer={null}
-          width={800}
+        <Button
+          type="primary"
+          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+          icon={<PlusOutlined />}
+          onClick={handleAdd}
         >
-          <div dangerouslySetInnerHTML={{ __html: modalContent }} />
-        </Modal>
-
-        <BlogForm
-          fetchBlogs={fetchBlogs}
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleFormSubmit}
-          editingBlog={editingBlog}
-        />
+          Add Blog
+        </Button>
       </div>
-    </>
+
+      <Spin spinning={loading} indicator={antIcon}>
+        <Table
+          columns={columns}
+          dataSource={filteredBlogs}
+          rowKey={(record) => record._id}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            position: ["bottomRight"],
+          }}
+          onChange={handleTableChange}
+        />
+      </Spin>
+
+      <Modal
+        title="Full Content"
+        open={isContentModalVisible}
+        onCancel={() => setIsContentModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <div dangerouslySetInnerHTML={{ __html: modalContent }} />
+      </Modal>
+
+      <BlogForm
+        fetchBlogs={fetchBlogs}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        initialValues={editingBlog}
+      />
+    </div>
   );
 };
 
 export default BlogManagement;
-
-
-
-//  import React from 'react'
- 
-//  function page() {
-//    return (
-//      <div>
-//        blog
-//      </div>
-//    )
-//  }
- 
-//  export default page
- 
-
-
-// import React from 'react'
-
-// function page() {
-//   return (
-//     <div>
-//       blog
-//     </div>
-//   )
-// }
-
-// export default page

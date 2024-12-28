@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Input, Row, Select, Col } from "antd";
+import { Modal, Button, Input, Row, Select, Col, message } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,7 +12,7 @@ const blogSchema = z.object({
   title: z.string().nonempty("Please enter the blog title"),
   description: z.string().nonempty("Please enter the blog description"),
   content: z.string().nonempty("Please enter the content"),
-  status: z.string().nonempty("Please enter the status"),
+  status: z.string().nonempty("Please select a status"),
   metakeyword: z.string().nonempty("Please enter meta keywords"),
   metatitle: z.string().nonempty("Please enter a meta title"),
   metadescription: z.string().nonempty("Please enter a meta description"),
@@ -21,9 +21,9 @@ const blogSchema = z.object({
   category: z.string().nonempty("Please select a category"),
 });
 
-const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
+const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
   const [url, setUrl] = useState(initialValues?.image || "");
-  const [isreset, setIsreset] = useState(false);
+  const [isReset, setIsReset] = useState(false);
   const { Option } = Select;
 
   const {
@@ -51,13 +51,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
   useEffect(() => {
     reset(initialValues);
     setUrl(initialValues?.image || "");
-    setIsreset(true);
+    setIsReset(true);
   }, [initialValues, reset]);
-
-  useEffect(()=>{
-    setIsreset(false)
-  },[])
-
 
   const handleFormSubmit = async (data) => {
     try {
@@ -66,24 +61,26 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
 
       if (initialValues?._id) {
         await axios.put(`/api/blog?id=${initialValues._id}`, data);
+        message.success("Blog updated successfully");
       } else {
         await axios.post("/api/blog", data);
+        message.success("Blog added successfully");
       }
 
       fetchBlogs();
       reset({});
       setUrl("");
-      setIsreset(true);
+      setIsReset(true);
       onCancel();
-      setInitialValues(null);
     } catch (error) {
       console.error("Failed to submit the form:", error);
+      message.error("Failed to save the blog");
     }
   };
 
   return (
     <Modal
-      title={initialValues ? "Edit Blog" : "Add Blog"}
+      title={initialValues?._id ? "Edit Blog" : "Add Blog"}
       open={open}
       width={800}
       onCancel={onCancel}
@@ -94,7 +91,7 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
           onClick={handleSubmit(handleFormSubmit)}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
-          {initialValues ? "Save" : "Submit"}
+          {initialValues?._id ? "Save" : "Submit"}
         </Button>,
       ]}
     >
@@ -105,8 +102,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="title"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Blog Title</label>
+                <div>
+                  <label>Blog Title</label>
                   <Input {...field} />
                   {errors.title && (
                     <p className="text-red-500">{errors.title.message}</p>
@@ -120,8 +117,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="status"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Status</label>
+                <div>
+                  <label>Status</label>
                   <Select
                     {...field}
                     placeholder="Select Status"
@@ -142,8 +139,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="category"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Category</label>
+                <div>
+                  <label>Category</label>
                   <Select
                     {...field}
                     placeholder="Select Category"
@@ -165,9 +162,14 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="image"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Thumbnail Image</label>
-                  <FileUploadComponent {...field} url={url} isreset={isreset}  setUrl={setUrl} />
+                <div>
+                  <label>Thumbnail Image</label>
+                  <FileUploadComponent
+                    {...field}
+                    url={url}
+                    isreset={isReset}
+                    setUrl={setUrl}
+                  />
                 </div>
               )}
             />
@@ -177,8 +179,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="description"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Description</label>
+                <div>
+                  <label>Description</label>
                   <Input.TextArea {...field} />
                   {errors.description && (
                     <p className="text-red-500">{errors.description.message}</p>
@@ -187,14 +189,13 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               )}
             />
           </Col>
-
           <Col span={12}>
             <Controller
               name="metakeyword"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Meta Keywords</label>
+                <div>
+                  <label>Meta Keywords</label>
                   <Input {...field} />
                   {errors.metakeyword && (
                     <p className="text-red-500">{errors.metakeyword.message}</p>
@@ -208,8 +209,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="metatitle"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Meta Title</label>
+                <div>
+                  <label>Meta Title</label>
                   <Input {...field} />
                   {errors.metatitle && (
                     <p className="text-red-500">{errors.metatitle.message}</p>
@@ -223,12 +224,11 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="content"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Content</label>
-          
+                <div>
+                  <label>Content</label>
                   <TextEditor
-                      previousValue={field.value}
-                      updatedValue={(e) => field.onChange(e.target.value)}
+                    previousValue={field.value}
+                    updatedValue={(value) => field.onChange(value)}
                     onBlur={field.onBlur}
                     placeholder="Start typing your content here..."
                     height={200}
@@ -245,8 +245,8 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               name="metadescription"
               control={control}
               render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Meta Description</label>
+                <div>
+                  <label>Meta Description</label>
                   <Input.TextArea {...field} rows={3} />
                   {errors.metadescription && (
                     <p className="text-red-500">
@@ -257,7 +257,6 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               )}
             />
           </Col>
-        
         </Row>
       </form>
     </Modal>

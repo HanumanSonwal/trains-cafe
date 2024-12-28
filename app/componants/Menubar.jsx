@@ -10,6 +10,14 @@ import {
   OrderedListOutlined,
   MessageOutlined,
   PercentageOutlined,
+  GlobalOutlined,
+  InboxOutlined,
+  BookOutlined,
+  SolutionOutlined,
+  ProfileOutlined,
+  HomeOutlined,
+  DatabaseOutlined,
+  CreditCardOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 
@@ -43,12 +51,12 @@ const Menubar = () => {
     {
       key: '2',
       icon: <ShopOutlined />,
-      label: <Link href="/admin/Stations">Stations</Link>,
-      path: '/admin/Stations',
+      label: <Link href="/admin/stations">Stations</Link>,
+      path: '/admin/stations',
     },
     {
       key: '3',
-      icon: <ShopOutlined />,
+      icon: <DatabaseOutlined />,
       label: <Link href="/admin/vendors">Vendors</Link>,
       path: '/admin/vendors',
     },
@@ -61,84 +69,86 @@ const Menubar = () => {
     {
       key: '5',
       icon: <MenuOutlined />,
-      label: <Link href="/admin/menu-item">Menu Items</Link>,
-      path: '/admin/menu-item',
+      label: <Link href="/admin/menu-items">Menu Items</Link>,
+      path: '/admin/menu-items',
     },
     {
       key: '6',
       icon: <PercentageOutlined />,
-      label: <Link href="/admin/coupen-managment">Coupon Management</Link>,
-      path: '/admin/coupen-managment',
+      label: <Link href="/admin/coupon-management">Coupon Management</Link>,
+      path: '/admin/coupon-management',
     },
     {
       key: '7',
-      icon: <FileTextOutlined />,
-      label: <Link href="/admin/websitesPages">Website Pages</Link>,
-      path: '/admin/websitesPages',
-    },
-    {
-      key: '17',
-      icon: <FileTextOutlined />,
-      label: <Link href="/admin/stationPages">Station Pages</Link>,
-      path: '/admin/stationPages',
-    },
-    {
-      key: '18',
-      icon: <FileTextOutlined />,
-      label: <Link href="/admin/TrainPages">Train Pages</Link>,
-      path: '/admin/TrainPages',
+      icon: <GlobalOutlined />,
+      label: <Link href="/admin/website-pages">Website Pages</Link>,
+      path: '/admin/website-pages',
     },
     {
       key: '8',
-      icon: <FileTextOutlined />,
+      icon: <HomeOutlined />,
+      label: <Link href="/admin/station-pages">Station Pages</Link>,
+      path: '/admin/station-pages',
+    },
+    {
+      key: '9',
+      icon: <InboxOutlined />,
+      label: <Link href="/admin/train-pages">Train Pages</Link>,
+      path: '/admin/train-pages',
+    },
+    {
+      key: '10',
+      icon: <BookOutlined />,
       label: <Link href="/admin/blog">Blog</Link>,
       path: '/admin/blog',
     },
     {
-      key: '9',
-      icon: <FileTextOutlined />,
+      key: '11',
+      icon: <SolutionOutlined />,
       label: <Link href="/admin/contact-info">Contact Info</Link>,
       path: '/admin/contact-info',
     },
     {
-      key: '19',
-      icon: <FileTextOutlined />,
-      label: <Link href="/admin/vendor-request">Vendor Request</Link>,
-      path: '/admin/vendor-request',
+      key: '12',
+      icon: <ProfileOutlined />,
+      label: <Link href="/admin/vendor-requests">Vendor Requests</Link>,
+      path: '/admin/vendor-requests',
     },
     {
-      key: '10',
+      key: '13',
       icon: <MessageOutlined />,
-      label: <Link href="/admin/contact-inquiry">Contact Inquiry</Link>,
-      path: '/admin/contact-inquiry',
+      label: <Link href="/admin/contact-inquiries">Contact Inquiries</Link>,
+      path: '/admin/contact-inquiries',
     },
-    ...(session?.user?.role === 'sab-admin' ? [
-      {
-        key: '11',
-        icon: <UserOutlined />,
-        label: <Link href="/admin/manager">Manager</Link>,
-        path: '/admin/manager',
-      }
-    ] : []),
+    ...(session?.user?.role === 'sab-admin'
+      ? [
+          {
+            key: '14',
+            icon: <UserOutlined />,
+            label: <Link href="/admin/managers">Managers</Link>,
+            path: '/admin/managers',
+          },
+        ]
+      : []),
     {
       key: 'sub1',
       icon: <OrderedListOutlined />,
       label: 'Orders',
       children: [
         {
-          key: '12',
-          label: <Link href="/admin/order">Ongoing</Link>,
-          path: '/admin/order',
+          key: '15',
+          label: <Link href="/admin/orders/ongoing">Ongoing</Link>,
+          path: '/admin/orders/ongoing',
         },
         {
-          key: '13',
-          label: <Link href="/admin/order/delivered">Delivered</Link>,
-          path: '/admin/order/delivered',
+          key: '16',
+          label: <Link href="/admin/orders/delivered">Delivered</Link>,
+          path: '/admin/orders/delivered',
         },
         {
-          key: '14',
-          label: <Link href="/admin/order/cancelled">Cancelled</Link>,
-          path: '/admin/order/cancelled',
+          key: '17',
+          label: <Link href="/admin/orders/cancelled">Cancelled</Link>,
+          path: '/admin/orders/cancelled',
         },
       ],
     },
@@ -148,12 +158,12 @@ const Menubar = () => {
       label: 'Settings',
       children: [
         {
-          key: '15',
+          key: '18',
           label: <Link href="/admin/settings/profile">Profile</Link>,
           path: '/admin/settings/profile',
         },
         {
-          key: '16',
+          key: '19',
           label: <Link href="/admin/settings/account">Account</Link>,
           path: '/admin/settings/account',
         },
