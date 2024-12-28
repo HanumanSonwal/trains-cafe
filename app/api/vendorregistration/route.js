@@ -129,8 +129,8 @@ export async function POST(req) {
 
 export async function DELETE(req) {
     try {
-        const url = new URL(req.url);
-        const id = url.searchParams.get('id');
+        const body = await req.json(); 
+        const id = body.id; 
 
         if (!id) {
             return new Response(
@@ -174,4 +174,5 @@ export async function DELETE(req) {
         );
     }
 }
+
 

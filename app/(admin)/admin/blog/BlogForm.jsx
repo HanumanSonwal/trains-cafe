@@ -225,9 +225,10 @@ const BlogForm = ({ open, onCancel, initialValues, fetchBlogs }) => {
               render={({ field }) => (
                 <div className="mb-4">
                   <label className="block mb-1">Content</label>
+          
                   <TextEditor
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.target.value)}
+                      previousValue={field.value}
+                      updatedValue={(e) => field.onChange(e.target.value)}
                     onBlur={field.onBlur}
                     placeholder="Start typing your content here..."
                     height={200}

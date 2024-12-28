@@ -44,7 +44,7 @@ export async function GET(req) {
     const data = await thirdPartyResponse.json();
     return NextResponse.json({
       data: data?.data? data.data: "",
-      success: data?.status ? data.status: "",
+      success: data?.data?.success !== undefined ? data.data.success : data?.status || false, 
       Timestamp: data?.Timestamp ? data.Timestamp: "",
       message: data?.message ? data.message: ""
     });

@@ -132,15 +132,16 @@ const VendorsManagement = () => {
       key: "station",
     },
     {
-      title: "Email",
-      dataIndex: "Email",
-      key: "email",
-    },
-    {
       title: "Distance",
       dataIndex: "Distance",
       key: "distance",
     },
+    {
+      title: "Email",
+      dataIndex: "Email",
+      key: "email",
+    },
+
     {
       title: "Actions",
       key: "actions",
@@ -201,13 +202,7 @@ const VendorsManagement = () => {
             onChange={handleSearch}
           />
         </div>
-        <Button
-          type="primary"
-          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-          icon={<PlusOutlined />}
-        >
-          Add Vendor
-        </Button>
+   
       </div>
 
       <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
