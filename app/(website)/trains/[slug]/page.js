@@ -1,277 +1,130 @@
-// 'use client';
-// import React, { useState, useEffect } from "react";
-// import Link from "next/link";
-// import { Button } from "antd";
-// import Spinner from "@/app/componants/spinner/Spinner";
-
-// const fetchPage = async (slug) => {
-//   try {
-//     const res = await fetch(`/api/web-pages?slug=${slug}`);
-//     if (!res.ok) {
-//       throw new Error(`Network response was not ok: ${res.status}`);
-//     }
-//     const data = await res.json();
-//     return data.docs.find((page) => page.slug === slug && page.status === "published") || null;
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     return null;
-//   }
-// };
-
-// export default function Page({ params }) {
-//   const [page, setPage] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const slug = params.slug;
-//     fetchPage(slug)
-//       .then((data) => {
-//         if (data) {
-//           setPage(data);
-//         } else {
-//           setError("Page not found or unpublished");
-//         }
-//         setLoading(false);
-//       })
-//       .catch((err) => {
-//         setError(err.message);
-//         setLoading(false);
-//       });
-//   }, [params.slug]);
-
-//   if (loading) return <Spinner/>;
-//   if (error) return <div>Error: {error}</div>;
-//   if (!page) return <div>No content available</div>;
-
-//   return (
-//     <div>
-//       {/* Banner Section */}
-//       <div className="relative h-40 md:h-60">
-//         <img
-//           src="/images/section-bg.webp"
-//           alt="Banner"
-//           className="absolute inset-0 object-cover w-full h-full"
-//         />
-//         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-//           <h1 className="text-white text-xl md:text-4xl font-bold text-center px-4">{page.title || "No Name Provided"}</h1>
-//         </div>
-//       </div>
-
-//       {/* Page Content */}
-//       <div className="relative max-w-4xl mx-auto p-4 md:p-6 z-10" style={{ background: "#fcfcfc" }}>
-//         <div className="relative z-10">
-//           <h2 style={{ color: "#704D25", fontWeight: "bold" }} className="text-xl md:text-2xl font-semibold mb-4">
-//             {page.title || "No Title Provided"}
-//           </h2>
-
-//           {/* Render HTML content safely */}
-//           {page.pageData ? (
-//             <div
-//               className="text-sm md:text-base mb-4 text-justify ck-content"
-//               dangerouslySetInnerHTML={{ __html: page.pageData }}
-//             />
-//           ) : (
-//             <p>No content available for this page</p>
-//           )}
-
-//           {/* Call to Action */}
-//           <Link href="/contactus" passHref>
-//             <Button
-//               type="btn"
-//               className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]"
-//             >
-//               Contact Us
-//             </Button>
-//           </Link>
-//         </div>
-//       </div>
-
-//       <style jsx global>{`
-//         /* Add basic CKEditor styles for tables */
-//         .ck-content {
-//           overflow-x: auto; /* Enable horizontal scroll for smaller screens */
-//         }
-
-//         .ck-content table {
-//           width: 100%;
-//           border-collapse: collapse;
-//           min-width: 600px; /* Enforce minimum width to maintain table layout */
-//         }
-
-//         .ck-content th,
-//         .ck-content td {
-//           border: 1px solid #ddd;
-//           padding: 8px;
-//           font-size: 0.875rem; /* Slightly smaller text for better table readability */
-//         }
-
-//         .ck-content th {
-//           background-color: #f4f4f4;
-//           font-weight: bold;
-//         }
-
-//         .ck-content tr:nth-child(even) {
-//           background-color: #f9f9f9;
-//         }
-
-//         .ck-content tr:hover {
-//           background-color: #ddd;
-//         }
-
-//         /* Responsive text and layout */
-//         @media (max-width: 768px) {
-//           .ck-content th,
-//           .ck-content td {
-//             font-size: 0.75rem; /* Adjust text size on smaller screens */
-//           }
-//         }
-//       `}</style>
-//     </div>
-//   );
-// }
-
-
 "use client";
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { Button, message } from "antd";
-import Spinner from "@/app/componants/spinner/Spinner";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { message, Collapse } from "antd";
+import { PhoneOutlined, WhatsAppOutlined } from "@ant-design/icons";
+import VendorCard from "../VendorCard";
+import RecentOrders from "@/app/componants/RecentOrders";
+import TrainData from "../TrainData";
+import TrainContent from "../TrainContent";
 
-const fetchPage = async (slug) => {
-  try {
-    const res = await fetch(`/api/web-train?slug=${slug}`);
-    if (!res.ok) {
-      throw new Error(`Network response was not ok: ${res.status}`);
-    }
-    const data = await res.json();
-    return data.docs.find((page) => page.slug === slug && page.status === "published") || null;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return null;
-  }
-};
+const { Panel } = Collapse;
 
-export default function Page({ params }) {
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const TrainDetails = ({ params }) => {
+  const router = useRouter();
+  const { slug } = params;
+
+
+  const parts = slug.split("-");
+  const trainNo = parts[parts.length - 1]; 
+  const trainName = parts.slice(0, -1).join(" "); 
+
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
+
+  const [journeyDate, setJourneyDate] = useState(getTodayDate);
+  const [upcomingStations, setUpcomingStations] = useState([]);
+  const [activeKey, setActiveKey] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
+
+  console.log(trainName, "trainName");
 
   useEffect(() => {
-    const slug = params.slug;
-    fetchPage(slug)
-      .then((data) => {
-        if (data) {
-          setPage(data);
-        } else {
-          setError("Page not found or unpublished");
+    const fetchTrainDetails = async () => {
+      try {
+        if (!journeyDate) {
+          throw new Error("Date is required for fetching train details.");
         }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [params.slug]);
 
-  if (loading) return <Spinner />;
-  if (error) return <div className="text-red-500 text-center py-6">Error: {error}</div>;
-  if (!page) return <div className="text-gray-500 text-center py-6">No content available</div>;
+        const response = await fetch(
+          `/api/rapid/live?trainNo=${trainNo}&date=${journeyDate}`
+        );
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          setUpcomingStations(result.data.upcoming_stations || []);
+          setNewMessage(result.data.new_message || "");
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        message.error(`Error: ${error.message}`);
+        router.push("/");
+      }
+    };
+
+    if (trainNo && journeyDate) {
+      fetchTrainDetails();
+    }
+  }, [trainNo, journeyDate, router]);
 
   return (
-    <div className=" bg-gray-50">
-  
+    <div className="max-w-3xl mx-auto p-4">
+      <h1
+        className="text-2xl font-bold text-center mb-4"
+        style={{ color: "#704d25" }}
+      >
+        Order Food in {trainName} ({trainNo}) Train
+      </h1>
 
-      <div className="relative h-60 md:h-80">
-        <img
-          src="/images/section-bg.webp"
-          alt="Banner"
-          className="absolute inset-0 object-cover w-full h-full"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1  className="text-white text-xl md:text-4xl font-bold text-center px-4">{page.title || "No Name Provided"}</h1>
-        </div>
+      <div className="bg-gray-100 p-2 mb-4">
+        <span className="font-semibold" style={{ color: "#704d25" }}>
+          Journey Date:
+        </span>{" "}
+        {journeyDate}
       </div>
 
-      {/* Page Content Section */}
-      <div className="max-w-4xl mx-auto p-6 sm:p-10 bg-white shadow-lg rounded-lg mt-8">
-        <h2 style={{color:'#704d25'}} className="text-2xl md:text-3xl font-bold text-coffee-600 mb-4">
-          {page.title || "No Title Provided"}
-        </h2>
-        <div
-          className="text-gray-700 text-base md:text-lg leading-relaxed ck-content mb-8"
-          dangerouslySetInnerHTML={{ __html: page.pageData || "<p>No content available for this page.</p>" }}
-        />
-
-        {/* Call-to-Action */}
-        <div className="text-center">
-        <Link href="/contactus" passHref>
-           <Button
-              type="btn"
-              className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]"
-            >
-              Contact Us
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* Footer Section */}
-      <footer className="bg-coffee-600 text-white py-6 mt-8">
-        <div style={{color:'#704d25'}} className="text-center text-sm">
-          <p>
-            Need help? Reach us at{" "}
-            <a href="tel:+911234567890" className="underline font-semibold">
-              +91 1234567890
-            </a>{" "}
-            or email us at{" "}
-            <a href="mailto:support@example.com" className="underline font-semibold">
-              support@example.com
-            </a>.
+      {!upcomingStations.length && newMessage && (
+        <div className="flex flex-col items-center text-center p-4">
+          <p className="text-lg font-semibold text-red-600 mb-2">{newMessage}</p>
+          <p className="text-md text-gray-700 mb-4">
+            Please order food by calling or via WhatsApp.
           </p>
-          <p className="mt-2">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+          <div className="flex items-center space-x-4">
+            <a href="tel:+1234567890" className="flex items-center space-x-1">
+              <PhoneOutlined className="text-blue-500 text-2xl" />
+              <span className="text-blue-500">Call Us</span>
+            </a>
+            <a
+              href="https://wa.me/1234567890"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-1"
+            >
+              <WhatsAppOutlined className="text-green-500 text-2xl" />
+              <span className="text-green-500">WhatsApp Us</span>
+            </a>
+          </div>
         </div>
-      </footer>
+      )}
 
-      <style jsx global>{`
-        .ck-content {
-          overflow-x: auto;
-          font-size: 1rem;
-        }
+      <Collapse accordion activeKey={activeKey} onChange={setActiveKey}>
+        {upcomingStations.map((station, index) => (
+          <Panel
+            key={index}
+            header={
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="font-semibold">{station.station_name}</span>{" "}
+                  ({station.station_code})
+                </div>
+                <div className="text-sm">Arrival: {station.eta}</div>
+              </div>
+            }
+          >
+            <VendorCard train={{ trainNo, trainName }} station={station} />
+          </Panel>
+        ))}
+      </Collapse>
 
-        .ck-content table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 1rem 0;
-        }
-
-        .ck-content th,
-        .ck-content td {
-          border: 1px solid #ddd;
-          padding: 0.75rem;
-          text-align: left;
-        }
-
-        .ck-content th {
-          background-color: #f5f5f5;
-          font-weight: bold;
-        }
-
-        .ck-content tr:nth-child(even) {
-          background-color: #fafafa;
-        }
-
-        .ck-content tr:hover {
-          background-color: #f0f0f0;
-        }
-
-        @media (max-width: 768px) {
-          .ck-content th,
-          .ck-content td {
-            font-size: 0.875rem;
-          }
-        }
-      `}</style>
+      <RecentOrders />
+      <TrainContent slug={slug} trainNo={trainNo} />
     </div>
   );
-}
+};
+
+export default TrainDetails;
+
+

@@ -1,6 +1,4 @@
 "use client";
-
-// import { useRouter } from "next/router"; 
 import { useEffect, useState } from "react";
 import { Card } from "antd";
 import dayjs from "dayjs";
@@ -9,13 +7,7 @@ const { Meta } = Card;
 
 const BlogPost = ({ params }) => {
     const { slug } = params; 
-//   const router = useRouter();
-//   const { slug } = router.query.slug; 
-  
   const [blogPost, setBlogPost] = useState(null);
-
-  console.log(blogPost,"blogPost")
-
 
   useEffect(() => {
     if (!slug) return; 

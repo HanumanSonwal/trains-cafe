@@ -17,6 +17,8 @@ const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) =>
         title: initialValues.title,
         description: initialValues.description,
         keywords: initialValues.keywords.join(', '),
+        trainnumber: initialValues.trainnumber,
+        trainname: initialValues.trainname,
         status: initialValues.status || 'published',
       });
       setEditorContent(initialValues.pageData || '');
@@ -34,7 +36,9 @@ const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) =>
         title: values.title,
         description: values.description,
         keywords: values.keywords.split(',').map(keyword => keyword.trim()),
-        status: mode === 'add' ? 'draft' : values.status,  // Default to "draft" on add
+        trainnumber: values.trainnumber,
+        trainname: values.trainname,
+        status: mode === 'add' ? 'draft' : values.status, // Default to "draft" on add
         pageData: editorContent,
       };
 
@@ -74,7 +78,7 @@ const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) =>
 
   return (
     <Modal
-      title={mode === 'add' ? "Add Sattion Page" : "Edit Sattion Page"}
+      title={mode === 'add' ? "Add Station Page" : "Edit Station Page"}
       visible={visible}
       onCancel={onCancel}
       onOk={handleSubmit}
@@ -108,6 +112,22 @@ const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) =>
           rules={[{ required: true, message: 'Please input the keywords!' }]}
         >
           <Input placeholder="Enter keywords separated by commas" />
+        </Form.Item>
+
+        <Form.Item
+          name="trainnumber"
+          label="Train Number"
+          rules={[{ required: true, message: 'Please input the train number!' }]}
+        >
+          <Input placeholder="Enter the train number" />
+        </Form.Item>
+
+        <Form.Item
+          name="trainname"
+          label="Train Name"
+          rules={[{ required: true, message: 'Please input the train name!' }]}
+        >
+          <Input placeholder="Enter the train name" />
         </Form.Item>
 
         {/* Only show the status selection during edit mode */}
