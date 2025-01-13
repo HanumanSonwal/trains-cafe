@@ -281,3 +281,26 @@ pre {
 /* .anticon{
 color: #704D25 !important;
 } */
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.animate-scroll {
+  display: flex;
+  /* width: calc(100%);  */
+  animation: scroll 15s linear infinite;
+}
+
+.space-x-6 > *:not(:last-child) {
+  margin-right: 1.5rem; 
+}
