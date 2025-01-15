@@ -150,16 +150,23 @@
 // export default OrderFood;
 
 "use client";
-import { Input, Button, Tabs, message } from "antd";
+import { Input, Button, Tabs, Select, message } from "antd";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
+
+const { Option } = Select;
 
 const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("1");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
+  const [station, setStation] = useState("");
+  const [stationOptions, setStationOptions] = useState([]);
+  console.log(stationOptions ,station)
+  
   const router = useRouter();
+
 
   const handleTabChange = (key) => {
     setActiveKey(key);
@@ -168,6 +175,25 @@ const OrderFood = () => {
   const createSlug = (name, number) => {
     const formattedName = name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
     return `order-food-in-${formattedName.replace(/--+/g, "-")}-${number}`;
+  };
+
+  const fetchStations = async (search) => {
+    try {
+      const response = await fetch(`/api/station?search=${search}`);
+      const result = await response.json();
+      if (response.ok) {
+        const options = result.data.map((station) => ({
+          value: station.code,
+          label: `${station.name} (${station.code})`,
+          name: station.name,
+        }));
+        setStationOptions(options);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      message.error(`Error: ${error.message}`);
+    }
   };
 
   const searchPNR = async () => {
@@ -213,11 +239,25 @@ const OrderFood = () => {
     }
   };
 
+  const searchStation = async () => {
+    if (!station) {
+      return message.error("Please select a station.");
+    }
+    try {
+      message.success("Station found! Redirecting...");
+      router.push(`/stations/${stationOptions.name}`);
+    } catch (error) {
+      message.error(`Error: ${error.message}`);
+    }
+  };
+
   const handleSearch = () => {
     if (activeKey === "1") {
       searchPNR();
     } else if (activeKey === "2") {
       searchTrain();
+    } else if (activeKey === "3") {
+      searchStation();
     }
   };
 
@@ -233,7 +273,10 @@ const OrderFood = () => {
             value={pnr}
             onChange={(e) => setPnr(e.target.value)}
           />
-          <Button onClick={handleSearch} className="order-btn text-white border-none rounded-full px-4 py-2 text-xs font-[600]">
+          <Button
+            onClick={handleSearch}
+            className="order-btn text-white border-none rounded-full px-4 py-2 text-xs font-[600]"
+          >
             Order Now
           </Button>
         </div>
@@ -250,7 +293,34 @@ const OrderFood = () => {
             value={trainNumber}
             onChange={(e) => setTrainNumber(e.target.value)}
           />
-          <Button onClick={handleSearch} className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]">
+          <Button
+            onClick={handleSearch}
+            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
+          >
+            Order Now
+          </Button>
+        </div>
+      ),
+    },
+    {
+      key: "3",
+      label: "Station Name",
+      children: (
+        <div className="flex items-center space-x-2 p-6">
+          <Select
+            showSearch
+            placeholder="Enter Station Name"
+            className="flex-grow"
+            value={station}
+            onSearch={fetchStations}
+            onChange={(value) => setStation(value)}
+            options={stationOptions}
+            filterOption={false}
+          />
+          <Button
+            onClick={handleSearch}
+            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
+          >
             Order Now
           </Button>
         </div>
