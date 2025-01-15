@@ -1,5 +1,6 @@
 import Articles from "../componants/Article";
 import BlogSection from "../componants/BlogSection";
+import Breadcrumbs from "../componants/Breadcrumbs";
 import CustomerReviewSlider from "../componants/CustomerReviewSlider";
 import HeroSection from "../componants/HeroSection";
 import OrderFood from "../componants/OrderFood";
@@ -12,6 +13,7 @@ import StepsSection from "../componants/StepsSection";
 export default function Home() {
   return (
     <div >
+      {/* <Breadcrumbs /> */}
       <HeroSection/>
       <OrderFood/>
       <StepsSection/>

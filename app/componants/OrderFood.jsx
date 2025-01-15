@@ -149,9 +149,8 @@
 
 // export default OrderFood;
 
-
 "use client";
-import { Input, Button, Tabs, message, DatePicker } from "antd";
+import { Input, Button, Tabs, message } from "antd";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
@@ -160,20 +159,16 @@ const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("1");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
   const router = useRouter();
 
   const handleTabChange = (key) => {
     setActiveKey(key);
   };
 
-  const formatDate = (date) => dayjs(date).format("YYYY-MM-DD");
-
   const createSlug = (name, number) => {
     const formattedName = name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
     return `order-food-in-${formattedName.replace(/--+/g, "-")}-${number}`;
   };
-  
 
   const searchPNR = async () => {
     if (!pnr) {
@@ -196,11 +191,11 @@ const OrderFood = () => {
   };
 
   const searchTrain = async () => {
-    if (!trainNumber || !selectedDate) {
-      return message.error("Please enter a valid train number and date.");
+    if (!trainNumber) {
+      return message.error("Please enter a valid train number.");
     }
     try {
-      const formattedDate = formatDate(selectedDate);
+      const formattedDate = dayjs().format("YYYY-MM-DD"); // Use current date
       const response = await fetch(
         `/api/rapid/live?trainNo=${trainNumber}&date=${formattedDate}`
       );
@@ -254,12 +249,6 @@ const OrderFood = () => {
             className="flex-grow"
             value={trainNumber}
             onChange={(e) => setTrainNumber(e.target.value)}
-          />
-          <DatePicker
-            className="flex-grow"
-            placeholder="Select Date"
-            value={selectedDate ? dayjs(selectedDate) : null}
-            onChange={(date) => setSelectedDate(date ? date.toDate() : null)}
           />
           <Button onClick={handleSearch} className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]">
             Order Now
