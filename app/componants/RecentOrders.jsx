@@ -1,4 +1,4 @@
-import { Button, Card, Carousel } from "antd";
+import { Button, Card } from "antd";
 import { PhoneOutlined } from "@ant-design/icons";
 import Link from "next/link";
 
@@ -12,43 +12,42 @@ export default function RecentOrders() {
               src="/images/Recent.png"
               alt="Recent"
               className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2/3"
-              // style={{ top: '-20px' }}
             />
-            <h2 className="text-2xl relative  text-[#704D25] font-bold z-10">
+            <h2 className="text-2xl relative text-[#704D25] font-bold z-10">
               Recent Orders
             </h2>
           </div>
 
-          <Carousel autoplay className="carousel-container">
-            <div className="flex flex-row space-x-6 recent-order-sl p-2">
-              <Card className="flex-shrink-0 w-[calc(50%-1.5rem)] rounded-lg shadow-md">
-                <p className="text-gray-600 text-sm ">
-                  <span className="font-bold">Mamta Nagar</span> In publishing
-                  and graphic design, Lorem ipsum is a placeholder text commonly
-                </p>
-              </Card>
-              <Card className="flex-shrink-0 w-[calc(50%-1.5rem)]  rounded-lg shadow-md">
-                <p className="text-gray-600 text-sm ">
-                  <span className="font-bold"> Nagar</span> In publishing and
-                  graphic design, Lorem ipsum is a placeholder text commonly
-                </p>
-              </Card>
+          {/* Smooth Continuous Slider */}
+          <div className="overflow-hidden relative">
+            <div className="flex animate-scroll space-x-6">
+              {[...Array(6)].map((_, i) => (
+                <Card
+                  key={i}
+                  className="flex-shrink-0 w-[calc(50%-1.5rem)] rounded-lg shadow-md"
+                >
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-bold">Order {i + 1}</span> In
+                    publishing and graphic design, Lorem ipsum is a placeholder
+                    text commonly
+                  </p>
+                </Card>
+              ))}
+              {/* Duplicate the cards for infinite scrolling */}
+              {[...Array(6)].map((_, i) => (
+                <Card
+                  key={`duplicate-${i}`}
+                  className="flex-shrink-0 w-[calc(50%-1.5rem)] rounded-lg shadow-md"
+                >
+                  <p className="text-gray-600 text-sm">
+                    <span className="font-bold">Order {i + 1}</span> In
+                    publishing and graphic design, Lorem ipsum is a placeholder
+                    text commonly
+                  </p>
+                </Card>
+              ))}
             </div>
-            <div className="flex flex-row space-x-6 recent-order-sl p-2">
-              <Card className="flex-shrink-0 w-[calc(50%-1.5rem)]  rounded-lg shadow-md">
-                <p className="text-gray-600 text-sm">
-                  <span className="font-bold">hello</span> In publishing and
-                  graphic design, Lorem ipsum is a placeholder text commonly
-                </p>
-              </Card>
-              <Card className="flex-shrink-0 w-[calc(50%-1.5rem)] rounded-lg shadow-md">
-                <p className="text-gray-600 text-sm ">
-                  <span className="font-bold">hy</span> In publishing and
-                  graphic design, Lorem ipsum is a placeholder text commonly
-                </p>
-              </Card>
-            </div>
-          </Carousel>
+          </div>
         </div>
 
         {/* Order Food On Call Section */}
@@ -73,7 +72,7 @@ export default function RecentOrders() {
             <Button
               type="btn"
               icon={<PhoneOutlined />}
-              className="common-btn border-none flex items-center justify-center  text-sm font-[600] rounded-full"
+              className="common-btn border-none flex items-center justify-center text-sm font-[600] rounded-full"
             >
               Order via call
             </Button>

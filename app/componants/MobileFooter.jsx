@@ -45,7 +45,7 @@ const MobileFooter = () => {
         <div>
           <Space className="w-full py-3 px-4 flex justify-between items-center">
             <FooterItem icon={<HomeOutlined />} text="Home" link="/" />
-            <FooterItem icon={<ToolOutlined />} text="Train Tools" link="/train-tools" />
+            <FooterItem icon={<ToolOutlined />} text="Services" link="/" />
             <FooterItem icon={<FileTextOutlined />} text="Orders" link="/orders" />
             <FooterItem icon={<GiftOutlined />} text="Offers" link="/offers" />
             <button onClick={toggleMenu} className="menu-button flex flex-col items-center font-bold text-[#000] hover:text-[#704D25]">

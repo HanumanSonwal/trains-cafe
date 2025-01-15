@@ -282,22 +282,25 @@ pre {
 color: #704D25 !important;
 } */
 
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
 
-.breadcrumb-container {
-  list-style: none;
-  padding: 0;
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.animate-scroll {
   display: flex;
-  align-items: center;
+  /* width: calc(100%);  */
+  animation: scroll 15s linear infinite;
 }
 
-.breadcrumb-item {
-  margin-right: 4px; /* Space between breadcrumb items */
-}
-
-.breadcrumb-active {
-  font-weight: bold;
-}
-
-.breadcrumb-container span {
-  margin: 0 4px; /* Margin to separate the separator */
+.space-x-6 > *:not(:last-child) {
+  margin-right: 1.5rem; 
 }

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Form, Input, Button, Typography, Divider, App } from 'antd';
+import InfoSection from '@/app/componants/InfoSection';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -45,11 +46,11 @@ const ContactUsPage = () => {
           alt="Banner"
           className="absolute inset-0 object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-2xl md:text-4xl font-bold">Contact Us</h1>
-        </div>
+        
       </div>
-
+      <Title level={3} style={{ color: '#704D25', fontWeight: 'bold' }} className="text-xl text-center mb-4">
+      Contact Us
+        </Title>
       {/* Contact Details Section */}
       <div className="flex flex-col items-center py-8">
         <Title level={3} style={{ color: '#704D25', fontWeight: 'bold' }} className="text-xl mb-4">
@@ -124,7 +125,7 @@ const ContactUsPage = () => {
           </Form>
         </div>
       </div>
-
+<InfoSection/>
       {/* Map Section */}
       <Divider className="m-0" />
       <div className="flex items-center justify-center ">
