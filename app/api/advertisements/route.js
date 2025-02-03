@@ -1,15 +1,17 @@
 import dbConnect from '../../lib/dbConnect';
 import AdvertisementsModel from '../../models/add';
 
-// GET: Fetch advertisements with filters based on slug
+const isValidSlug = (slug) => ['advertisements', 'Banner'].includes(slug);
+
 export async function GET(req) {
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get('slug'); // Get slug parameter
+    const slug = url.searchParams.get('slug'); 
+    const search = url.searchParams.get('search') || ''; 
 
-    if (!slug) {
+    if (slug && !isValidSlug(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Slug is required' }),
+        JSON.stringify({ success: false, message: 'Invalid slug' }),
         { status: 400 }
       );
     }
@@ -17,7 +19,17 @@ export async function GET(req) {
     await dbConnect();
     console.log("Database connected successfully");
 
-    const advertisements = await AdvertisementsModel.find({ slug });
+    const searchCriteria = search
+      ? {
+          slug: slug || { $in: ['advertisements', 'Banner'] },
+          $or: [
+            { title: { $regex: search, $options: 'i' } }, 
+            { description: { $regex: search, $options: 'i' } }, 
+          ],
+        }
+      : { slug: slug || { $in: ['advertisements', 'Banner'] } };
+
+    const advertisements = await AdvertisementsModel.find(searchCriteria);
     console.log("Advertisements fetched successfully");
 
     return new Response(
@@ -36,10 +48,17 @@ export async function GET(req) {
   }
 }
 
-// POST: Create a new advertisement based on slug
 export async function POST(req) {
   try {
     const body = await req.json();
+
+    
+    if (!isValidSlug(body.slug)) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Invalid slug. Allowed values are "advertisements" or "Banner".' }),
+        { status: 400 }
+      );
+    }
 
     if (!body.slug || !body.title || !body.image || !body.description) {
       return new Response(
@@ -69,13 +88,20 @@ export async function POST(req) {
   }
 }
 
-// PUT: Update an advertisement based on slug
 export async function PUT(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const slug = searchParams.get('slug'); // Get slug parameter
+    const slug = searchParams.get('slug');
     const id = searchParams.get('id');
     const body = await req.json();
+
+    
+    if (!isValidSlug(slug)) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Invalid slug. Allowed values are "advertisements" or "Banner".' }),
+        { status: 400 }
+      );
+    }
 
     if (!slug || !id) {
       return new Response(
@@ -88,7 +114,7 @@ export async function PUT(req) {
     console.log("Database connected for updating advertisement");
 
     const updatedAdvertisement = await AdvertisementsModel.findOneAndUpdate(
-      { _id: id, slug }, // Match by ID and slug
+      { _id: id, slug },
       body,
       { new: true, runValidators: true }
     );
@@ -115,10 +141,17 @@ export async function PUT(req) {
   }
 }
 
-// DELETE: Delete an advertisement based on slug
 export async function DELETE(req) {
   try {
     const { slug, id } = await req.json();
+
+    
+    if (!isValidSlug(slug)) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Invalid slug. Allowed values are "advertisements" or "Banner".' }),
+        { status: 400 }
+      );
+    }
 
     if (!slug || !id) {
       return new Response(

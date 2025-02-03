@@ -120,6 +120,12 @@ const Menubar = () => {
       label: <Link href="/admin/contact-inquiries">Contact Inquiries</Link>,
       path: '/admin/contact-inquiries',
     },
+    {
+      key: '20',
+      icon: <MessageOutlined />,
+      label: <Link href="/admin/advertisements">Advertisements</Link>,
+      path: '/admin/advertisements',
+    },
     ...(session?.user?.role === 'sab-admin'
       ? [
           {
