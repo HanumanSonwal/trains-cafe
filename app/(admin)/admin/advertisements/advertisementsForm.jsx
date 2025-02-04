@@ -1,61 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Input, Form, message, Select } from "antd";
-import { useForm, Controller } from "react-hook-form";
 import { postData, updateData } from "@/app/lib/ApiFuntions";
 import FileUploadComponent from "@/app/componants/ImageUpload";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 const { Option } = Select;
 
-const schema = z.object({
-  slug: z.enum(["advertisements", "Banner"], {
-    required_error: "Slug is required",
-  }),
-  title: z.string().min(1, "Title is required"),
-  image: z.string().min(1, "Image is required"),
-  description: z.string().optional(),
-});
-
-const AdvertisementsForm = ({ open, onCancel, initialValues, fetchAdvertisements }) => {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      slug: "",
-      title: "",
-      image: "",
-      description: "",
-    },
-  });
-
+const AdvertisementsForm = ({
+  open,
+  onCancel,
+  initialValues,
+  fetchAdvertisements,
+}) => {
   const [url, setUrl] = useState("");
   const [imageError, setImageError] = useState("");
-  const [isReset, setIsReset] = useState(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (initialValues) {
       setUrl(initialValues.image || "");
-      reset(initialValues);
+      form.setFieldsValue(initialValues);
     } else {
-      reset({
-        slug: "",
-        title: "",
-        image: "",
-        description: "",
-      });
+      form.resetFields();
     }
-  }, [initialValues, reset]);
+  }, [initialValues, form]);
 
-  useEffect(() => {
-    setIsReset(false);
-  }, []);
-
-  const handleFormSubmit = (data) => {
+  const handleFormSubmit = async (values) => {
     if (!url) {
       setImageError("Please upload an image.");
       return;
@@ -63,29 +32,38 @@ const AdvertisementsForm = ({ open, onCancel, initialValues, fetchAdvertisements
       setImageError("");
     }
 
-    console.log(data);
-
-    const formData = new FormData();
-    formData.append("slug", data.slug);
-    formData.append("title", data.title);
-    formData.append("image", url);
-    formData.append("description", data.description);
+    const data = {
+      slug: values.slug,
+      title: values.title,
+      image: url,
+      description: values.description,
+    };
 
     const id = initialValues ? initialValues.id : null;
-    postAdvertisement(formData, id);
+    postAdvertisement(data, id);
   };
 
-  const postAdvertisement = async (formData, id) => {
-    const url = initialValues ? `/api/advertisements?id=${initialValues?._id}` : "/api/advertisements";
+  const postAdvertisement = async (data, id) => {
+    const url = initialValues
+      ? `/api/advertisements?id=${initialValues?._id}`
+      : "/api/advertisements";
     const method = initialValues ? updateData : postData;
 
     try {
-      const response = await method(url, formData);
+      const response = await method(url, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       if (response.success !== false) {
-        message.success(id ? "Advertisement updated successfully!" : "Advertisement added successfully!");
+        message.success(
+          id
+            ? "Advertisement updated successfully!"
+            : "Advertisement added successfully!"
+        );
         fetchAdvertisements();
-        reset();
-        setIsReset(true);
+        form.resetFields();
         onCancel();
       } else {
         throw new Error(response.err || "Failed to save advertisement");
@@ -104,7 +82,7 @@ const AdvertisementsForm = ({ open, onCancel, initialValues, fetchAdvertisements
         <Button
           key="submit"
           type="primary"
-          onClick={handleSubmit(handleFormSubmit)}
+          onClick={() => form.submit()}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           {initialValues ? "Save" : "Submit"}
@@ -114,48 +92,41 @@ const AdvertisementsForm = ({ open, onCancel, initialValues, fetchAdvertisements
       <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
         {initialValues ? "Edit Advertisement" : "Add Advertisement"}
       </h2>
-      <Form layout="vertical" onFinish={handleSubmit(handleFormSubmit)}>
-        <Form.Item label="Slug">
-          <Controller
-            name="slug"
-            control={control}
-            render={({ field }) => (
-              <Select {...field} placeholder="Select slug">
-                <Option value="advertisements">Advertisement</Option>
-                <Option value="Banner">Banner</Option>
-              </Select>
-            )}
-          />
-          {errors.slug && <p className="text-red-500">{errors.slug.message}</p>}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFormSubmit}
+        initialValues={initialValues}
+      >
+        <Form.Item
+          label="Slug"
+          name="slug"
+          rules={[{ required: true, message: "Slug is required" }]}
+        >
+          <Select placeholder="Select slug">
+            <Option value="advertisements">Advertisement</Option>
+            <Option value="Banner">Banner</Option>
+          </Select>
         </Form.Item>
 
-        <Form.Item label="Title">
-          <Controller
-            name="title"
-            control={control}
-            render={({ field }) => <Input {...field} placeholder="Enter title" />}
-          />
-          {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+        <Form.Item
+          label="Title"
+          name="title"
+          rules={[{ required: true, message: "Title is required" }]}
+        >
+          <Input placeholder="Enter title" />
         </Form.Item>
 
-        <Form.Item label="Image">
-          <Controller
-            name="image"
-            control={control}
-            render={({ field }) => (
-              <FileUploadComponent {...field} url={url} setUrl={setUrl} isReset={isReset} setImageError={setImageError} />
-            )}
+        <Form.Item label="Image" name="image">
+          <FileUploadComponent
+            url={url}
+            setUrl={setUrl}
+            setImageError={setImageError}
           />
-          {imageError && <p className="text-red-500">{imageError}</p>}
         </Form.Item>
 
-        <Form.Item label="Description">
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => <Input.TextArea rows={3} {...field} placeholder="Enter description" />}
-          />
-          {errors.description && <p className="text-red-500">{errors.description.message}</p>}
+        <Form.Item label="Description" name="description">
+          <Input.TextArea rows={3} placeholder="Enter description" />
         </Form.Item>
       </Form>
     </Modal>

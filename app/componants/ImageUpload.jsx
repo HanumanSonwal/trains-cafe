@@ -180,42 +180,40 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Define your Zod schema
+// File validation schema using Zod
 const schema = z.object({
   file: z
     .instanceof(File)
     .refine((file) => file.size <= 2 * 1024 * 1024, {
       message: "File size must be less than 2MB",
     })
-    .refine((file) => {
-      const validTypes = ["image/jpeg", "image/png", "image/gif"];
-      return validTypes.includes(file.type);
-    }, {
-      message: "Only .jpeg, .png and .gif formats are supported",
-    }),
+    .refine(
+      (file) => ["image/jpeg", "image/png", "image/gif"].includes(file.type),
+      {
+        message: "Only .jpeg, .png and .gif formats are supported",
+      }
+    ),
 });
 
-const FileUploadComponent = ({ url, setUrl ,isreset  }) => {
+const FileUploadComponent = ({ url, setUrl, isreset }) => {
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  
 
-  const { control, handleSubmit, reset,  setValue, formState: { errors } } = useForm({
+  const { control, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
-  
 
-useEffect(()=> {
-if(isreset ) {
-  setPreviewImage("");
-  setFileList([]);
-  
-}
+  // Reset preview and file list when isreset is true
+  useEffect(() => {
+    if (isreset) {
+      setPreviewImage("");
+      setFileList([]);
+      setUrl(""); // Reset URL
+    }
+  }, [isreset]);
 
-},[isreset ])
-console.log(isreset , previewImage ,"image preview" )
-
+  // Update file list when `url` changes
   useEffect(() => {
     if (url) {
       setFileList([
@@ -229,6 +227,7 @@ console.log(isreset , previewImage ,"image preview" )
     }
   }, [url]);
 
+  // Function to handle file upload
   const handleFileUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -244,7 +243,7 @@ console.log(isreset , previewImage ,"image preview" )
       if (result.success) {
         message.success("File uploaded successfully");
         setUrl(result.url);
-        console.log("File URL:", result.url);
+        setValue("file", result.url); // Update form state
       } else {
         message.error(result.message || "File upload failed");
       }
@@ -254,18 +253,18 @@ console.log(isreset , previewImage ,"image preview" )
     }
   };
 
-  const onSubmit = (data) => {
-    handleFileUpload(data.file[0]);
-  };
-
+  // Handle file selection and change
   const handleChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    setValue("file", newFileList); // Update the file field in the form
+
     if (newFileList.length > 0 && newFileList[0].originFileObj) {
       handleFileUpload(newFileList[0].originFileObj);
+    } else {
+      setUrl(""); // Reset URL if file removed
     }
   };
 
+  // Handle image preview
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -274,12 +273,8 @@ console.log(isreset , previewImage ,"image preview" )
     setPreviewOpen(true);
   };
 
-  const uploadButton = (
-    <Button icon={<PlusOutlined />}>Upload</Button>
-  );
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form>
       <Controller
         name="file"
         control={control}
@@ -290,11 +285,13 @@ console.log(isreset , previewImage ,"image preview" )
             onPreview={handlePreview}
             onChange={(info) => {
               handleChange(info);
-              field.onChange(info.fileList); 
+              field.onChange(info.fileList);
             }}
-            beforeUpload={() => false}
+            beforeUpload={() => false} // Prevent automatic upload
           >
-            {fileList.length >= 1 ? null : uploadButton}
+            {fileList.length >= 1 ? null : (
+              <Button icon={<PlusOutlined />}>Upload</Button>
+            )}
           </Upload>
         )}
       />
@@ -305,7 +302,7 @@ console.log(isreset , previewImage ,"image preview" )
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage("") ,
+            afterOpenChange: (visible) => !visible && setPreviewImage(""),
           }}
           src={previewImage}
           wrapperStyle={{ display: "none" }}
