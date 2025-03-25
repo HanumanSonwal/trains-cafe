@@ -247,36 +247,37 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
             />
           </Col>
           <Col span={12}>
-            <Controller
-              name="Working_Time"
-              control={control}
-              render={({ field }) => (
-                <div className="mb-4">
-                  <label className="block mb-1">Working Time</label>
-                  <TimePicker.RangePicker
-                    format="HH:mm"
-                    onChange={(times) => {
-                      if (times) {
-                        const [start, end] = times;
-                        field.onChange({
-                          start: start ? start.format("HH:mm") : null,
-                          end: end ? end.format("HH:mm") : null,
-                        });
-                      } else {
-                        field.onChange(null);
-                      }
-                    }}
-                  />
+  <Controller
+    name="Working_Time"
+    control={control}
+    render={({ field }) => (
+      <div className="mb-4">
+        <label className="block mb-1">Working Time</label>
+        <TimePicker.RangePicker
+          format="hh:mm A"
+          onChange={(times) => {
+            if (times) {
+              const [start, end] = times;
+              field.onChange({
+                start: start ? start.format("hh:mm A") : null,
+                end: end ? end.format("hh:mm A") : null,
+              });
+            } else {
+              field.onChange(null);
+            }
+          }}
+        />
 
-                  {errors.Working_Time && (
-                    <p className="text-red-500">
-                      {errors.Working_Time.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
-          </Col>
+        {errors.Working_Time && (
+          <p className="text-red-500">
+            {errors.Working_Time.message}
+          </p>
+        )}
+      </div>
+    )}
+  />
+</Col>
+
         </Row>
         <Row gutter={16}>
           <Col span={12}>

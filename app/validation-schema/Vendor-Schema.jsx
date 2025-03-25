@@ -16,21 +16,31 @@ export const vendorSchema = z.object({
     .number()
     .min(1, 'Minimum order time must be at least 1 minute')
     .max(60, 'Minimum order time cannot exceed 60 minutes'),
-  Working_Time: z.object({
-    start: z.string().regex(
-      /^([01]\d|2[0-3]):([0-5]\d)$/,
-      'Start time must be in HH:mm format (24-hour clock)'
-    ),
-    end: z.string().regex(
-      /^([01]\d|2[0-3]):([0-5]\d)$/,
-      'End time must be in HH:mm format (24-hour clock)'
-    ),
-  })
-    .refine(
-      ({ start, end }) => new Date(`1970-01-01T${end}:00`) > new Date(`1970-01-01T${start}:00`),
-      { message: 'End time must be later than start time' }
-    )
-    .transform(({ start, end }) => `${formatTimeWithAmPm(start)} - ${formatTimeWithAmPm(end)}`), // Format to include AM/PM
+    Working_Time: z.object({
+      start: z.string().regex(
+        /^(0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/,
+        'Start time must be in hh:mm AM/PM format'
+      ),
+      end: z.string().regex(
+        /^(0?[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/,
+        'End time must be in hh:mm AM/PM format'
+      ),
+    })
+      .refine(
+        ({ start, end }) => {
+          const parseTime = (time) => {
+            const [_, hours, minutes, period] = time.match(/(\d{1,2}):(\d{2}) (AM|PM)/);
+            let hours24 = period === 'PM' && hours !== '12' ? parseInt(hours) + 12 : parseInt(hours);
+            hours24 = period === 'AM' && hours === '12' ? 0 : hours24;
+            return new Date(`1970-01-01T${hours24.toString().padStart(2, '0')}:${minutes}:00`);
+          };
+    
+          return parseTime(end) > parseTime(start);
+        },
+        { message: 'End time must be later than start time' }
+      )
+      .transform(({ start, end }) => `${start} - ${end}`),
+    
   Weekly_Off: z.string().nonempty('Please select the weekly off day'),
   Food_Type: z.string().nonempty('Please select the food type'),
   Description: z.string().nonempty('Please enter a description'),

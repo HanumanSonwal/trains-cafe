@@ -247,7 +247,7 @@ const HeroSection = () => {
         {carouselImages.map((image, index) => (
           <div key={index}>
             <div 
-              className="w-full h-[45vh] bg-center bg-cover bg-no-repeat"
+              className="w-full h-[25vh] bg-center bg-cover bg-no-repeat"
               style={{ backgroundImage: `url(${image})` }}
             />
           </div>
