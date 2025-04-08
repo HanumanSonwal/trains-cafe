@@ -11,6 +11,11 @@ const WebStationSchema = new mongoose.Schema({
         unique: true,
         required: true
     }   ,
+    Station: { 
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'Station' // Enforce specific food types
+        },
     slug: { type: String, unique: true, required: true },
     description: { type: String, required: true },
     keywords: { type: [], required: true },

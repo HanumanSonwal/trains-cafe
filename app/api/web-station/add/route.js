@@ -2,12 +2,13 @@ import dbConnect from '@/app/lib/dbConnect';
 import WebStation from "@/app/models/webStation";
 import { NextResponse } from 'next/server';
 import slugify from 'slugify';
+import StationModel from '@/app/models/station';
 
 export async function POST(req) { 
     try {
             await dbConnect();
 
-        const { name, title, description, keywords, pageData } = await req.json();
+        const { name, title, description, keywords, pageData ,Station } = await req.json();
 
         const slug = slugify(title, { lower: true, strict: true });
         
@@ -15,6 +16,7 @@ export async function POST(req) {
             name,
             slug,
             title,
+            Station,
             description,
             keywords,
             pageData,

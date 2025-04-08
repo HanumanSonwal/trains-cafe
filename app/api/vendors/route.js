@@ -157,15 +157,41 @@ export async function GET(req) {
             if (station) {
                 searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
             }
+            else {
+                return new Response(
+                    JSON.stringify({
+                        success: false,
+                        message: 'Invalid Station Code or No Vendors Found',
+                    }),
+                    { status: 404 }
+                );
+            }
+        
         }
 
         // Search by station code
-        if (stationcode) {
-            const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
-            if (station) {
-                searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-            }
-        }
+        // if (stationcode) {
+        //     const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+        //     if (station) {
+        //         searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+        //     }
+        // }
+        // Search by station code
+if (stationcode) {
+    const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+    if (station) {
+        searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+    } else {
+        return new Response(
+            JSON.stringify({
+                success: false,
+                message: 'Invalid Station Code or No Vendors Found',
+            }),
+            { status: 404 }
+        );
+    }
+}
+
 
         // Search by vendor name
         if (vendorname) {
