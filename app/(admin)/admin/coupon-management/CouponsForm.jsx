@@ -22,10 +22,10 @@ const couponSchema = z.object({
     .refine((val) => !isNaN(val.getTime()), 'Please select a valid start date'),
   endDate: z
     .date({ required_error: 'End date is required' })
-    .refine((val) => !isNaN(val.getTime()), 'Please select a valid end date')
-    .refine((val, ctx) => val >= ctx.parent.startDate, {
-      message: 'End date must be after start date',
-    }),
+    .refine((val) => !isNaN(val.getTime()), 'Please select a valid end date'),
+    // .refine((val, ctx) => val >= ctx.parent.startDate, {
+    //   message: 'End date must be after start date',
+    // }),
   minimumAmount: z.number().min(1, 'Minimum amount must be greater than zero'),
   discount: z.object({
     type: z.enum(['percentage', 'flat'], 'Please select a discount type'),
