@@ -84,11 +84,10 @@ const CouponManagement = () => {
 
   const handleSearch = (e) => {
     setSearchText(e.target.value);
-    const filtered = coupons.filter((coupon) =>
-      coupon.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
-    setFilteredCoupons(filtered);
+    setPagination((p) => ({ ...p, current: 1 }));
   };
+  
+  
 
   const columns = [
     {
@@ -150,6 +149,7 @@ const CouponManagement = () => {
                     type="primary"
                     icon={<EditFilled />}
                     onClick={() => handleEdit(record)}
+                    style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
                 />
                 <Popconfirm
                     title="Are you sure to delete this coupon?"
@@ -182,12 +182,14 @@ const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
         <div className="flex items-center my-5 justify-between">
           <div style={{ display: "flex", alignItems: "center" }}>
         
-        <AntdInput
-          placeholder="Search by title"
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={handleSearch}
-        />
+          <AntdInput
+              placeholder="Search"
+              style={{ width: 300, borderColor: "#D6872A" }}
+              prefix={<SearchOutlined />}
+              allowClear
+              value={searchText}
+              onChange={handleSearch}
+            />
          </div>
         <Button
           type="primary"

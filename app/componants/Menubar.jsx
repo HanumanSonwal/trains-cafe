@@ -24,6 +24,7 @@ import { Menu } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { color } from 'framer-motion';
 
 const Menubar = () => {
   const { data: session } = useSession();
@@ -51,8 +52,8 @@ const Menubar = () => {
     {
       key: '2',
       icon: <ShopOutlined />,
-      label: <Link href="/admin/stations">Stations</Link>,
-      path: '/admin/stations',
+      label: <Link href="/admin/Stations">Stations</Link>,
+      path: '/admin/Stations',
     },
     {
       key: '3',
@@ -78,30 +79,7 @@ const Menubar = () => {
       label: <Link href="/admin/coupon-management">Coupon Management</Link>,
       path: '/admin/coupon-management',
     },
-    {
-      key: '7',
-      icon: <GlobalOutlined />,
-      label: <Link href="/admin/website-pages">Website Pages</Link>,
-      path: '/admin/website-pages',
-    },
-    {
-      key: '8',
-      icon: <HomeOutlined />,
-      label: <Link href="/admin/station-pages">Station Pages</Link>,
-      path: '/admin/station-pages',
-    },
-    {
-      key: '9',
-      icon: <InboxOutlined />,
-      label: <Link href="/admin/train-pages">Train Pages</Link>,
-      path: '/admin/train-pages',
-    },
-    {
-      key: '10',
-      icon: <BookOutlined />,
-      label: <Link href="/admin/blog">Blog</Link>,
-      path: '/admin/blog',
-    },
+
     {
       key: '11',
       icon: <SolutionOutlined />,
@@ -120,12 +98,6 @@ const Menubar = () => {
       label: <Link href="/admin/contact-inquiries">Contact Inquiries</Link>,
       path: '/admin/contact-inquiries',
     },
-    {
-      key: '20',
-      icon: <MessageOutlined />,
-      label: <Link href="/admin/advertisements">Advertisements</Link>,
-      path: '/admin/advertisements',
-    },
     ...(session?.user?.role === 'sab-admin'
       ? [
           {
@@ -136,6 +108,38 @@ const Menubar = () => {
           },
         ]
       : []),
+      {
+        key: 'sub-pages',
+        icon: <GlobalOutlined />,
+        label: 'Page Settings',
+        children: [
+          {
+            key: 'ps-1',
+            label: <Link href="/admin/website-pages">Website Pages</Link>,
+            path: '/admin/website-pages',
+          },
+          {
+            key: 'ps-2',
+            label: <Link href="/admin/station-pages">Station Pages</Link>,
+            path: '/admin/station-pages',
+          },
+          {
+            key: 'ps-3',
+            label: <Link href="/admin/train-pages">Train Pages</Link>,
+            path: '/admin/train-pages',
+          },
+          {
+            key: 'ps-4',
+            label: <Link href="/admin/blog">Blog </Link>,
+            path: '/admin/blog',
+          },
+          {
+            key: 'ps-5',
+            label: <Link href="/admin/advertisements">Advertisements </Link>,
+            path: '/admin/advertisements',
+          },
+        ],
+      },
     {
       key: 'sub1',
       icon: <OrderedListOutlined />,

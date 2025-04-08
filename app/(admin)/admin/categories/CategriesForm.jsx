@@ -60,6 +60,8 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
         message.success(id ? "Category updated successfully!" : "Category added successfully!");
         onSubmit(response); 
         fetchCategories();
+    setIsreset(true);
+        
         onCancel();
       } else {
         throw new Error(response.err || "Failed to save category");
@@ -90,12 +92,17 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
     setUrl(""); 
     setIsreset(true);
   };
+  const handleCancel = () => {
+    reset();
+    onCancel();
+    setIsreset(true);
+  };
 
   return (
     <Modal
       title={initialValues ? "Edit Category" : "Add Category"}
       open={open}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       width={800}
       footer={[
         <Button

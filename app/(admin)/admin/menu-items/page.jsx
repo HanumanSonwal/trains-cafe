@@ -221,7 +221,7 @@ const TablePage = () => {
       title: "Discount",
       dataIndex: "Discount",
       key: "Discount",
-      render: (discount) => `${discount}%`, // Add percentage sign
+      render: (discount) => `${discount}%`, 
     },
     {
       title: "Status",
@@ -273,6 +273,7 @@ const TablePage = () => {
         <AntdInput
           placeholder="Search Menu Items"
           prefix={<SearchOutlined />}
+           allowClear
           value={searchText}
           onChange={handleSearch}
           style={{ maxWidth: 300, borderColor: "#D6872A" }}

@@ -22,13 +22,15 @@ function VendorCard({ station, train }) {
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
 
+  console.log(station ,"station")
+
   useEffect(() => {
     const fetchVendors = async () => {
       setLoading(true);
       setError(false);
       try {
         const response = await fetch(
-          `/api/vendors?stationname=${station.station_name}`
+          `/api/vendors?stationname=${station.station_code}`
         );
         const data = await response.json();
         if (data.data && data.data.length > 0) {
