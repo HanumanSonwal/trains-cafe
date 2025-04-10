@@ -3,7 +3,7 @@
 import { Table, Input, Button, message, Modal, Dropdown, Menu, Spin, Popconfirm } from "antd";
 import { SearchOutlined, CloseCircleOutlined, DownOutlined, LoadingOutlined, DeleteFilled } from "@ant-design/icons";
 import { useState, useEffect } from "react";
-import AdvertisementsForm from "./AdvertisementsForm"; // Import your form component
+import AdvertisementsForm from "./advertisementsForm";
 
 export default function AdvertisementDetails() {
   const [advertisements, setAdvertisements] = useState([]);
