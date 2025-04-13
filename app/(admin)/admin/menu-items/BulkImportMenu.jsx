@@ -101,8 +101,33 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   const [fileList, setFileList] = useState([]);
   const [uploadId, setUploadId] = useState(null);
 
-  const handleFileChange = (info) => {
+  const handleFileChange = (e, val) => {
+    console.log({
+      e,
+      val,
+    });
+
+    return;
     setFileList(info.fileList.slice(-1));
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: "binary" });
+
+      // CSV file has only one sheet
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+
+      const parsedData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      setData(parsedData);
+    };
+
+    reader.readAsBinaryString(file);
   };
 
   const handleSubmit = () => {
@@ -134,18 +159,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
         "DESCRIPTION",
         "GROUP_ID",
       ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        generatedId,
-      ],
+      ["", "", "", "", "", "", "", "", "", generatedId],
     ];
 
     const csvContent = sampleCSV.map((row) => row.join(",")).join("\n");
@@ -192,7 +206,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
             <Form.Item label="Upload File (.csv)">
               <Upload
                 fileList={fileList}
-                onChange={handleFileChange}
+                onChange={(e, val) => handleFileChange(e, val)}
                 beforeUpload={() => false}
                 accept=".csv"
               >
