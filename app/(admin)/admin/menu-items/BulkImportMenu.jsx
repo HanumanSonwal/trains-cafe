@@ -92,10 +92,6 @@
 
 // export default BulkImportMenu;
 
-
-
-
-
 "use client";
 import React, { useState } from "react";
 import { Button, Upload, message, Modal, Form, Row, Col } from "antd";
@@ -106,7 +102,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   const [uploadId, setUploadId] = useState(null);
 
   const handleFileChange = (info) => {
-    setFileList(info.fileList.slice(-1)); 
+    setFileList(info.fileList.slice(-1));
   };
 
   const handleSubmit = () => {
@@ -117,53 +113,39 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
 
     const formData = new FormData();
     formData.append("file", fileList[0].originFileObj);
-    formData.append("uploadId", uploadId); 
-
-    console.log("🆔 Upload ID:", uploadId);
-    console.log("📦 File Data:", fileList[0]);
-
+    formData.append("uploadId", uploadId);
     onSubmit(formData);
   };
 
   const handleDownloadSampleCSV = () => {
-    const generatedId = crypto.randomUUID(); 
+    const generatedId = crypto.randomUUID();
     setUploadId(generatedId);
 
     const sampleCSV = [
-      ["Upload ID", generatedId], 
       [
         "STATION_ID",
         "VENDOR_ID",
         "CATEGORY_ID",
         "ITEM_NAME",
         "IMAGE",
-        "FOOD_TYPE (0=Veg, 1=Nonveg)",
+        "FOOD_TYPE(0=Veg | 1=Nonveg)",
         "PRICE",
         "DISCOUNT(%)",
-        "DESCRIPTION"
+        "DESCRIPTION",
+        "GROUP_ID",
       ],
       [
-        "101",
-        "201",
-        "301",
-        "Sample Item 1",
-        "image1.jpg",
-        "0",
-        "100",
-        "10",
-        "Delicious Veg Item"
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        generatedId,
       ],
-      [
-        "102",
-        "202",
-        "302",
-        "Sample Item 2",
-        "image2.jpg",
-        "1",
-        "200",
-        "15",
-        "Spicy Non-Veg Item"
-      ]
     ];
 
     const csvContent = sampleCSV.map((row) => row.join(",")).join("\n");
@@ -211,7 +193,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
               <Upload
                 fileList={fileList}
                 onChange={handleFileChange}
-                beforeUpload={() => false} 
+                beforeUpload={() => false}
                 accept=".csv"
               >
                 <Button icon={<UploadOutlined />}>Select CSV File</Button>
@@ -230,4 +212,3 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
 };
 
 export default BulkImportMenu;
-
