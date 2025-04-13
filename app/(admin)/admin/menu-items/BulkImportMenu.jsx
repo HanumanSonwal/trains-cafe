@@ -1,101 +1,8 @@
-// "use client";
-// import React, { useState } from "react";
-// import { Button, Upload, message, Modal, Form, Row, Col } from "antd";
-// import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
-
-// const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
-//   const [fileList, setFileList] = useState([]);
-
-//   const handleFileChange = (info) => {
-//     setFileList(info.fileList.slice(-1)); // Restrict to a single file
-//   };
-
-//   const handleSubmit = () => {
-//     if (!fileList.length) {
-//       message.error("Please upload a file before submitting.");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append("file", fileList[0].originFileObj);
-//     onSubmit(formData); // Call the parent onSubmit function with the form data
-//   };
-
-//   const handleDownloadSampleCSV = () => {
-//     const sampleCSV = [
-//       ["Item Name", "Price", "Discount", "Category"],
-//       ["Sample Item 1", "10.00", "0", "Category 1"],
-//       ["Sample Item 2", "20.00", "10", "Category 2"],
-//     ];
-
-//     const csvContent = sampleCSV
-//       .map((row) => row.join(","))
-//       .join("\n");
-
-//     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-//     const link = document.createElement("a");
-//     const url = URL.createObjectURL(blob);
-//     link.href = url;
-//     link.setAttribute("download", "sample.csv");
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//   };
-
-//   return (
-//     <Modal
-//       title="Bulk Import Menu Items"
-//       open={open}
-//       onCancel={onCancel}
-//       footer={[
-//         <Button key="cancel" onClick={onCancel}>
-//           Cancel
-//         </Button>,
-//         <Button
-//           key="download"
-//           icon={<DownloadOutlined />}
-//           onClick={handleDownloadSampleCSV}
-//         >
-//           Download Sample CSV
-//         </Button>,
-//         <Button
-//           key="submit"
-//           type="primary"
-//           onClick={handleSubmit}
-//           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-//         >
-//           Import
-//         </Button>,
-//       ]}
-//     >
-//       <Form layout="vertical">
-//         <Row gutter={16}>
-//           <Col span={24}>
-//             <Form.Item label="Upload File">
-//               <Upload
-//                 fileList={fileList}
-//                 onChange={handleFileChange}
-//                 beforeUpload={() => false} // Prevent auto-upload
-//                 accept=".csv" // Limit to CSV files
-//               >
-//                 <Button icon={<UploadOutlined />}>
-//                   Select CSV File
-//                 </Button>
-//               </Upload>
-//             </Form.Item>
-//           </Col>
-//         </Row>
-//       </Form>
-//     </Modal>
-//   );
-// };
-
-// export default BulkImportMenu;
-
 "use client";
 import React, { useState } from "react";
 import { Button, Upload, message, Modal, Form, Row, Col } from "antd";
 import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
+import * as XLSX from "xlsx";
 
 const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   const [fileList, setFileList] = useState([]);
@@ -146,7 +53,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
     const generatedId = crypto.randomUUID();
     setUploadId(generatedId);
 
-    const sampleCSV = [
+    const sampleData = [
       [
         "STATION_ID",
         "VENDOR_ID",
@@ -159,16 +66,37 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
         "DESCRIPTION",
         "GROUP_ID",
       ],
-      ["", "", "", "", "", "", "", "", "", generatedId],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        generatedId, 
+      ],
     ];
 
-    const csvContent = sampleCSV.map((row) => row.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
+
+    worksheet["!cols"] = Array(sampleData[0].length).fill({});
+    worksheet["!cols"][9] = { hidden: true }; 
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "SampleMenu");
+
+    const blob = new Blob(
+      [XLSX.write(workbook, { bookType: "xlsx", type: "array" })],
+      { type: "application/octet-stream" }
+    );
 
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;
-    link.setAttribute("download", "sample_menu_upload.csv");
+    link.setAttribute("download", "sample_menu_upload.xlsx");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -188,7 +116,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
           icon={<DownloadOutlined />}
           onClick={handleDownloadSampleCSV}
         >
-          Download Sample CSV
+          Download Sample Excel
         </Button>,
         <Button
           key="submit"
@@ -203,21 +131,16 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
       <Form layout="vertical">
         <Row gutter={16}>
           <Col span={24}>
-            <Form.Item label="Upload File (.csv)">
+            <Form.Item label="Upload File (.xlsx)">
               <Upload
                 fileList={fileList}
                 onChange={(e, val) => handleFileChange(e, val)}
                 beforeUpload={() => false}
-                accept=".csv"
+                accept=".xlsx"
               >
-                <Button icon={<UploadOutlined />}>Select CSV File</Button>
+                <Button icon={<UploadOutlined />}>Select Excel File</Button>
               </Upload>
             </Form.Item>
-            {uploadId && (
-              <p>
-                <strong>Upload ID:</strong> {uploadId}
-              </p>
-            )}
           </Col>
         </Row>
       </Form>
