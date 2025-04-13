@@ -1,6 +1,15 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Upload, message, Modal, Form, Row, Col } from "antd";
+import {
+  Button,
+  Upload,
+  message,
+  Modal,
+  Form,
+  Row,
+  Col,
+  notification,
+} from "antd";
 import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
@@ -8,33 +17,35 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   const [fileList, setFileList] = useState([]);
   const [uploadId, setUploadId] = useState(null);
 
-  const handleFileChange = (e, val) => {
-    console.log({
-      e,
-      val,
-    });
+  const handleFileChange = (file) => {
 
-    return;
-    setFileList(info.fileList.slice(-1));
+    // const isCsv = file.type === "text/csv";
+    // if (!isCsv) {
+    //   message.error("Please upload a CSV file");
+    //   return Upload.LIST_IGNORE;
+    // }
 
-    const file = e.target.files[0];
-    if (!file) return;
+    const rawFile = file.file; // ✅ actual Blob
 
     const reader = new FileReader();
 
-    reader.onload = (evt) => {
-      const bstr = evt.target.result;
+    reader.onload = (e) => {
+      const bstr = e.target.result;
       const wb = XLSX.read(bstr, { type: "binary" });
-
-      // CSV file has only one sheet
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
 
-      const parsedData = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      setData(parsedData);
+      const jsonData = XLSX.utils.sheet_to_json(ws, { defval: "" });
+
+      if (jsonData.length) {
+        console.log({ jsonData });
+      } else {
+        message.warning("No data found in CSV");
+      }
     };
 
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(rawFile);
+    return false;
   };
 
   const handleSubmit = () => {
@@ -66,24 +77,13 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
         "DESCRIPTION",
         "GROUP_ID",
       ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        generatedId, 
-      ],
+      ["", "", "", "", "", "", "", "", "", generatedId],
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
 
     worksheet["!cols"] = Array(sampleData[0].length).fill({});
-    worksheet["!cols"][9] = { hidden: true }; 
+    worksheet["!cols"][9] = { hidden: true };
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "SampleMenu");
@@ -134,7 +134,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
             <Form.Item label="Upload File (.xlsx)">
               <Upload
                 fileList={fileList}
-                onChange={(e, val) => handleFileChange(e, val)}
+                onChange={handleFileChange}
                 beforeUpload={() => false}
                 accept=".xlsx"
               >
