@@ -63,6 +63,7 @@ const OrderSchema = new mongoose.Schema({
         enum: ["pending","processing", "completed", "cancelled"],
         default: "pending"
      },
+      timestamps: true ,
 })
 
 OrderSchema.plugin(mongoosePaginate)
