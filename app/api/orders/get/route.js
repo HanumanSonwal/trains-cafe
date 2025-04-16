@@ -69,6 +69,7 @@
 // }
 import dbConnect from '@/app/lib/dbConnect';
 import Order from '@/app/models/order';
+import station from '@/app/models/station';
 import vendor from '@/app/models/vendor';
 import { NextResponse } from 'next/server';
 
@@ -92,14 +93,9 @@ export async function GET(req) {
         const searchOptions = {};
 
         if (status) {
-            searchOptions.status =
-                status === "processing" ? "processing" :
-                status === "pending" ? "pending" :
-                status === "canceled" ? "canceled" :
-                status;
+            searchOptions.status = status;
         }
 
-        // Date Range Filter
         if (startDate && endDate) {
             searchOptions.createdAt = {
                 $gte: new Date(startDate),
@@ -116,24 +112,29 @@ export async function GET(req) {
             });
         }
 
-        const ordersWithVendorDetails = await Promise.all(orders.docs.map(async (order) => {
-            const vendorDetails = await vendor.findById(order.vendor).select('Vendor_Name Contact_No');
-            return {
-                ...order.toObject(),
-                vendorDetails
-            };
-        }));
+        const ordersWithDetails = await Promise.all(
+            orders.docs.map(async (order) => {
+                const vendorDetails = await vendor.findById(order.vendor).select("Vendor_Name Contact_No");
+                const stationDetails = await station.findById(order.station).select("Station_Name Station_Code");
+
+                return {
+                    ...order.toObject(),
+                    vendorDetails: vendorDetails || null,
+                    stationDetails: stationDetails || null,
+                };
+            })
+        );
 
         return NextResponse.json({
             success: true,
             ...orders,
-            docs: ordersWithVendorDetails,
+            docs: ordersWithDetails,
         });
 
     } catch (error) {
         return NextResponse.json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 }

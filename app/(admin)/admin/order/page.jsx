@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Button, DatePicker, Select, Input, Space, Tag } from 'antd';
 import { PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 
@@ -7,29 +7,68 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const OrdersTable = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: '1',
-      orderID: 'TC000353',
-      date: '23-08-2024 15:52:38',
-      admin: 'Admin',
-      vendor: 'Madras Bakery',
-      contact: '7798168161',
-      details: '1x Dal Rice Combo',
-      deliveryDetails: {
-        name: 'subi richa',
-        mobile: '9260997672',
-        train: '12629 (A 1 25)',
-        pnr: '4517555983',
-        deliveryTime: '23-08-2024 17:40',
-        station: 'Bhusaval Junction (BSL)',
-      },
-      amount: 117,
-      status: 'Confirm',
-      paymentStatus: 'Pending',
-    },
-    // Add more orders as needed
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    status: 'pending',
+    startDate: null,
+    endDate: null,
+  });
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const fetchData = async (page = 1, limit = 10) => {
+    setLoading(true);
+    try {
+      const { status, startDate, endDate } = filters;
+      const start = startDate ? `&startDate=${startDate}` : '';
+      const end = endDate ? `&endDate=${endDate}` : '';
+      const statusQuery = status && status !== 'All' ? `&status=${status}` : '';
+      const response = await fetch(`/api/orders/get?page=${page}&limit=${limit}${statusQuery}${start}${end}`);
+      const result = await response.json();
+
+      if (result.success) {
+        const mappedData = result.docs.map(order => ({
+          key: order._id,
+          orderID: order._id,
+          date: new Date(order.createdAt || order.updatedAt).toLocaleString(), // show actual order date
+          admin: "Admin",
+          vendor: order?.vendor || 'N/A',
+          amount: order.total,
+          contact: order?.user_details?.mobile || 'N/A',
+          details: `${order?.subTotal || 0} (₹)`,
+          deliveryDetails: {
+            name: order?.user_details?.name || 'N/A',
+            mobile: order?.user_details?.mobile || 'N/A',
+            train: order?.user_details?.pnr || 'N/A',
+            pnr: order?.user_details?.pnr || 'N/A',
+            deliveryTime: "TBD",
+            station: order?.stationDetails?.stationName || 'TBD',
+          },
+          status: order?.status || 'Pending',
+          paymentStatus: order?.payment?.payment_status || 'N/A',
+          paymentMethod: order?.payment?.payment_method || 'N/A',
+        }));
+
+        setDataSource(mappedData);
+        setTotalPages(result.totalPages);
+      } else {
+        console.error('Failed to fetch data');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [filters, currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const columns = [
     {
@@ -88,18 +127,19 @@ const OrdersTable = () => {
       key: 'status',
       render: (status) => (
         <Space>
-          <Tag color={status === 'Confirm' ? 'purple' : 'green'}>{status}</Tag>
+          <Tag color={status === 'pending' ? 'orange' : 'green'}>{status}</Tag>
           <Button type="link">Change</Button>
         </Space>
       ),
     },
     {
-      title: 'Payment Status',
+      title: 'Payment',
       dataIndex: 'paymentStatus',
       key: 'paymentStatus',
-      render: (status) => (
+      render: (text, record) => (
         <Space>
-          <Tag color="gold">{status}</Tag>
+          <Tag color="blue">{record.paymentStatus}</Tag>
+          <Tag color="purple">{record.paymentMethod}</Tag>
           <Button type="link">Change</Button>
         </Space>
       ),
@@ -110,13 +150,25 @@ const OrdersTable = () => {
     <div className="orders-table">
       <div className="filters flex justify-between mb-4">
         <div className="flex space-x-4">
-          <RangePicker />
-          <Select defaultValue="All" style={{ width: 120 }}>
+          <RangePicker
+            onChange={(dates) => {
+              setFilters({
+                ...filters,
+                startDate: dates?.[0]?.format('YYYY-MM-DD') || null,
+                endDate: dates?.[1]?.format('YYYY-MM-DD') || null,
+              });
+            }}
+          />
+          <Select
+            value={filters.status}
+            onChange={(value) => setFilters({ ...filters, status: value })}
+            style={{ width: 140 }}
+          >
             <Option value="All">All</Option>
-            <Option value="Pending">Pending</Option>
-            <Option value="Confirmed">Confirmed</Option>
+            <Option value="pending">Pending</Option>
+            <Option value="confirmed">Confirmed</Option>
           </Select>
-          <Input placeholder="Search" />
+          <Input placeholder="Search" disabled /> {/* functionality not implemented */}
         </div>
         <div className="flex space-x-2">
           <Button type="primary" icon={<PlusOutlined />} className="bg-brown">
@@ -125,14 +177,19 @@ const OrdersTable = () => {
           <Button icon={<DownloadOutlined />}>Download</Button>
         </div>
       </div>
+
       <Table
         columns={columns}
         dataSource={dataSource}
-        pagination={{ pageSize: 10 }}
+        loading={loading}
+        pagination={{
+          current: currentPage,
+          total: totalPages * 10, // assuming 10 per page
+          onChange: handlePageChange,
+          pageSize: 10,
+        }}
         expandable={{
-          expandedRowRender: (record) => (
-            <p style={{ margin: 0 }}>{record.details}</p>
-          ),
+          expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.details}</p>,
         }}
       />
     </div>
