@@ -31,7 +31,7 @@ const OrdersTable = () => {
         const mappedData = result.docs.map(order => ({
           key: order._id,
           orderID: order._id,
-          date: new Date(order.createdAt || order.updatedAt).toLocaleString(), // show actual order date
+          date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
           admin: "Admin",
           vendor: order?.vendor || 'N/A',
           amount: order.total,
@@ -168,7 +168,7 @@ const OrdersTable = () => {
             <Option value="pending">Pending</Option>
             <Option value="confirmed">Confirmed</Option>
           </Select>
-          <Input placeholder="Search" disabled /> {/* functionality not implemented */}
+          <Input placeholder="Search" disabled /> 
         </div>
         <div className="flex space-x-2">
           <Button type="primary" icon={<PlusOutlined />} className="bg-brown">
