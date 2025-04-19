@@ -34,6 +34,11 @@ const MenuSchema = new mongoose.Schema({
         required: true,
         ref: 'Category' // Use correct model name (capitalized)
     },
+    Group_Id:{ 
+        type: String,
+        required: true,
+      
+    },
     Vendor: { 
         type: mongoose.Schema.Types.ObjectId, // Change to ObjectId for referencing
         required: true,
