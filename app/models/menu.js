@@ -35,10 +35,15 @@ const MenuSchema = new mongoose.Schema(
       required: true,
       ref: "Category", // Use correct model name (capitalized)
     },
-    Vendor: {
-      type: mongoose.Schema.Types.ObjectId, // Change to ObjectId for referencing
-      required: true,
-      ref: "Vendor", // Use correct model name (capitalized)
+    Group_Id:{ 
+        type: String,
+        required: true,
+      
+    },
+    Vendor: { 
+        type: mongoose.Schema.Types.ObjectId, // Change to ObjectId for referencing
+        required: true,
+        ref: 'Vendor' // Use correct model name (capitalized)
     },
     Price: {
       type: Number, // Changed to Number for price calculations

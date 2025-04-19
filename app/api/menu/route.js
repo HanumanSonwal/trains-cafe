@@ -143,21 +143,77 @@ export async function GET(req) {
     );
   }
 }
-
 export async function POST(req) {
   try {
     const formData = await req.formData();
     const body = Object.fromEntries(formData.entries());
 
+    // Ensure Group_Id is provided
+    if (!body.Group_Id) {
+      return new Response(
+        JSON.stringify({ success: false, message: 'Group_Id is required' }),
+        { status: 400 }
+      );
+    }
+
     await dbConnect();
-    const newMenu = new MenuModel(body);
-    await newMenu.save();
-    
-    return new Response(JSON.stringify({ success: true, data: newMenu }), { status: 201 });
+
+    // Check if there are already menu items with the same Group_Id
+    const existingMenu = await MenuModel.find({ Group_Id: body.Group_Id });
+
+    if (existingMenu.length > 0) {
+      // Delete the older entries with the same Group_Id
+      await MenuModel.deleteMany({ Group_Id: body.Group_Id });
+
+      // Replace the existing data with the new one
+      const newMenu = new MenuModel(body);
+      await newMenu.save();
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Existing menu replaced with new data.',
+          data: newMenu,
+        }),
+        { status: 201 }
+      );
+    } else {
+      // If no existing menu found with the same Group_Id, create a new one
+      const newMenu = new MenuModel(body);
+      await newMenu.save();
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'New menu created successfully.',
+          data: newMenu,
+        }),
+        { status: 201 }
+      );
+    }
   } catch (error) {
-    return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+    return new Response(
+      JSON.stringify({ success: false, message: error.message }),
+      { status: 500 }
+    );
   }
 }
+
+
+// export async function POST(req) {
+//   try {
+//     const formData = await req.formData();
+//     const body = Object.fromEntries(formData.entries());
+
+//     await dbConnect();
+//     const newMenu = new MenuModel(body);
+//     await newMenu.save();
+    
+//     return new Response(JSON.stringify({ success: true, data: newMenu }), { status: 201 });
+//   } catch (error) {
+//     return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+//   }
+// }
 
 export async function PUT(req) {
   try {
