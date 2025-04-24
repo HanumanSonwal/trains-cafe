@@ -1,5 +1,7 @@
-// import dbConnect from '@/app/lib/dbConnect';
-// import StationModel from '@/app/models/vendor';
+import dbConnect from '@/app/lib/dbConnect';
+//import StationModel from '@/app/models/vendor';
+
+
 
 // export async function GET(req) {
 //     try {
@@ -11,15 +13,59 @@
 //     }
 // }
 
-import dbConnect from '@/app/lib/dbConnect';
-import StationModel from '@/app/models/station';
+// import dbConnect from '@/app/lib/dbConnect';
+// import StationModel from '@/app/models/station';
 
+// // export async function GET(req) {
+// //     try {
+// //         const url = new URL(req.url);
+// //         const search = url.searchParams.get('search') || '';
+        
+// //         const page = parseInt(url.searchParams.get('page'), 10) || 1;
+// //         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+
+// //         await dbConnect();
+
+// //         // Create search criteria
+// //         const searchCriteria = search ? {
+// //             $or: [
+// //                 { name: { $regex: search, $options: 'i' } },
+// //                 { code: { $regex: search, $options: 'i' } }
+// //             ]
+// //         } : {};
+
+// //         // Calculate pagination
+// //         const skip = (page - 1) * limit;
+
+// //         const stations = await StationModel.find(searchCriteria)
+// //             .limit(limit)
+// //             .skip(skip);
+
+// //         const total = await StationModel.countDocuments(searchCriteria);
+
+// //         return new Response(
+// //             JSON.stringify({
+// //                 success: true,
+// //                 data: stations,
+// //                 total,
+// //                 page,
+// //                 totalPages: Math.ceil(total / limit)
+// //             }),
+// //             { status: 200 }
+// //         );
+// //     } catch (error) {
+// //         return new Response(
+// //             JSON.stringify({ success: false, message: 'Error fetching vendors' }),
+// //             { status: 500 }
+// //         );
+// //     }
+// // }
 // export async function GET(req) {
 //     try {
 //         const url = new URL(req.url);
 //         const search = url.searchParams.get('search') || '';
         
-//         const page = parseInt(url.searchParams.get('page'), 10) || 1;
+//         const page = parseInt(url.searchParams.get('page'), 10) ;
 //         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
 
 //         await dbConnect();
@@ -32,14 +78,26 @@ import StationModel from '@/app/models/station';
 //             ]
 //         } : {};
 
-//         // Calculate pagination
-//         const skip = (page - 1) * limit;
+//         let stations;
+//         let total;
 
-//         const stations = await StationModel.find(searchCriteria)
-//             .limit(limit)
-//             .skip(skip);
+//         if (page === 0) {
+//             // Fetch all data without pagination
+//             stations = await StationModel.find(searchCriteria);
+//             total = stations.length; // Total records when fetching all
+//         } else {
+//             // Calculate pagination
+//             const skip = (page - 1) * limit;
 
-//         const total = await StationModel.countDocuments(searchCriteria);
+//             stations = await StationModel.find(searchCriteria)
+//                 .limit(limit)
+//                 .skip(skip);
+                
+//             total = await StationModel.countDocuments(searchCriteria);
+//         }
+
+//         console.log('Search Criteria:', searchCriteria);
+//         console.log('Stations Retrieved:', stations.length);
 
 //         return new Response(
 //             JSON.stringify({
@@ -47,7 +105,7 @@ import StationModel from '@/app/models/station';
 //                 data: stations,
 //                 total,
 //                 page,
-//                 totalPages: Math.ceil(total / limit)
+//                 totalPages: page === 0 ? 1 : Math.ceil(total / limit)
 //             }),
 //             { status: 200 }
 //         );
@@ -58,17 +116,23 @@ import StationModel from '@/app/models/station';
 //         );
 //     }
 // }
+
+
+//import WebStation from "@/models/webStation";
+import WebStation from "@/app/models/webStation";
+ import StationModel from "@/app/models/station";
+// import WebStation from "@/models/webStation";
+// import dbConnect from "@/lib/dbConnect";
+
 export async function GET(req) {
     try {
         const url = new URL(req.url);
         const search = url.searchParams.get('search') || '';
-        
-        const page = parseInt(url.searchParams.get('page'), 10) ;
+        const page = parseInt(url.searchParams.get('page'), 10);
         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
 
         await dbConnect();
 
-        // Create search criteria
         const searchCriteria = search ? {
             $or: [
                 { name: { $regex: search, $options: 'i' } },
@@ -80,27 +144,34 @@ export async function GET(req) {
         let total;
 
         if (page === 0) {
-            // Fetch all data without pagination
             stations = await StationModel.find(searchCriteria);
-            total = stations.length; // Total records when fetching all
+            total = stations.length;
         } else {
-            // Calculate pagination
             const skip = (page - 1) * limit;
-
-            stations = await StationModel.find(searchCriteria)
-                .limit(limit)
-                .skip(skip);
-                
+            stations = await StationModel.find(searchCriteria).limit(limit).skip(skip);
             total = await StationModel.countDocuments(searchCriteria);
         }
 
-        console.log('Search Criteria:', searchCriteria);
-        console.log('Stations Retrieved:', stations.length);
+        const stationIds = stations.map(station => station._id);
+        const webStations = await WebStation.find(
+            { Station: { $in: stationIds } },
+            'Station slug'
+        );
+
+        const slugMap = {};
+        webStations.forEach(ws => {
+            slugMap[ws.Station.toString()] = ws.slug;
+        });
+
+        const stationsWithSlugs = stations.map(station => ({
+            ...station.toObject(),
+            slug: slugMap[station._id.toString()] || null
+        }));
 
         return new Response(
             JSON.stringify({
                 success: true,
-                data: stations,
+                data: stationsWithSlugs,
                 total,
                 page,
                 totalPages: page === 0 ? 1 : Math.ceil(total / limit)
@@ -108,14 +179,13 @@ export async function GET(req) {
             { status: 200 }
         );
     } catch (error) {
+        console.error('Error fetching stations:', error);
         return new Response(
-            JSON.stringify({ success: false, message: 'Error fetching vendors' }),
+            JSON.stringify({ success: false, message: 'Error fetching stations' }),
             { status: 500 }
         );
     }
 }
-
-
 
 
 export async function POST(req) {
