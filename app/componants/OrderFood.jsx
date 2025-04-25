@@ -302,34 +302,34 @@ const OrderFood = () => {
         </div>
       ),
     },
-    // {
-    //   key: "3",
-    //   label: "Station Name",
-    //   children: (
-    //     <div className="flex items-center space-x-2 p-6">
-    //       <Select
-    //         showSearch
-    //         placeholder="Enter Station Name"
-    //         className="flex-grow"
-    //         value={station}
-    //         onSearch={fetchStations}
-    //         onChange={(value) => setStation(value)}
-    //         options={stationOptions}
-    //         filterOption={false}
-    //       />
-    //       <Button
-    //         onClick={handleSearch}
-    //         className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
-    //       >
-    //         Order Now
-    //       </Button>
-    //     </div>
-    //   ),
-    // },
+    {
+      key: "3",
+      label: "Station Name",
+      children: (
+        <div className="flex items-center space-x-2 p-6">
+          <Select
+            showSearch
+            placeholder="Enter Station Name"
+            className="flex-grow"
+            value={station}
+            onSearch={fetchStations}
+            onChange={(value) => setStation(value)}
+            options={stationOptions}
+            filterOption={false}
+          />
+          <Button
+            onClick={handleSearch}
+            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
+          >
+            Order Now
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   return (
-    <div className="py-8 px-2 mt-8">
+    <div className=" px-2 mt-8">
       <div className="relative text-center mb-4">
         <img
           src="/images/Order.png"

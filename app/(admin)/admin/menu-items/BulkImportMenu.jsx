@@ -8,7 +8,6 @@ import {
   Form,
   Row,
   Col,
-  notification,
 } from "antd";
 import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
@@ -17,18 +16,16 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   const [fileList, setFileList] = useState([]);
   const [uploadId, setUploadId] = useState(null);
 
-  const handleFileChange = (file) => {
+  const handleFileChange = (info) => {
+    const latestFileList = [...info.fileList].slice(-1); // only keep latest file
+    setFileList(latestFileList);
 
-    // const isCsv = file.type === "text/csv";
-    // if (!isCsv) {
-    //   message.error("Please upload a CSV file");
-    //   return Upload.LIST_IGNORE;
-    // }
+    const file = latestFileList[0];
+    if (!file) return;
 
-    const rawFile = file.file; // ✅ actual Blob
+    const rawFile = file.originFileObj;
 
     const reader = new FileReader();
-
     reader.onload = (e) => {
       const bstr = e.target.result;
       const wb = XLSX.read(bstr, { type: "binary" });
@@ -38,14 +35,13 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
       const jsonData = XLSX.utils.sheet_to_json(ws, { defval: "" });
 
       if (jsonData.length) {
-        console.log({ jsonData });
+        console.log("✅ Excel Data:", jsonData);
       } else {
-        message.warning("No data found in CSV");
+        message.warning("No data found in Excel file.");
       }
     };
 
     reader.readAsArrayBuffer(rawFile);
-    return false;
   };
 
   const handleSubmit = () => {
@@ -57,7 +53,8 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
     const formData = new FormData();
     formData.append("file", fileList[0].originFileObj);
     formData.append("uploadId", uploadId);
-    onSubmit(formData);
+
+    if (onSubmit) onSubmit(formData);
   };
 
   const handleDownloadSampleCSV = () => {
@@ -81,7 +78,6 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
-
     worksheet["!cols"] = Array(sampleData[0].length).fill({});
     worksheet["!cols"][9] = { hidden: true };
 
@@ -135,8 +131,9 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
               <Upload
                 fileList={fileList}
                 onChange={handleFileChange}
-                beforeUpload={() => false}
+                beforeUpload={() => false} // prevent auto-upload
                 accept=".xlsx"
+                maxCount={1}
               >
                 <Button icon={<UploadOutlined />}>Select Excel File</Button>
               </Upload>

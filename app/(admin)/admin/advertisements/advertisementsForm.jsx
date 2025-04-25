@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Input, Form, message, Select } from "antd";
+import { Modal, Button, Input, Form, message, Select, Row, Col } from "antd";
 import { postData, updateData } from "@/app/lib/ApiFuntions";
 import FileUploadComponent from "@/app/componants/ImageUpload";
 
@@ -36,7 +36,8 @@ const AdvertisementsForm = ({
       slug: values.slug,
       title: values.title,
       image: url,
-      description: values.description,
+      alt: values.alt,
+      link_url: values.link_url,
     };
 
     const id = initialValues ? initialValues.id : null;
@@ -98,36 +99,65 @@ const AdvertisementsForm = ({
         onFinish={handleFormSubmit}
         initialValues={initialValues}
       >
-        <Form.Item
-          label="Slug"
-          name="slug"
-          rules={[{ required: true, message: "Slug is required" }]}
-        >
-          <Select placeholder="Select slug">
-            <Option value="advertisements">Advertisement</Option>
-            <Option value="Banner">Banner</Option>
-          </Select>
-        </Form.Item>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              label="Slug"
+              name="slug"
+              rules={[{ required: true, message: "Slug is required" }]}
+            >
+              <Select placeholder="Select slug">
+                <Option value="advertisements">Advertisement</Option>
+                <Option value="Banner">Banner</Option>
+              </Select>
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Title"
-          name="title"
-          rules={[{ required: true, message: "Title is required" }]}
-        >
-          <Input placeholder="Enter title" />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Title is required" }]}
+            >
+              <Input placeholder="Enter title" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item label="Image" name="image">
-          <FileUploadComponent
-            url={url}
-            setUrl={setUrl}
-            setImageError={setImageError}
-          />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              label="Alt Tag"
+              name="alt"
+              rules={[{ required: true, message: "Alt tag is required" }]}
+            >
+              <Input placeholder="Enter image alt text" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item label="Description" name="description">
-          <Input.TextArea rows={3} placeholder="Enter description" />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item
+              label="Link URL"
+              name="link_url"
+              rules={[{ required: true, message: "Link URL is required" }]}
+            >
+              <Input placeholder="Enter target URL" />
+            </Form.Item>
+          </Col>
+
+          <Col span={24}>
+            <Form.Item label="Image" name="image">
+              <FileUploadComponent
+                url={url}
+                setUrl={setUrl}
+                setImageError={setImageError}
+              />
+              {imageError && (
+                <div style={{ color: "red", marginTop: "4px" }}>
+                  {imageError}
+                </div>
+              )}
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );

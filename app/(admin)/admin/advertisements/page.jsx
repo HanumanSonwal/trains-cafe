@@ -91,7 +91,6 @@ export default function AdvertisementDetails() {
   );
 
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
-
   const columns = [
     {
       title: "Title",
@@ -102,25 +101,27 @@ export default function AdvertisementDetails() {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      render: (text) => <img src={text} alt="Advertisement" style={{ width: 50, height: 50 }} />,
+      render: (text, record) => (
+        <img
+          src={text}
+          alt={record.alt || "Advertisement Image"}
+          style={{ width: 50, height: 50, objectFit: "cover" }}
+        />
+      ),
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      render: (text, record) => (
-        <div>
-          {text.split(" ").slice(0, 5).join(" ") + (text.split(" ").length > 5 ? "..." : "")}
-          {text.split(" ").length > 5 && (
-            <Button
-              style={{ color: "#D6872A", textDecoration: "underline" }}
-              type="link"
-              onClick={() => handleAddEditAd(record)}
-            >
-              Read More
-            </Button>
-          )}
-        </div>
+      title: "Alt",
+      dataIndex: "alt",
+      key: "alt",
+    },
+    {
+      title: "Link",
+      dataIndex: "link_url",
+      key: "link_url",
+      render: (text) => (
+        <a href={text} target="_blank" rel="noopener noreferrer">
+          {text}
+        </a>
       ),
     },
     {
@@ -146,6 +147,7 @@ export default function AdvertisementDetails() {
       ),
     },
   ];
+  
 
   const menu = (
     <Menu onClick={handleMenuClick}>
