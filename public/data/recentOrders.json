@@ -1,0 +1,18 @@
+[
+    { "station": "Itarsi Jn", "name": "Meena Joshi", "train": "LTT PURI SUPERFAST (12880)", "amount": 1643 },
+    { "station": "Bhopal Jn", "name": "Arvind Meena", "train": "MALWA EXPRESS (12919)", "amount": 275 },
+    { "station": "", "name": "Sneha Patil", "train": "GORAKHPUR EXPRESS (12592)", "amount": 420 },
+    { "station": "Vadodara Jn", "name": "Shweta Kapoor", "train": "MUMBAI RAJDHANI (12952)", "amount": 2821 },
+    { "station": "Jaipur Jn", "name": "Lalit Sharma", "train": "JAIPUR EXPRESS (19715)", "amount": 399 },
+    { "station": "Dhanbad Jn", "name": "Neha Rathi", "train": "KOAA ASR EXPRESS (13137)", "amount": 512 },
+    { "station": "Gwalior", "name": "Harsh Vardhan", "train": "GT EXPRESS (12615)", "amount": 688 },
+    { "station": "Lucknow NR", "name": "Anjali Mehta", "train": "SHATABDI EXPRESS (12003)", "amount": 4573 },
+    { "station": "Varanasi Jn", "name": "Deepak Soni", "train": "KASHI V EXPRESS (15017)", "amount": 342 },
+    { "station": "Ahmedabad Jn", "name": "Kiran Patel", "train": "SABARMATI EXP (19166)", "amount": 458 },
+    { "station": "Kanpur Central", "name": "Ramesh Thakur", "train": "PRAYAGRAJ EXP (12417)", "amount": 189 },
+    { "station": "", "name": "Ramesh Yadav", "train": "SAMPARK KRANTI (12628)", "amount": 382 },
+    { "station": "", "name": "Vinod Meena", "train": "NAVJEEVAN EXP (12655)", "amount": 389 },
+    { "station": "", "name": "Aarti Sharma", "train": "AZAD HIND EXP (12129)", "amount": 478 },
+    { "station": "", "name": "Rahul Soni", "train": "PUNJAB MAIL (12138)", "amount": 335 }
+  ]
+  
