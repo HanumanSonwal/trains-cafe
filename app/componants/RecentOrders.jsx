@@ -172,7 +172,7 @@ import { useEffect, useState } from "react";
 import { Button, Card } from "antd";
 import { PhoneOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import "./RecentOrders.css"; // 👈 Add CSS file or move styles to globals
+import "./RecentOrders.css"; 
 
 export default function RecentOrders() {
   const [orders, setOrders] = useState([]);
@@ -192,7 +192,7 @@ export default function RecentOrders() {
             <img
               src="/images/Recent.png"
               alt="Recent"
-              className="mx-auto mb-2 w-40"
+              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2/3"
             />
             <h2 className="text-2xl relative text-[#704D25] font-bold z-10">
               Recent Orders
@@ -227,7 +227,7 @@ export default function RecentOrders() {
             backgroundSize: "cover",
           }}
         >
-          <h2 className="font-bold text-2xl text-white text-center">
+          <h2 className="font-bold text-xl text-white text-center">
             Order Food On Call
           </h2>
           <img
