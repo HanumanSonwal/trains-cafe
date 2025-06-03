@@ -22,8 +22,6 @@ function VendorCardWithoutTrain({ selectedStation }) {
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
 
-  console.log(selectedStation, "dfgfdgfdgdfghdhhgfghfgfghfghfghfghfgh");
-
   useEffect(() => {
     const fetchVendors = async () => {
       setLoading(true);

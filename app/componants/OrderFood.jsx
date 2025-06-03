@@ -3,14 +3,12 @@ import { Input, Button, Tabs, Select, message } from "antd";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-import { useDispatch } from "react-redux";
-import { setSelectedStation } from "@/app/redux/stationSlice";
 import { createTrainSlug, createStationSlug } from "@/utils/slugify";
 
 const { Option } = Select;
 
 const OrderFood = () => {
-  const [activeKey, setActiveKey] = useState("1");
+  const [activeKey, setActiveKey] = useState("2");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
   const [station, setStation] = useState("");
@@ -18,7 +16,6 @@ const OrderFood = () => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchStations("");
@@ -29,8 +26,6 @@ const OrderFood = () => {
       const query = search?.trim() ? `?search=${search}` : "?limit=10";
       const response = await fetch(`/api/station${query}`);
       const result = await response.json();
-
-      console.log(result ,"resultsss")
 
       if (response.ok) {
         const options = result.data.map((station) => ({
@@ -103,10 +98,6 @@ const OrderFood = () => {
       console.log(selectedStation ,"selectedStation")
 
       if (!selectedStation) return message.error("Selected station not found.");
-
-      // Save to Redux store
-      dispatch(setSelectedStation(selectedStation));
-
       const slug = selectedStation.slug || createStationSlug(selectedStation.name, selectedStation.value);
       message.success("Station found! Redirecting...");
       router.push(`/stations/${slug}`);

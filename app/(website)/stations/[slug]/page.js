@@ -10,6 +10,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
+import Spinner from "@/app/componants/spinner/Spinner";
 
 const parseStationSlug = (slug) => {
   if (!slug) return null;
@@ -75,7 +76,7 @@ export default function Page() {
     fetchPage();
   }, [slug]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Spinner/>;
 
   if (error || !page) return <StationData selectedStation={parsedStation} />;
 
