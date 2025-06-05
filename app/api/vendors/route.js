@@ -264,7 +264,7 @@ if (stationcode) {
 export async function POST(req) {
     try {
         const body = await req.json();
-        if (!body.Vendor_Name || !body.Contact_No || !body.Station || !body.Delivery_Charges || !body.Min_Order_Value) {
+        if (!body.Vendor_Name ||!body.image|| !body.Contact_No || !body.Station || !body.Delivery_Charges || !body.Min_Order_Value) {
             return new Response(JSON.stringify({ success: false, message: 'All required fields must be filled' }), { status: 400 });
         }
         await dbConnect();

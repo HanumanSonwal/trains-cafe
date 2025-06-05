@@ -5,6 +5,7 @@ const VendorSchema = new mongoose.Schema({
     vendorid: { type: String, unique: true },
     Vendor_Name: { type: String, required: true },
     Contact_No: { type: String, required: true },
+    image: { type: String, required: true },
     Alternate_Contact_No: { type: String, required: true },
     Station: { 
         type: mongoose.Schema.Types.ObjectId,
