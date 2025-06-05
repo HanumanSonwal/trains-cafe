@@ -16,7 +16,7 @@ const HeroSection = () => {
     <div className="relative hero-banner">
       <Carousel
         autoplay
-        className="w-full"
+        className="w-full h-full"
       >
         {carouselImages.map((image, index) => (
           <div key={index}>
@@ -30,7 +30,7 @@ const HeroSection = () => {
 
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="p-3">
-          <div className="text-left mt-10 mx-auto relative">
+          <div className="text-left  mt-9 mx-auto relative">
             <img
               src="/images/Tastyfood.png"
               alt="Hero Title Background"
