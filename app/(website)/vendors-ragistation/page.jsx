@@ -8,6 +8,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import { postData ,fetchData } from "@/app/lib/ApiFuntions";
+import Link from "next/link";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -44,82 +45,25 @@ const VendorRegistration = () => {
   
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="relative h-60 md:h-72">
-        <img
+      <div className="relative h-60 md:h-72 ">
+       <div>
+         <img
           src="/images/section-bg.webp"
           alt="Banner"
           className="absolute inset-0 object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-xl md:text-4xl font-bold text-center px-4">
+       </div>
+        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+          <h1 className="text-white  text-xl md:text-4xl font-bold text-center px-4">
             Vendor Registration
           </h1>
         </div>
       </div>
 
-      <div className="py-12 px-4">
-        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-10">
+      <div className="py-10 px-4">
+        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-10 gap-3">
           <div className="mb-6">
-            <h2
-              className="text-center text-2xl sm:text-3xl font-bold mb-4"
-              style={{ color: "#704d25" }}
-            >
-              Join the Trains Cafe Vendor Network
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Reach more customers by registering your restaurant with us.
-            </p>
-            <p className="text-gray-600 mb-4">
-              <strong>Trains Cafe™</strong> is a premier online platform
-              delivering fresh and hygienic meals across Train Food Delivery and
-              Tiffin Services. With a Pan-India presence in over 150 cities, we
-              focus on <strong>quality</strong>, <strong>hygiene</strong>, and{" "}
-              <strong>customer satisfaction</strong>.
-            </p>
-            <p className="text-gray-600 mb-4">
-              By partnering with us, you commit to providing{" "}
-              <strong>premium quality food</strong>,{" "}
-              <strong>excellent service</strong>, and{" "}
-              <strong>safe packaging</strong> to ensure customer delight.
-              Together, we’ll work towards creating rewarding dining experiences
-              for all.
-            </p>
-            <p className="text-gray-600 mb-4">
-              Let’s embark on this journey together and bring your delicious
-              meals to customers across India!
-            </p>
-            <h3
-              className="text-xl sm:text-2xl font-semibold mb-4"
-              style={{ color: "#704d25" }}
-            >
-              Steps to Register as a Vendor
-            </h3>
-            <ul className="list-disc list-inside text-gray-600 space-y-2">
-              <li>
-                <strong>Complete</strong> the online registration form.
-              </li>
-              <li>
-                <strong>Our Vendor Team</strong> will contact you for mandatory
-                documentation.
-              </li>
-              <li>
-                <strong>Sign</strong> the agreement with Trains Cafe.
-              </li>
-              <li>
-                <strong>Pay</strong> the registration fees (T&C apply).
-              </li>
-              <li>
-                <strong>Start receiving</strong> orders for Train Food Delivery
-                and Tiffin Services.
-              </li>
-            </ul>
-            <p className="text-gray-600 mt-4">
-              <strong>Note:</strong> Trains Cafe reserves the right to accept or
-              reject applications at its sole discretion.
-            </p>
-          </div>
-
-          <Form
+            <Form
             form={form}
             layout="vertical"
             onFinish={onFinish}
@@ -245,16 +189,84 @@ const VendorRegistration = () => {
               </Button>
             </Form.Item>
           </Form>
+          </div>
+          <div>
+            <h2
+              className="text-center text-2xl sm:text-3xl font-bold mb-4"
+              style={{ color: "#704d25" }}
+            >
+              Join the Trains Cafe Vendor Network
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Reach more customers by registering your restaurant with us.
+            </p>
+            <p className="text-gray-600 mb-4">
+              <strong>Trains Cafe™</strong> is a premier online platform
+              delivering fresh and hygienic meals across Train Food Delivery and
+              Tiffin Services. With a Pan-India presence in over 150 cities, we
+              focus on <strong>quality</strong>, <strong>hygiene</strong>, and{" "}
+              <strong>customer satisfaction</strong>.
+            </p>
+            <p className="text-gray-600 mb-4">
+              By partnering with us, you commit to providing{" "}
+              <strong>premium quality food</strong>,{" "}
+              <strong>excellent service</strong>, and{" "}
+              <strong>safe packaging</strong> to ensure customer delight.
+              Together, we’ll work towards creating rewarding dining experiences
+              for all.
+            </p>
+            <p className="text-gray-600 mb-4">
+              Let’s embark on this journey together and bring your delicious
+              meals to customers across India!
+            </p>
+            <h3
+              className="text-xl sm:text-2xl font-semibold mb-4"
+              style={{ color: "#704d25" }}
+            >
+              Steps to Register as a Vendor
+            </h3>
+            <ul className="list-disc list-inside text-gray-600 space-y-2">
+              <li>
+                <strong>Complete</strong> the online registration form.
+              </li>
+              <li>
+                <strong>Our Vendor Team</strong> will contact you for mandatory
+                documentation.
+              </li>
+              <li>
+                <strong>Sign</strong> the agreement with Trains Cafe.
+              </li>
+              <li>
+                <strong>Pay</strong> the registration fees (T&C apply).
+              </li>
+              <li>
+                <strong>Start receiving</strong> orders for Train Food Delivery
+                and Tiffin Services.
+              </li>
+            </ul>
+            <p className="text-gray-600 mt-4">
+              <strong>Note:</strong> Trains Cafe reserves the right to accept or
+              reject applications at its sole discretion.
+            </p>
+          </div>
+
+          
         </div>
       </div>
 
-      <footer className="bg-coffee-600 text-white py-6">
+      <footer className="bg-coffee-600 text-white py-2">
         <div className="text-center">
           <p style={{ color: "#704d25" }} className="text-sm">
             Need help? Contact us at:
             <br />
             <span className="font-semibold hover:underline cursor-pointer">
-              +91 9818474510 | support@traincafe.com
+              
+              
+               <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                    +91-8696963496
+                  </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                   support@traincafe.com
+                  </Link>
             </span>
           </p>
         </div>

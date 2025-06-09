@@ -181,7 +181,7 @@
 //     },
 //     {
 //       q: `Can passengers order train food online from WhatsApp for ${stationName} railway station?`,
-//       a: `Indian Railways now allows passengers to order train food from WhatsApp number 7042062070 for ${stationName} railway station.`,
+//       a: `Indian Railways now allows passengers to order train food from WhatsApp number+91-8696963496 for ${stationName} railway station.`,
 //     },
 //   ].map(({ q, a }, i) => (
 //     <li key={i} style={{ marginBottom: "14px", fontSize: "14px" }}>
@@ -206,6 +206,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import Link from "next/link";
+import BlogSection from "@/app/componants/BlogSection";
 
 const StationData = ({ selectedStation }) => {
   const [expanded, setExpanded] = useState(false);
@@ -215,12 +216,11 @@ const StationData = ({ selectedStation }) => {
   const toggleReadMore = () => setExpanded(!expanded);
 
   return (
-    <div
+    <div className="px-2"
       style={{
-        
-        margin: "3%",
+                // margin: "3%",
         // lineHeight: "1.6",
-        textAlign: "justify",
+        // textAlign: "justify",
       }}
     >
       <h1
@@ -266,7 +266,7 @@ const StationData = ({ selectedStation }) => {
         </Swiper>
       </div>
 
-      <h1
+      <h2
         style={{
           display: "flex",
           alignItems: "center",
@@ -284,13 +284,13 @@ const StationData = ({ selectedStation }) => {
           height={50}
         />
         Restaurants at {stationName}
-      </h1>
+      </h2>
 
       <VendorCardWithoutTrain selectedStation={selectedStation} />
 
       <p>
         Order <Link
-          className="font-bold text-[#704D25] underline"
+          className="font-bold text-blue-600 hover:text-blue-800 underline"
           href="https://www.trainscafe.in/online-food-on-train"
         >  food on train </Link> at <strong>{stationName}</strong> Railway Station
         and receive your fresh meal directly at your seat. The station code is{" "}
@@ -337,7 +337,7 @@ const StationData = ({ selectedStation }) => {
       <p>
         Trainscafe offers{" "}
         <Link
-          className="font-bold text-[#704D25] underline"
+          className="font-bold text-blue-600 hover:text-blue-800 underline"
           href="https://www.trainscafe.in/group-food-order-in-train"
         >
         bulk food ordering in train</Link>{" "} for school trips, corporate travel, family
@@ -354,7 +354,7 @@ const StationData = ({ selectedStation }) => {
           marginTop: "2rem",
         }}
       >
-        How to <Link className="font-bold text-[#704D25] underline"
+        How to <Link className="font-bold text-blue-600 hover:text-blue-800 underline"
           href="https://www.trainscafe.in/order-food-in-train"> Order Food in Train </Link> at {stationName} {stationCode}
       </h2>
       <p>
@@ -363,7 +363,7 @@ const StationData = ({ selectedStation }) => {
       </p>
 
       <ul style={{ paddingLeft: "5%", listStyleType: "decimal" }}>
-        <li>Visit <Link  className="font-bold text-[#704D25] underline"
+        <li>Visit <Link  className="font-bold text-blue-600 hover:text-blue-800 underline"
           href="https://www.trainscafe.in">Trainscafe Website</Link> or open the app</li>
         <li>
          Enter station name: {stationName} or station code: {stationCode}
@@ -425,12 +425,13 @@ const StationData = ({ selectedStation }) => {
   FAQs: Online Food Delivery at {stationName} Station
 </h2>
 
-<ul style={{ listStyleType: "none", paddingLeft: 0 }}>
+<div>
+  <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
   <li style={{ marginBottom: "14px", fontSize: "14px" }}>
     <strong>Q1:</strong> <strong>How to order food online at {stationName} Railway Station?</strong>
     <br />
     <strong>Ans.</strong> Visit Trainscafe's official{" "}
-    <Link className="font-bold text-[#704D25] underline" href="https://www.trainscafe.in">
+    <Link className="font-bold text-blue-600 hover:text-blue-800 underline" href="https://www.trainscafe.in">
       website
     </Link>{" "}
     or app, select {stationName}, choose your meal, and get it delivered to your seat.
@@ -440,9 +441,9 @@ const StationData = ({ selectedStation }) => {
     <strong>Q2:</strong> <strong>Can I call for food delivery in train at {stationName}?</strong>
     <br />
     <strong>Ans.</strong> Yes, call{" "}
-    <a href="tel:+918696963496" className="font-bold text-[#704D25] underline">
-      +91 8696963496
-    </a>{" "}
+    <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+      +91-8696963496
+    </Link>{" "}
     to place your food order for delivery at {stationName}.
   </li>
 
@@ -451,7 +452,7 @@ const StationData = ({ selectedStation }) => {
     <br />
     <strong>Ans.</strong> Click on{" "}
     <Link
-      className="font-bold text-[#704D25] underline"
+      className="font-bold text-blue-600 hover:text-blue-800 underline"
       href="https://www.trainscafe.in/group-food-order-in-train"
     >
       “Group Order”
@@ -469,9 +470,9 @@ const StationData = ({ selectedStation }) => {
     <strong>Q5:</strong> <strong>Can I use WhatsApp to order?</strong>
     <br />
     <strong>Ans.</strong> Yes, message Trainscafe on WhatsApp at{" "}
-    <a href="https://wa.me/917042062070" className="font-bold text-[#704D25] underline">
-      7042062070
-    </a>{" "}
+    <Link href="https://wa.me/918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+     +91-8696963496
+    </Link>{" "}
     to order food for delivery at {stationName}.
   </li>
 
@@ -480,19 +481,24 @@ const StationData = ({ selectedStation }) => {
     <br />
     <strong>Ans.</strong> Visit the{" "}
     <Link
-      className="font-bold text-[#704D25] underline"
+      className="font-bold text-blue-600 hover:text-blue-800 underline"
       href="https://www.trainscafe.in/vendor-registration"
     >
       Restaurant Signup
     </Link>{" "}
     page on Trainscafe or call{" "}
-    <a href="tel:+918696963496" className="font-bold text-[#704D25] underline">
-      +91 8696963496
-    </a>.
+    <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+      +91-8696963496
+    </Link>.
   </li>
 </ul>
-
+</div>
+<div>
+  <BlogSection/>
+</div>
     </div>
+          
+
   );
 };
 
