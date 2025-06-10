@@ -449,21 +449,20 @@ const BulkOrderForm = () => {
           
         </div>
       </div>
-      <footer className="bg-coffee-600 text-white py-6">
-        <div className="text-center text-sm">
-          <p>
-            Need immediate assistance? Call us at{" "}
-            <a href="tel:+911234567890" className="font-semibold underline">
-              +91 1234567890
-            </a>{" "}
-            or email us at{" "}
-            <a
-              href="mailto:support@example.com"
-              className="font-semibold underline"
-            >
-              support@example.com
-            </a>
-            .
+      <footer className=" text-white py-2">
+        <div className="text-center">
+          <p style={{ color: "#704d25" }} className="text-sm">
+            Need help? Contact us at:
+            <br />
+            <span className="font-semibold hover:underline cursor-pointer">
+              
+              
+               <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                    +91-8696963496
+                  </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                   support@trainscafe.com
+                  </Link>
+            </span>
           </p>
         </div>
       </footer>

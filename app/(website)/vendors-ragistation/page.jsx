@@ -254,21 +254,18 @@ const VendorRegistration = () => {
         </div>
       </div>
 
-      <footer className="bg-coffee-600 text-white py-2">
-        <div className="text-center">
-          <p style={{ color: "#704d25" }} className="text-sm">
-            Need help? Contact us at:
-            <br />
-            <span className="font-semibold hover:underline cursor-pointer">
-              
-              
-               <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
-                    +91-8696963496
-                  </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
-                   support@traincafe.com
-                  </Link>
-            </span>
+     <footer className="bg-coffee-600 text-white py-4 mt-2">
+        <div style={{color:'#704d25'}} className="text-center text-sm">
+          <p>
+            Need help? Reach us at{" "}
+            
+            <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                                +91-8696963496
+                              </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                               support@trainscafe.com
+                              </Link>
           </p>
+          <p className="mt-2">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
         </div>
       </footer>
     </div>
