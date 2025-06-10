@@ -8,6 +8,7 @@ import {
   MailOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
+import Link from "next/link";
 
 const { TextArea } = Input;
 
@@ -166,11 +167,11 @@ const OnlineCoolieBooking = () => {
       <footer className="bg-coffee-600 text-white py-6">
         <div className="text-center">
           <p style={{color:'#704d25'}} className="text-sm">
-            Need immediate assistance? Call us at:
-            <br />
-            <span className="font-semibold hover:underline cursor-pointer">
-              +91 1234567890
-            </span>
+            Need immediate assistance? Call us at: <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                    +91-8696963496
+                  </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                   support@trainscafe.com
+                  </Link>
           </p>
         </div>
       </footer>

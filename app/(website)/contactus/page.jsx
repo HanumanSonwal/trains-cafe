@@ -1,7 +1,8 @@
-'use client';
-import React from 'react';
-import { Form, Input, Button, Typography, Divider, App } from 'antd';
-import InfoSection from '@/app/componants/InfoSection';
+"use client";
+import React from "react";
+import { Form, Input, Button, Typography, Divider, App } from "antd";
+import InfoSection from "@/app/componants/InfoSection";
+import Link from "next/link";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -9,28 +10,29 @@ const { TextArea } = Input;
 const ContactUsPage = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
-  
-  const mapSrc = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.865751258791!2d-74.0059740846814!3d40.71277597933168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a1ffdb26f47%3A0x3a69f9de2fa2cfb1!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1631874711768!5m2!1sen!2sin";
+
+  const mapSrc =
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.865751258791!2d-74.0059740846814!3d40.71277597933168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a1ffdb26f47%3A0x3a69f9de2fa2cfb1!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1631874711768!5m2!1sen!2sin";
 
   const onFinish = async (values) => {
     try {
-      const response = await fetch('/api/contact?slug=ContactUs', {
-        method: 'POST',
+      const response = await fetch("/api/contact?slug=ContactUs", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...values, 
-          slug: 'ContactUs' 
-        })
+          ...values,
+          slug: "ContactUs",
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       await response.json();
-      message.success('Your message has been sent successfully!');
+      message.success("Your message has been sent successfully!");
       form.resetFields();
     } catch (error) {
       // message.error('Failed to send your message. Please try again later.');
@@ -46,27 +48,58 @@ const ContactUsPage = () => {
           alt="Banner"
           className="absolute inset-0 object-cover w-full h-full"
         />
-        
       </div>
-      <Title level={3} style={{ color: '#704D25', fontWeight: 'bold' }} className="text-xl text-center mb-4">
-      Contact Us
-        </Title>
+      <Title
+        level={1}
+        style={{ color: "#704D25", fontWeight: "bold" }}
+        className="text-center mb-4"
+      >
+        Contact Us
+      </Title>
       {/* Contact Details Section */}
       <div className="flex flex-col items-center py-8">
-        <Title level={3} style={{ color: '#704D25', fontWeight: 'bold' }} className="text-xl mb-4">
+        <Title
+          level={3}
+          style={{ color: "#704D25", fontWeight: "bold" }}
+          className="text-xl mb-4"
+        >
           Company Contact Details
         </Title>
         <div className="text-center">
-          <p className="text-sm"><strong>Phone:</strong> +123 456 7890</p>
-          <p className="text-sm"><strong>Email:</strong> contact@company.com</p>
-          <p className="text-sm"><strong>Address:</strong> 123 Business Rd, Business City, BC 12345</p>
+          <p className="text-sm">
+            <strong>Phone:</strong>{" "}
+            <Link
+              href="tel:+918696963496"
+              className="font-bold text-blue-600 hover:text-blue-800 underline"
+            >
+              +91-8696963496
+            </Link>{" "}
+          </p>
+          <p className="text-sm">
+            <strong>Email:</strong>{" "}
+            <Link
+              href="support@traincafe.com"
+              className="font-bold text-blue-600 hover:text-blue-800 underline"
+            >
+              support@trainscafe.com
+            </Link>
+          </p>
+
+          <p className="text-sm">
+            <strong>Address:</strong> <Link  className="font-bold text-blue-600 hover:text-blue-800 underline" href="https://maps.app.goo.gl/hY9eo2kAij9PPqzi6">8, Paschim vihar, D, Bhakrota, Jaipur,
+            Rajasthan 302026</Link>
+          </p>
         </div>
       </div>
 
       {/* Form Section */}
       <div className="flex items-center justify-center py-4 px-2 shadow-lg">
         <div className="max-w-md w-full bg-white p-4 rounded-lg ">
-          <Title style={{ color: '#704D25' }} level={2} className="text-3xl font-semibold mb-6 text-center">
+          <Title
+            style={{ color: "#704D25" }}
+            level={2}
+            className="text-3xl font-semibold mb-6 text-center"
+          >
             Get in Touch
           </Title>
           <Form
@@ -74,24 +107,31 @@ const ContactUsPage = () => {
             layout="vertical"
             onFinish={onFinish}
             validateMessages={{
-              required: '${label} is required!',
+              required: "${label} is required!",
               types: {
-                email: '${label} is not a valid email!',
-              }
+                email: "${label} is not a valid email!",
+              },
             }}
           >
             <Form.Item
               label="Name"
               name="Name"
-              rules={[{ required: true, min: 2, message: 'Please input your name!' }]}
+              rules={[
+                { required: true, min: 2, message: "Please input your name!" },
+              ]}
             >
               <Input placeholder="Your Name" />
             </Form.Item>
-            
+
             <Form.Item
               label="Contact Number"
               name="ContactNumber"
-              rules={[{ required: true, message: 'Please input your contact number!' }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your contact number!",
+                },
+              ]}
             >
               <Input placeholder="Your Contact Number" />
             </Form.Item>
@@ -100,17 +140,19 @@ const ContactUsPage = () => {
               label="Email"
               name="Email"
               rules={[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { required: true, message: "Please input your email!" },
+                { type: "email", message: "Please enter a valid email!" },
               ]}
             >
               <Input placeholder="Your Email" type="email" />
             </Form.Item>
-            
+
             <Form.Item
               label="Message"
               name="Message"
-              rules={[{ required: true, message: 'Please input your message!' }]}
+              rules={[
+                { required: true, message: "Please input your message!" },
+              ]}
             >
               <TextArea placeholder="Your Message" rows={4} />
             </Form.Item>
@@ -125,23 +167,28 @@ const ContactUsPage = () => {
           </Form>
         </div>
       </div>
-<InfoSection/>
+      <InfoSection />
       {/* Map Section */}
       <Divider className="m-0" />
       <div className="flex items-center justify-center ">
         <div className="w-full max-w-4xl p-2">
-          <Title level={3} style={{ color: '#704D25' }} className="text-2xl font-semibold mb-4 text-center">
+          <Title
+            level={3}
+            style={{ color: "#704D25" }}
+            className="text-2xl font-semibold mb-4 text-center"
+          >
             Our Location
           </Title>
+          
           <iframe
-            title="Company Location"
-            src={mapSrc}
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.7475753554404!2d75.69229787450367!3d26.879759861507655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4b3e9fbcc449%3A0x80d5fe523ff88297!2s8%2C%20Paschim%20vihar%2C%20D%2C%20Bhakrota%2C%20Jaipur%2C%20Rajasthan%20302026!5e0!3m2!1sen!2sin!4v1749540150046!5m2!1sen!2sin"
             width="100%"
             height="300"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
-          />
+            
+          ></iframe>
         </div>
       </div>
     </div>
