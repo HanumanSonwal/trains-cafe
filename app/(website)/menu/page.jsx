@@ -197,8 +197,6 @@ const MenuPage = () => {
       
       )}
 
-      {/* Go to Cart Button with Quantity Badge */}
-      {/* Go to Cart Button with Quantity Badge */}
       <div className="flex items-center justify-between mt-6 w-full">
         <Badge count={totalUniqueItems} offset={[0, 0]}>
           <ShoppingCartOutlined className="text-2xl text-green-500" />
@@ -284,7 +282,7 @@ const CartComp = ({ cartItems, item }) => {
         min={0}
         max={10}
         value={cartItem.quantity}
-        className="mx-2 w-12 text-center"
+        className="mx-1 w-8 text-center"
         readOnly
       />
       <Button

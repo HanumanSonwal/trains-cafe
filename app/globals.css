@@ -68,7 +68,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     width: 100% !important;
-    height: 20vh;
+    /* height: 20vh; */
     /* padding: 20px; */
   }
   .hero-banner h2 {
@@ -237,30 +237,6 @@
   background-color: #D49929 !important;
 }
 
-/* :where(.css-dev-only-do-not-override-qnu6hi).ant-btn {
-  color: #fff !important;
-} */
-
-
-
-/* blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-  margin: inherit !important;
-} */
-/* li{
-  margin: 8px 0;
-} */
 
 :where(.css-dev-only-do-not-override-qnu6hi).ant-input-outlined:hover{
   border-color: #704D25 !important;
@@ -319,4 +295,15 @@ color: #704D25 !important;
   background-color: #704D25 !important;
   color: white !important;
   border-color: #704D25 !important;
+}
+
+.custom-link {
+  color: blue;
+  font-weight: 600;
+  text-decoration: underline;
+  
+}
+
+.ant-card-body{
+  padding: 12px!important;
 }
