@@ -129,6 +129,12 @@ const StationManagement = () => {
 
   const columns = [
     {
+      title: "Station Id",
+      dataIndex: "stationId",
+      key: "stationId",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
       title: "Station Name",
       dataIndex: "name",
       key: "name",

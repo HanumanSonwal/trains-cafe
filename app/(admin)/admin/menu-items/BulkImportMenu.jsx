@@ -1,24 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Button,
-  Upload,
-  message,
-  Modal,
-  Form,
-  Row,
-  Col,
-} from "antd";
+import { Button, Upload, message, Modal, Form, Row, Col } from "antd";
 import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
 const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   const [fileList, setFileList] = useState([]);
-  const [uploadId, setUploadId] = useState(null);
 
   const handleFileChange = (info) => {
     const latestFileList = [...info.fileList].slice(-1); // only keep latest file
-    setFileList(latestFileList);
 
     const file = latestFileList[0];
     if (!file) return;
@@ -33,7 +23,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
       const ws = wb.Sheets[wsname];
 
       const jsonData = XLSX.utils.sheet_to_json(ws, { defval: "" });
-
+      setFileList(jsonData);
       if (jsonData.length) {
         console.log("✅ Excel Data:", jsonData);
       } else {
@@ -50,16 +40,11 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", fileList[0].originFileObj);
-    formData.append("uploadId", uploadId);
-
-    if (onSubmit) onSubmit(formData);
+    if (onSubmit) onSubmit(fileList);
   };
 
   const handleDownloadSampleCSV = () => {
     const generatedId = crypto.randomUUID();
-    setUploadId(generatedId);
 
     const sampleData = [
       [
@@ -78,8 +63,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
-    worksheet["!cols"] = Array(sampleData[0].length).fill({});
-    worksheet["!cols"][9] = { hidden: true };
+    // worksheet["!cols"] = Array(sampleData[0].length).fill({});
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "SampleMenu");
