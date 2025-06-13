@@ -43,7 +43,7 @@ const CouponPage = () => {
 
   return (
     <div>
-      <div className="relative md:h-60 h-40 mb-4">
+      <div className="relative h-40 mb-4">
         <img
           src="/images/section-bg.webp"
           alt="Banner"

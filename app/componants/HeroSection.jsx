@@ -16,12 +16,11 @@ const HeroSection = () => {
     <div className="relative hero-banner">
       <Carousel
         autoplay
-        className="w-full h-full"
       >
         {carouselImages.map((image, index) => (
           <div key={index}>
             <div
-              className="h-[30vh]  bg-center bg-cover bg-no-repeat"
+              className="h-40  md:h-60 bg-center bg-cover bg-no-repeat"
               style={{ backgroundImage: `url(${image})` }}
             />
           </div>

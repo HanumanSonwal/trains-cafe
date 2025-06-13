@@ -33,7 +33,7 @@ export default function Articles() {
           </Link>{" "}
           with Trainscafe
         </h1>
-        <p className="text-justify">
+        <p className="text-justify text-sm">
           Are you bored of eating boring pantry food on the train? Are you on
           your long train journey and still ordering the same tasteless rail
           food? No need to worry now, introducing Trainscafe, which provides an
@@ -47,10 +47,8 @@ export default function Articles() {
           <p className="text-sm mb-5">{previewText}</p>
         ) : (
           <div className="text-left text-sm mb-5 space-y-4">
-            <h2>Why choose Trainscafe for online food orders on the train?</h2>
-            <h3>
-              List of Delicious food you can order from Trainscafe on the train
-            </h3>
+            <h2 className="text-xl font-bold relative z-10 mt-3 text-[#704D25]">Why choose Trainscafe for online food orders on the train?</h2>
+           
             <p>
               Trainscafe provides fresh meals and the{" "}
               <Link
@@ -293,7 +291,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 className="font-bold text-[#704D25]">About Trainscafe -</h4>
+            <h2 className="t -skew-x-12 font-bold text-[#704D25]">About Trainscafe -</h2>
             <p>
               Trainscafe is a well-known e-catering platform that provides fresh
               and hygienic online food delivery on trains. Trainscafe ranked

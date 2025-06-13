@@ -220,7 +220,7 @@ const BlogSection = () => {
 
       <div className="text-center mt-6">
         <Link href={`/blog`} passHref>
-          <Button type="link" className="flex items-center">
+          <Button type="default" className="flex items-center">
             View More Blogs <ArrowRightOutlined className="ml-1" />
           </Button>
         </Link>

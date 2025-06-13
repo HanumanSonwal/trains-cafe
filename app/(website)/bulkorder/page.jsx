@@ -53,7 +53,7 @@ const BulkOrderForm = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="relative h-60 md:h-72">
+      <div className="relative h-40">
         <img
           src="/images/section-bg.webp"
           alt="Banner"
@@ -438,7 +438,12 @@ const BulkOrderForm = () => {
   <li style={{ marginBottom: "14px", fontSize: "14px" }}>
     <strong>Q5:</strong> <strong> How to order bulk food in train on call?</strong>
     <br />
-    <strong>Ans.</strong> Order food on train with Traincafe, contact us at 8696963496 to place your order.
+    <strong>Ans.</strong> Order food on train with Traincafe, contact us at  <Link
+                href="tel:+918696963496"
+                className="font-bold text-blue-600 hover:text-blue-800 underline"
+              >
+                +91-8696963496
+              </Link> to place your order.
 
   </li>
 
