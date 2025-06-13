@@ -50,7 +50,7 @@ export default function Page({ params }) {
     <div className="min-h-screen bg-gray-50">
   
 
-      <div className="relative h-60 md:h-80">
+      <div className="relative h-40">
         <img
           src="/images/section-bg.webp"
           alt="Banner"
@@ -65,12 +65,12 @@ export default function Page({ params }) {
       <div className="max-w-4xl mx-auto p-6 sm:p-10 bg-white shadow-lg rounded-lg ">
 
 
-        <h2 style={{color:'#704d25'}} className="text-2xl md:text-3xl font-bold text-coffee-600 mb-4">
+        <h2 style={{color:'#704d25'}} className="text-2xl md:text-3xl font-bold text-center text-coffee-600 mb-4">
           {page.title || "No Title Provided"}
         </h2>
         <OrderFood/>
         <div
-          className="text-gray-700 text-base md:text-lg leading-relaxed ck-content mb-8"
+          className="text-gray-700 text-base md:text-lg leading-relaxed ck-content mb-6"
           dangerouslySetInnerHTML={{ __html: page.pageData || "<p>No content available for this page.</p>" }}
         />
 

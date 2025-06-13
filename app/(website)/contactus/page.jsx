@@ -42,7 +42,7 @@ const ContactUsPage = () => {
   return (
     <div className="min-h-screen">
       {/* Banner Section */}
-      <div className="relative md:h-60 h-40 mb-4">
+      <div className="relative h-40 mb-4">
         <img
           src="/images/section-bg.webp"
           alt="Banner"
@@ -57,22 +57,28 @@ const ContactUsPage = () => {
         Contact Us
       </Title>
       {/* Contact Details Section */}
-      <div className="flex flex-col items-center py-8">
-        <Title
-          level={3}
+      <div className="flex flex-col items-center py-4">
+      <div className="p-5 ">
+      <h2 
+          style={{ color: "#704D25", fontWeight: "bold" }}
+          className="text-xl mb-4 text-center">Contact Us - We’re Here to Help</h2>
+        <p>At <b>Trainscafe</b>, your satisfaction is our priority. Whether you have questions about your order, want to know more about our services, or need help with group bookings - we’re just a call, message, or email away.
+Our support team is available 24*7 days a week, ready to assist you with real-time solutions for a smooth and enjoyable train food delivery experience.</p>
+      </div>
+        <h3
           style={{ color: "#704D25", fontWeight: "bold" }}
           className="text-xl mb-4"
         >
-          Company Contact Details
-        </Title>
-        <div className="text-center">
+          📞 Customer Support
+        </h3>
+        <div className="text-center mb-4">
           <p className="text-sm">
-            <strong>Phone:</strong>{" "}
+            <strong>Call Us:</strong>{" "}
             <Link
               href="tel:+918696963496"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              +91-8696963496
+              +91-8696963496(Available from 7 AM to 10 PM)
             </Link>{" "}
           </p>
           <p className="text-sm">
@@ -89,7 +95,22 @@ const ContactUsPage = () => {
             <strong>Address:</strong> <Link  className="font-bold text-blue-600 hover:text-blue-800 underline" href="https://maps.app.goo.gl/hY9eo2kAij9PPqzi6">8, Paschim vihar, D, Bhakrota, Jaipur,
             Rajasthan 302026</Link>
           </p>
+
+           
         </div>
+        <div className="text-center p-5"> <h3
+          style={{ color: "#704D25", fontWeight: "bold" }}
+          className="text-xl mb-4"
+        >
+         Business/Partner Inquiries
+        </h3>
+        <p className="text-center">Interested in partnering with us or becoming a food vendor on trains?
+Write to us at: <Link
+              href="support@traincafe.com"
+              className="font-bold text-blue-600 hover:text-blue-800 underline"
+            >
+              info@trainscafe.com
+            </Link></p></div>
       </div>
 
       {/* Form Section */}
@@ -167,6 +188,7 @@ const ContactUsPage = () => {
           </Form>
         </div>
       </div>
+      
       <InfoSection />
       {/* Map Section */}
       <Divider className="m-0" />

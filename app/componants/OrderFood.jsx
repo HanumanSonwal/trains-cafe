@@ -11,7 +11,7 @@ const OrderFood = () => {
   const [activeKey, setActiveKey] = useState("2");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
-  const [station, setStation] = useState("");
+  const [station, setStation] = useState(undefined);
   const [stationOptions, setStationOptions] = useState([]);
   const [loading, setLoading] = useState(false);
 
