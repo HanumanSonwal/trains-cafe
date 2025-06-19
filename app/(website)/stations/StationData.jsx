@@ -16,19 +16,7 @@ const StationData = ({ selectedStation }) => {
 
   return (
      <div className="bg-gray-50 min-h-screen">
-      {/* Banner Section */}
-      <div className="relative h-40">
-        <img
-          src="/images/section-bg.webp"
-          alt="Banner"
-          className="absolute inset-0 object-cover w-full h-full"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-xl md:text-4xl font-bold text-center px-4">
-            {stationName} {stationCode}
-          </h1>
-        </div>
-      </div>
+     
     <div className="px-2 py-4"
       style={{
                 // margin: "3%",
@@ -36,25 +24,6 @@ const StationData = ({ selectedStation }) => {
         // textAlign: "justify",
       }}
     >
-      <h1
-        style={{
-          color: "#704d25",
-          fontSize: "1.6rem",
-          fontWeight: "bold",
-          marginBottom: "0.5rem",
-        }}
-        className="text-center"
-      >
-        Get Your Delicious Meal Online at {stationName} {stationCode}
-      </h1>
-
-      <div
-        style={{
-          marginBottom: "1rem",
-          borderRadius: "12px",
-          overflow: "hidden",
-        }}
-      >
         <Swiper
           modules={[Autoplay]}
           slidesPerView={1}
@@ -78,27 +47,44 @@ const StationData = ({ selectedStation }) => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-
-      <h2
+      <h1
         style={{
-          display: "flex",
+          color: "#704d25",
+          fontSize: "1.6rem",
+          fontWeight: "bold",
+          marginBottom: "0.5rem",
+        }}
+        className="text-center"
+      >
+        Get Your Delicious Meal Online at {stationName} {stationCode}
+      </h1>
+
+      <div
+        style={{
+          marginBottom: "1rem",
+          borderRadius: "12px",
+          overflow: "hidden",
+        }}
+      >
+      </div>
+<div className="flex flex-col justify-center"><div className="flex justify-center"><Image
+          src="/images/trainlogo.png"
+          alt="online food in train"
+           width={328}
+          height={90}
+        /></div>
+      <div className="text-center"><h2
+        style={{          
           alignItems: "center",
           gap: "0.5rem",
           color: "#704d25",
-          fontSize: "1rem",
           fontWeight: "bold",
           marginBottom: "1rem",
         }}
       >
-        <Image
-          src="/images/railway.webp"
-          alt="train icon"
-          width={50}
-          height={50}
-        />
+        
         Restaurants at {stationName}
-      </h2>
+      </h2></div></div>
 
       <VendorCardWithoutTrain selectedStation={selectedStation} />
 
@@ -220,7 +206,7 @@ const StationData = ({ selectedStation }) => {
         }}
       >
         <Image
-          src="/images/vendors_banner.webp"
+          src="/images/vendor-banner.png"
           alt="Bottom Ad Banner"
           layout="responsive"
           width={728}

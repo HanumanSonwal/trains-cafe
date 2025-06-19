@@ -50,14 +50,14 @@ export default function Page({ params }) {
     <div className="min-h-screen bg-gray-50">
   
 
-      <div className="relative h-40">
+      <div className="relative h-40 md:h-60">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="online food in train"
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1  className="text-white text-xl md:text-4xl font-bold text-center px-4">{page.title || "No Name Provided"}</h1>
+          <h1  className="text-white font-bold text-center px-4">{page.title || "No Name Provided"}</h1>
         </div>
       </div>
 
@@ -95,8 +95,8 @@ export default function Page({ params }) {
             
             <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
                                 +91-8696963496
-                              </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
-                               support@trainscafe.com
+                              </Link> | <Link href="support@trainscafe.in" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                               support@trainscafe.in
                               </Link>
           </p>
           <p className="mt-2">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
@@ -105,7 +105,7 @@ export default function Page({ params }) {
 
       <style jsx global>{`
         .ck-content {
-          overflow-x: auto;
+          {/* overflow-x: auto; */}
           font-size: 1rem;
         }
 

@@ -10,6 +10,27 @@
 
 /* SignIn Componanat css */
 
+h1{
+  font-size: 1.5rem !important;
+}
+h2{
+  font-size: 1.4rem !important;
+}
+h3{
+  font-size: 1.2rem !important;
+}
+h4{
+  font-size: 1.1rem !important;
+}
+
+
+.ck-content ol,
+.ck-content ul,
+.ck-content menu {
+  list-style: auto !important;
+  margin:0 20px !important;
+}
+
 .container {
     margin: 0 auto;
     padding: var(--padding);

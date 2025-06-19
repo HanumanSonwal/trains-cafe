@@ -10,7 +10,7 @@ export default function Articles() {
 
   return (
     <div className="py-8 px-2 mx-auto max-w-[575px] bg-gray-100 rounded-md mb-3">
-      <div className="relative text-center mb-8">
+      {/* <div className="relative text-center mb-8">
         <img
           src="/images/Articles.png"
           alt="Blog Title Background"
@@ -20,10 +20,10 @@ export default function Articles() {
         <h2 className="text-2xl font-bold relative z-10 text-[#704D25]">
           Latest Articles
         </h2>
-      </div>
+      </div> */}
 
       <div className="text-center">
-        <h1 className="font-bold text-[#704D25] mb-3">
+        <h1 className="font-bold text-[#704D25] text-xl mb-3">
           Order{" "}
           <Link
             className="text-blue-600 font-bold underline hover:text-blue-800"
@@ -150,7 +150,7 @@ export default function Articles() {
                 elevate your journey.
               </li>
             </ul>
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Exciting Offers & Promo Codes on Trainscafe
             </h2>
             <p>Save more on your train meals with our latest deals:</p>
@@ -191,7 +191,7 @@ export default function Articles() {
               before checkout
             </p>
 
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Online{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
@@ -242,9 +242,9 @@ export default function Articles() {
               That’s it! Enjoy hot and fresh meals delivered right to your train
               seat.
             </p>
-            <h3 className="font-bold text-[#704D25]">
+            <h2 className="font-bold  text-xl text-[#704D25]">
               Don’t Need to Download our app ‘Trainscafe’ from Playstore
-            </h3>
+            </h2>
             <p>
               Now you can easily Visit our (PWA) Web App from your browser for
               quick ordering of food in train. Follow the mentioned below steps-
@@ -291,7 +291,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h2 className="t -skew-x-12 font-bold text-[#704D25]">About Trainscafe -</h2>
+            <h2 className="t -skew-x-12 text-xl font-bold text-[#704D25]">About Trainscafe -</h2>
             <p>
               Trainscafe is a well-known e-catering platform that provides fresh
               and hygienic online food delivery on trains. Trainscafe ranked
@@ -307,7 +307,7 @@ export default function Articles() {
               online train food with us.
             </p>
 
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Enjoy Delicious{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
@@ -325,7 +325,7 @@ export default function Articles() {
               train food delivery platform
             </p>
 
-            <h2>
+            <h2 className="text-xl">
               <b>Top Reasons to Trust Trainscafe for Food Delivery on Train</b>
             </h2>
 
@@ -355,7 +355,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 className="font-bold text-[#704D25]">FSSAI-Certified Partner Restaurants</h4>
+            <h4 style={{fontSize:"20px"}} className="font-bold text-[#704D25]">FSSAI-Certified Partner Restaurants</h4>
             <p>
               {" "}
               Hygienically prepared meals from verified kitchens to ensure food
@@ -403,7 +403,7 @@ export default function Articles() {
               meals.
             </p>
 
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold  text-xl text-[#704D25]">
               Delicious Hot & Hygienic Meals on Your Train Journey with
               Trainscafe
             </h2>
@@ -415,7 +415,7 @@ export default function Articles() {
               or quick bites, we’ve covered all your choices, especially for
               travellers.
             </p>
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Online Food Order in Trains at 450+ Railway Stations Across India
             </h2>
             <p>
@@ -438,7 +438,7 @@ export default function Articles() {
               <br></br>Enjoy your journey, and let Trainscafe handle the food
               with care and quality you can trust.
             </p>
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               More Than Just Train Food - Trainscafe Helps You Travel Smarter
             </h2>
             <p>
@@ -537,7 +537,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Why Choose Trainscafe for All Your Travel Needs?
             </h2>
 
@@ -592,7 +592,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h2 className="font-bold text-[#704D25]">Our Related Search Queries on Browser</h2>
+            <h2 className="font-bold text-xl text-[#704D25]">Our Related Search Queries on Browser</h2>
             <p className="mb-3">
               Hygienic food delivery in trains |{" "}
               <Link
@@ -662,7 +662,7 @@ export default function Articles() {
               train food ordering
             </p>
 
-            <h2 className="font-bold text-[#704D25]">Top-Rated Trains</h2>
+            <h2 className="font-bold text-xl text-[#704D25]">Top-Rated Trains</h2>
             <p>
               Order Food in Vande Bharat Express - 22436 | Order Food in Tejas
               Express - 22671 | Order Food in Rajdhani Express - 12951 | Order
@@ -687,7 +687,7 @@ export default function Articles() {
               | Order Food in Howrah Yeshvantpur Express - 12863 | Order Food in
               Lokmanya Tilak AC Express - 22123
             </p>
-            <h2 className="font-bold text-[#704D25]">Top Railway Stations</h2>
+            <h2 className="font-bold text-xl text-[#704D25]">Top Railway Stations</h2>
             <p className="mb-3">
               Order Food in train at New Delhi Railway Station - NDLS | Order
               Food in train at Mumbai CST Railway Station - CSMT | Order Food in
@@ -706,7 +706,7 @@ export default function Articles() {
               Junction - CBE | Order Food in train at Vadodara Junction - BRC
             </p>
 
-            <h2 className="font-bold text-[#704D25]">
+            <h2 className="font-bold  text-xl text-[#704D25]">
               Frequently Asked Questions (FAQs)
             </h2>
             <Collapse accordion>

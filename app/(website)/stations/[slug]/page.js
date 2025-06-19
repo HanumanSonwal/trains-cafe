@@ -142,7 +142,7 @@ export default function Page() {
 
       <style jsx global>{`
         .ck-content {
-          overflow-x: auto;
+          {/* overflow-x: auto; */}
         }
         .ck-content table {
           width: 100%;

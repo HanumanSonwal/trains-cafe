@@ -53,7 +53,7 @@ const BlogPost = ({ params }) => {
 
       <style jsx global>{`
         .ck-content {
-          overflow-x: auto;
+          {/* overflow-x: auto; */}
           font-size: 1rem;
         }
 

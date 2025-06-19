@@ -9,6 +9,7 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import Title from "antd/es/skeleton/Title";
 
 const { TextArea } = Input;
 
@@ -52,25 +53,25 @@ const BulkOrderForm = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="relative h-40">
+    <div className=" min-h-screen">
+      <div className="relative h-40 md:h-60 mb-4">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="food in train"
           className="absolute inset-0 object-cover w-full h-full"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-xl md:text-4xl font-bold text-center px-4">
-            Bulk Order Request
-          </h1>
+         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h1 className="text-white  font-bold"> Group Food Ordering in Train</h1>
         </div>
-      </div>
-      <div className="py-12 px-4">
-        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8 sm:p-12">
+        </div>
+         
+      
+      <div className="py-8 px-4">
+        <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-5 sm:p-12">
           <div className=" mb-8">
-            <h1 className="text-3xl font-bold text-coffee-600 mb-4">
+            <h2 className="text-3xl font-bold text-center text-coffee-600 mb-4">
               Group Food Ordering in Train
-            </h1>
+            </h2>
             <div className="mb-4">
               <Form
             form={form}
@@ -170,12 +171,12 @@ const BulkOrderForm = () => {
               place for a wedding or you are taking a summer vacation with your
               kids and family. The first image that comes to mind when we think
               of group train travel is of a group of people interacting, sharing
-              tales, laughing, and enjoying meals. Fortunately, with the advent
+              tales, laughing, and enjoying meals. <br></br> <br></br>Fortunately, with the advent
               of <b>group food ordering in train</b> services by Traincafe,
               dining on trains has become more convenient and enjoyable than
               ever before. Imagine when you arrive at the train stations of your
               choice, picture a dish of freshly prepared, hot meals, much like
-              you would find at a restaurant. You should{" "}
+              you would find at a restaurant. <br></br><br></br> You should{" "}
               <b>order food in train</b> using Traincafe platform instead of
               train food if you detest boring, tasteless pantry food that is
               prepared in an unclean manner. It would be a delightful pleasure.
@@ -202,7 +203,7 @@ const BulkOrderForm = () => {
               introduction of Traincafe. Get <b>food on train </b>without any
               tension by Traincafe Here are some common types of groups that you
               may encounter on trains:
-            </p>
+            </p><br></br>
             <ul className="list-disc list-inside text-gray-600 space-y-2">
               <li>
                 <b>Family Group -</b>Families including parents, and children
@@ -257,7 +258,7 @@ const BulkOrderForm = () => {
                 delicious flavor while traveling by rail in a group, simply give
                 your travel companion Traincafe a call, and they will transport{" "}
                 <b>pure veg/Non-veg food delivery in train</b> for your group
-                right to your seat at any station along the way.
+                right to your seat at any station along the way. <br></br><br></br>
                 <b>Pure veg food delivery in train </b>includes 100% pure veg
                 thali, north/south Indian food etc for a group. If you are Jain
                 and travelling in a group, don’t worry, we also have option of{" "}
@@ -266,30 +267,30 @@ const BulkOrderForm = () => {
                 best <b>food delivery in train</b> for travelers at all popular
                 stations. For non-veg lovers, Traincafe provides a variety of
                 non-veg food such as Tandoori or grilled kebabs, Non-veg thali,
-                non-veg biryani, butter chicken and lots more. Now get your
+                non-veg biryani, butter chicken and lots more. <br></br><br></br> Now get your
                 favorite veg/non-veg pizza at your seat by ordering from{" "}
                 <b>Domino’s pizza delivery</b> or <b>Pizza hut delivery</b>{" "}
                 options available on traincafe. Traincafe provides best non-veg
-                food delivery in train. For group food order in train,call us
-                on………….
-              </p>
-              <p>
+                food delivery in train.
+              </p><br></br>
+              <h3  className="font-bold text-[#704d25]">
                 Is there a longer reservation period for{" "}
                 <b>group food ordering in train?</b>
-              </p>
+              </h3>
+              <br></br>
               <p>
                 Yes, there is a longer reservation window available for making
                 large reservations on trains. Orders for large quantities of
                 food must be reserved at least 12 or 24 hours in advance. By
                 doing this, the eateries that are listed on the platform are
                 guaranteed adequate time to cook and wrap their food before it
-                is delivered. Making a reservation for a large meal on a train
+                is delivered. <br></br><br></br> Making a reservation for a large meal on a train
                 is not the same as ordering takeout. The restaurants must
                 prepare more food for bulk orders because they are intended for
                 larger groups of patrons, which takes more time. Furthermore,
                 logistical factors like the train's arrival and departure times
                 must be taken into account because the food will be supplied by
-                train. Therefore, if you intend to get a large quantity of food
+                train. <br></br> <br></br>Therefore, if you intend to get a large quantity of food
                 for your train ride, be sure to schedule your order well in
                 advance. This will guarantee that the meal you order is
                 delivered on schedule and that it is what you desire.{" "}
@@ -302,12 +303,13 @@ const BulkOrderForm = () => {
                 </Link>{" "}.
                 Traincafe provides best <b>train food delivery</b> for all the
                 groups.
-              </p>
-              <h4>How to do Group Food Ordering in Train</h4>
+              </p><br></br>
+              <h4  className="font-bold text-[#704d25]">How to do Group Food Ordering in Train</h4>
               <p>
                 You can easily order <b>food on train</b> by simply following
-                simple steps-
+                simple steps:
               </p>
+              <br />
               <ul className="list-disc list-inside text-gray-600 space-y-2">
                 <li>
                   <b>Visit Website -</b> Go to our website{" "}
@@ -373,7 +375,7 @@ const BulkOrderForm = () => {
                 </li>
               </ul>
             </div>
-            <h4 className="font-bold text-[#704d25] py-2 underline">Conclusion :</h4>
+            <h4 className="font-bold text-[#704d25] py-2 ">Conclusion :</h4>
             <p>
              <b> Group food ordering in train</b> has undoubtedly revolutionized the
               dining experience during train journeys, offering passengers
@@ -454,9 +456,9 @@ const BulkOrderForm = () => {
           
         </div>
       </div>
-      <footer className=" text-white py-2">
+      <footer className=" text-white py-4 px-4">
         <div className="text-center">
-          <p style={{ color: "#704d25" }} className="text-sm">
+          <span style={{ color: "#704d25" }} className="text-sm">
             Need help? Contact us at:
             <br />
             <span className="font-semibold hover:underline cursor-pointer">
@@ -464,11 +466,11 @@ const BulkOrderForm = () => {
               
                <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
                     +91-8696963496
-                  </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
-                   support@trainscafe.com
+                  </Link> | <Link href="support@trainscafe.in" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                   support@trainscafe.in
                   </Link>
             </span>
-          </p>
+          </span>
         </div>
       </footer>
 

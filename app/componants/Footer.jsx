@@ -6,21 +6,19 @@ import Link from "next/link";
 const Footer = () => {
   const [showTopNavigation, setShowTopNavigation] = useState(false);
 
-
-
   useEffect(() => {
-
     const handleScroll = () => {
       const halfScrollHeight = document.documentElement.scrollHeight / 2;
-      const currentScrollPosition = document.documentElement.scrollY + document.documentElement.innerHeight;
-  
+      const currentScrollPosition =
+        document.documentElement.scrollY + document.documentElement.innerHeight;
+
       if (currentScrollPosition > halfScrollHeight) {
         setShowTopNavigation(true);
       } else {
         setShowTopNavigation(false);
       }
     };
-  
+
     document.documentElement.addEventListener("scroll", handleScroll);
 
     return () => {
@@ -28,31 +26,30 @@ const Footer = () => {
     };
   }, []);
 
-  
   const scrollToTop = () => {
     const duration = 1000;
-    const element = document.documentElement; 
-    const start = element.scrollTop; 
+    const element = document.documentElement;
+    const start = element.scrollTop;
     const startTime = performance.now();
-  
+
     const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
-  
+
     const scrollStep = (currentTime) => {
       const timeElapsed = currentTime - startTime;
       const progress = Math.min(timeElapsed / duration, 1);
       const easing = easeInOutQuad(progress);
       const scrollPosition = start - easing * start;
-  
-      element.scrollTo(0, scrollPosition); 
-  
+
+      element.scrollTo(0, scrollPosition);
+
       if (progress < 1) {
         requestAnimationFrame(scrollStep);
       }
     };
-  
+
     requestAnimationFrame(scrollStep);
   };
-  
+
   return (
     <>
       <footer
@@ -70,22 +67,23 @@ const Footer = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="sm:text-left">
-              <Link href="/"> 
-                <img
-                  src="/images/logo.svg"
-                  alt="Company Logo"
-                  className="w-24  sm:mx-0 mb-4"
-                />
+                <Link href="/">
+                  <img
+                    src="/images/logo.svg"
+                    alt="Company Logo"
+                    className="w-24  sm:mx-0 mb-4"
+                  />
                 </Link>
                 <p className="text-sm text-[#3A3A3A]">
-                  We are dedicated to providing the best food service for
-                  travelers. Our commitment is to ensure a delightful journey
-                  with quality food and excellent service.
+                  Trainscafe is your trusted partner for hygienic and delicious
+                  food delivery in train. We ensure fresh meals, timely service,
+                  and a satisfying travelers experience across 450+ railway
+                  stations in India.
                 </p>
               </div>
               <div>
                 <h4 className="text-md font-semibold mb-4">Quick Links</h4>
-                <ul className="space-y-0">
+                <ul className="space-y-0 ">
                   <li>
                     <Link
                       href="/about-us"
@@ -128,10 +126,10 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/bulkorder"
+                      href="/group-food-ordering-in-train"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
-                      Bulk Food Order in Train
+                      Group Food Ordering in Train
                     </Link>
                   </li>
                   <li>
@@ -139,7 +137,8 @@ const Footer = () => {
                       href="/online-coolie-booking"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
-Online Coolie Services                   </Link>
+                      Online Coolie Services{" "}
+                    </Link>
                   </li>
                   <li>
                     <Link
@@ -215,10 +214,10 @@ Online Coolie Services                   </Link>
                   </li>
                   <li>
                     <Link
-                      href="/vendors-ragistation"
+                      href="/vendor-registration"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
-                     Vendor Registration
+                      Vendor Registration
                     </Link>
                   </li>
                 </ul>
@@ -230,7 +229,7 @@ Online Coolie Services                   </Link>
                 <ul className="space-y-0">
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/pnr-status"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       PNR Status Check
@@ -238,7 +237,7 @@ Online Coolie Services                   </Link>
                   </li>
                   <li>
                     <Link
-                      href="//comingsoon"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Train Coach Position
@@ -285,7 +284,7 @@ Online Coolie Services                   </Link>
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-2 border-t border-gray-200">
             <div className="text-gray-600 text-center  mb-4 md:mb-0">
               <p style={{ fontSize: "12px" }}>
-                Copyright 2024 @ Trainscafe.com
+                Copyright 2025 @Trainscafe.com
               </p>
             </div>
 
@@ -311,8 +310,3 @@ Online Coolie Services                   </Link>
 };
 
 export default Footer;
-
-
-
-
-
