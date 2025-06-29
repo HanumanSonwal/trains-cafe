@@ -16,12 +16,11 @@ const HeroSection = () => {
     <div className="relative hero-banner">
       <Carousel
         autoplay
-        className="w-full h-full"
       >
         {carouselImages.map((image, index) => (
           <div key={index}>
             <div
-              className="h-[30vh]  bg-center bg-cover bg-no-repeat"
+              className="h-40  md:h-60 bg-center bg-cover bg-no-repeat"
               style={{ backgroundImage: `url(${image})` }}
             />
           </div>
@@ -30,15 +29,15 @@ const HeroSection = () => {
 
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="p-3">
-          <div className="text-left  mt-9 mx-auto relative">
+          <div className="text-left mt-9 md:mt-14 mx-auto relative">
             <img
               src="/images/Tastyfood.png"
               alt="Hero Title Background"
               className="absolute transform -translate-y-1/2"
             />
 
-            <h2 className="text-white font-bold relative">
-              Munching Through <br /> The Miles!
+            <h2 className="text-white font-bold relative se-list-font-family">
+              Best Online <br /> Food Delivery  in Train 
             </h2>
 
             <div className="flex gap-2 mt-4">

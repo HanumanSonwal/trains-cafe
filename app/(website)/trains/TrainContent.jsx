@@ -56,13 +56,11 @@ export default function TrainContent({ slug  }) {
         <div style={{color:'#704d25'}} className="text-center text-sm">
           <p>
             Need help? Reach us at{" "}
-            <a href="tel:+911234567890" className="underline font-semibold">
-              +91 1234567890
-            </a>{" "}
-            or email us at{" "}
-            <a href="mailto:support@example.com" className="underline font-semibold">
-              support@example.com
-            </a>.
+           <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                    +91-8696963496
+                  </Link> | <Link href="support@trainscafe.in" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                   support@trainscafe.in
+                  </Link>
           </p>
           <p className="mt-2">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
         </div>
@@ -70,7 +68,7 @@ export default function TrainContent({ slug  }) {
 
   <style jsx global>{`
     .ck-content {
-      overflow-x: auto;
+      {/* overflow-x: auto; */}
       font-size: 1rem;
     }
 

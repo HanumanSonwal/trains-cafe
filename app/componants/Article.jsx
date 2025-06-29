@@ -10,7 +10,7 @@ export default function Articles() {
 
   return (
     <div className="py-8 px-2 mx-auto max-w-[575px] bg-gray-100 rounded-md mb-3">
-      <div className="relative text-center mb-8">
+      {/* <div className="relative text-center mb-8">
         <img
           src="/images/Articles.png"
           alt="Blog Title Background"
@@ -20,20 +20,20 @@ export default function Articles() {
         <h2 className="text-2xl font-bold relative z-10 text-[#704D25]">
           Latest Articles
         </h2>
-      </div>
+      </div> */}
 
       <div className="text-center">
-        <h2 className="font-bold mb-3">
+        <h1 className="font-bold text-[#704D25] text-xl mb-3">
           Order{" "}
           <Link
-            className="font-bold text-[#704D25] underline"
+            className="text-blue-600 font-bold underline hover:text-blue-800"
             href="https://www.trainscafe.in/online-food-on-train"
           >
             Fresh & Tasty Food on Train
           </Link>{" "}
           with Trainscafe
-        </h2>
-        <p className="text-justify">
+        </h1>
+        <p className="text-justify text-sm">
           Are you bored of eating boring pantry food on the train? Are you on
           your long train journey and still ordering the same tasteless rail
           food? No need to worry now, introducing Trainscafe, which provides an
@@ -47,14 +47,12 @@ export default function Articles() {
           <p className="text-sm mb-5">{previewText}</p>
         ) : (
           <div className="text-left text-sm mb-5 space-y-4">
-            <h3>Why choose Trainscafe for online food orders on the train?</h3>
-            <h4>
-              List of Delicious food you can order from Trainscafe on the train
-            </h4>
+            <h2 className="text-xl font-bold relative z-10 mt-3 text-[#704D25]">Why choose Trainscafe for online food orders on the train?</h2>
+           
             <p>
               Trainscafe provides fresh meals and the{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://trainscafe.com/pure-veg-food-delivery-in-train"
               >
                 best food delivery in trains
@@ -103,7 +101,7 @@ export default function Articles() {
               <li className="mb-2">
                 <b>Jain Food in Train:</b> We delivers fresh and hygienic{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/jain-food-in-train"
                 >
                   {" "}
@@ -126,7 +124,7 @@ export default function Articles() {
                 We promise not to let any non-vegetarians down; you are welcome
                 to select your preferred{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/non-veg-food-in-train"
                 >
                   {" "}
@@ -152,9 +150,9 @@ export default function Articles() {
                 elevate your journey.
               </li>
             </ul>
-            <h4 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Exciting Offers & Promo Codes on Trainscafe
-            </h4>
+            </h2>
             <p>Save more on your train meals with our latest deals:</p>
             <ul className="list-disc list-inside">
               <li>
@@ -167,7 +165,7 @@ export default function Articles() {
                 <b>Group Booking Discount -</b> Traveling with friends or
                 family? Trainscafe makes{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/group-food-order-in-train"
                 >
                   {" "}
@@ -193,16 +191,16 @@ export default function Articles() {
               before checkout
             </p>
 
-            <h4 className="font-semibold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Online{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://api.whatsapp.com/send/?phone=%2B918696963496&text=Hi&type=phone_number&app_absent=0"
               >
                 Order Food on the Train via WhatsApp
               </Link>{" "}
               - Easy Steps
-            </h4>
+            </h2>
             <p>
               Now you can easily order food on your train journey through
               WhatsApp. Just follow these simple steps:
@@ -244,9 +242,9 @@ export default function Articles() {
               That’s it! Enjoy hot and fresh meals delivered right to your train
               seat.
             </p>
-            <h4 className="font-bold text-[#704D25]">
+            <h2 className="font-bold  text-xl text-[#704D25]">
               Don’t Need to Download our app ‘Trainscafe’ from Playstore
-            </h4>
+            </h2>
             <p>
               Now you can easily Visit our (PWA) Web App from your browser for
               quick ordering of food in train. Follow the mentioned below steps-
@@ -258,7 +256,7 @@ export default function Articles() {
               <li>Don’t Need to download App directly order on web App</li>
             </ul>
 
-            <h5 className="fw-bold">Just Tap & Eat - No App Download Needed</h5>
+            <h3 className="fw-bold">Just Tap & Eat - No App Download Needed</h3>
             <ul className="list-disc list-inside">
               <li>
                 <b>Fresh Meals, No App Required - </b>Trainscafe runs as a
@@ -267,7 +265,7 @@ export default function Articles() {
               <li>
                 <b>Instant Access via Browser - </b>Simply open{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://trainscafe.com"
                 >
                   {" "}
@@ -293,7 +291,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 className="font-bold text-[#704D25]">About Trainscafe -</h4>
+            <h2 className="t -skew-x-12 text-xl font-bold text-[#704D25]">About Trainscafe -</h2>
             <p>
               Trainscafe is a well-known e-catering platform that provides fresh
               and hygienic online food delivery on trains. Trainscafe ranked
@@ -309,17 +307,17 @@ export default function Articles() {
               online train food with us.
             </p>
 
-            <h4 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Enjoy Delicious{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.com/train-food-delivery"
               >
                 {" "}
                 Train Food Delivery{" "}
               </Link>{" "}
               with Fresh Food Delivered to Your train seat
-            </h4>
+            </h2>
             <p>
               Tired of bland train food or limited pantry options? Say goodbye
               to boring meals and hello to tasty, hygienic food delivered right
@@ -327,9 +325,9 @@ export default function Articles() {
               train food delivery platform
             </p>
 
-            <h5>
+            <h2 className="text-xl">
               <b>Top Reasons to Trust Trainscafe for Food Delivery on Train</b>
-            </h5>
+            </h2>
 
             <ul className="list-disc list-inside">
               <li>
@@ -357,7 +355,7 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 className="font-bold">FSSAI-Certified Partner Restaurants</h4>
+            <h4 style={{fontSize:"20px"}} className="font-bold text-[#704D25]">FSSAI-Certified Partner Restaurants</h4>
             <p>
               {" "}
               Hygienically prepared meals from verified kitchens to ensure food
@@ -405,10 +403,10 @@ export default function Articles() {
               meals.
             </p>
 
-            <h4 className="font-bold">
+            <h2 className="font-bold  text-xl text-[#704D25]">
               Delicious Hot & Hygienic Meals on Your Train Journey with
               Trainscafe
-            </h4>
+            </h2>
             <p>
               {" "}
               Skip the train food and treat yourself to delicious, hygienic
@@ -417,9 +415,9 @@ export default function Articles() {
               or quick bites, we’ve covered all your choices, especially for
               travellers.
             </p>
-            <h4 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Online Food Order in Trains at 450+ Railway Stations Across India
-            </h4>
+            </h2>
             <p>
               Trainscafe makes your train journey more enjoyable with seamless
               online food order in trains. Our e-catering services are available
@@ -430,7 +428,7 @@ export default function Articles() {
               meals by FSSAI-certified restaurant partners. Whether it's
               breakfast, lunch, or dinner -{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/order-favourite-dishes-in-train"
               >
                 {" "}
@@ -440,9 +438,9 @@ export default function Articles() {
               <br></br>Enjoy your journey, and let Trainscafe handle the food
               with care and quality you can trust.
             </p>
-            <h4 className="font-bold text-[#704D25]">
+            <h2 className="font-bold text-xl text-[#704D25]">
               More Than Just Train Food - Trainscafe Helps You Travel Smarter
-            </h4>
+            </h2>
             <p>
               Trainscafe isn't just about food delivery. We also make your train
               journey smooth and stress-free with essential travel tools like:
@@ -452,7 +450,7 @@ export default function Articles() {
               <li className="mb-2">
                 <b>🔍 Check PNR Status :</b> Instantly you can{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/check-pnr-updates"
                 >
                   {" "}
@@ -463,7 +461,7 @@ export default function Articles() {
               <li className="mb-2">
                 <b>🚆 Live Train Running Status :</b> Track your{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/check-live-train-running-status"
                 >
                   {" "}
@@ -477,7 +475,7 @@ export default function Articles() {
                 <b>📍 🛤️ Train Schedule & Timings :</b> Plan your journey with
                 our accurate{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/check-train-time-table"
                 >
                   {" "}
@@ -490,7 +488,7 @@ export default function Articles() {
                 <b>📍 Coach Position & Platform Info:</b> Avoid last-minute
                 confusion by checking the exact{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/check-train-coach-position"
                 >
                   check coach position
@@ -502,7 +500,7 @@ export default function Articles() {
                 <b>👷 Book Coolie Services Easily:</b> Avoid carrying heavy
                 luggage! With just a few clicks,{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/online-coolie-in-train"
                 >
                   book a coolie in train{" "}
@@ -514,7 +512,7 @@ export default function Articles() {
                 <b>🛏️ Book Hotels Near Your Station:</b>
                 Planning to take a break?{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/book-hotels-in-train-near-by-station"
                 >
                   {" "}
@@ -527,7 +525,7 @@ export default function Articles() {
                 <b>🍴 Restaurant Partners - Join Us:</b>
                 Are you a restaurant owner looking to serve train passengers?{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://www.trainscafe.in/vendor-registration"
                 >
                   {" "}
@@ -539,9 +537,9 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 className="font-bold">
+            <h2 className="font-bold text-xl text-[#704D25]">
               Why Choose Trainscafe for All Your Travel Needs?
-            </h4>
+            </h2>
 
             <p>
               Traveling by Indian Railways? Make your journey more enjoyable
@@ -560,7 +558,7 @@ export default function Articles() {
               <li className="mb-2">
                 Rated 4.8/5 on Google by our customers, you can{" "}
                 <Link
-                  className="font-bold text-[#704D25] underline"
+                  className="text-blue-600 font-bold underline hover:text-blue-800"
                   href="https://g.co/kgs/Jsxy8vM"
                 >
                   {" "}
@@ -594,25 +592,25 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 className="font-bold">Our Related Search Queries on Browser</h4>
+            <h2 className="font-bold text-xl text-[#704D25]">Our Related Search Queries on Browser</h2>
             <p className="mb-3">
               Hygienic food delivery in trains |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/online-train-food-delivery"
               >
                 Train food delivery online{" "}
               </Link>
               | Fast train food ordering |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/order-food-in-train"
               >
                 Order food in train{" "}
               </Link>{" "}
               | IRCTC food delivery |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/order-meals-in-train"
               >
                 {" "}
@@ -620,7 +618,7 @@ export default function Articles() {
               </Link>
               | Regional food in trains |
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/railway-meal-food-in-train"
               >
                 {" "}
@@ -629,7 +627,7 @@ export default function Articles() {
               | Online food for train travel | Food delivery to your train seat
               |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/ecatering-train-services"
               >
                 {" "}
@@ -637,7 +635,7 @@ export default function Articles() {
               </Link>{" "}
               | Quick meal delivery in trains |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/train-food-booking-online"
               >
                 {" "}
@@ -645,7 +643,7 @@ export default function Articles() {
               </Link>{" "}
               | Best train food delivery services India |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://jsdl.in/DT-30J42CYB8JR"
               >
                 {" "}
@@ -653,7 +651,7 @@ export default function Articles() {
               </Link>
               | Book meals for train journey |{" "}
               <Link
-                className="font-bold text-[#704D25] underline"
+                className="text-blue-600 font-bold underline hover:text-blue-800"
                 href="https://www.trainscafe.in/online-food-for-train-passengers"
               >
                 {" "}
@@ -664,7 +662,7 @@ export default function Articles() {
               train food ordering
             </p>
 
-            <h4 className="font-bold">Top-Rated Trains</h4>
+            <h2 className="font-bold text-xl text-[#704D25]">Top-Rated Trains</h2>
             <p>
               Order Food in Vande Bharat Express - 22436 | Order Food in Tejas
               Express - 22671 | Order Food in Rajdhani Express - 12951 | Order
@@ -689,7 +687,7 @@ export default function Articles() {
               | Order Food in Howrah Yeshvantpur Express - 12863 | Order Food in
               Lokmanya Tilak AC Express - 22123
             </p>
-            <h4 className="font-bold">Top Railway Stations</h4>
+            <h2 className="font-bold text-xl text-[#704D25]">Top Railway Stations</h2>
             <p className="mb-3">
               Order Food in train at New Delhi Railway Station - NDLS | Order
               Food in train at Mumbai CST Railway Station - CSMT | Order Food in
@@ -708,9 +706,9 @@ export default function Articles() {
               Junction - CBE | Order Food in train at Vadodara Junction - BRC
             </p>
 
-            <h4 className="font-semibold text-[#704D25]">
+            <h2 className="font-bold  text-xl text-[#704D25]">
               Frequently Asked Questions (FAQs)
-            </h4>
+            </h2>
             <Collapse accordion>
               <Panel
                 header="Q1. How do I order food on a train using Trainscafe?"
@@ -938,7 +936,7 @@ export default function Articles() {
         <Button
           type="default"
           onClick={() => setShowFullContent(!showFullContent)}
-          className="border-none rounded-full px-4 py-2 text-xs font-semibold hover:bg-[#D49929] hover:text-white"
+          className="border-none rounded-full px-4 py-2 text-xs font-bold hover:bg-[#D49929] hover:text-white"
         >
           {showFullContent ? "Show Less" : "View More"}
         </Button>

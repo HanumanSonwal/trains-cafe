@@ -35,7 +35,7 @@ const InfoSection = () => {
   return (
     <div className="max-w-[575px] mx-auto p-6 bg-gray-50">
     
-      <Title style={{ color: '#704D25' }} level={2} className="text-3xl font-semibold mb-6 text-center">
+      <Title style={{ color: '#704D25' }} level={3} className="text-3xl font-semibold mb-6 text-center">
       More Information
           </Title>
       <div className="flex flex-col gap-6">

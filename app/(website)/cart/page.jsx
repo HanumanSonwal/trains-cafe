@@ -55,11 +55,11 @@ const CartPage = () => {
   }, 0);
 
   return (
- <div className="max-w-[1024px] mx-auto p-4 bg-gray-100 min-h-screen">
-      <div className="relative h-60 md:h-80">
+ <div className="mx-auto bg-gray-100 min-h-screen">
+      <div className="relative h-40 md:h-60">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="online food delivery in train"
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -68,7 +68,8 @@ const CartPage = () => {
           </h1>
         </div>
       </div>
-      <h1 className="text-xl md:text-2xl font-bold my-6 text-center">
+      <div className="px-4">
+        <h1 className="text-xl md:text-2xl font-bold my-6 text-center">
         Your <span style={{ color: "#704d25" }}>Cart</span>
       </h1>
       {cartItems.length > 0 ? (
@@ -76,15 +77,15 @@ const CartPage = () => {
           {cartItems.map((item) => (
             <div
               key={item._id}
-              className="bg-white flex flex-col sm:flex-row justify-between shadow rounded-lg mb-4 p-4"
+              className="bg-white flex  justify-between shadow rounded-lg mb-4 p-4"
             >
-              <div className="flex flex-col sm:flex-row justify-between items-center w-full">
+              <div className="flex justify-between w-full">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-20 h-20 object-cover rounded mb-2 sm:mb-0 sm:mr-4"
+                  className="w-20 h-20 object-cover rounded mb-2 sm:mr-4"
                 />
-                <div className="flex-1 text-center sm:text-left">
+                <div className="flex-1 px-2 ">
                   <h3 className="text-lg font-semibold text-[#704D25]">
                     {item.name}
                   </h3>
@@ -96,7 +97,7 @@ const CartPage = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex justify-center sm:justify-end items-center mt-4 sm:mt-0">
+              <div className="flex justify-center sm:justify-end items-center">
                 <div className="flex items-center">
                   <Button
                     icon={<MinusOutlined />}
@@ -121,7 +122,8 @@ const CartPage = () => {
               ₹ {totalPrice.toFixed(2)}
             </span>
           </div>
-          <Button
+          <div className="flex justify-center">
+            <Button
             type="primary"
             style={{
               backgroundColor: "#D6872A",
@@ -132,10 +134,12 @@ const CartPage = () => {
           >
             Proceed to Checkout
           </Button>
+          </div>
         </>
       ) : (
         <p className="text-center text-gray-600 mt-6">Your cart is empty.</p>
       )}
+      </div>
 
       <div className="mt-10">
         <RecentOrders />

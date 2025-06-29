@@ -36,7 +36,7 @@ const BlogPost = ({ params }) => {
           <img
             alt={blogPost.title}
             src={blogPost.image}
-            className="object-cover w-full h-64 md:h-80 lg:h-96 max-w-full"
+            className="object-cover w-full h-40 max-w-full"
           />
         }
         className="shadow-lg rounded-lg"
@@ -53,7 +53,7 @@ const BlogPost = ({ params }) => {
 
       <style jsx global>{`
         .ck-content {
-          overflow-x: auto;
+          {/* overflow-x: auto; */}
           font-size: 1rem;
         }
 

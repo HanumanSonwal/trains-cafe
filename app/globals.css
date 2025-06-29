@@ -10,6 +10,27 @@
 
 /* SignIn Componanat css */
 
+h1{
+  font-size: 1.5rem !important;
+}
+h2{
+  font-size: 1.4rem !important;
+}
+h3{
+  font-size: 1.2rem !important;
+}
+h4{
+  font-size: 1.1rem !important;
+}
+
+
+.ck-content ol,
+.ck-content ul,
+.ck-content menu {
+  list-style: auto !important;
+  margin:0 20px !important;
+}
+
 .container {
     margin: 0 auto;
     padding: var(--padding);
@@ -72,7 +93,7 @@
     /* padding: 20px; */
   }
   .hero-banner h2 {
-    font-size: 28px;
+    font-size: 28px !important;
     line-height: 36px; 
   }
   .hero-banner .ant-btn {
@@ -86,7 +107,7 @@
   
       
     .hero-banner h2 {
-      font-size: 22px;
+      font-size: 22px !important;
       line-height: 1.2; 
     }
   
@@ -237,30 +258,6 @@
   background-color: #D49929 !important;
 }
 
-/* :where(.css-dev-only-do-not-override-qnu6hi).ant-btn {
-  color: #fff !important;
-} */
-
-
-
-/* blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-  margin: inherit !important;
-} */
-/* li{
-  margin: 8px 0;
-} */
 
 :where(.css-dev-only-do-not-override-qnu6hi).ant-input-outlined:hover{
   border-color: #704D25 !important;
@@ -319,4 +316,15 @@ color: #704D25 !important;
   background-color: #704D25 !important;
   color: white !important;
   border-color: #704D25 !important;
+}
+
+.custom-link {
+  color: blue;
+  font-weight: 600;
+  text-decoration: underline;
+  
+}
+
+.ant-card-body{
+  padding: 12px!important;
 }

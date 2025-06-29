@@ -11,11 +11,11 @@ import {
 } from "antd";
 import {
   PlusOutlined,
-  LoadingOutlined ,
+  LoadingOutlined,
   SearchOutlined,
   DeleteFilled,
   EditFilled,
-  ImportOutlined
+  ImportOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import MenuItemForm from "./MenuItemForm";
@@ -33,18 +33,19 @@ const TablePage = () => {
     pagination: {
       current: 1,
       pageSize: 10,
-      pageSizeOptions: ['10', '20', '30'],
+      pageSizeOptions: ["10", "20", "30"],
       showSizeChanger: true,
       total: 0,
     },
   });
   const [loading, setLoading] = useState(false);
 
-
-  const fetchMenuItems = async (page = 1, pageSize = 10, search = '') => {
+  const fetchMenuItems = async (page = 1, pageSize = 10, search = "") => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/menu?page=${page}&limit=${pageSize}&search=${search}`);
+      const response = await axios.get(
+        `/api/menu?page=${page}&limit=${pageSize}&search=${search}`
+      );
       const { data, total, success } = response.data;
 
       if (success) {
@@ -58,10 +59,10 @@ const TablePage = () => {
           },
         }));
       } else {
-        message.error('Failed to fetch menu Item');
+        message.error("Failed to fetch menu Item");
       }
     } catch (error) {
-      message.error('Error fetching Menu Item');
+      message.error("Error fetching Menu Item");
     } finally {
       setLoading(false);
     }
@@ -70,8 +71,11 @@ const TablePage = () => {
   useEffect(() => {
     const { current, pageSize } = tableParams.pagination;
     fetchMenuItems(current, pageSize, searchText);
-  }, [tableParams.pagination.current, tableParams.pagination.pageSize, searchText]);
-
+  }, [
+    tableParams.pagination.current,
+    tableParams.pagination.pageSize,
+    searchText,
+  ]);
 
   const handleAddMenuItem = () => {
     setEditingItem(null);
@@ -94,13 +98,22 @@ const TablePage = () => {
   };
 
   const handleBulkImport = () => {
-    setIsBulkImportModalOpen(true); 
+    setIsBulkImportModalOpen(true);
   };
 
-  const handleBulkImportSubmit = (formData) => {
-    message.success("Bulk import processed successfully");
-    setIsBulkImportModalOpen(false);
-    fetchMenuItems(page, pageSize);
+  const handleBulkImportSubmit = async (data) => {
+    try {
+      await axios.post(`/api/menu/bulk-import`, {
+        data,
+      });
+
+      message.success("Bulk import processed successfully");
+      setIsBulkImportModalOpen(false);
+      fetchMenuItems(1, 10);
+    } catch (error) {
+      console.error("Bulk import failed:", error);
+      message.error("Failed to process bulk import");
+    }
   };
 
   const handleEditMenuItem = (record) => {
@@ -110,7 +123,9 @@ const TablePage = () => {
 
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.put(`/api/menu/${key}/status`, { status: checked ? true : false });
+      await axios.put(`/api/menu/${key}/status`, {
+        status: checked ? true : false,
+      });
       const updatedData = data.map((item) =>
         item.key === key ? { ...item, status: checked ? "1" : "0" } : item
       );
@@ -124,34 +139,36 @@ const TablePage = () => {
 
   const handleDeleteMenuItem = async (key) => {
     try {
-      await axios.delete('/api/menu', {
+      await axios.delete("/api/menu", {
         data: { id: key },
       });
-  
-    
+
       const { current, pageSize } = tableParams.pagination;
-      
 
       await fetchMenuItems(current, pageSize, searchText);
-      
+
       message.success("Menu item deleted successfully");
     } catch (error) {
       message.error("Failed to delete menu item");
     }
   };
-  
+
   const handleMenuItemFormSubmit = async (values) => {
     try {
       if (editingItem) {
         await axios.put(`/api/menu/${editingItem.key}`, values);
         setData(
           data.map((item) =>
-            item.key === editingItem.key ? { ...values, key: editingItem.key } : item
+            item.key === editingItem.key
+              ? { ...values, key: editingItem.key }
+              : item
           )
         );
         setFilteredData(
           filteredData.map((item) =>
-            item.key === editingItem.key ? { ...values, key: editingItem.key } : item
+            item.key === editingItem.key
+              ? { ...values, key: editingItem.key }
+              : item
           )
         );
         message.success("Menu item updated successfully");
@@ -171,24 +188,27 @@ const TablePage = () => {
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchText(value);
-    const { pageSize } = tableParams.pagination; 
+    const { pageSize } = tableParams.pagination;
     fetchMenuItems(1, pageSize, value);
   };
-  
 
   const columns = [
     {
       title: "Item Name",
       dataIndex: "Item_Name",
       key: "Item_Name",
-      render: (Item_Name) => <strong>{Item_Name}</strong>, 
+      render: (Item_Name) => <strong>{Item_Name}</strong>,
     },
     {
       title: "Image",
       dataIndex: "image",
       key: "image",
       render: (image) => (
-        <img src={image} alt="thumbnail" style={{ width: '70px', height: '50px', borderRadius: '8px' }} />
+        <img
+          src={image}
+          alt="thumbnail"
+          style={{ width: "70px", height: "50px", borderRadius: "8px" }}
+        />
       ),
     },
     {
@@ -212,16 +232,17 @@ const TablePage = () => {
       key: "Price",
       render: (price) => (
         <>
-          <strong style={{ color: 'green' ,fontSize:"16px" }}>₹</strong> {price}
+          <strong style={{ color: "green", fontSize: "16px" }}>₹</strong>{" "}
+          {price}
         </>
       ),
     },
-    
+
     {
       title: "Discount",
       dataIndex: "Discount",
       key: "Discount",
-      render: (discount) => `${discount}%`, 
+      render: (discount) => `${discount}%`,
     },
     {
       title: "Status",
@@ -255,7 +276,7 @@ const TablePage = () => {
       ),
     },
   ];
-  
+
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
   return (
     <div
@@ -266,14 +287,17 @@ const TablePage = () => {
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       }}
     >
-      <h2 className="text-lg font-semibold mb-5" style={{ color: "#6F4D27", marginBottom:"20px" }}>
+      <h2
+        className="text-lg font-semibold mb-5"
+        style={{ color: "#6F4D27", marginBottom: "20px" }}
+      >
         Menu-Item Management
       </h2>
       <div className="flex justify-between items-center my-5">
         <AntdInput
           placeholder="Search Menu Items"
           prefix={<SearchOutlined />}
-           allowClear
+          allowClear
           value={searchText}
           onChange={handleSearch}
           style={{ maxWidth: 300, borderColor: "#D6872A" }}
@@ -303,16 +327,16 @@ const TablePage = () => {
         </div>
       </div>
       <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        pagination={tableParams.pagination}
-        // loading={loading}
-        onChange={handleTableChange}
-      />
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          pagination={tableParams.pagination}
+          // loading={loading}
+          onChange={handleTableChange}
+        />
       </Spin>
       <MenuItemForm
-      fetchMenuItems={fetchMenuItems}
+        fetchMenuItems={fetchMenuItems}
         open={isMenuItemModalOpen}
         onCancel={() => setIsMenuItemModalOpen(false)}
         onSubmit={handleMenuItemFormSubmit}
