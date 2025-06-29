@@ -6,6 +6,14 @@ const WebTrainSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    trainname: {
+        type: String,
+        required: true,
+    },
+    trainnumber: {
+        type: String,
+        required: true,
+    },
     title: {
         type: String,
         unique: true,

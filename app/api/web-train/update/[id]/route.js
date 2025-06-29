@@ -12,9 +12,10 @@ export async function PUT(req, context) {
 
         const { id } = context.params;
 
-        const { name, title, description, keywords, pageData, status } = await req.json();
-
-        const slug = slugify(title, { lower: true, strict: true });
+        // const { name, title, description, keywords, pageData, status } = await req.json();
+        const { name, title, trainname,trainnumber,description, keywords, pageData ,status} = await req.json();
+        const slug = slugify(`order-food-in-${trainname}-${trainnumber}`, { lower: true, strict: true });
+        // const slug = slugify(title, { lower: true, strict: true });
 
         const webTrain = await WebTrain.findById(id);
         if (!webTrain) {
@@ -26,6 +27,8 @@ export async function PUT(req, context) {
         webTrain.name = name;
         webTrain.title = title;
         webTrain.slug = slug;
+        webTrain.name = trainname; 
+         webTrain.name = trainnumber;
         webTrain.description = description;
         webTrain.keywords = keywords;
         webTrain.pageData = pageData;
