@@ -56,10 +56,10 @@ const CartPage = () => {
 
   return (
  <div className="mx-auto bg-gray-100 min-h-screen">
-      <div className="relative h-40">
+      <div className="relative h-40 md:h-60">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="online food delivery in train"
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">

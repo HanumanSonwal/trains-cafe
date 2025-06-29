@@ -42,20 +42,18 @@ const ContactUsPage = () => {
   return (
     <div className="min-h-screen">
       {/* Banner Section */}
-      <div className="relative h-40 mb-4">
+      <div className="relative h-40 md:h-60 mb-4">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="food delivery in train"
           className="absolute inset-0 object-cover w-full h-full"
         />
+         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h1 className="text-white  font-bold">Contact Us</h1>
+        </div>
       </div>
-      <Title
-        level={1}
-        style={{ color: "#704D25", fontWeight: "bold" }}
-        className="text-center mb-4"
-      >
-        Contact Us
-      </Title>
+      
+
       {/* Contact Details Section */}
       <div className="flex flex-col items-center py-4">
       <div className="p-5 ">
@@ -71,7 +69,7 @@ Our support team is available 24*7 days a week, ready to assist you with real-ti
         >
           📞 Customer Support
         </h3>
-        <div className="text-center mb-4">
+        <div className="text-center mb-4 p-5">
           <p className="text-sm">
             <strong>Call Us:</strong>{" "}
             <Link
@@ -84,10 +82,10 @@ Our support team is available 24*7 days a week, ready to assist you with real-ti
           <p className="text-sm">
             <strong>Email:</strong>{" "}
             <Link
-              href="support@traincafe.com"
+              href="support@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              support@trainscafe.com
+              support@trainscafe.in
             </Link>
           </p>
 
@@ -106,10 +104,10 @@ Our support team is available 24*7 days a week, ready to assist you with real-ti
         </h3>
         <p className="text-center">Interested in partnering with us or becoming a food vendor on trains?
 Write to us at: <Link
-              href="support@traincafe.com"
+              href="info@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              info@trainscafe.com
+              info@trainscafe.in
             </Link></p></div>
       </div>
 

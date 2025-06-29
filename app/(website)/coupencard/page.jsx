@@ -43,14 +43,14 @@ const CouponPage = () => {
 
   return (
     <div>
-      <div className="relative h-40 mb-4">
+      <div className="relative h-40 md:h-60 mb-4">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="online delivery for food in train"
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-2xl md:text-4xl font-bold">Coupons</h1>
+          <h1 className="text-white  font-bold">Coupons</h1>
         </div>
       </div>
 

@@ -58,8 +58,8 @@ export default function TrainContent({ slug  }) {
             Need help? Reach us at{" "}
            <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
                     +91-8696963496
-                  </Link> | <Link href="support@traincafe.com" className="font-bold text-blue-600 hover:text-blue-800 underline">
-                   support@trainscafe.com
+                  </Link> | <Link href="support@trainscafe.in" className="font-bold text-blue-600 hover:text-blue-800 underline">
+                   support@trainscafe.in
                   </Link>
           </p>
           <p className="mt-2">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
@@ -68,7 +68,7 @@ export default function TrainContent({ slug  }) {
 
   <style jsx global>{`
     .ck-content {
-      overflow-x: auto;
+      {/* overflow-x: auto; */}
       font-size: 1rem;
     }
 

@@ -46,11 +46,11 @@ const VendorRegistration = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="relative h-40">
+      <div className="relative h-40 md:h-60">
         <div>
           <img
-            src="/images/section-bg.webp"
-            alt="Banner"
+            src="/images/Trainscafe-Banner.webp"
+            alt="food in train by traincafe"
             className="absolute inset-0 object-cover w-full h-full"
           />
         </div>
@@ -202,13 +202,13 @@ const VendorRegistration = () => {
           </div>
           <div>
            
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 mb-4 text-justify">
               In the ever-evolving landscape of the food industry, restaurants
               are constantly seeking innovative ways to enhance their offerings
               and provide unique experiences to their customers. One such
               strategy that has gained traction in recent years is the concept
-              of vendor tie-ups. These partnerships between restaurants and
-              vendors offer a range of benefits to both parties involved,
+              of vendor tie-ups. <br></br> <br></br> These partnerships between restaurants and vendors offer a range of benefits
+               to both parties involved,
               ultimately leading to an enriched dining experience for patrons.
               To register your restaurant for online order food delivery via
               train, click this link. You will be able to sell food for
@@ -232,7 +232,9 @@ const VendorRegistration = () => {
               entertainment providers. The primary goal of these collaborations
               is to add value to the dining experience by offering high-quality
               products and services that complement the restaurant's core
-              offerings. All restaurant operators are invited to join our
+              offerings. <br></br><br></br>
+              
+               All restaurant operators are invited to join our
               network as an Authorized IRCTC E-Catering Partner Trainscafe in
               order to expand their food business. We are aware of your
               outstanding business and your cutting-edge services, which allow
@@ -317,7 +319,7 @@ const VendorRegistration = () => {
               small-scale food business operators, must have an annual turnover
               surpassing Rs. 12 lakhs or a daily production capacity over 100
               kg/litres in order to obtain an authorization certificate from the
-              Food Safety and Standards Authority of India (FSSAI). They must
+              Food Safety and Standards Authority of India (FSSAI). <br></br><br></br>They must
               first register with the FSSAI in order to be eligible to apply for
               IRCTC catering services if their yearly sales is less than Rs. 12
               lakhs. <b>Get vendor tie-ups with restaurants</b> and start
@@ -340,9 +342,9 @@ const VendorRegistration = () => {
                 Getting on board and expanding your business is quite simple.
                 The following is all you need to know to order food on trains,
                 planes, or major bus routes:
-                <br></br>· A valid FSSAI license aids in verifying that the
+                <br></br><br></br>A valid FSSAI license aids in verifying that the
                 partners are approved food and beverage providers.
-              </p>
+              </p><br></br>
               <ul className="list-disc list-inside">
                 <li className="mb-2">
                   <b>GST Registration : </b>We need you to have a GST
@@ -453,10 +455,10 @@ const VendorRegistration = () => {
             </Link>{" "}
             |{" "}
             <Link
-              href="support@traincafe.com"
+              href="support@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              support@trainscafe.com
+              support@trainscafe.in
             </Link>
           </p>
           <p className="mt-2">

@@ -55,10 +55,10 @@ const OnlineCoolieBooking = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Banner Section */}
-      <div className="relative h-40">
+      <div className="relative h-40 md:h-60">
         <img
-          src="/images/section-bg.webp"
-          alt="Banner"
+          src="/images/Trainscafe-Banner.webp"
+          alt="food delivery in your seat"
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -82,7 +82,7 @@ const OnlineCoolieBooking = () => {
               be problematic and exhausting. Whether you’re a regular traveler,
               tour operator, or business commuter, managing luggage and
               belongings while going through a busy station is a big challenging
-              task especially for senior citizens. But what if we say that you
+              task especially for senior citizens. <br></br> <br></br> But what if we say that you
               can get rid of this carrying luggage thing? Trainscafe can solve
               this problem while introducing hassle-free online coolie booking
               service, designed to smother your travel experience.
@@ -242,90 +242,99 @@ const OnlineCoolieBooking = () => {
       </div>
       <div className="py-4 px-4">
         <h2 className="font-bold text-[#704D25] mb-2">
-         Why do we recommend to book coolie in advance?
-
+          Why do we recommend to book coolie in advance?
         </h2>
-       
+
         <ul className="list-disc list-inside">
           <li>
-           <b>Avoid Last-Minute Rush :</b> Everything gets stressful while reached the station and finding coolies at crowded platforms.
+            <b>Avoid Last-Minute Rush :</b> Everything gets stressful while
+            reached the station and finding coolies at crowded platforms.
           </li>
           <li>
-           <b>Fixed, Transparent Pricing :</b> Skip the stress of bargaining at station.
+            <b>Fixed, Transparent Pricing :</b> Skip the stress of bargaining at
+            station.
           </li>
-          <li><b>Assured Availability :</b>  Guaranteed services during the season of travel times.</li>
           <li>
-           <b>  Safety and Reliability :</b> Trained coolie’s to handle your luggage with care and safety.
-
+            <b>Assured Availability :</b> Guaranteed services during the season
+            of travel times.
           </li>
-         
+          <li>
+            <b> Safety and Reliability :</b> Trained coolie’s to handle your
+            luggage with care and safety.
+          </li>
         </ul>
       </div>
-      <div className="py-4 px-4"> <h2 className="font-bold text-[#704D25] mb-2">
-                    Frequently Asked Questions (FAQs)
-                  </h2>
-                  <Collapse accordion>
-                    <Panel
-                      header="Q1. How early should I book my coolie service in train?"
-                      key="1"
-                    >
-                      <p>
-                        You can book your coolie before 45 minutes of reaching the station. Booking before reaching the station gives a seamless experience and a smoother journey.
+      <div className="py-4 px-4">
+        {" "}
+        <h2 className="font-bold text-[#704D25] mb-2">
+          Frequently Asked Questions (FAQs)
+        </h2>
+        <Collapse accordion>
+          <Panel
+            header="Q1. How early should I book my coolie service in train?"
+            key="1"
+          >
+            <p>
+              You can book your coolie before 45 minutes of reaching the
+              station. Booking before reaching the station gives a seamless
+              experience and a smoother journey.
+            </p>
+          </Panel>
+          <Panel
+            header="Q2. Can I book a coolie for both boarding and deboarding? "
+            key="2"
+          >
+            <p>
+              Yes, you can book coolie service for both boarding and return
+              journeys.
+            </p>
+          </Panel>
+          <Panel header="Q3. Is my online payment secure?" key="3">
+            <p>
+              Absolutely, the payment is secure and accurate. Incase if you find
+              out any issue you can contact to our customer support team which
+              is available for 24*7 to resolve any issue under 10-15 minutes.
+            </p>
+          </Panel>
 
-                      </p>
-                    </Panel>
-                    <Panel
-                      header="Q2. Can I book a coolie for both boarding and deboarding? "
-                      key="2"
-                    >
-                      <p>
-                       Yes, you can book coolie service for both boarding and return journeys.
-                      </p>
-                    </Panel>
-                    <Panel
-                      header="Q3. Is my online payment secure?"
-                      key="3"
-                    >
-                      <p>
-                        Absolutely, the payment is secure and accurate. Incase if you find out any issue you can contact to our customer support team which is available for 24*7 to resolve any issue under 10-15 minutes.
+          <Panel
+            header="Q4. How will I identify my coolie at the station?"
+            key="4"
+          >
+            <p>
+              After booking, you can check the details of the assigned coolie,
+              his name, mobile number, and location. He will call you once the
+              booking has been done so you can directly coordinate with the
+              coolie on call.
+            </p>
+          </Panel>
 
-                      </p>
-                    </Panel>
-      
-                    <Panel
-                      header="Q4. How will I identify my coolie at the station?"
-                      key="4"
-                    >
-                      <p>
-                       After booking, you can check the details of the assigned coolie, his name, mobile number, and location. He will call you once the booking has been done so you can directly coordinate with the coolie on call.
-                      </p>
-                    </Panel>
-      
-                    <Panel
-                      header="Q5. Can I cancel my booking? "
-                      key="5"
-                    >
-                      <p>
-                        Yes, you can cancel your booking, but cancellation policies may apply. Please refer to our terms and conditions for more details.
-                      </p>
-                    </Panel>
-      
-                   
-                  </Collapse></div>
+          <Panel header="Q5. Can I cancel my booking? " key="5">
+            <p>
+              Yes, you can cancel your booking, but cancellation policies may
+              apply. Please refer to our terms and conditions for more details.
+            </p>
+          </Panel>
+        </Collapse>
+      </div>
 
-<div className="py-4 px-4">
+      <div className="py-4 px-4">
         <h3 className="font-bold text-[#704D25] mb-2">
-        Experience Stress-Free Travel with Trainscafe
+          Experience Stress-Free Travel with Trainscafe
         </h3>
-        <p className="mb-2">Ready to experience stressful travel? Book your coolie online with Trainscafe today and make your journey smoother from start to finish!
-For more information or assistance, feel free to reach out to our commendable customer support team which is ready to give on time solutions.
-
-</p>
-<p>
-Fill Above Form
-🕒<b> Our support team is available 24x7 to assist you.</b></p>
-        </div>
-      <footer className="bg-coffee-600 text-white py-6">
+        <p className="mb-2">
+          Ready to experience stressful travel? Book your coolie online with
+          Trainscafe today and make your journey smoother from start to finish!
+          For more information or assistance, feel free to reach out to our
+          commendable customer support team which is ready to give on time
+          solutions.
+        </p>
+        <p>
+          Fill Above Form 🕒
+          <b> Our support team is available 24x7 to assist you.</b>
+        </p>
+      </div>
+      <footer className="bg-coffee-600 text-white py-6 px-4">
         <div className="text-center">
           <p style={{ color: "#704d25" }} className="text-sm">
             Need immediate assistance? Call us at:{" "}
@@ -337,10 +346,10 @@ Fill Above Form
             </Link>{" "}
             |{" "}
             <Link
-              href="support@traincafe.com"
+              href="support@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              support@trainscafe.com
+              support@trainscafe.in
             </Link>
           </p>
         </div>
