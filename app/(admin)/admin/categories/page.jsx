@@ -122,6 +122,7 @@ const CategoryManagement = () => {
       <div className="flex justify-between items-center my-5">
         <AntdInput
           placeholder="Search Categories"
+          allowClear
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={handleSearch}

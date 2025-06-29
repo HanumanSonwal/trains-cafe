@@ -12,4 +12,3 @@ const AdvertisementsSchema = new mongoose.Schema({
 });
 
 export default mongoose.models.Advertisements || mongoose.model('Advertisements', AdvertisementsSchema);
-

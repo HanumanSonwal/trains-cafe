@@ -54,7 +54,7 @@ const CheckoutPage = () => {
         method: paymentMethod,
       };
 
-      const response = await placeOrder(vendor, station, train, payment, items, data, couponCode);
+      const response = await placeOrder(vendor, station, train, payment, items, data, couponCode ,discount);
       localStorage.setItem("orderData", JSON.stringify(response.data));
 
       reset();

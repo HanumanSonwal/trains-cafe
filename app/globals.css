@@ -63,13 +63,13 @@
     color: #fdfdfd;
   }
   .hero-banner {
-    background-image: url("/images/herobanner.png");
+    /* background-image: url("/images/herobanner.png"); */
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
     width: 100% !important;
-    /* height: 45vh; */
-    padding: 20px;
+    /* height: 20vh; */
+    /* padding: 20px; */
   }
   .hero-banner h2 {
     font-size: 28px;
@@ -80,9 +80,9 @@
     padding: 4px 10px !important;
   }
   @media (max-width: 575px) {
-    .hero-banner {
+    /* .hero-banner {
           padding: 8px !important;
-    }
+    } */
   
       
     .hero-banner h2 {
@@ -281,3 +281,42 @@ pre {
 /* .anticon{
 color: #704D25 !important;
 } */
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.animate-scroll {
+  display: flex;
+  /* width: calc(100%);  */
+  animation: scroll 15s linear infinite;
+}
+
+.space-x-6 > *:not(:last-child) {
+  margin-right: 1.5rem; 
+}
+
+.common-btn {
+  background-color: #704D25 !important;
+  color: white !important;
+}
+
+.common-btn-outline {
+  border-color: white !important;
+  color: rgb(0, 0, 0) !important;
+}
+
+.common-btn-outline:hover {
+  background-color: #704D25 !important;
+  color: white !important;
+  border-color: #704D25 !important;
+}

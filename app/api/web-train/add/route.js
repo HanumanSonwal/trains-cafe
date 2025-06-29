@@ -7,6 +7,19 @@ export async function POST(req) {
     try {
             await dbConnect();
 
+        // const { name, title, description, keywords, pageData } = await req.json();
+
+        // const slug = slugify(title, { lower: true, strict: true });
+        
+        // const webTrain = new WebTrain({
+        //     name,
+        //     slug,
+        //     title,
+        //     description,
+        //     keywords,
+        //     pageData,
+        // });
+
         const { name, title, trainname,trainnumber,description, keywords, pageData } = await req.json();
 
         // const slug = slugify(title, { lower: true, strict: true });
@@ -22,7 +35,7 @@ export async function POST(req) {
             description,
             keywords,
             pageData,
-        });
+        });
 
      const result =  await webTrain.save();
 

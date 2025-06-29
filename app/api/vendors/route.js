@@ -157,15 +157,41 @@ export async function GET(req) {
             if (station) {
                 searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
             }
+            else {
+                return new Response(
+                    JSON.stringify({
+                        success: false,
+                        message: 'Invalid Station Code or No Vendors Found',
+                    }),
+                    { status: 404 }
+                );
+            }
+        
         }
 
         // Search by station code
-        if (stationcode) {
-            const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
-            if (station) {
-                searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-            }
-        }
+        // if (stationcode) {
+        //     const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+        //     if (station) {
+        //         searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+        //     }
+        // }
+        // Search by station code
+if (stationcode) {
+    const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+    if (station) {
+        searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+    } else {
+        return new Response(
+            JSON.stringify({
+                success: false,
+                message: 'Invalid Station Code or No Vendors Found',
+            }),
+            { status: 404 }
+        );
+    }
+}
+
 
         // Search by vendor name
         if (vendorname) {
@@ -238,7 +264,7 @@ export async function GET(req) {
 export async function POST(req) {
     try {
         const body = await req.json();
-        if (!body.Vendor_Name || !body.Contact_No || !body.Station || !body.Delivery_Charges || !body.Min_Order_Value) {
+        if (!body.Vendor_Name ||!body.image|| !body.Contact_No || !body.Station || !body.Delivery_Charges || !body.Min_Order_Value) {
             return new Response(JSON.stringify({ success: false, message: 'All required fields must be filled' }), { status: 400 });
         }
         await dbConnect();

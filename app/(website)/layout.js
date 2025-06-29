@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import ProviderWrapper from "../componants/ProviderWrapper";
+import NextBreadcrumb from "../componants/Breadcrumbs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,8 @@ export default function RootLayout({ children }) {
         <AntdRegistry>
           <ProviderWrapper>
             {children}
+          {/* <NextBreadcrumb /> */}
+
           </ProviderWrapper>
         </AntdRegistry>
       </body>

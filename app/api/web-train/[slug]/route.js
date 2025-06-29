@@ -32,6 +32,8 @@
 //         }, { status: 500 });
 //     }
 // }
+
+
 // import { NextResponse } from "next/server";
 // import WebTrain from "@/app/models/webtrain";
 // import dbConnect from "@/app/lib/dbConnect";
@@ -39,27 +41,25 @@
 // export async function GET(req, { params }) {
 //     try {
 //         const { slug } = params;
-//         const Trainnumber = req.nextUrl.searchParams.get("trainnumber"); // Get trainnumber from query params
-//         console.log("Train Number: ", req.nextUrl.searchParams.get("trainnumber"));
+//         const trainnumber = req.nextUrl.searchParams.get("trainnumber");
 
-//         if (!slug && !Trainnumber) {
+//         if (!slug && !trainnumber) {
 //             return NextResponse.json(
 //                 { message: "Web station page not found" },
 //                 { status: 404 }
 //             );
 //         }
-//         console.log("Train Number: ", Trainnumber);
 
 //         await dbConnect();
 
-//         const result = await WebTrain.find({
+//         const result = await WebTrain.findOne({
 //             $or: [
 //                 { slug: slug },
-//                 { trainnumber: Trainnumber  } 
+//                 { trainnumber: trainnumber }
 //             ],
 //             status: "published",
 //         });
-//         console.log("Result: ", result);
+
 //         if (!result) {
 //             return NextResponse.json(
 //                 { message: "Web station not found" },
@@ -75,37 +75,36 @@
 //         );
 //     }
 // }
- import { NextResponse } from "next/server";
+
+
+import { NextResponse } from "next/server";
 import WebTrain from "@/app/models/webtrain";
 import dbConnect from "@/app/lib/dbConnect";
 
 export async function GET(req, context) {
     try {
-        const { slug } = context.params; // The dynamic parameter from the URL
+        const { slug } = context.params; // Dynamic parameter from the URL
 
-        // Split the slug to extract the train number at the end
-        const parts = slug.split('-'); // This will split based on '-'
-        const trainnumber = parts[parts.length - 1]; // The last part will be the train number
+        // Train number is directly passed as a slug (assuming it's a number)
+        const trainnumber = slug;
 
-        // If the trainnumber is not valid or not found, return an error
+        // Check if train number is valid
         if (!trainnumber || isNaN(trainnumber)) {
             return NextResponse.json({
-                message: 'Invalid or missing trainnumber',
+                message: 'Invalid or missing train number',
             }, { status: 400 });
         }
 
-        // Extract the rest of the parts as the actual slug
-        const slugText = parts.slice(0, -1).join('-');
-
+        // Connect to the database
         await dbConnect();
 
-        // Build the query based on the available parameters
+        // Query the database based on the train number
         const query = { status: 'published', trainnumber: trainnumber };
 
         // Log the query for debugging
         console.log("Query being executed: ", query);
 
-        // Search for the document with the provided trainnumber and slug
+        // Find the document
         const result = await WebTrain.findOne(query);
 
         if (!result) {
