@@ -118,9 +118,9 @@ import mongoose from 'mongoose';
 export async function GET(req) {
     try {
         const url = new URL(req.url);
-        const search = (url.searchParams.get('search') || '').trim(); // Extract search term
+        const search = (url.searchParams.get('search') || '').trim(); 
         const stationname = url.searchParams.get('stationname');
-        const stationcode = url.searchParams.get('stationcode'); // New search by station code
+        const stationcode = url.searchParams.get('stationcode'); 
         const vendorname = url.searchParams.get('vendorname');
         const page = parseInt(url.searchParams.get('page'), 10) || 1;
         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
@@ -129,16 +129,13 @@ export async function GET(req) {
 
         await dbConnect();
 
-        // Create search criteria
         let searchCriteria = { $or: [] };
 
-        // General search term
         if (search) {
-            // Search for stations by name or code using regex
             const stations = await StationModel.find({
                 $or: [
                     { name: { $regex: search, $options: 'i' } },
-                    { code: { $regex: search, $options: 'i' } } // Search by station code
+                    { code: { $regex: search, $options: 'i' } } 
                 ]
             });
 
@@ -147,11 +144,9 @@ export async function GET(req) {
                 searchCriteria.$or.push({ Station: { $in: stationIds } });
             }
 
-            // Fuzzy match for Vendor_Name
             searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
         }
 
-        // Search by station name
         if (stationname) {
             const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
             if (station) {
@@ -193,24 +188,20 @@ if (stationcode) {
 }
 
 
-        // Search by vendor name
         if (vendorname) {
             searchCriteria.$or.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
         }
 
-        // Calculate pagination
         const skip = Math.max((page - 1) * limit, 0);
         console.log('Skip:', skip);
 
         let vendors;
         if (searchCriteria.$or.length === 0) {
-            // Return all vendors if no search criteria
             vendors = await VendorModel.find({})
                 .skip(skip)
                 .limit(limit)
                 .populate('Station', 'name code');
         } else {
-            // Apply search criteria
             vendors = await VendorModel.find(searchCriteria)
                 .skip(skip)
                 .limit(limit)
@@ -229,15 +220,13 @@ if (stationcode) {
             );
         }
 
-        // Map the response
         vendors = vendors.map(item => ({
             ...item.toObject(),
             Station: item.Station?._id || 'Unknown',
             Station_Name: item.Station?.name || 'Unknown',
-            Station_Code: item.Station?.code || 'Unknown', // Include station code
+            Station_Code: item.Station?.code || 'Unknown', 
         }));
 
-        // Get total number of matching documents for pagination
         const total = await VendorModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
         console.log('Total Count:', total);
 

@@ -333,7 +333,7 @@ const FileUploadComponent = ({ url, setUrl, isreset }) => {
     }
   }, [isreset]);
 
-  // Update fileList from url
+
   useEffect(() => {
     if (url) {
       setFileList([
@@ -396,7 +396,7 @@ const FileUploadComponent = ({ url, setUrl, isreset }) => {
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
-        beforeUpload={() => false} // Prevent automatic upload
+        beforeUpload={() => false} 
       >
         {fileList.length >= 1 ? null : (
           <Button icon={<PlusOutlined />}>Upload</Button>
@@ -418,7 +418,7 @@ const FileUploadComponent = ({ url, setUrl, isreset }) => {
   );
 };
 
-// Utility to convert image file to base64
+
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();

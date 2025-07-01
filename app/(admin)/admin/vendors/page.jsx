@@ -184,6 +184,19 @@ const VendorsManagement = () => {
       sorter: (a, b) => a.Vendor_Name.localeCompare(b.Vendor_Name),
     },
     {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => (
+        <img
+          src={image}
+          alt="thumbnail"
+          style={{ width: "70px", height: "50px", borderRadius: "8px" }}
+        />
+      ),
+    },
+    
+    {
       title: "Vendor Name",
       dataIndex: "Vendor_Name",
       key: "vendor_name",

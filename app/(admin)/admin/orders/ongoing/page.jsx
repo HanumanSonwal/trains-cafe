@@ -24,7 +24,7 @@ const OrdersTable = () => {
       const start = startDate ? `&startDate=${startDate}` : '';
       const end = endDate ? `&endDate=${endDate}` : '';
       const statusQuery = status && status !== 'All' ? `&status=${status}` : '';
-      const response = await fetch(`/api/orders/get?page=${page}&limit=${limit}${statusQuery}${start}${end}`);
+      const response = await fetch(`/api/orders?page=${page}&limit=${limit}${statusQuery}${start}${end}`);
       const result = await response.json();
 
       if (result.success) {
