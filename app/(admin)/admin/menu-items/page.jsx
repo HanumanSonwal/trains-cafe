@@ -123,7 +123,7 @@ const TablePage = () => {
 
   const handleStatusChange = async (checked, key) => {
     try {
-      await axios.put(`/api/menu/${key}/status`, {
+      await axios.put(`/api/menu?id=${key}`, {
         status: checked ? true : false,
       });
       const updatedData = data.map((item) =>

@@ -220,30 +220,70 @@ export async function POST(req) {
 //   }
 // }
 
+// export async function PUT(req) {
+//   try {
+//     const { searchParams } = new URL(req.url);
+//     const id = searchParams.get('id');
+//     const formData = await req.formData();
+    
+//     const updateData = Object.fromEntries(formData.entries());
+
+//     if (!id) {
+//       return new Response(JSON.stringify({ success: false, message: 'Menu ID is required' }), { status: 400 });
+//     }
+
+//     await dbConnect();
+
+//     const updatedMenu = await MenuModel.findByIdAndUpdate(id, updateData, { new: true });
+
+//     if (!updatedMenu) {
+//       return new Response(JSON.stringify({ success: false, message: 'Menu not found' }), { status: 404 });
+//     }
+
+//     return new Response(
+//       JSON.stringify({
+//         success: true,
+//         message: 'Menu updated successfully',
+//         data: updatedMenu,
+//       }),
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     return new Response(
+//       JSON.stringify({ success: false, message: error.message }),
+//       { status: 500 }
+//     );
+//   }
+// }
 export async function PUT(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-    const formData = await req.formData();
-    
-    const updateData = Object.fromEntries(formData.entries());
+    const id = searchParams.get("id");
 
     if (!id) {
-      return new Response(JSON.stringify({ success: false, message: 'Menu ID is required' }), { status: 400 });
+      return new Response(JSON.stringify({ success: false, message: "Menu ID is required" }), { status: 400 });
     }
+
+    const formData = await req.formData();
+    const statusValue = formData.get("status")?.trim(); // ✅ Trim the string
+    const status = statusValue === "true" || statusValue === "True";
 
     await dbConnect();
 
-    const updatedMenu = await MenuModel.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedMenu = await MenuModel.findByIdAndUpdate(
+      id,
+      { status }, // ✅ Only updating this field
+      { new: true }
+    );
 
     if (!updatedMenu) {
-      return new Response(JSON.stringify({ success: false, message: 'Menu not found' }), { status: 404 });
+      return new Response(JSON.stringify({ success: false, message: "Menu not found" }), { status: 404 });
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Menu updated successfully',
+        message: "Menu status updated successfully",
         data: updatedMenu,
       }),
       { status: 200 }
@@ -255,6 +295,8 @@ export async function PUT(req) {
     );
   }
 }
+
+
 
 export async function DELETE(req) {
   try {
