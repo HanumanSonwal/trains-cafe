@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -9,34 +11,12 @@ import {
   Radio,
   message,
   Form,
+  InputNumber,
 } from "antd";
-import { useForm, Controller } from "react-hook-form";
 import { fetchData, postData, updateData } from "@/app/lib/ApiFuntions";
 import FileUploadComponent from "@/app/componants/ImageUpload";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
 const { Option } = Select;
-
-const schema = z.object({
-  Item_Name: z.string().min(1, "Item name is required"),
-  Category_Id: z.string().min(1, "Category is required"),
-  Vendor: z.string().min(1, "Vendor is required"),
-  Station: z.string().min(1, "Station is required"),
-  Food_Type: z.enum(["Vegetarian", "Non-Vegetarian", "Vegan"], {
-    required_error: "Food type is required",
-  }),
-  price: z
-    .number()
-    .positive("Price must be a positive number")
-    .min(0.01, "Price must be at least 0.01"),
-  discount: z
-    .number()
-    .min(0, "Discount cannot be less than 0")
-    .max(100, "Discount cannot be more than 100")
-    .optional(),
-  Description: z.string().optional(), 
-});
 
 const MenuItemForm = ({
   open,
@@ -44,29 +24,7 @@ const MenuItemForm = ({
   initialValues,
   fetchMenuItems,
 }) => {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    // resolver: zodResolver(schema),
-    defaultValues: {
-      Item_Name: "",
-      Category_Id: "",
-      Vendor: "",
-      Station: "",
-      Food_Type: "",
-      Price: "",
-      Discount: "",
-      Description: "",
-      image: "",
-    },
-  });
-
-  console.log(errors,"errors")
-  console.log(initialValues,"initialValues")
-
+  const [form] = Form.useForm();
   const [url, setUrl] = useState("");
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
@@ -74,7 +32,6 @@ const MenuItemForm = ({
   const [selectedStationName, setSelectedStationName] = useState("");
   const [imageError, setImageError] = useState("");
   const [isreset, setIsreset] = useState(false);
-
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -88,7 +45,6 @@ const MenuItemForm = ({
 
     const fetchStations = async () => {
       const response = await fetchData("/api/station?search=&page=0");
-      console.log(response.data.name,"response")
       if (response.success !== false) {
         setStations(response.data);
       } else {
@@ -100,105 +56,75 @@ const MenuItemForm = ({
     fetchStations();
   }, []);
 
-
   useEffect(() => {
-    console.log("Selected station name changed:", selectedStationName);
     if (selectedStationName) {
       fetchVendors(selectedStationName);
     }
   }, [selectedStationName]);
-  
-  
+
   const fetchVendors = async (stationName) => {
     try {
-      console.log("Station name for vendor fetch:", stationName);
       const response = await fetchData(`/api/vendors?page=1&limit=10&search=${stationName}`);
-
-      console.log("Vendor fetch response:", response);
-  
       if (response && response.success !== false) {
         setVendors(response.data);
       } else {
-        console.error("Failed to fetch vendors:", response?.error);
         message.error("Failed to fetch vendors");
       }
     } catch (error) {
-      console.error("Error fetching vendors:", error);
       message.error("An error occurred while fetching vendors");
     }
   };
-  
-  
+
   useEffect(() => {
     if (initialValues) {
       setUrl(initialValues.image || "");
-      reset(initialValues);
+      form.setFieldsValue(initialValues);
     } else {
-      reset({
-        Item_Name: "",
-        Category_Id: "",
-        Vendor: "",
-        Station: "",
-        Food_Type: "",
-        Price: "",
-        Discount: "",
-        Description: "",
-        image: "",
-      });
+      form.resetFields();
     }
-  }, [initialValues, reset]);
+  }, [initialValues, form]);
 
-  useEffect(()=>{
-    setIsreset(false)
-  },[])
+  useEffect(() => {
+    setIsreset(false);
+  }, []);
 
- 
-  const handleFormSubmit = (data) => {
+  const handleFinish = async (values) => {
     if (!url) {
-        setImageError("Please upload an image."); 
-        return;
+      setImageError("Please upload an image.");
+      return;
     } else {
-        setImageError(""); 
+      setImageError("");
     }
-
-    console.log(data);
 
     const formData = new FormData();
-    formData.append("Item_Name", data.Item_Name);
-    formData.append("Category_Id", data.Category_Id);
-    formData.append("Vendor", data.Vendor);
-    formData.append("Station", data.Station);
-    formData.append("Food_Type", data.Food_Type);
-    formData.append("Price", data.Price);
-    formData.append("Discount", data.Discount);
-    formData.append("Description", data.Description);
+    formData.append("Item_Name", values.Item_Name);
+    formData.append("Category_Id", values.Category_Id);
+    formData.append("Vendor", values.Vendor);
+    formData.append("Station", values.Station);
+    formData.append("Food_Type", values.Food_Type);
+    formData.append("Price", values.Price);
+    formData.append("Discount", values.Discount || "");
+    formData.append("Description", values.Description || "");
     formData.append("image", url);
 
-    const id = initialValues ? initialValues.id : null;
-    postCategory(formData, id);
-};
-
-
-const postCategory = async (formData, id) => {
-    const url = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
+    const urlPath = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
     const method = initialValues ? updateData : postData;
 
     try {
-        const response = await method(url, formData);
-        if (response.success !== false) {
-            message.success(id ? "Menu item updated successfully!" : "Menu item added successfully!");
-            fetchMenuItems();
-            reset();
-            setIsreset(true);
-            onCancel();
-        } else {
-            throw new Error(response.err || "Failed to save category");
-        }
+      const response = await method(urlPath, formData);
+      if (response.success !== false) {
+        message.success(initialValues ? "Menu item updated successfully!" : "Menu item added successfully!");
+        fetchMenuItems();
+        form.resetFields();
+        setIsreset(true);
+        onCancel();
+      } else {
+        throw new Error(response.err || "Failed to save category");
+      }
     } catch (error) {
-        message.error(error.message || "Something went wrong");
+      message.error(error.message || "Something went wrong");
     }
-};
-
+  };
 
   return (
     <Modal
@@ -209,7 +135,7 @@ const postCategory = async (formData, id) => {
         <Button
           key="submit"
           type="primary"
-          onClick={handleSubmit(handleFormSubmit)}
+          onClick={() => form.submit()}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           {initialValues ? "Save" : "Submit"}
@@ -219,160 +145,139 @@ const postCategory = async (formData, id) => {
       <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
         {initialValues ? "Edit Menu Item" : "Add Menu Item"}
       </h2>
-      <Form layout="vertical" onFinish={handleSubmit(handleFormSubmit)}>
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFinish}
+      >
         <Row gutter={20}>
           <Col span={12}>
-            <Form.Item label="Item Name">
-              <Controller
-                name="Item_Name"
-                control={control}
-                render={({ field }) => <Input {...field} />}
-              />
-              {errors.Item_Name && (
-                <p className="text-red-500">{errors.Item_Name.message}</p>
-              )}
+            <Form.Item
+              label="Item Name"
+              name="Item_Name"
+              rules={[{ required: true, message: "Item name is required" }]}
+            >
+              <Input />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Select Category">
-              <Controller
-                name="Category_Id"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field}>
-                    {categories?.map((category) => (
-                      <Option key={category._id} value={category._id}>
-                        {category.title}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              />
-              {errors.Category_Id && (
-                <p className="text-red-500">{errors.Category_Id.message}</p>
-              )}
+            <Form.Item
+              label="Select Category"
+              name="Category_Id"
+              rules={[{ required: true, message: "Category is required" }]}
+            >
+              <Select placeholder="Select Category">
+                {categories.map((category) => (
+                  <Option key={category._id} value={category._id}>
+                    {category.title}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={20}>
+          <Col span={12}>
+            <Form.Item
+              label="Select Station"
+              name="Station"
+              rules={[{ required: true, message: "Station is required" }]}
+            >
+              <Select
+                showSearch
+                placeholder="Search for a station"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option?.children.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={(value) => {
+                  const selectedStation = stations.find(station => station._id === value);
+                  setSelectedStationName(selectedStation?.name || "");
+                }}
+              >
+                {stations.map((station) => (
+                  <Option key={station._id} value={station._id}>
+                    {station.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Select Vendor"
+              name="Vendor"
+              rules={[{ required: true, message: "Vendor is required" }]}
+            >
+              <Select placeholder="Select Vendor">
+                {vendors.map((vendor) => (
+                  <Option key={vendor._id} value={vendor._id}>
+                    {vendor.Vendor_Name}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
         </Row>
 
         <Row gutter={20}>
         <Col span={12}>
-<Form.Item label="Select Station">
-  <Controller
-    name="Station"
-    control={control}
-    render={({ field }) => (
-      <Select
-        {...field}
-        onChange={(value) => {
-          field.onChange(value);
-          const selectedStation = stations.find(station => station._id === value);
-          setSelectedStationName(selectedStation?.name || '');
-        }}
-        showSearch
-        placeholder="Search for a station"
-        optionFilterProp="children"
-        filterOption={(input, option) =>
-          option?.children.toLowerCase().includes(input.toLowerCase())
-        }
-      >
-        {stations?.map((station) => (
-          <Select.Option key={station._id} value={station._id}>
-            {station.name}
-          </Select.Option>
-        ))}
-      </Select>
-    )}
-  />
-  {errors.Station && (
-    <p className="text-red-500">{errors.Station.message}</p>
-  )}
-</Form.Item>
-
-</Col>
-
-          <Col span={12}>
-            <Form.Item label="Select Vendor">
-              <Controller
-                name="Vendor"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field}>
-                    {vendors?.map((vendor) => (
-                      <Option key={vendor._id} value={vendor._id}>
-                        {vendor.Vendor_Name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              />
-              {errors.Vendor && (
-                <p className="text-red-500">{errors.Vendor.message}</p>
-              )}
-            </Form.Item>
-          </Col>
+    <Form.Item
+      label="Price"
+      name="Price"
+      rules={[
+        { required: true, message: "Price is required" },
+        { type: "number", min: 0.01, message: "Price must be positive and at least 0.01" },
+      ]}
+    >
+      <InputNumber
+        style={{ width: "100%" }}
+        min={0.01}
+      />
+    </Form.Item>
+  </Col>
+           <Col span={12}>
+    <Form.Item
+      label="Discount (%)"
+      name="Discount"
+      rules={[
+        { type: "number", min: 0, max: 100, message: "Discount must be between 0 and 100" },
+      ]}
+    >
+      <InputNumber
+        style={{ width: "100%" }}
+        min={0}
+        max={100}
+      />
+    </Form.Item>
+  </Col>
         </Row>
 
         <Row gutter={20}>
           <Col span={12}>
-            <Form.Item label="Price">
-              <Controller
-              type="number"
-                name="Price"
-                control={control}
-                render={({ field }) => <Input type="number" {...field} />}
-              />
-              {errors.Price && (
-                <p className="text-red-500">{errors.Price.message}</p>
-              )}
+            <Form.Item
+              label="Food Type"
+              name="Food_Type"
+              rules={[{ required: true, message: "Food type is required" }]}
+            >
+              <Radio.Group>
+                <Radio value="Vegetarian">Veg</Radio>
+                <Radio value="Non-Vegetarian">Non-Veg</Radio>
+                <Radio value="Vegan">Vegan</Radio>
+              </Radio.Group>
             </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Col span={12}>
-              <Form.Item label="Discount (%)">
-                <Controller
-                  name="Discount"
-                  control={control}
-                  render={({ field }) => <Input type="number" {...field} />}
-                />
-                {errors.Discount && (
-                  <p className="text-red-500">{errors.Discount.message}</p>
-                )}
-              </Form.Item>
-            </Col>
-          </Col>
-        </Row>
-
-        <Row gutter={20}>
-          <Col span={12}>
-          <Form.Item label="Food Type">
-  <Controller
-    name="Food_Type"
-    control={control}
-    render={({ field }) => (
-      <Radio.Group {...field}>
-        <Radio value="Vegetarian">Veg</Radio>
-        <Radio value="Non-Vegetarian">Non-Veg</Radio>
-        <Radio value="Vegan">Vegan</Radio>
-      </Radio.Group>
-    )}
-  />
-  {errors.Food_Type && (
-    <p className="text-red-500">{errors.Food_Type.message}</p>
-  )}
-</Form.Item>
-
           </Col>
           <Col span={12}>
             <Form.Item label="Image">
-              <Controller
-                name="image"
-                control={control}
-                render={({ field }) => (
-                  <FileUploadComponent {...field} url={url} setUrl={setUrl} isreset={isreset}  setImageError={setImageError} />
-                )}
+              <FileUploadComponent
+                url={url}
+                setUrl={setUrl}
+                isreset={isreset}
+                setImageError={setImageError}
               />
-            {imageError && (
+              {imageError && (
                 <p className="text-red-500">{imageError}</p>
               )}
             </Form.Item>
@@ -380,15 +285,11 @@ const postCategory = async (formData, id) => {
         </Row>
 
         <Col>
-          <Form.Item label="Description">
-            <Controller
-              name="Description"
-              control={control}
-              render={({ field }) => <Input.TextArea rows={3} {...field} />}
-            />
-            {errors.Description && (
-              <p className="text-red-500">{errors.Description.message}</p>
-            )}
+          <Form.Item
+            label="Description"
+            name="Description"
+          >
+            <Input.TextArea rows={3} />
           </Form.Item>
         </Col>
       </Form>
