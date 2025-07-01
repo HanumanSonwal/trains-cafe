@@ -115,139 +115,244 @@ import VendorModel from '@/app/models/vendor';
 import StationModel from '@/app/models/station';
 import mongoose from 'mongoose';
 
+// export async function GET(req) {
+//     try {
+//         const url = new URL(req.url);
+//         const search = (url.searchParams.get('search') || '').trim(); 
+//         const stationname = url.searchParams.get('stationname');
+//         const stationcode = url.searchParams.get('stationcode'); 
+//         const vendorname = url.searchParams.get('vendorname');
+//         const page = parseInt(url.searchParams.get('page'), 10) || 1;
+//         const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+
+//         console.log(`Search: ${search}, StationName: ${stationname}, StationCode: ${stationcode}, VendorName: ${vendorname}, Page: ${page}, Limit: ${limit}`);
+
+//         await dbConnect();
+
+//         let searchCriteria = { $or: [] };
+
+//         if (search) {
+//             const stations = await StationModel.find({
+//                 $or: [
+//                     { name: { $regex: search, $options: 'i' } },
+//                     { code: { $regex: search, $options: 'i' } } 
+//                 ]
+//             });
+
+//             if (stations.length > 0) {
+//                 const stationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
+//                 searchCriteria.$or.push({ Station: { $in: stationIds } });
+//             }
+
+//             searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
+//         }
+
+//         if (stationname) {
+//             const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
+//             if (station) {
+//                 searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+//             }
+//             else {
+//                 return new Response(
+//                     JSON.stringify({
+//                         success: false,
+//                         message: 'Invalid Station Code or No Vendors Found',
+//                     }),
+//                     { status: 404 }
+//                 );
+//             }
+        
+//         }
+
+//         // Search by station code
+//         // if (stationcode) {
+//         //     const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+//         //     if (station) {
+//         //         searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+//         //     }
+//         // }
+//         // Search by station code
+// if (stationcode) {
+//     const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+//     if (station) {
+//         searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+//     } else {
+//         return new Response(
+//             JSON.stringify({
+//                 success: false,
+//                 message: 'Invalid Station Code or No Vendors Found',
+//             }),
+//             { status: 404 }
+//         );
+//     }
+// }
+
+
+//         if (vendorname) {
+//             searchCriteria.$or.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
+//         }
+
+//         const skip = Math.max((page - 1) * limit, 0);
+//         console.log('Skip:', skip);
+
+//         let vendors;
+//         if (searchCriteria.$or.length === 0) {
+//             vendors = await VendorModel.find({})
+//                 .skip(skip)
+//                 .limit(limit)
+//                 .populate('Station', 'name code');
+//         } else {
+//             vendors = await VendorModel.find(searchCriteria)
+//                 .skip(skip)
+//                 .limit(limit)
+//                 .populate('Station', 'name code');
+//         }
+
+//         console.log('Vendors:', vendors);
+
+//         if (vendors.length === 0) {
+//             return new Response(
+//                 JSON.stringify({
+//                     success: false,
+//                     message: 'No items found for the search criteria',
+//                 }),
+//                 { status: 404 }
+//             );
+//         }
+
+//         vendors = vendors.map(item => ({
+//             ...item.toObject(),
+//             Station: item.Station?._id || 'Unknown',
+//             Station_Name: item.Station?.name || 'Unknown',
+//             Station_Code: item.Station?.code || 'Unknown', 
+//         }));
+
+//         const total = await VendorModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
+//         console.log('Total Count:', total);
+
+//         return new Response(
+//             JSON.stringify({
+//                 success: true,
+//                 data: vendors,
+//                 total,
+//                 page,
+//                 totalPages: Math.ceil(total / limit),
+//             }),
+//             { status: 200 }
+//         );
+//     } catch (error) {
+//         console.error('Error fetching vendors:', error);
+//         return new Response(
+//             JSON.stringify({ success: false, message: 'Error fetching vendors' }),
+//             { status: 500 }
+//         );
+//     }
+// }
 export async function GET(req) {
     try {
-        const url = new URL(req.url);
-        const search = (url.searchParams.get('search') || '').trim(); 
-        const stationname = url.searchParams.get('stationname');
-        const stationcode = url.searchParams.get('stationcode'); 
-        const vendorname = url.searchParams.get('vendorname');
-        const page = parseInt(url.searchParams.get('page'), 10) || 1;
-        const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
-
-        console.log(`Search: ${search}, StationName: ${stationname}, StationCode: ${stationcode}, VendorName: ${vendorname}, Page: ${page}, Limit: ${limit}`);
-
-        await dbConnect();
-
-        let searchCriteria = { $or: [] };
-
-        if (search) {
-            const stations = await StationModel.find({
-                $or: [
-                    { name: { $regex: search, $options: 'i' } },
-                    { code: { $regex: search, $options: 'i' } } 
-                ]
-            });
-
-            if (stations.length > 0) {
-                const stationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
-                searchCriteria.$or.push({ Station: { $in: stationIds } });
-            }
-
-            searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
+      const url = new URL(req.url);
+      const search = (url.searchParams.get('search') || '').trim(); 
+      const stationname = url.searchParams.get('stationname');
+      const stationcode = url.searchParams.get('stationcode'); 
+      const vendorname = url.searchParams.get('vendorname');
+      const page = parseInt(url.searchParams.get('page'), 10) || 1;
+      const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+  
+      await dbConnect();
+  
+      let searchCriteria = { $or: [] };
+  
+      if (search) {
+        const stations = await StationModel.find({
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { code: { $regex: search, $options: 'i' } } 
+          ]
+        });
+  
+        if (stations.length > 0) {
+          const stationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
+          searchCriteria.$or.push({ Station: { $in: stationIds } });
         }
-
-        if (stationname) {
-            const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
-            if (station) {
-                searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-            }
-            else {
-                return new Response(
-                    JSON.stringify({
-                        success: false,
-                        message: 'Invalid Station Code or No Vendors Found',
-                    }),
-                    { status: 404 }
-                );
-            }
-        
-        }
-
-        // Search by station code
-        // if (stationcode) {
-        //     const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
-        //     if (station) {
-        //         searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-        //     }
-        // }
-        // Search by station code
-if (stationcode) {
-    const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
-    if (station) {
-        searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-    } else {
-        return new Response(
-            JSON.stringify({
-                success: false,
-                message: 'Invalid Station Code or No Vendors Found',
-            }),
-            { status: 404 }
-        );
-    }
-}
-
-
-        if (vendorname) {
-            searchCriteria.$or.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
-        }
-
-        const skip = Math.max((page - 1) * limit, 0);
-        console.log('Skip:', skip);
-
-        let vendors;
-        if (searchCriteria.$or.length === 0) {
-            vendors = await VendorModel.find({})
-                .skip(skip)
-                .limit(limit)
-                .populate('Station', 'name code');
+  
+        searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
+      }
+  
+      if (stationname) {
+        const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
+        if (station) {
+          searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
         } else {
-            vendors = await VendorModel.find(searchCriteria)
-                .skip(skip)
-                .limit(limit)
-                .populate('Station', 'name code');
+          return new Response(JSON.stringify({
+            success: false,
+            message: 'Invalid Station Name or No Vendors Found',
+          }), { status: 404 });
         }
-
-        console.log('Vendors:', vendors);
-
-        if (vendors.length === 0) {
-            return new Response(
-                JSON.stringify({
-                    success: false,
-                    message: 'No items found for the search criteria',
-                }),
-                { status: 404 }
-            );
+      }
+  
+      if (stationcode) {
+        const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+        if (station) {
+          searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
+        } else {
+          return new Response(JSON.stringify({
+            success: false,
+            message: 'Invalid Station Code or No Vendors Found',
+          }), { status: 404 });
         }
-
-        vendors = vendors.map(item => ({
-            ...item.toObject(),
-            Station: item.Station?._id || 'Unknown',
-            Station_Name: item.Station?.name || 'Unknown',
-            Station_Code: item.Station?.code || 'Unknown', 
-        }));
-
-        const total = await VendorModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
-        console.log('Total Count:', total);
-
-        return new Response(
-            JSON.stringify({
-                success: true,
-                data: vendors,
-                total,
-                page,
-                totalPages: Math.ceil(total / limit),
-            }),
-            { status: 200 }
-        );
+      }
+  
+      if (vendorname) {
+        searchCriteria.$or.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
+      }
+  
+      const skip = Math.max((page - 1) * limit, 0);
+  
+      let vendors;
+      if (searchCriteria.$or.length === 0) {
+        vendors = await VendorModel.find({})
+          .sort({ createdAt: -1 }) // ✅ Sort by createdAt descending
+          .skip(skip)
+          .limit(limit)
+          .populate('Station', 'name code');
+      } else {
+        vendors = await VendorModel.find(searchCriteria)
+          .sort({ createdAt: -1 }) // ✅ Sort by createdAt descending
+          .skip(skip)
+          .limit(limit)
+          .populate('Station', 'name code');
+      }
+  
+      if (vendors.length === 0) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'No items found for the search criteria',
+        }), { status: 404 });
+      }
+  
+      vendors = vendors.map(item => ({
+        ...item.toObject(),
+        Station: item.Station?._id || 'Unknown',
+        Station_Name: item.Station?.name || 'Unknown',
+        Station_Code: item.Station?.code || 'Unknown',
+      }));
+  
+      const total = await VendorModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
+  
+      return new Response(JSON.stringify({
+        success: true,
+        data: vendors,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      }), { status: 200 });
+  
     } catch (error) {
-        console.error('Error fetching vendors:', error);
-        return new Response(
-            JSON.stringify({ success: false, message: 'Error fetching vendors' }),
-            { status: 500 }
-        );
+      console.error('Error fetching vendors:', error);
+      return new Response(JSON.stringify({ success: false, message: 'Error fetching vendors' }), { status: 500 });
     }
-}
+  }
+  
 
 
 export async function POST(req) {

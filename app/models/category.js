@@ -35,7 +35,7 @@ const CategorySchema = new mongoose.Schema({
 });
 
 CategorySchema.pre("save", async function (next) {
-  if (this.isNew) {
+  if (this.isNew && !this.categoryid){
     try {
       const counter = await CounterModel.findOneAndUpdate(
         { id: "categoryid" },
@@ -49,6 +49,7 @@ CategorySchema.pre("save", async function (next) {
   }
   next();
 });
+
 
 export default mongoose.models.Category ||
   mongoose.model("Category", CategorySchema);

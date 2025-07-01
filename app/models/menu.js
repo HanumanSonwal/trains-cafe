@@ -67,6 +67,10 @@ const MenuSchema = new mongoose.Schema(
     },
     Description: { type: String, required: true },
     GroupId: { type: String },
+    status: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // Automatically add createdAt and updatedAt fields
