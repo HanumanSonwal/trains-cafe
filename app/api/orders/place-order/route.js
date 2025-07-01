@@ -272,7 +272,8 @@ export async function POST(req, context) {
 
     // Validate station
     // const stationRes = await Station.findOne({ code: station.station_code });
-    const stationRes = await Station.findOne({ code: station.code });
+    const stationRes = await Station.findOne({ code: station.code });
+
     if (!stationRes) {
       return NextResponse.json({
         success: false,

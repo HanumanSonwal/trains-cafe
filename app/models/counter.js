@@ -1,8 +1,14 @@
+// models/counter.js
+
+
+
+// models/counter.js
 import mongoose from "mongoose";
 
 const CounterSchema = new mongoose.Schema({
-  id: { type: String, required: true, unique: true }, // E.g., "vendorId"
+  id: { type: String, required: true, unique: true },
   seq: { type: Number, default: 0 },
 });
 
-export default mongoose.models.Counter || mongoose.model("Counter", CounterSchema);
+export default mongoose.models.Counter || mongoose.model("Counter", CounterSchema);
+

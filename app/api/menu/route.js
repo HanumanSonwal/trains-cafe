@@ -149,13 +149,18 @@ export async function POST(req) {
     const body = Object.fromEntries(formData.entries());
 
     // Ensure Group_Id is provided
+    // if (!body.Group_Id) {
+    //   return new Response(
+    //     JSON.stringify({ success: false, message: 'Group_Id is required' }),
+    //     { status: 400 }
+    //   );
+    // }
     if (!body.Group_Id) {
-      return new Response(
-        JSON.stringify({ success: false, message: 'Group_Id is required' }),
-        { status: 400 }
-      );
+      // Generate a unique Group_Id, for example using Date.now() and Math.random()
+      const uniqueId = `group_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      body.Group_Id = uniqueId;
     }
-
+    
     await dbConnect();
 
     // Check if there are already menu items with the same Group_Id

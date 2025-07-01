@@ -6,7 +6,7 @@ const VendorSchema = new mongoose.Schema({
   Vendor_Name: { type: String, required: true },
   Contact_No: { type: String, required: true },
   image: { type: String, required: true },
-  Alternate_Contact_No: { type: String },
+  Alternate_Contact_No: { type: String},
   Station: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -20,14 +20,12 @@ const VendorSchema = new mongoose.Schema({
   Food_Type: { type: String, required: true },
   Description: { type: String, required: true },
   Address: { type: String, required: true },
-  Status: { type: String, default: "Active" }
-  
+  Status: { type: String, default: "Active" },
+ 
 },
 {
   timestamps: true 
-}
-
-);
+});
 VendorSchema.pre("save", async function (next) {
   if (this.isNew && !this.vendorId) {
     try {
@@ -43,4 +41,6 @@ VendorSchema.pre("save", async function (next) {
   }
   next();
 });
+
+
 export default mongoose.models.Vendor || mongoose.model("Vendor", VendorSchema);
