@@ -9,25 +9,25 @@ const InfoSection = () => {
     {
       icon: <ShoppingOutlined className="text-2xl" />,
       title: "Online Order Food In Your Journey",
-      href: "/food-order",
+      href: "/",
       position: "translate-x-0"
     },
     {
       icon: <ClockCircleOutlined className="text-2xl" />,
       title: "Check Train Time-Table",
-      href: "/time-table",
+      href: "/",
       position: "translate-x-4"
     },
     {
       icon: <SearchOutlined className="text-2xl" />,
       title: "Check PNR Status",
-      href: "/pnr-status",
+      href: "/",
       position: "translate-x-8"
     },
     {
       icon: <UserOutlined className="text-2xl" />,
       title: "Check Coach Position",
-      href: "/coach-position",
+      href: "/",
       position: "translate-x-12"
     }
   ];

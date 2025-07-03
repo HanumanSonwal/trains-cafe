@@ -110,7 +110,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/stations"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Stations
@@ -118,7 +118,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/trains"
+                      href="/comingsoon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Trains

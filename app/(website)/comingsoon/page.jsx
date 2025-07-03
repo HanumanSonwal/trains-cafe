@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Typography, Button } from 'antd';
+import Link from 'next/link';
 
 const { Title, Paragraph } = Typography;
 
@@ -13,14 +14,18 @@ const ComingSoonPage = () => {
         <Paragraph className="text-lg mt-4 hover:text-red-600 transition duration-600">
           We are working hard to bring you something amazing. Stay tuned for updates!
         </Paragraph>
-        <Button
-          type="primary"
-          className="order-btn mt-6 hover:bg-blue-600 transition duration-300"
-          onClick={() => alert('Thank you for your interest!')}
-        >
-          Join Our Mailing List
-        </Button>
+         <div className="text-center">
+              <Link href="/contactus" passHref>
+                 <Button
+                    type="btn"
+                    className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]"
+                  >
+                    Contact Us
+                  </Button>
+                </Link>
+              </div>
       </div>
+     
     </div>
   );
 };
