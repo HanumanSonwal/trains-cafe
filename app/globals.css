@@ -328,3 +328,45 @@ color: #704D25 !important;
 .ant-card-body{
   padding: 12px!important;
 }
+
+.restaurant-heading {
+    display: flex;
+    position: sticky;
+    top: 40px;
+    max-width: 575px;
+    width: 100vw;
+    padding: 0 18px;
+}
+
+@media (max-width: 425.98px) {
+    .restaurant-heading .railway-img {
+        width: 42px;
+        height: 33px;
+    }
+   .restaurant-heading .station-detail .station-heading  {
+        font-size: 16px !important;
+    }
+  }
+.restaurant-heading .railway-img {
+    position: relative;
+    width: 70px;
+    height: 37.5px;
+    aspect-ratio: 36 / 26;
+}
+.restaurant-heading .station-detail {   
+    display: flex;
+    flex-direction: column;
+    margin-left: 8.36px;
+}
+
+.restaurant-heading .station-detail .station-heading {
+    font-size: 18px!important;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    
+}
+:where(.css-dev-only-do-not-override-161f05s).ant-modal{
+  padding-bottom: 0% !important;
+}
+

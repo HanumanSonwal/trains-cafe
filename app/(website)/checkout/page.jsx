@@ -10,6 +10,7 @@ import { CSSTransition } from "react-transition-group";
 import {resetCart} from '@/app/redux/cartSlice';
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
+import RecentOrders from "@/app/componants/RecentOrders";
 
 
 
@@ -132,14 +133,24 @@ const CheckoutPage = () => {
 
   
   return (
-    <div className="max-w-[575px] mx-auto p-4 bg-gray-100 min-h-screen">    
-      <h1 className="text-xl font-bold mb-6 text-center text-gray-800">
+    <div className="max-w-[575px] mx-auto  bg-gray-100 min-h-screen">    
+    <div className="relative h-40 md:h-60 mb-4">
+        <img
+          src="/images/checkoutbanner.png"
+          alt="food delivery in train"
+          className="absolute inset-0 object-cover w-full h-full"
+        />
+         {/* <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h1 className="text-white  font-bold">Contact Us</h1>
+        </div> */}
+      </div>
+      <div className="p-4"><h1 className="text-xl font-bold mb-6 text-center text-gray-800">
         Your Order at <span style={{color:'#704d25'}}>Jaipur</span> from{" "}
         <span style={{color:'#704d25'}}>Trains Cafe</span>
       </h1>
       <div className="gap-4">
       <div className="bg-white shadow rounded-lg p-4 sm:p-6 mb-4 max-w-lg lg:max-w-2xl mx-auto">
-  <h2 className="text-lg font-bold mb-4 text-gray-800 text-center sm:text-left">Customer Details</h2>
+  <h2 className="text-lg font-bold mb-4 text-gray-800 md:text-center">Customer Details</h2>
 
   <Controller
     name="mobile"
@@ -335,7 +346,13 @@ const CheckoutPage = () => {
       >
         Place Order
       </Button>
+      <div>
+        
+      <RecentOrders/>
+      </div>
+</div>
     </div>
+    
   );
 };
 

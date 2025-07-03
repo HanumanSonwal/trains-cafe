@@ -23,6 +23,7 @@ import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 import { useSearchParams } from "next/navigation";
 import { getVendorCategoriesAndMenuItems } from "@/services/vendors";
 import Image from "next/image";
+import RecentOrders from "@/app/componants/RecentOrders";
 
 const { Panel } = Collapse;
 
@@ -109,92 +110,94 @@ const MenuPage = () => {
         </p>
       ) : (
         <Collapse accordion>
-        {categories.map((category) => (
-          <Panel header={category.categoryName} key={category.categoryName}>
-            <div className="max-h-[400px] overflow-y-auto">
-              {category.items.length > 0 ? (
-                category.items.map((item) => (
-                  <div
-                    key={item._id}
-                    className="bg-white shadow rounded-lg mb-4 p-4"
-                  >
-                    <div className="flex flex-col md:flex-row justify-between items-start mb-2 gap-4">
-                      <Image
-                        width={80}
-                        height={80}
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full md:w-20 h-auto md:h-20 object-cover rounded"
-                      />
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-[#d6872a]">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-2">
-                          {item.description.split(" ").slice(0, 8).join(" ")}...
-                          <br />
-                          <button
-                            onClick={() => handleReadMore(item)}
-                            className="text-[#d6872a] underline"
-                          >
-                            View Details
-                          </button>
-                        </p>
-                        <div className="flex flex-wrap gap-2 items-center">
-                          {/* Discount Tag */}
-                          {item.discount > 0 && (
-                            <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
-                              {item.discount}% OFF
-                            </span>
-                          )}
-                          {/* Food Type (Veg, Non-Veg, or Both) */}
-                          <div className="flex space-x-1">
-                            {item.foodType === "Vegetarian" && (
-                              <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                                V
+          {categories.map((category) => (
+            <Panel header={category.categoryName} key={category.categoryName}>
+              <div className="max-h-[400px] overflow-y-auto">
+                {category.items.length > 0 ? (
+                  category.items.map((item) => (
+                    <div
+                      key={item._id}
+                      className="bg-white shadow rounded-lg mb-4 p-4"
+                    >
+                      <div className="flex flex-col md:flex-row justify-between items-start mb-2 gap-4">
+                        <Image
+                          width={80}
+                          height={80}
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full md:w-20 h-auto md:h-20 object-cover rounded"
+                        />
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-[#d6872a]">
+                            {item.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-2">
+                            {item.description.split(" ").slice(0, 8).join(" ")}
+                            ...
+                            <br />
+                            <button
+                              onClick={() => handleReadMore(item)}
+                              className="text-[#d6872a] underline"
+                            >
+                              View Details
+                            </button>
+                          </p>
+                          <div className="flex flex-wrap gap-2 items-center">
+                            {/* Discount Tag */}
+                            {item.discount > 0 && (
+                              <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                                {item.discount}% OFF
                               </span>
                             )}
-                            {item.foodType === "Non-Vegetarian" && (
-                              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                N
-                              </span>
-                            )}
-                            {item.foodType === "Both" && (
-                              <>
+                            {/* Food Type (Veg, Non-Veg, or Both) */}
+                            <div className="flex space-x-1">
+                              {item.foodType === "Vegetarian" && (
                                 <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                                   V
                                 </span>
+                              )}
+                              {item.foodType === "Non-Vegetarian" && (
                                 <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                                   N
                                 </span>
-                              </>
-                            )}
+                              )}
+                              {item.foodType === "Both" && (
+                                <>
+                                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                                    V
+                                  </span>
+                                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                    N
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <p className="text-xs text-green-500 mb-2">{item.availability}</p>
-                    <div className="flex justify-between items-center">
-                      <p
-                        style={{ color: "#704d25", fontWeight: "bold" }}
-                        className="text-lg mb-1"
-                      >
-                        ₹ {item.price}
+                      <p className="text-xs text-green-500 mb-2">
+                        {item.availability}
                       </p>
-                      <CartComp cartItems={cartItems} item={item} />
+                      <div className="flex justify-between items-center">
+                        <p
+                          style={{ color: "#704d25", fontWeight: "bold" }}
+                          className="text-lg mb-1"
+                        >
+                          ₹ {item.price}
+                        </p>
+                        <CartComp cartItems={cartItems} item={item} />
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-600">
-                  No items available in this category.
-                </p>
-              )}
-            </div>
-          </Panel>
-        ))}
-      </Collapse>
-      
+                  ))
+                ) : (
+                  <p className="text-center text-gray-600">
+                    No items available in this category.
+                  </p>
+                )}
+              </div>
+            </Panel>
+          ))}
+        </Collapse>
       )}
 
       {/* Go to Cart Button with Quantity Badge */}
@@ -215,7 +218,200 @@ const MenuPage = () => {
           </Button>
         </Link>
       </div>
+      <RecentOrders />
 
+      <div>
+        <h2 className="font-bold"
+          style={{
+            marginTop: "2rem",
+             color: "#704d25",
+          }}
+        >
+          Order{" "}
+          <Link
+            className="font-bold text-blue-600 hover:text-blue-800 underline"
+            href="https://www.trainscafe.in/"
+          >
+            {" "}
+            food in train{" "}
+          </Link>{" "}
+          from{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong>{" "}
+          at{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>{" "}
+          with Trainscafe
+        </h2>
+        <p className="py-2">
+          Experience delicious, hygienic, and on-time food delivery in train
+          from{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong>{" "}
+          at{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>{" "}
+          through Trainscafe – India’s trusted train food delivery partner.
+        </p>
+        <p className="py-2">
+          Trainscafe delivers fresh meals directly to your train seat with
+          E-catering partnership. Whether you're craving a light snack or a full
+          meal, <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong>{" "} at <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>{" "} station is ready to serve
+          passengers traveling across India with a multiple varieties range of
+          food.{" "}        
+         
+        </p>
+
+         <h2 className="font-bold mb-2"
+          style={{
+            color: "#704d25",
+            marginTop: "2rem",
+          }}
+        >
+          Why Choose Trainscafe for  <Link
+            className="font-bold text-blue-600 hover:text-blue-800 underline"
+            href="https://www.trainscafe.in/online-train-food-delivery"
+          >
+            {" "}
+           Online Train Food Delivery?{" "}
+          </Link>
+
+        </h2>
+        <ul style={{ paddingLeft: "5%", listStyleType: "disc" }}>
+                  <li>
+                    <b>Expertise in Train Catering :</b> With years of experience in railway food delivery services, Trainscafe ensures every meal is prepared with care and delivered with precision.
+                  </li>
+                  <li>
+                   <b>Trusted by Thousands :</b> Daily serving 500+ trains and thousands of passengers across major Indian railway  stations.
+                  </li>
+                   <li>
+                   <b>Real-time Tracking & Support :</b> Know when your food is being prepared, dispatched, and delivered with real-time updates.
+                  </li>
+                  
+                </ul>
+
+                <div>
+                  <h2 className="font-bold"
+          style={{
+            marginTop: "2rem",
+             color: "#704d25",
+          }}
+        >   
+        <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong>{" "}
+          at{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>{" "}
+        Railway Station
+        </h2>
+        <p className="py-2">
+          Trainscafe has tied up with  <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong> to provide on-seat train food delivery at  <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>.
+          <br />
+          Whether you’re traveling alone or with family, or need group meal booking in train, Trainscafe ensures a smooth, satisfying food experience right at your berth.
+
+
+        </p>
+                </div>
+                <div>
+                  <h2 className="font-bold"
+          style={{
+            marginTop: "2rem",
+             color: "#704d25",
+          }}
+        >
+          How to{" "}
+          <Link
+            className="font-bold text-blue-600 hover:text-blue-800 underline"
+            href="https://www.trainscafe.in/order-food-in-train"
+          >
+            {" "}
+           Order Food Online in Train{" "}
+          </Link>{" "}
+          from{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong>{" "}
+          at{" "}
+          <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>{" "}
+          ?
+        </h2>
+        <h4 className="py-2">Order your favorite food on train is just a few simple steps away</h4>
+         <ul style={{ paddingLeft: "5%", listStyleType: "decimal" }}>
+                  <li>
+                   Visit <b>Trainscafe Web App</b> or use our  <b>Whatsapp</b>
+                  </li>
+                <li>Enter Train no. / station name or PNR number (e.g.,  <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>)
+</li>
+                  
+                  <li>Choose <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong> from the list of available restaurants
+</li>
+<li>Select dishes from the displayed food menu
+</li>
+<li>Apply promo codes if available
+</li>
+<li>Pay online securely or choose <b>Cash on Delivery</b>
+</li>
+<li>Your food will be delivered directly to your train seat at  <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong> station</li>
+                </ul>
+                </div>
+                
+      </div>
+      <div>
+         <h2 className="font-bold"
+          style={{
+            marginTop: "2rem",
+             color: "#704d25",
+          }}
+        >
+          👨‍👩‍👧‍👦 Bulk Order Facility in Train
+
+        </h2>
+        <p className="py-2">
+          Traveling in a group? Trainscafe provides bulk food ordering for group train journeys from  <strong>
+            {categories.length > 0 ? categories[0].vendor : "N/A"}{" "}
+          </strong> at  <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong>. Ideal for school trips, tour groups, and corporate teams,etc.
+ ✅ Custom Menus | ✅ Best Prices | ✅ Timely Delivery | ✅ PAN-India Station Coverage
+        </p>
+        <h5 className="py-2 font-bold">Need Help with Your Train Food Order?</h5>
+        <p className="py-2">Call us on <Link
+                        href="tel:+918696963496"
+                        className="font-bold text-blue-600 hover:text-blue-800 underline"
+                      >
+                        +91-8696963496
+                      </Link>  or WhatsApp <Link
+                        href="https://wa.me/918696963496"
+                        className="font-bold text-blue-600 hover:text-blue-800 underline"
+                      >
+                        +91-8696963496
+                      </Link>  your order for <strong>
+            {categories.length > 0 ? categories[0].station : "N/A"}
+          </strong> delivery. Our customer care is available from 8:00 AM to 10:00 PM, all days.
+</p>
+      </div>
       <Modal
         visible={isModalVisible}
         onCancel={handleModalClose}

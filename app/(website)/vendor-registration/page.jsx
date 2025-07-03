@@ -14,6 +14,43 @@ const { TextArea } = Input;
 const { Option } = Select;
 const { Panel } = Collapse;
 
+const steps = [
+  {
+    // title: "Enter Your Train/PNR",
+    image: "/images/register-1.png",
+  },
+  {
+    // title: "Pick Your Favourite Meals",
+    image: "/images/kyc-approved-2.png",
+  },
+  {
+    // title: "Pay Online or COD",
+    image: "/images/orders-3.png",
+  },
+  {
+    // title: "Enjoy Fresh Food at Your Seat",
+    image: "/images/delivery-4.png",
+  },
+];
+
+const steps1 = [
+  {
+    // title: "Enter Your Train/PNR",
+    image: "/images/all-railway-stations-1.png",
+  },
+  {
+    // title: "Pick Your Favourite Meals",
+    image: "/images/restaurants-listings-2.png",
+  },
+  {
+    // title: "Pay Online or COD",
+    image: "/images/fssai-approved-3.png",
+  },
+  {
+    // title: "Enjoy Fresh Food at Your Seat",
+    image: "/images/real-time-order-tracking-4.png",
+  },
+];
 const VendorRegistration = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -64,7 +101,7 @@ const VendorRegistration = () => {
       <div className="py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-10 gap-3">
           <div className="mb-6">
-          <h2
+            <h2
               className="text-center text-2xl sm:text-3xl font-bold mb-4"
               style={{ color: "#704d25" }}
             >
@@ -201,20 +238,19 @@ const VendorRegistration = () => {
             </Form>
           </div>
           <div>
-           
             <p className="text-gray-600 mb-4 text-justify">
               In the ever-evolving landscape of the food industry, restaurants
               are constantly seeking innovative ways to enhance their offerings
               and provide unique experiences to their customers. One such
               strategy that has gained traction in recent years is the concept
-              of vendor tie-ups. <br></br> <br></br> These partnerships between restaurants and vendors offer a range of benefits
-               to both parties involved,
-              ultimately leading to an enriched dining experience for patrons.
-              To register your restaurant for online order food delivery via
-              train, click this link. You will be able to sell food for
-              e-Catering services if you adhere to the IRCTC's agreed rules. To
-              get your restaurant featured and grow your business, kindly fill
-              out this form………
+              of vendor tie-ups. <br></br> <br></br> These partnerships between
+              restaurants and vendors offer a range of benefits to both parties
+              involved, ultimately leading to an enriched dining experience for
+              patrons. To register your restaurant for online order food
+              delivery via train, click this link. You will be able to sell food
+              for e-Catering services if you adhere to the IRCTC's agreed rules.
+              To get your restaurant featured and grow your business, kindly
+              fill out this form………
             </p>
 
             <h3
@@ -232,16 +268,16 @@ const VendorRegistration = () => {
               entertainment providers. The primary goal of these collaborations
               is to add value to the dining experience by offering high-quality
               products and services that complement the restaurant's core
-              offerings. <br></br><br></br>
-              
-               All restaurant operators are invited to join our
-              network as an Authorized IRCTC E-Catering Partner Trainscafe in
-              order to expand their food business. We are aware of your
-              outstanding business and your cutting-edge services, which allow
-              you to serve your clients the best, most delicious cuisine
-              possible. Join the Trainscafe food delivery network as an
-              Authorized IRCTC E-Catering Partner to expand your business beyond
-              just foot traffic. Please visit our website or call us at
+              offerings. <br></br>
+              <br></br>
+              All restaurant operators are invited to join our network as an
+              Authorized IRCTC E-Catering Partner Trainscafe in order to expand
+              their food business. We are aware of your outstanding business and
+              your cutting-edge services, which allow you to serve your clients
+              the best, most delicious cuisine possible. Join the Trainscafe
+              food delivery network as an Authorized IRCTC E-Catering Partner to
+              expand your business beyond just foot traffic. Please visit our
+              website or call us at
               <Link
                 href="tel:+918696963496"
                 className="font-bold text-blue-600 hover:text-blue-800 underline"
@@ -250,6 +286,57 @@ const VendorRegistration = () => {
               </Link>{" "}
               for <b>online food order in train.</b>
             </p>
+            <div className="py-4">
+              <h3
+                className="text-xl sm:text-2xl font-semibold mb-4"
+                style={{ color: "#704d25" }}
+              >
+                Why Should You Partner With Trainscafe?
+              </h3>
+              <p className="pb-3">
+                Trainscafe helps you increase your revenue, attract new
+                customers, and enhance your brand visibility by offering
+                seamless food delivery services to train passengers across
+                India.
+              </p>
+              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {steps1.map((step1, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center text-center"
+                  >
+                    <img
+                      src={step1.image}
+                      alt={step1.title}
+                       className="img-fluid"                      
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+             <div className="py-4">
+              <h3
+                className="text-xl sm:text-2xl font-semibold mb-4"
+                style={{ color: "#704d25" }}
+              >
+               HOW IT WORKS?
+              </h3>
+            
+              <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {steps.map((step, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center text-center"
+                  >
+                    <img
+                      src={step.image}
+                      alt={step.title}
+                     className="img-fluid"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="py-4 ">
               <h3
                 className="text-xl sm:text-2xl font-semibold mb-4"
@@ -319,11 +406,11 @@ const VendorRegistration = () => {
               small-scale food business operators, must have an annual turnover
               surpassing Rs. 12 lakhs or a daily production capacity over 100
               kg/litres in order to obtain an authorization certificate from the
-              Food Safety and Standards Authority of India (FSSAI). <br></br><br></br>They must
-              first register with the FSSAI in order to be eligible to apply for
-              IRCTC catering services if their yearly sales is less than Rs. 12
-              lakhs. <b>Get vendor tie-ups with restaurants</b> and start
-              delivering
+              Food Safety and Standards Authority of India (FSSAI). <br></br>
+              <br></br>They must first register with the FSSAI in order to be
+              eligible to apply for IRCTC catering services if their yearly
+              sales is less than Rs. 12 lakhs.{" "}
+              <b>Get vendor tie-ups with restaurants</b> and start delivering
               <b>
                 {" "}
                 food on train. Online food order in Train is provided by
@@ -342,9 +429,11 @@ const VendorRegistration = () => {
                 Getting on board and expanding your business is quite simple.
                 The following is all you need to know to order food on trains,
                 planes, or major bus routes:
-                <br></br><br></br>A valid FSSAI license aids in verifying that the
+                <br></br>
+                <br></br>A valid FSSAI license aids in verifying that the
                 partners are approved food and beverage providers.
-              </p><br></br>
+              </p>
+              <br></br>
               <ul className="list-disc list-inside">
                 <li className="mb-2">
                   <b>GST Registration : </b>We need you to have a GST
@@ -462,7 +551,7 @@ const VendorRegistration = () => {
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+            &copy; {new Date().getFullYear()} Trainscafe.com. All rights reserved.
           </p>
         </div>
       </footer>

@@ -99,7 +99,7 @@ export default function Page({ params }) {
                                support@trainscafe.in
                               </Link>
           </p>
-          <p className="mt-2">&copy; {new Date().getFullYear()} Your Company. All rights reserved.</p>
+          <p className="mt-2">&copy; {new Date().getFullYear()} Trainscafe.com. All rights reserved.</p>
         </div>
       </footer>
 
