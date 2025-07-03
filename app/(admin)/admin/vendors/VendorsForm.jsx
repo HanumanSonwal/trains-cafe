@@ -26,20 +26,14 @@ const TextEditor = dynamic(() => import("../../../componants/TextEditor"), {
   ssr: false,
 });
 
-
-const VendorsForm = ({
-  open,
-  onCancel,
-  onSubmit,
-  initialValues,
-}) => {
+const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
   const [stations, setStations] = useState([]);
   const [form] = Form.useForm();
   const [image, setimage] = useState("");
   const [imageError, setImageError] = useState("");
   const [isreset, setIsreset] = useState(false);
 
-  console.log( initialValues ,"initialValues -va;ues")
+  console.log(initialValues, "initialValues -va;ues");
 
   useEffect(() => {
     const fetchStations = async () => {
@@ -82,15 +76,21 @@ const VendorsForm = ({
     const payload = {
       ...values,
       image: image,
-      Working_Time: values.Working_Time?.length === 2
-        ? `${values.Working_Time[0].format("hh:mm A")} - ${values.Working_Time[1].format("hh:mm A")}`
-        : "",
+      Working_Time:
+        values.Working_Time?.length === 2
+          ? `${values.Working_Time[0].format(
+              "hh:mm A"
+            )} - ${values.Working_Time[1].format("hh:mm A")}`
+          : "",
     };
 
     let response;
     try {
       if (initialValues?._id) {
-        response = await updateData(`/api/vendors/?id=${initialValues._id}`, payload);
+        response = await updateData(
+          `/api/vendors/?id=${initialValues._id}`,
+          payload
+        );
       } else {
         response = await postData("/api/vendors", payload);
       }
@@ -133,11 +133,7 @@ const VendorsForm = ({
         </Button>,
       ]}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleFinish}
-      >
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -148,72 +144,71 @@ const VendorsForm = ({
               <Input placeholder="Enter vendor name" />
             </Form.Item>
           </Col>
-     <Col span={12}>
-  <Form.Item
-    name="Contact_No"
-    label="Contact No."
-    rules={[
-      { required: true, message: "Contact number is required" },
-      {
-        pattern: /^[0-9]{10}$/,
-        message: "Contact number must be exactly 10 digits",
-      },
-    ]}
-  >
-    <Input
-      placeholder="Enter contact number"
-      maxLength={10}
-      onChange={(e) => {
-        const onlyNums = e.target.value.replace(/\D/g, "");
-        form.setFieldsValue({ Contact_No: onlyNums });
-      }}
-    />
-  </Form.Item>
-</Col>
+          <Col span={12}>
+            <Form.Item
+              name="Contact_No"
+              label="Contact No."
+              rules={[
+                { required: true, message: "Contact number is required" },
+                {
+                  pattern: /^[0-9]{10}$/,
+                  message: "Contact number must be exactly 10 digits",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter contact number"
+                maxLength={10}
+                onChange={(e) => {
+                  const onlyNums = e.target.value.replace(/\D/g, "");
+                  form.setFieldsValue({ Contact_No: onlyNums });
+                }}
+              />
+            </Form.Item>
+          </Col>
 
           <Col span={12}>
-  <Form.Item
-    name="Alternate_Contact_No"
-    label="Alternate Contact No."
-    rules={[
-      {
-        pattern: /^$|^[0-9]{10}$/,
-        message: "Alternate number must be exactly 10 digits",
-      },
-    ]}
-  >
-    <Input
-      placeholder="Enter alternate contact number"
-      maxLength={10}
-      onChange={(e) => {
-        const onlyNums = e.target.value.replace(/\D/g, "");
-        form.setFieldsValue({ Alternate_Contact_No: onlyNums });
-      }}
-    />
-  </Form.Item>
-</Col>
+            <Form.Item
+              name="Alternate_Contact_No"
+              label="Alternate Contact No."
+              rules={[
+                {
+                  pattern: /^$|^[0-9]{10}$/,
+                  message: "Alternate number must be exactly 10 digits",
+                },
+              ]}
+            >
+              <Input
+                placeholder="Enter alternate contact number"
+                maxLength={10}
+                onChange={(e) => {
+                  const onlyNums = e.target.value.replace(/\D/g, "");
+                  form.setFieldsValue({ Alternate_Contact_No: onlyNums });
+                }}
+              />
+            </Form.Item>
+          </Col>
           <Col span={12}>
-        <Form.Item
-  name="Station"
-  label="Station"
-  rules={[{ required: true, message: "Please select a station" }]}
->
-  <Select
-    showSearch
-    placeholder="Select station"
-    optionFilterProp="children"
-    filterOption={(input, option) =>
-      option.children.toLowerCase().includes(input.toLowerCase())
-    }
-  >
-    {stations.map((station) => (
-      <Option key={station._id} value={station._id}>
-        {station.name}
-      </Option>
-    ))}
-  </Select>
-</Form.Item>
-
+            <Form.Item
+              name="Station"
+              label="Station"
+              rules={[{ required: true, message: "Please select a station" }]}
+            >
+              <Select
+                showSearch
+                placeholder="Select station"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().includes(input.toLowerCase())
+                }
+              >
+                {stations.map((station) => (
+                  <Option key={station._id} value={station._id}>
+                    {station.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Col>
         </Row>
 
@@ -231,7 +226,9 @@ const VendorsForm = ({
             <Form.Item
               name="Min_Order_Value"
               label="Min. Order Value (Rs.)"
-              rules={[{ required: true, message: "Minimum order value required" }]}
+              rules={[
+                { required: true, message: "Minimum order value required" },
+              ]}
             >
               <Input placeholder="Enter minimum order value" />
             </Form.Item>
@@ -272,7 +269,7 @@ const VendorsForm = ({
               rules={[{ required: true, message: "Weekly off is required" }]}
             >
               <Select placeholder="Select weekly off">
-                  <Option value="">No Weekly Off</Option>
+                <Option value="">No Weekly Off</Option>
                 <Option value="Monday">Monday</Option>
                 <Option value="Tuesday">Tuesday</Option>
                 <Option value="Wednesday">Wednesday</Option>
@@ -298,27 +295,25 @@ const VendorsForm = ({
           </Col>
         </Row>
         <Form.Item
-  name="Address"
-  label="Address"
-  rules={[{ required: true, message: "Address is required" }]}
->
-  <Input.TextArea rows={4} placeholder="Enter address here" />
-</Form.Item>
-<Form.Item
-  name="Description"
-  label="Description"
-  rules={[{ required: true, message: "Description is required" }]}
->
-  <TextEditor
-    previousValue={form.getFieldValue("Description")}
-    updatedValue={(content) => form.setFieldValue("Description", content)}
-    height={200}
-  />
-</Form.Item>
-
-
-
-
+          name="Address"
+          label="Address"
+          rules={[{ required: true, message: "Address is required" }]}
+        >
+          <Input.TextArea rows={4} placeholder="Enter address here" />
+        </Form.Item>
+        <Form.Item
+          name="Description"
+          label="Description"
+          rules={[{ required: true, message: "Description is required" }]}
+        >
+          <TextEditor
+            previousValue={form.getFieldValue("Description")}
+            updatedValue={(content) =>
+              form.setFieldValue("Description", content)
+            }
+            height={200}
+          />
+        </Form.Item>
 
         <Form.Item label="Upload Image" required>
           <FileUploadComponent
@@ -327,9 +322,7 @@ const VendorsForm = ({
             isreset={isreset}
             setImageError={setImageError}
           />
-          {imageError && (
-            <p className="text-red-500">{imageError}</p>
-          )}
+          {imageError && <p className="text-red-500">{imageError}</p>}
         </Form.Item>
       </Form>
     </Modal>
