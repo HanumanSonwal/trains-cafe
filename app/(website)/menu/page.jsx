@@ -9,7 +9,7 @@ export const metadata = {
     title: "Order Food from Train Vendors | Trains Cafe",
     description:
       "Find your train vendor, browse menu and order food online. Hot meals delivered at your seat with Trains Cafe.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://trainscafe.in"}/menu`,
+    url: `${process.env.NEXT_PUBLIC_URL || "https://trainscafe.in"}/menu`,
   },
 };
 

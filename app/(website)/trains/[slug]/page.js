@@ -137,7 +137,7 @@ export async function generateMetadata({ params }) {
   const { slug } = params;
   const { trainNo, trainName } = parseTrainSlug(slug);
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://trainscafe.in";
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
 
   return {
     title: `Order Food in ${trainName} (${trainNo}) Train | TrainsCafe`,

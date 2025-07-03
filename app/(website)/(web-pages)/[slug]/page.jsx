@@ -2,7 +2,7 @@ import DynamicPage from "./DynamicPage";
 
 export async function generateMetadata({ params }) {
   const slug = params.slug;
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
   console.log("SEO CALL:", `${baseUrl}/api/web-pages?slug=${slug}`);
 

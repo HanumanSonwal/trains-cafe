@@ -335,7 +335,7 @@ export const metadata = {
     title: "Online Hotel Booking | Trains Cafe",
     description:
       "Reserve your stay with Trains Cafe. Wide range of budget-friendly and premium hotels for a comfortable travel experience. Best rates, verified stays, easy payment.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://trainscafe.in"}/online-hotel-booking`,
+    url: `${process.env.NEXT_PUBLIC_URL || "https://trainscafe.in"}/online-hotel-booking`,
   },
 };
 

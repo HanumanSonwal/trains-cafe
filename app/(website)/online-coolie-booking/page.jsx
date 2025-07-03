@@ -10,7 +10,7 @@ export const metadata = {
     title: "Online Coolie Booking | Trains Cafe",
     description:
       "Hire coolies online for hassle-free luggage handling at railway stations. Easy booking, fixed prices, verified porters with Trains Cafe.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://trainscafe.in"}/online-coolie-booking`,
+    url: `${process.env.NEXT_PUBLIC_URL || "https://trainscafe.in"}/online-coolie-booking`,
   },
 };
 

@@ -4,7 +4,7 @@ import DynamicStationPage from "./DynamicStationPage";
 
 export async function generateMetadata({ params }) {
   const slug = params.slug;
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
   const res = await fetch(`${baseUrl}/api/web-station/${slug}`, { cache: "no-store" });
 
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const slug = params.slug;
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
   const res = await fetch(`${baseUrl}/api/web-station/${slug}`, { cache: "no-store" });
   const data = await res.json();

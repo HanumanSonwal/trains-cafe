@@ -15,11 +15,11 @@ export const metadata = {
   openGraph: {
     title: "Trains Cafe - Fresh Meals Delivered in Train",
     description: "Order food in train with Trains Cafe and enjoy fresh hygienic meals at your seat.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com",
+    url: process.env.NEXT_PUBLIC_URL || "https://yourdomain.com",
     siteName: "Trains Cafe",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com"}/og-image.jpg`,
+        url: `${process.env.NEXT_PUBLIC_URL || "https://yourdomain.com"}/og-image.jpg`,
         width: 1200,
         height: 630,
         alt: "Trains Cafe OG Image",
@@ -31,7 +31,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Trains Cafe - Order Food in Train",
     description: "Fresh meals delivered at your train seat. Hassle-free IRCTC food ordering.",
-    images: [`${process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com"}/og-image.jpg`],
+    images: [`${process.env.NEXT_PUBLIC_URL || "https://yourdomain.com"}/og-image.jpg`],
   },
 };
 
