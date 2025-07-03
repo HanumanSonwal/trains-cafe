@@ -193,19 +193,27 @@ const VendorsForm = ({
   </Form.Item>
 </Col>
           <Col span={12}>
-            <Form.Item
-              name="Station"
-              label="Station"
-              rules={[{ required: true, message: "Please select a station" }]}
-            >
-              <Select showSearch placeholder="Select station">
-                {stations.map((station) => (
-                  <Option key={station._id} value={station._id}>
-                    {station.name}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+        <Form.Item
+  name="Station"
+  label="Station"
+  rules={[{ required: true, message: "Please select a station" }]}
+>
+  <Select
+    showSearch
+    placeholder="Select station"
+    optionFilterProp="children"
+    filterOption={(input, option) =>
+      option.children.toLowerCase().includes(input.toLowerCase())
+    }
+  >
+    {stations.map((station) => (
+      <Option key={station._id} value={station._id}>
+        {station.name}
+      </Option>
+    ))}
+  </Select>
+</Form.Item>
+
           </Col>
         </Row>
 
@@ -264,6 +272,7 @@ const VendorsForm = ({
               rules={[{ required: true, message: "Weekly off is required" }]}
             >
               <Select placeholder="Select weekly off">
+                  <Option value="">No Weekly Off</Option>
                 <Option value="Monday">Monday</Option>
                 <Option value="Tuesday">Tuesday</Option>
                 <Option value="Wednesday">Wednesday</Option>
@@ -288,6 +297,13 @@ const VendorsForm = ({
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item
+  name="Address"
+  label="Address"
+  rules={[{ required: true, message: "Address is required" }]}
+>
+  <Input.TextArea rows={4} placeholder="Enter address here" />
+</Form.Item>
 <Form.Item
   name="Description"
   label="Description"
@@ -300,17 +316,8 @@ const VendorsForm = ({
   />
 </Form.Item>
 
-<Form.Item
-  name="Address"
-  label="Address"
-  rules={[{ required: true, message: "Address is required" }]}
->
-  <TextEditor
-    previousValue={form.getFieldValue("Address")}
-    updatedValue={(content) => form.setFieldValue("Address", content)}
-    height={200}
-  />
-</Form.Item>
+
+
 
 
         <Form.Item label="Upload Image" required>

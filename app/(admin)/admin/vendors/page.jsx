@@ -23,7 +23,6 @@ import { updateData, deleteData } from "@/app/lib/ApiFuntions";
 
 const VendorsManagement = () => {
   const [vendors, setVendors] = useState([]);
-  const [filteredVendors, setFilteredVendors] = useState([]);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -31,12 +30,11 @@ const VendorsManagement = () => {
     pagination: {
       current: 1,
       pageSize: 10,
-      pageSizeOptions: ["10", "20", "30"],
+      pageSizeOptions: ["10", "20", "50"],
       showSizeChanger: true,
       total: 0,
     },
   });
-
   const [searchText, setSearchText] = useState("");
 
   const loadVendors = async (page = 1, pageSize = 10, search = "") => {
@@ -47,9 +45,8 @@ const VendorsManagement = () => {
       );
       const { data, total, success } = response.data;
 
-      if (success) {
+      if (success && data.length > 0) {
         setVendors(data);
-        setFilteredVendors(data);
         setTableParams((prev) => ({
           ...prev,
           pagination: {
@@ -58,11 +55,17 @@ const VendorsManagement = () => {
           },
         }));
       } else {
-        message.error("Failed to fetch data");
+        setVendors([]);
+        if (search) {
+          message.warning("No vendors found matching your search!");
+        } else {
+          message.info("No vendors available yet.");
+        }
       }
     } catch (error) {
       console.error(error);
-      message.error("Error fetching data");
+      setVendors([]);
+      message.error("Something went wrong while fetching vendors!");
     } finally {
       setLoading(false);
     }
@@ -70,12 +73,8 @@ const VendorsManagement = () => {
 
   useEffect(() => {
     const { current, pageSize } = tableParams.pagination;
-    loadVendors(current, pageSize, searchText);
-  }, [
-    tableParams.pagination.current,
-    tableParams.pagination.pageSize,
-    searchText,
-  ]);
+    loadVendors(current, pageSize, searchText.trim());
+  }, [tableParams.pagination.current, tableParams.pagination.pageSize, searchText]);
 
   const handleAddVendor = () => {
     setEditingVendor(null);
@@ -91,10 +90,8 @@ const VendorsManagement = () => {
     try {
       const result = await deleteData(`/api/vendors`, { id });
       if (result.success) {
-        setVendors(vendors.filter((vendor) => vendor._id !== id));
-        setFilteredVendors(
-          filteredVendors.filter((vendor) => vendor._id !== id)
-        );
+        const updatedVendors = vendors.filter((vendor) => vendor._id !== id);
+        setVendors(updatedVendors);
         message.success("Vendor deleted successfully");
       } else {
         message.error("Failed to delete vendor");
@@ -113,13 +110,11 @@ const VendorsManagement = () => {
           : vendor
       );
       setVendors(updatedVendors);
-      setFilteredVendors(updatedVendors);
       message.success("Vendor updated successfully");
     } else {
       const newVendor = { ...values, _id: `${vendors.length + 1}` };
       const updatedVendors = [...vendors, newVendor];
       setVendors(updatedVendors);
-      setFilteredVendors(updatedVendors);
       message.success("Vendor added successfully");
     }
     setIsVendorModalOpen(false);
@@ -137,30 +132,33 @@ const VendorsManagement = () => {
           vendor._id === _id ? { ...vendor, Status: status } : vendor
         );
         setVendors(updatedVendors);
-        setFilteredVendors(updatedVendors);
-        message.success("Vendor status updated successfully");
+        message.success("Vendor status updated");
       } else {
         message.error("Failed to update vendor status");
       }
     } catch (error) {
-      console.error("Error updating vendor status:", error);
-      message.error("An error occurred while updating vendor status");
+      console.error(error);
+      message.error("Error while updating vendor status");
     }
   };
 
   const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchText(value);
-    const filtered = vendors.filter((vendor) =>
-      vendor.Vendor_Name.toLowerCase().includes(value)
-    );
-    setFilteredVendors(filtered);
-  };
-  const clearSearch = () => {
-    setSearchText("");
+    setSearchText(e.target.value);
+    setTableParams((prev) => ({
+      ...prev,
+      pagination: {
+        ...prev.pagination,
+        current: 1,
+      },
+    }));
   };
 
-  const handleTableChange = (pagination, filters, sorter) => {
+  const clearSearch = () => {
+    setSearchText("");
+    message.info("Search cleared.");
+  };
+
+  const handleTableChange = (pagination) => {
     setTableParams((prev) => ({
       ...prev,
       pagination: {
@@ -168,12 +166,7 @@ const VendorsManagement = () => {
         current: pagination.current,
         pageSize: pagination.pageSize,
       },
-      filters,
-      sortOrder: sorter.order || null,
-      sortField: sorter.field || null,
     }));
-
-    loadVendors(pagination.current, pagination.pageSize, searchText);
   };
 
   const vendorColumns = [
@@ -181,7 +174,6 @@ const VendorsManagement = () => {
       title: "Vendor Id",
       dataIndex: "vendorId",
       key: "vendorId",
-      sorter: (a, b) => a.Vendor_Name.localeCompare(b.Vendor_Name),
     },
     {
       title: "Image",
@@ -195,63 +187,51 @@ const VendorsManagement = () => {
         />
       ),
     },
-    
     {
       title: "Vendor Name",
       dataIndex: "Vendor_Name",
       key: "vendor_name",
-      sorter: (a, b) => a.Vendor_Name.localeCompare(b.Vendor_Name),
     },
     {
       title: "Contact No",
       dataIndex: "Contact_No",
       key: "contact_no",
-      render: (contact) =>
-        Array.isArray(contact) ? contact.join(", ") : contact,
     },
     {
       title: "Alternate Contact No",
       dataIndex: "Alternate_Contact_No",
       key: "alternate_contact_no",
-      render: (contact) => contact || "N/A",
+      render: (val) => val || "N/A",
     },
     {
       title: "Station",
       dataIndex: "Station_Name",
       key: "station",
-      render: (Station) => Station || "N/A",
+      render: (val) => val || "N/A",
     },
     {
       title: "Food Type",
       dataIndex: "Food_Type",
       key: "food_type",
       render: (Food_Type) => {
-        let color;
-        let displayText = Food_Type || "N/A";
-        if (Food_Type === "Non-Veg") {
-          color = "red";
-        } else if (Food_Type === "Veg") {
-          color = "green";
-        } else if (Food_Type === "Veg & Non-Veg") {
-          color = "orange";
-        } else {
-          color = "black";
-        }
-        return <span style={{ color }}>{displayText}</span>;
+        let color = "black";
+        if (Food_Type === "Veg") color = "green";
+        if (Food_Type === "Non-Veg") color = "red";
+        if (Food_Type === "Veg & Non-Veg") color = "orange";
+        return <span style={{ color }}>{Food_Type || "N/A"}</span>;
       },
     },
-
     {
       title: "Weekly Off",
       dataIndex: "Weekly_Off",
       key: "weekly_off",
-      render: (day) => day || "N/A",
+      render: (val) => val || "N/A",
     },
     {
       title: "Working Time",
       dataIndex: "Working_Time",
       key: "working_time",
-      render: (time) => time || "N/A",
+      render: (val) => val || "N/A",
     },
     {
       title: "Status",
@@ -267,7 +247,7 @@ const VendorsManagement = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (text, record) => (
+      render: (_, record) => (
         <div className="space-x-2">
           <Button
             icon={<EditFilled />}
@@ -275,7 +255,7 @@ const VendorsManagement = () => {
             style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           />
           <Popconfirm
-            title="Are you sure to delete?"
+            title="Are you sure you want to delete this vendor?"
             onConfirm={() => handleDeleteVendor(record._id)}
           >
             <Button icon={<DeleteFilled />} danger />
@@ -293,49 +273,53 @@ const VendorsManagement = () => {
       style={{
         backgroundColor: "#FAF3CC",
         borderRadius: "8px",
-        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
       }}
     >
       <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
         Vendors Management
       </h2>
+
       <div className="flex items-center my-5 justify-between">
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <AntdInput
-            placeholder="Search"
-            style={{ width: 300, borderColor: "#D6872A" }}
-            prefix={<SearchOutlined />}
-            suffix={
-              searchText && (
-                <CloseCircleOutlined
-                  onClick={clearSearch}
-                  style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
-                />
-              )
-            }
-            value={searchText}
-            onChange={handleSearch}
-          />
-        </div>
+        <AntdInput
+          placeholder="Search vendors..."
+          style={{ width: 300, borderColor: "#D6872A" }}
+          prefix={<SearchOutlined />}
+          suffix={
+            searchText && (
+              <CloseCircleOutlined
+                onClick={clearSearch}
+                style={{ cursor: "pointer", color: "#888" }}
+              />
+            )
+          }
+          value={searchText}
+          onChange={handleSearch}
+        />
         <Button
-          type="primary"
-          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           icon={<PlusOutlined />}
+          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+          type="primary"
           onClick={handleAddVendor}
         >
           Add Vendor
         </Button>
       </div>
 
-      <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
+      <Spin spinning={loading} indicator={antIcon}>
         <Table
           columns={vendorColumns}
-          dataSource={filteredVendors}
+          dataSource={vendors}
           pagination={tableParams.pagination}
-          // loading={loading}
           onChange={handleTableChange}
+          locale={{
+            emptyText: searchText
+              ? "No vendors found for your search!"
+              : "No vendors available.",
+          }}
         />
       </Spin>
+
       <VendorsForm
         open={isVendorModalOpen}
         onCancel={() => setIsVendorModalOpen(false)}

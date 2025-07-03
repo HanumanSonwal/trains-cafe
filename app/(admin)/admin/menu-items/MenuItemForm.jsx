@@ -207,18 +207,26 @@ const MenuItemForm = ({
           </Col>
           <Col span={12}>
             <Form.Item
-              label="Select Vendor"
-              name="Vendor"
-              rules={[{ required: true, message: "Vendor is required" }]}
-            >
-              <Select placeholder="Select Vendor">
-                {vendors.map((vendor) => (
-                  <Option key={vendor._id} value={vendor._id}>
-                    {vendor.Vendor_Name}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+  label="Select Vendor"
+  name="Vendor"
+  rules={[{ required: true, message: "Vendor is required" }]}
+>
+  <Select
+    showSearch
+    placeholder="Search for a vendor"
+    optionFilterProp="children"
+    filterOption={(input, option) =>
+      option?.children.toLowerCase().includes(input.toLowerCase())
+    }
+  >
+    {vendors.map((vendor) => (
+      <Option key={vendor._id} value={vendor._id}>
+        {vendor.Vendor_Name}
+      </Option>
+    ))}
+  </Select>
+</Form.Item>
+
           </Col>
         </Row>
 
