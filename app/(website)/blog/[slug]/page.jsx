@@ -104,6 +104,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }) {
   const slug = params.slug;
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  const pageUrl = `${baseUrl}/blog/${slug}`;
 
   try {
     const res = await fetch(`${baseUrl}/api/blog?slug=${slug}`, {
@@ -122,17 +123,59 @@ export async function generateMetadata({ params }) {
         title: "Blog Not Found - Trains Cafe",
         description: "No blog found for this URL.",
         robots: "noindex",
+        alternates: {
+          canonical: pageUrl,
+        },
+        openGraph: {
+          title: "Blog Not Found - Trains Cafe",
+          description: "No blog found for this URL.",
+          url: pageUrl,
+          type: "article",
+          images: [`${baseUrl}/images/meta_image.png`],
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: "Blog Not Found - Trains Cafe",
+          description: "No blog found for this URL.",
+          images: [`${baseUrl}/images/meta_image.png`],
+        },
       };
     }
 
+    const safeTitle = blog.metatitle || blog.title || "Trains Cafe Blog";
+    const safeDesc =
+      blog.metadescription || blog.description || "Train food, IRCTC tips.";
+    const safeKeywords = blog.metakeyword || "train food, IRCTC food, blogs";
+    const ogImage = blog.ogImage || "/images/meta_image.png";
+
     return {
-      title: blog.metatitle || blog.title || "Trains Cafe Blog",
-      description: blog.metadescription || blog.description || "",
-      keywords: blog.metakeyword || "",
+      title: safeTitle,
+      description: safeDesc,
+      keywords: safeKeywords,
+      robots: "index, follow",
+      alternates: {
+        canonical: pageUrl,
+      },
       openGraph: {
-        title: blog.metatitle || blog.title,
-        description: blog.metadescription || blog.description,
-        url: `${baseUrl}/blog/${slug}`,
+        title: safeTitle,
+        description: safeDesc,
+        url: pageUrl,
+        type: "article",
+        images: [
+          ogImage.startsWith("http")
+            ? ogImage
+            : `${baseUrl}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: safeTitle,
+        description: safeDesc,
+        images: [
+          ogImage.startsWith("http")
+            ? ogImage
+            : `${baseUrl}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
+        ],
       },
     };
   } catch (err) {
@@ -141,6 +184,22 @@ export async function generateMetadata({ params }) {
       title: "Error - Trains Cafe",
       description: "Something went wrong.",
       robots: "noindex",
+      alternates: {
+        canonical: pageUrl,
+      },
+      openGraph: {
+        title: "Error - Trains Cafe",
+        description: "Something went wrong.",
+        url: pageUrl,
+        type: "article",
+        images: [`${baseUrl}/images/meta_image.png`],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Error - Trains Cafe",
+        description: "Something went wrong.",
+        images: [`${baseUrl}/images/meta_image.png`],
+      },
     };
   }
 }
