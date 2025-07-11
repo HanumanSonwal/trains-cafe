@@ -16,6 +16,8 @@ const CartPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
 
+  console.log(cartItems ,"cart-Items")
+
   const handleProceedToCheckout = () => {
     router.push("/checkout");
   };

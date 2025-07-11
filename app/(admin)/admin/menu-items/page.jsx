@@ -121,21 +121,28 @@ const TablePage = () => {
     setIsMenuItemModalOpen(true);
   };
 
-  const handleStatusChange = async (checked, key) => {
-    try {
-      await axios.put(`/api/menu?id=${key}`, {
-        status: checked ? true : false,
-      });
-      const updatedData = data.map((item) =>
-        item.key === key ? { ...item, status: checked ? "1" : "0" } : item
-      );
-      setData(updatedData);
-      setFilteredData(updatedData);
-      message.success("Menu item status updated successfully");
-    } catch (error) {
-      message.error("Failed to update status");
-    }
-  };
+const handleStatusChange = async (checked, key) => {
+  try {
+    const formData = new FormData();
+    formData.append("status", checked ? "true" : "false");
+
+    await axios.put(`/api/menu?id=${key}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    message.success("Menu item status updated successfully");
+
+    // ✅ Properly re-fetch updated list:
+    const { current, pageSize } = tableParams.pagination;
+    fetchMenuItems(current, pageSize, searchText);
+
+  } catch (error) {
+    message.error("Failed to update status");
+  }
+};
+
 
   const handleDeleteMenuItem = async (key) => {
     try {
@@ -244,18 +251,18 @@ const TablePage = () => {
       key: "Discount",
       render: (discount) => `${discount}%`,
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status, record) => (
-        <Switch
-          checked={status === true}
-          onChange={(checked) => handleStatusChange(checked, record._id)}
-          className={status === "1" ? "ant-switch-checked" : "ant-switch"}
-        />
-      ),
-    },
+{
+  title: "Status",
+  dataIndex: "status",
+  key: "status",
+  render: (status, record) => (
+    <Switch
+      checked={status === true || status === "1" || status === 1}
+      onChange={(checked) => handleStatusChange(checked, record._id)}
+    />
+  ),
+},
+
     {
       title: "Actions",
       key: "actions",
