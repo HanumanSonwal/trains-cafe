@@ -247,112 +247,111 @@ import mongoose from 'mongoose';
 //             { status: 500 }
 //         );
 //     }
-// }
+// // }import dbConnect from '@/app/lib/dbConnect';
+
+// import dbConnect from '@/app/lib/dbConnect';
+// import VendorModel from '@/app/models/vendor';
+// import StationModel from '@/app/models/station';
+// import mongoose from 'mongoose';
+
 export async function GET(req) {
-    try {
-      const url = new URL(req.url);
-      const search = (url.searchParams.get('search') || '').trim(); 
-      const stationname = url.searchParams.get('stationname');
-      const stationcode = url.searchParams.get('stationcode'); 
-      const vendorname = url.searchParams.get('vendorname');
-      const page = parseInt(url.searchParams.get('page'), 10) || 1;
-      const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
-  
-      await dbConnect();
-  
-      let searchCriteria = { $or: [] };
-  
-      if (search) {
-        const stations = await StationModel.find({
-          $or: [
-            { name: { $regex: search, $options: 'i' } },
-            { code: { $regex: search, $options: 'i' } } 
-          ]
-        });
-  
-        if (stations.length > 0) {
-          const stationIds = stations.map(station => new mongoose.Types.ObjectId(station._id));
-          searchCriteria.$or.push({ Station: { $in: stationIds } });
-        }
-  
-        searchCriteria.$or.push({ Vendor_Name: { $regex: search, $options: 'i' } });
-      }
-  
-      if (stationname) {
-        const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
-        if (station) {
-          searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-        } else {
-          return new Response(JSON.stringify({
-            success: false,
-            message: 'Invalid Station Name or No Vendors Found',
-          }), { status: 404 });
-        }
-      }
-  
-      if (stationcode) {
-        const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
-        if (station) {
-          searchCriteria.$or.push({ Station: new mongoose.Types.ObjectId(station._id) });
-        } else {
-          return new Response(JSON.stringify({
-            success: false,
-            message: 'Invalid Station Code or No Vendors Found',
-          }), { status: 404 });
-        }
-      }
-  
-      if (vendorname) {
-        searchCriteria.$or.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
-      }
-  
-      const skip = Math.max((page - 1) * limit, 0);
-  
-      let vendors;
-      if (searchCriteria.$or.length === 0) {
-        vendors = await VendorModel.find({})
-          .sort({ createdAt: -1 }) // ✅ Sort by createdAt descending
-          .skip(skip)
-          .limit(limit)
-          .populate('Station', 'name code');
-      } else {
-        vendors = await VendorModel.find(searchCriteria)
-          .sort({ createdAt: -1 }) // ✅ Sort by createdAt descending
-          .skip(skip)
-          .limit(limit)
-          .populate('Station', 'name code');
-      }
-  
-      if (vendors.length === 0) {
-        return new Response(JSON.stringify({
-          success: false,
-          message: 'No items found for the search criteria',
-        }), { status: 404 });
-      }
-  
-      vendors = vendors.map(item => ({
-        ...item.toObject(),
-        Station: item.Station?._id || 'Unknown',
-        Station_Name: item.Station?.name || 'Unknown',
-        Station_Code: item.Station?.code || 'Unknown',
-      }));
-  
-      const total = await VendorModel.countDocuments(searchCriteria.$or.length === 0 ? {} : searchCriteria);
-  
-      return new Response(JSON.stringify({
-        success: true,
-        data: vendors,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit),
-      }), { status: 200 });
-  
-    } catch (error) {
-      console.error('Error fetching vendors:', error);
-      return new Response(JSON.stringify({ success: false, message: 'Error fetching vendors' }), { status: 500 });
+  try {
+    const url = new URL(req.url);
+    const search = (url.searchParams.get('search') || '').trim();
+    const stationname = url.searchParams.get('stationname');
+    const stationcode = url.searchParams.get('stationcode');
+    const vendorname = url.searchParams.get('vendorname');
+    const page = parseInt(url.searchParams.get('page'), 10) || 1;
+    const limit = parseInt(url.searchParams.get('limit'), 10) || 10;
+
+    await dbConnect();
+
+    let andConditions = [];
+
+    // 🔍 Search text
+    if (search) {
+      const stations = await StationModel.find({
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { code: { $regex: search, $options: 'i' } }
+        ]
+      });
+      const stationIds = stations.map(station => station._id);
+
+      andConditions.push({
+        $or: [
+          { Station: { $in: stationIds } },
+          { Vendor_Name: { $regex: search, $options: 'i' } }
+        ]
+      });
     }
+
+    // 📍 Station name filter
+    if (stationname) {
+      const station = await StationModel.findOne({ name: { $regex: stationname, $options: 'i' } });
+      if (!station) {
+        return Response.json({ success: false, message: 'Invalid Station Name' }, { status: 404 });
+      }
+      andConditions.push({ Station: station._id });
+    }
+
+    // 🏷️ Station code filter
+    if (stationcode) {
+      const station = await StationModel.findOne({ code: { $regex: stationcode, $options: 'i' } });
+      if (!station) {
+        return Response.json({ success: false, message: 'Invalid Station Code' }, { status: 404 });
+      }
+      andConditions.push({ Station: station._id });
+    }
+
+    // 🧾 Vendor name filter
+    if (vendorname) {
+      andConditions.push({ Vendor_Name: { $regex: vendorname, $options: 'i' } });
+    }
+
+    const searchCriteria = andConditions.length > 0 ? { $and: andConditions } : {};
+
+    const skip = Math.max((page - 1) * limit, 0);
+
+    const vendors = await VendorModel.find(searchCriteria)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('Station', 'name code');
+
+    if (vendors.length === 0) {
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'No items found for the search criteria',
+      }), { status: 404 });
+    }
+
+    const formatted = vendors.map(item => ({
+      ...item.toObject(),
+      Station: item.Station?._id || 'Unknown',
+      Station_Name: item.Station?.name || 'Unknown',
+      Station_Code: item.Station?.code || 'Unknown',
+    }));
+
+    const total = await VendorModel.countDocuments(searchCriteria);
+
+    return new Response(JSON.stringify({
+      success: true,
+      data: formatted,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    }), { status: 200 });
+
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+    return new Response(JSON.stringify({
+      success: false,
+      message: 'Error fetching vendors',
+    }), { status: 500 });
   }
-  
+}
+
 
 
 export async function POST(req) {
