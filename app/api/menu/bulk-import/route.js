@@ -98,12 +98,17 @@ export async function POST(req) {
         Description: item["DESCRIPTION"] || "",
         Price: parseFloat(item["PRICE"]) || 0,
         image: item["IMAGE"] || "",
-        Discount: parseFloat(item["DISCOUNT(%)"]) || 0,
-        Food_Type:
-          item["FOOD_TYPE(0=Veg | 1=Nonveg)"] == 1
-            ? "Non-Vegetarian"
-            : "Vegetarian",
-      };
+          Discount: parseFloat(item["DISCOUNT"]) || 0,
+  Food_Type: item["FOOD_TYPE"] == 1 ? "Non-Vegetarian" : "Vegetarian"
+};
+
+      //   Discount: parseFloat(item["DISCOUNT(%)"]) || 0,
+      //   Food_Type:
+      //     item["FOOD_TYPE(0=Veg | 1=Nonveg)"] == 1
+      //       ? "Non-Vegetarian"
+      //       : "Vegetarian",
+      // };
+
 
       const menuItem = new MenuModel(newItem);
       await menuItem.save();

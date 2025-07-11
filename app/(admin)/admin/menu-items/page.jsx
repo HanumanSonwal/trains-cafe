@@ -121,21 +121,42 @@ const TablePage = () => {
     setIsMenuItemModalOpen(true);
   };
 
-  const handleStatusChange = async (checked, key) => {
-    try {
-      await axios.put(`/api/menu?id=${key}`, {
-        status: checked ? true : false,
-      });
-      const updatedData = data.map((item) =>
-        item.key === key ? { ...item, status: checked ? "1" : "0" } : item
-      );
-      setData(updatedData);
-      setFilteredData(updatedData);
-      message.success("Menu item status updated successfully");
-    } catch (error) {
-      message.error("Failed to update status");
-    }
-  };
+  // const handleStatusChange = async (checked, key) => {
+  //   try {
+  //     await axios.put(`/api/menu?id=${key}`, {
+  //       status: checked ? true : false,
+  //     });
+  //     const updatedData = data.map((item) =>
+  //       item.key === key ? { ...item, status: checked ? "1" : "0" } : item
+  //     );
+  //     setData(updatedData);
+  //     setFilteredData(updatedData);
+  //     message.success("Menu item status updated successfully");
+  //   } catch (error) {
+  //     message.error("Failed to update status");
+  //   }
+  // };
+const handleStatusChange = async (checked, key) => {
+  try {
+    const formData = new FormData();
+    formData.append("status", checked ? "true" : "false");
+
+    await axios.put(`/api/menu?id=${key}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    const updatedData = data.map((item) =>
+      item.key === key ? { ...item, status: checked ? "1" : "0" } : item
+    );
+    setData(updatedData);
+    setFilteredData(updatedData);
+    message.success("Menu item status updated successfully");
+  } catch (error) {
+    message.error("Failed to update status");
+  }
+};
 
   const handleDeleteMenuItem = async (key) => {
     try {
