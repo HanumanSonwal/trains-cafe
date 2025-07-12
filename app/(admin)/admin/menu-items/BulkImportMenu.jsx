@@ -1,14 +1,27 @@
 "use client";
+
 import React, { useState } from "react";
-import { Button, Upload, message, Modal, Form, Row, Col } from "antd";
+import {
+  Button,
+  Upload,
+  message,
+  Modal,
+  Form,
+  Row,
+  Col,
+  Table,
+  Image,
+} from "antd";
 import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
 const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
-  const [fileList, setFileList] = useState([]);
+  const [uploadFileList, setUploadFileList] = useState([]); 
+  const [excelData, setExcelData] = useState([]); 
 
   const handleFileChange = (info) => {
-    const latestFileList = [...info.fileList].slice(-1); // only keep latest file
+    const latestFileList = [...info.fileList].slice(-1); 
+    setUploadFileList(latestFileList);
 
     const file = latestFileList[0];
     if (!file) return;
@@ -23,7 +36,8 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
       const ws = wb.Sheets[wsname];
 
       const jsonData = XLSX.utils.sheet_to_json(ws, { defval: "" });
-      setFileList(jsonData);
+      setExcelData(jsonData);
+
       if (jsonData.length) {
         console.log("✅ Excel Data:", jsonData);
       } else {
@@ -35,12 +49,13 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
   };
 
   const handleSubmit = () => {
-    if (!fileList.length) {
+    if (!excelData.length) {
       message.error("Please upload a file before submitting.");
       return;
     }
 
-    if (onSubmit) onSubmit(fileList);
+    if (onSubmit) onSubmit(excelData);
+    handleClose(); 
   };
 
   const handleDownloadSampleCSV = () => {
@@ -59,12 +74,10 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
         "DESCRIPTION",
         "GROUP_ID",
       ],
-      ["", "", "", "", "", "", "", "", "", generatedId],
+      ["1", "1", "1", "Sample Item", "https://", "0", "100", "10", "Desc", generatedId],
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
-    // worksheet["!cols"] = Array(sampleData[0].length).fill({});
-
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "SampleMenu");
 
@@ -82,13 +95,43 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
     document.body.removeChild(link);
   };
 
+  const handleClose = () => {
+    setUploadFileList([]);
+    setExcelData([]);
+    if (onCancel) onCancel();
+  };
+
+  const columns = [
+    {
+      title: "Item Name",
+      dataIndex: "ITEM_NAME",
+      key: "ITEM_NAME",
+    },
+    {
+      title: "Image",
+      dataIndex: "IMAGE",
+      key: "IMAGE",
+      render: (url) => (url ? <Image src={url} width={50} /> : "-"),
+    },
+    {
+      title: "Price",
+      dataIndex: "PRICE",
+      key: "PRICE",
+    },
+    {
+      title: "Group ID",
+      dataIndex: "GROUP_ID",
+      key: "GROUP_ID",
+    },
+  ];
+
   return (
     <Modal
       title="📦 Bulk Import Menu Items"
       open={open}
-      onCancel={onCancel}
+      onCancel={handleClose}
       footer={[
-        <Button key="cancel" onClick={onCancel}>
+        <Button key="cancel" onClick={handleClose}>
           Cancel
         </Button>,
         <Button
@@ -107,15 +150,16 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
           Import
         </Button>,
       ]}
+      width={900}
     >
       <Form layout="vertical">
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item label="Upload File (.xlsx)">
               <Upload
-                fileList={fileList}
+                fileList={uploadFileList}
                 onChange={handleFileChange}
-                beforeUpload={() => false} // prevent auto-upload
+                beforeUpload={() => false}
                 accept=".xlsx"
                 maxCount={1}
               >
@@ -123,6 +167,19 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
               </Upload>
             </Form.Item>
           </Col>
+
+          {excelData.length > 0 && (
+            <Col span={24}>
+              <Table
+                columns={columns}
+                dataSource={excelData}
+                pagination={false}
+                scroll={{ y: 300 }} 
+                rowKey={(row, index) => index}
+                size="small"
+              />
+            </Col>
+          )}
         </Row>
       </Form>
     </Modal>
