@@ -1,18 +1,42 @@
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//     images: {
+//         domains: ["localhost", "res.cloudinary.com"],
+//     },
+//     swcMinify: true,
+//     output: "standalone",
+//     eslint: {
+//         // Warning: This allows production builds to successfully complete even if
+//         // your project has ESLint errors.
+//         ignoreDuringBuilds: true,
+//     },
+// };
+
+// export default nextConfig;
+
+
+// next.config.mjs
+
+import pwa from 'next-pwa';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        domains: ["localhost", "res.cloudinary.com"],
-    },
-    swcMinify: true,
-    output: "standalone",
-    eslint: {
-        // Warning: This allows production builds to successfully complete even if
-        // your project has ESLint errors.
-        ignoreDuringBuilds: true,
-    },
+  images: {
+    domains: ['localhost', 'res.cloudinary.com'],
+  },
+  swcMinify: true,
+  output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
-export default nextConfig;
+// PWA config wrap karo
+export default pwa({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+})(nextConfig);
 
 
 

@@ -174,11 +174,12 @@
 // }
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   PhoneOutlined,
   WhatsAppOutlined,
   ShoppingCartOutlined,
+  DownloadOutlined,
   DeleteFilled,
 } from '@ant-design/icons';
 import { Badge, Modal, Button } from 'antd';
@@ -191,8 +192,10 @@ import {
 
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const dispatch = useDispatch();
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
 
+  const dispatch = useDispatch();
   const cartItemsRaw = useSelector((state) => state.cart.items);
   const cartItems = Array.isArray(cartItemsRaw) ? cartItemsRaw : [];
   const totalUniqueItems = cartItems.length;
@@ -236,6 +239,35 @@ export default function Header() {
     return total + item.price * item.quantity;
   }, 0);
 
+  // ✅ Setup for Install App button
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+
+    setDeferredPrompt(null);
+    setShowInstall(false);
+  };
+
   return (
     <div className="sticky top-0 z-50 mx-auto">
       <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
@@ -243,7 +275,18 @@ export default function Header() {
           <Link href="/">
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
-          <div className="relative">
+          <div className="flex items-center gap-4">
+            {/* ✅ Install App Button */}
+            {showInstall && (
+              <button
+                onClick={handleInstallClick}
+                className="install-button text-[#6F4D27]"
+                title="Install App"
+              >
+                <DownloadOutlined style={{ fontSize: '24px' }} />
+              </button>
+            )}
+
             <button className="cart-button" onClick={toggleCart}>
               <Badge count={totalUniqueItems} showZero>
                 <ShoppingCartOutlined style={{ fontSize: '24px' }} />
@@ -263,18 +306,38 @@ export default function Header() {
         <ul>
           {totalUniqueItems > 0 ? (
             cartItems.map((item) => (
-              <li key={item._id} className="flex justify-between items-center py-4 border-b border-gray-300">
+              <li
+                key={item._id}
+                className="flex justify-between items-center py-4 border-b border-gray-300"
+              >
                 <div className="flex items-center gap-4">
-                  <img src={item.image} alt={item.name} className="h-16 w-16 object-cover rounded-md" />
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-16 w-16 object-cover rounded-md"
+                  />
                   <div className="flex flex-col">
-                    <span className="font-semibold" style={{ color: '#6F4D27' }}>{item.name}</span>
-                    <span className="text-sm text-gray-500">₹{item.price}</span>
-                    <span className="text-sm text-gray-500 font-bold">Total: ₹{(item.price * item.quantity).toFixed(2)}</span>
+                    <span
+                      className="font-semibold"
+                      style={{ color: '#6F4D27' }}
+                    >
+                      {item.name}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      ₹{item.price}
+                    </span>
+                    <span className="text-sm text-gray-500 font-bold">
+                      Total: ₹{(item.price * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
-                    style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                    style={{
+                      backgroundColor: '#FAF3CC',
+                      borderColor: '#D6872A',
+                      color: '#6F4D27',
+                    }}
                     onClick={() => handleDecreaseQuantity(item)}
                     className="rounded-full w-8 h-8 flex justify-center items-center transition-all duration-300 transform hover:scale-110"
                     size="small"
@@ -283,14 +346,22 @@ export default function Header() {
                   </Button>
                   <span className="mx-2 font-semibold">{item.quantity}</span>
                   <Button
-                    style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                    style={{
+                      backgroundColor: '#FAF3CC',
+                      borderColor: '#D6872A',
+                      color: '#6F4D27',
+                    }}
                     onClick={() => handleIncreaseQuantity(item)}
                     className="rounded-full w-8 h-8 flex justify-center items-center transition-all duration-300 transform hover:scale-110"
                     size="small"
                   >
                     +
                   </Button>
-                  <Button onClick={() => handleDeleteItem(item)} icon={<DeleteFilled />} danger />
+                  <Button
+                    onClick={() => handleDeleteItem(item)}
+                    icon={<DeleteFilled />}
+                    danger
+                  />
                 </div>
               </li>
             ))
@@ -301,14 +372,20 @@ export default function Header() {
 
         {totalUniqueItems > 0 && (
           <div className="mt-4">
-            <span className="text-xl font-bold">Total: ₹ {totalPrice.toFixed(2)}</span>
+            <span className="text-xl font-bold">
+              Total: ₹ {totalPrice.toFixed(2)}
+            </span>
             <div className="flex justify-between mt-4">
               <Link href="/cart">
                 <Button
                   type="primary"
                   className="w-full mr-2"
                   onClick={handleClose}
-                  style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                  style={{
+                    backgroundColor: '#FAF3CC',
+                    borderColor: '#D6872A',
+                    color: '#6F4D27',
+                  }}
                 >
                   Go to Cart
                 </Button>
@@ -318,7 +395,11 @@ export default function Header() {
                   type="primary"
                   className="w-full"
                   onClick={handleClose}
-                  style={{ backgroundColor: '#FAF3CC', borderColor: '#D6872A', color: '#6F4D27' }}
+                  style={{
+                    backgroundColor: '#FAF3CC',
+                    borderColor: '#D6872A',
+                    color: '#6F4D27',
+                  }}
                 >
                   Checkout
                 </Button>

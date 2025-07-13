@@ -262,24 +262,24 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
         </Row>
 
         <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="Weekly_Off"
-              label="Weekly Off"
-              rules={[{ required: true, message: "Weekly off is required" }]}
-            >
-              <Select placeholder="Select weekly off">
-                <Option value="">No Weekly Off</Option>
-                <Option value="Monday">Monday</Option>
-                <Option value="Tuesday">Tuesday</Option>
-                <Option value="Wednesday">Wednesday</Option>
-                <Option value="Thursday">Thursday</Option>
-                <Option value="Friday">Friday</Option>
-                <Option value="Saturday">Saturday</Option>
-                <Option value="Sunday">Sunday</Option>
-              </Select>
-            </Form.Item>
-          </Col>
+      <Col span={12}>
+  <Form.Item
+    name="Weekly_Off"
+    label="Weekly Off"
+  >
+    <Select placeholder="Select weekly off" defaultValue="">
+      <Option value="">No Weekly Off</Option>
+      <Option value="Monday">Monday</Option>
+      <Option value="Tuesday">Tuesday</Option>
+      <Option value="Wednesday">Wednesday</Option>
+      <Option value="Thursday">Thursday</Option>
+      <Option value="Friday">Friday</Option>
+      <Option value="Saturday">Saturday</Option>
+      <Option value="Sunday">Sunday</Option>
+    </Select>
+  </Form.Item>
+</Col>
+
           <Col span={12}>
             <Form.Item
               name="Food_Type"
