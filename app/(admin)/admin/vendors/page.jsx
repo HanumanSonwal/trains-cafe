@@ -221,12 +221,22 @@ const VendorsManagement = () => {
         return <span style={{ color }}>{Food_Type || "N/A"}</span>;
       },
     },
-    {
-      title: "Weekly Off",
-      dataIndex: "Weekly_Off",
-      key: "weekly_off",
-      render: (val) => val || "N/A",
-    },
+{
+  title: "Weekly Off",
+  dataIndex: "Weekly_Off",
+  key: "weekly_off",
+  render: (val) => {
+    if (!val) return "N/A";
+    return val
+      .split("_")
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(" ");
+  },
+}
+,
     {
       title: "Working Time",
       dataIndex: "Working_Time",
