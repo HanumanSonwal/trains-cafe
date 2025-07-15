@@ -43,4 +43,4 @@ VendorSchema.pre("save", async function (next) {
 });
 
 
-export default mongoose.models.Vendor || mongoose.model("Vendor", VendorSchema);
+export default mongoose.models.vendor || mongoose.model("vendor", VendorSchema);
