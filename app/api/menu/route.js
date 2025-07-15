@@ -143,67 +143,116 @@ export async function GET(req) {
     );
   }
 }
-export async function POST(req) {
-  try {
-    const formData = await req.formData();
-    const body = Object.fromEntries(formData.entries());
+// export async function POST(req) {
+//   try {
+//     const formData = await req.formData();
+//     const body = Object.fromEntries(formData.entries());
 
-    // Ensure Group_Id is provided
-    // if (!body.Group_Id) {
-    //   return new Response(
-    //     JSON.stringify({ success: false, message: 'Group_Id is required' }),
-    //     { status: 400 }
-    //   );
-    // }
-    if (!body.Group_Id) {
-      // Generate a unique Group_Id, for example using Date.now() and Math.random()
-      const uniqueId = `group_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      body.Group_Id = uniqueId;
-    }
+//     // Ensure Group_Id is provided
+//     // if (!body.Group_Id) {
+//     //   return new Response(
+//     //     JSON.stringify({ success: false, message: 'Group_Id is required' }),
+//     //     { status: 400 }
+//     //   );
+//     // }
+//     if (!body.Group_Id) {
+//       // Generate a unique Group_Id, for example using Date.now() and Math.random()
+//       const uniqueId = `group_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+//       body.Group_Id = uniqueId;
+//     }
     
-    await dbConnect();
+//     await dbConnect();
 
-    // Check if there are already menu items with the same Group_Id
-    const existingMenu = await MenuModel.find({ Group_Id: body.Group_Id });
+//     // Check if there are already menu items with the same Group_Id
+//     const existingMenu = await MenuModel.find({ Group_Id: body.Group_Id });
 
-    if (existingMenu.length > 0) {
-      // Delete the older entries with the same Group_Id
-      await MenuModel.deleteMany({ Group_Id: body.Group_Id });
+//     if (existingMenu.length > 0) {
+//       // Delete the older entries with the same Group_Id
+//       await MenuModel.deleteMany({ Group_Id: body.Group_Id });
 
-      // Replace the existing data with the new one
-      const newMenu = new MenuModel(body);
-      await newMenu.save();
+//       // Replace the existing data with the new one
+//       const newMenu = new MenuModel(body);
+//       await newMenu.save();
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: 'Existing menu replaced with new data.',
-          data: newMenu,
-        }),
-        { status: 201 }
-      );
-    } else {
-      // If no existing menu found with the same Group_Id, create a new one
-      const newMenu = new MenuModel(body);
-      await newMenu.save();
+//       return new Response(
+//         JSON.stringify({
+//           success: true,
+//           message: 'Existing menu replaced with new data.',
+//           data: newMenu,
+//         }),
+//         { status: 201 }
+//       );
+//     } else {
+//       // If no existing menu found with the same Group_Id, create a new one
+//       const newMenu = new MenuModel(body);
+//       await newMenu.save();
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: 'New menu created successfully.',
-          data: newMenu,
-        }),
-        { status: 201 }
-      );
-    }
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ success: false, message: error.message }),
-      { status: 500 }
-    );
-  }
-}
+//       return new Response(
+//         JSON.stringify({
+//           success: true,
+//           message: 'New menu created successfully.',
+//           data: newMenu,
+//         }),
+//         { status: 201 }
+//       );
+//     }
+//   } catch (error) {
+//     return new Response(
+//       JSON.stringify({ success: false, message: error.message }),
+//       { status: 500 }
+//     );
+//   }
+// }
 
+
+
+// export async function POST(req) {
+//   try {
+//     const formData = await req.formData();
+//     const body = Object.fromEntries(formData.entries());
+
+//     // ✅ Generate Group_Id if not present
+//     if (!body.Group_Id) {
+//       const uniqueId = `group_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+//       body.Group_Id = uniqueId;
+//     }
+
+//     await dbConnect();
+
+//     // ✅ Manual parsing of number fields
+//     body.Price = parseFloat(body.Price || "0");
+//     body.Discount = parseFloat(body["Discount"] || body["Discount(%)"] || "0");
+//     body.Category_Id = new mongoose.Types.ObjectId(body.Category_Id);
+//     body.Vendor = new mongoose.Types.ObjectId(body.Vendor);
+//     body.Station = new mongoose.Types.ObjectId(body.Station);
+//     body.Food_Type = body.Food_Type || "Vegetarian"; // fallback default
+
+    
+//     // Clean any odd field names
+//     delete body["Discount(%)"];
+
+//     // ✅ Delete existing if Group_Id matches
+//     await MenuModel.deleteMany({ Group_Id: body.Group_Id });
+
+//     const newMenu = new MenuModel(body);
+//     await newMenu.save();
+
+//     return new Response(
+//       JSON.stringify({
+//         success: true,
+//         message: "Menu item saved successfully",
+//         data: newMenu,
+//       }),
+//       { status: 201 }
+//     );
+//   } catch (error) {
+//     console.error("Menu POST error:", error);
+//     return new Response(
+//       JSON.stringify({ success: false, message: error.message }),
+//       { status: 500 }
+//     );
+//   }
+// }
 
 // export async function POST(req) {
 //   try {
@@ -254,48 +303,108 @@ export async function POST(req) {
 //       { status: 500 }
 //     );
 //   }
+// // }
+// export async function PUT(req) {
+//   try {
+//     const { searchParams } = new URL(req.url);
+//     const id = searchParams.get("id");
+
+//     if (!id) {
+//       return new Response(JSON.stringify({ success: false, message: "Menu ID is required" }), { status: 400 });
+//     }
+
+//     const formData = await req.formData();
+//     const statusValue = formData.get("status")?.trim(); // ✅ Trim the string
+//     const status = statusValue === "true" || statusValue === "True";
+
+//     await dbConnect();
+
+//     const updatedMenu = await MenuModel.findByIdAndUpdate(
+//       id,
+//       { status }, // ✅ Only updating this field
+//       { new: true }
+//     );
+
+//     if (!updatedMenu) {
+//       return new Response(JSON.stringify({ success: false, message: "Menu not found" }), { status: 404 });
+//     }
+
+//     return new Response(
+//       JSON.stringify({
+//         success: true,
+//         message: "Menu status updated successfully",
+//         data: updatedMenu,
+//       }),
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     return new Response(
+//       JSON.stringify({ success: false, message: error.message }),
+//       { status: 500 }
+//     );
+//   }
 // }
-export async function PUT(req) {
+
+
+
+export async function POST(req) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return new Response(JSON.stringify({ success: false, message: "Menu ID is required" }), { status: 400 });
-    }
-
     const formData = await req.formData();
-    const statusValue = formData.get("status")?.trim(); // ✅ Trim the string
-    const status = statusValue === "true" || statusValue === "True";
+    const body = Object.fromEntries(formData.entries());
+
+    // ✅ Generate Group_Id if not present
+    if (!body.Group_Id) {
+      const uniqueId = `group_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      body.Group_Id = uniqueId;
+    }
 
     await dbConnect();
 
-    const updatedMenu = await MenuModel.findByIdAndUpdate(
-      id,
-      { status }, // ✅ Only updating this field
-      { new: true }
-    );
+    // ✅ Parse numeric and boolean fields
+    body.Price = parseFloat(body.Price || "0");
+    body.Discount = parseFloat(body.Discount || body["Discount(%)"] || "0");
+    delete body["Discount(%)"];
 
-    if (!updatedMenu) {
-      return new Response(JSON.stringify({ success: false, message: "Menu not found" }), { status: 404 });
+    if (body.status) {
+      const statusStr = body.status.toString().trim().toLowerCase();
+      body.status = statusStr === "true" || statusStr === "1";
+    } else {
+      body.status = false;
     }
+
+    // ✅ Convert IDs to ObjectId
+    if (body.Category_Id) body.Category_Id = new mongoose.Types.ObjectId(body.Category_Id);
+    if (body.Vendor) body.Vendor = new mongoose.Types.ObjectId(body.Vendor);
+    if (body.Station) body.Station = new mongoose.Types.ObjectId(body.Station);
+
+    // ✅ Normalize Food_Type
+    if (body.Food_Type === "0") body.Food_Type = "Vegetarian";
+    else if (body.Food_Type === "1") body.Food_Type = "Non-Vegetarian";
+    else if (!body.Food_Type) body.Food_Type = "Vegetarian";
+
+    // ✅ Remove previous data with same Group_Id
+    await MenuModel.deleteMany({ Group_Id: body.Group_Id });
+
+    const newMenu = new MenuModel(body);
+console.log("Saving Menu Item with data:", body); // <--- 🔍 Debug log
+await newMenu.save();
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Menu status updated successfully",
-        data: updatedMenu,
+        message: "Menu item saved successfully",
+        data: newMenu,
       }),
-      { status: 200 }
+      { status: 201 }
     );
   } catch (error) {
+    console.error("Menu POST error:", error);
     return new Response(
       JSON.stringify({ success: false, message: error.message }),
       { status: 500 }
     );
   }
 }
-
 
 
 export async function DELETE(req) {
@@ -315,5 +424,53 @@ export async function DELETE(req) {
     return new Response(JSON.stringify({ success: true, message: 'Menu deleted successfully' }), { status: 200 });
   } catch (error) {
     return new Response(JSON.stringify({ success: false, message: error.message }), { status: 500 });
+  }
+}
+
+export async function PUT(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Menu ID is required" }),
+        { status: 400 }
+      );
+    }
+
+    const formData = await req.formData();
+    const statusValue = formData.get("status")?.trim();
+    const status = statusValue === "true" || statusValue === "True";
+
+    await dbConnect();
+
+    const updatedMenu = await MenuModel.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedMenu) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Menu not found" }),
+        { status: 404 }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Menu status updated successfully",
+        data: updatedMenu,
+      }),
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating menu status:", error);
+    return new Response(
+      JSON.stringify({ success: false, message: error.message }),
+      { status: 500 }
+    );
   }
 }

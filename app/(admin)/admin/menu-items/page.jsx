@@ -249,7 +249,7 @@ const handleStatusChange = async (checked, key) => {
       title: "Discount",
       dataIndex: "Discount",
       key: "Discount",
-      render: (discount) => `${discount}%`,
+      render: (discount) => `${discount}`,
     },
 {
   title: "Status",

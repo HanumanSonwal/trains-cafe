@@ -29,11 +29,11 @@ const OrdersTable = () => {
 
       if (result.success) {
         const mappedData = result.docs.map(order => ({
-          key: order._id,
+          //key: order._id,
           orderID: order._id,
           date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
           admin: "Admin",
-          vendor: order?.vendor || 'N/A',
+          vendor: order?.Vendor_Name || 'N/A',
           amount: order.total,
           contact: order?.user_details?.mobile || 'N/A',
           details: `${order?.subTotal || 0} (₹)`,
@@ -71,11 +71,11 @@ const OrdersTable = () => {
   };
 
   const columns = [
-    {
-      title: '#',
-      dataIndex: 'key',
-      key: 'key',
-    },
+    // {
+    //  // title: '#',
+    //   dataIndex: 'key',
+    //   key: 'key',
+    // },
     {
       title: 'Order ID',
       dataIndex: 'orderID',

@@ -74,7 +74,8 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const OrderSchema = new mongoose.Schema(
   {
-    vendor: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "vendors" },
+   vendor: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "vendor" },
+
     station: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "stations" },
 
     train: {
