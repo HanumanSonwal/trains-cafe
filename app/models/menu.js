@@ -69,7 +69,7 @@ const MenuSchema = new mongoose.Schema(
     GroupId: { type: String },
     status: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   {

@@ -55,7 +55,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
         "IMAGE",
         "FOOD_TYPE(0=Veg | 1=Nonveg)",
         "PRICE",
-        "DISCOUNT(%)",
+        "DISCOUNT",
         "DESCRIPTION",
         "GROUP_ID",
       ],
