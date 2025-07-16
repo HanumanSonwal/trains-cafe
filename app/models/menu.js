@@ -43,7 +43,7 @@ const MenuSchema = new mongoose.Schema(
     Vendor: { 
         type: mongoose.Schema.Types.ObjectId, // Change to ObjectId for referencing
         required: true,
-        ref: 'Vendor' // Use correct model name (capitalized)
+        ref: 'vendor' // Use correct model name (capitalized)
     },
     Price: {
       type: Number, // Changed to Number for price calculations
