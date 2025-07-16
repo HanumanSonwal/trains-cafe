@@ -17,12 +17,12 @@
 
 // next.config.mjs
 
-import pwa from 'next-pwa';
+import pwa from 'next-pwa'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'res.cloudinary.com'],
+    domains: ['localhost', 'res.cloudinary.com', 'images.pexels.com'],
   },
   swcMinify: true,
   output: 'standalone',
