@@ -81,7 +81,7 @@ const StepSection = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 text-center relative">
-      {/* Background decorative image */}
+      
       <img
         src="/images/Process.png"
         alt="Process"
@@ -103,7 +103,7 @@ const StepSection = () => {
             <img
               src={step.image}
               alt={step.title}
-              className="h-16 mb-3 transition-transform duration-300 group-hover:scale-110"
+              className="h-24 mb-3 transition-transform duration-300 group-hover:scale-110"
             />
             <p className="text-xs sm:text-sm font-semibold text-[#3A3A3A]">{step.title}</p>
           </div>
