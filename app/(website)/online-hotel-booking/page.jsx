@@ -296,7 +296,7 @@ const OnlineHotelBooking = () => {
       </div>
 
       {/* Footer Section */}
-      <footer className="bg-coffee-600 text-white py-4 px-4">
+      <footer className="bg-coffee-600 text-white  px-4">
         <div className="text-center">
           <p style={{ color: "#704d25" }} className="text-sm font-bold">
             For reservations or assistance, Call us at:{" "}

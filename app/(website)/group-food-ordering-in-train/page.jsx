@@ -456,7 +456,7 @@ const BulkOrderForm = () => {
           
         </div>
       </div>
-      <footer className=" text-white py-4 px-4">
+      <footer className=" text-white px-4">
         <div className="text-center">
           <span style={{ color: "#704d25" }} className="text-sm">
             Need help? Contact us at:

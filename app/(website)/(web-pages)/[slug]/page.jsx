@@ -88,7 +88,7 @@ export default function Page({ params }) {
       </div>
 
       {/* Footer Section */}
-      <footer className="bg-coffee-600 text-white py-6 mt-8">
+      <footer className="bg-coffee-600 text-white py-6">
         <div style={{color:'#704d25'}} className="text-center text-sm">
           <p>
             Need help? Reach us at{" "}

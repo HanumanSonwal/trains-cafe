@@ -77,7 +77,7 @@ const MobileFooter = () => {
             <nav className="space-y-4">
               {/* <Link href="/profile" className="block text-sm font-bold" onClick={closeMenu}>Profile</Link> */}
               {/* <Link href="/comingsoon" className="block text-sm font-bold" onClick={closeMenu}>My Orders</Link> */}
-              <Link href="/bulkorder" className="block text-sm font-bold" onClick={closeMenu}>Group Order</Link>
+              <Link href="/group-food-ordering-in-train" className="block text-sm font-bold" onClick={closeMenu}>Group Food Ordering in Train</Link>
               <Link href="/contactus" className="block text-sm font-bold" onClick={closeMenu}>Contact Us</Link>
               <Link href="/about-us" className="block text-sm font-bold" onClick={closeMenu}>About Us</Link>
               <Link href="/blog" className="block text-sm font-bold" onClick={closeMenu}>Blog</Link>
@@ -88,12 +88,15 @@ const MobileFooter = () => {
               <Link href="/terms-and-conditions" className="block text-sm font-bold" onClick={closeMenu}>Terms & Conditions</Link>
               <Link href="/privacy-policy" className="block text-sm font-bold" onClick={closeMenu}>Privacy Policy</Link>
               <Link href="/cancellation-policy" className="block text-sm font-bold" onClick={closeMenu}>Cancellation Policy</Link>
-              <Link href="/complained-and-feedback" className="block text-sm font-bold" onClick={closeMenu}>Feedback</Link>
+              {/* <Link href="/complained-and-feedback" className="block text-sm font-bold" onClick={closeMenu}>Feedback</Link> */}
               
               <div className="mt-4">
                 <p className="text-sm font-bold">Contact Info</p>
-                <p className="text-sm">+91-09090909090</p>
-                <p className="text-sm">Trainscafe.com</p>
+                <p className="text-sm"><a class="font-medium text-sm text-blue-600 hover:text-blue-800 underline" href="tel:+918696963496">+91-8696963496</a></p>
+                
+                <p className="text-sm"><a class="font-medium text-sm text-blue-600 hover:text-blue-800 underline" href="support@trainscafe.in">support@trainscafe.in</a></p>
+                
+                
               </div>
             </nav>
           </div>

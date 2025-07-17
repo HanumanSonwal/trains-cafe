@@ -334,7 +334,7 @@ const OnlineCoolieBooking = () => {
           <b> Our support team is available 24x7 to assist you.</b>
         </p>
       </div>
-      <footer className="bg-coffee-600 text-white py-6 px-4">
+      <footer className="bg-coffee-600 text-white py-4 px-4">
         <div className="text-center">
           <p style={{ color: "#704d25" }} className="text-sm">
             Need immediate assistance? Call us at:{" "}

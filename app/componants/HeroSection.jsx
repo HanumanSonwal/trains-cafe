@@ -30,11 +30,11 @@ const HeroSection = () => {
       <div className="absolute top-0 left-0 w-full h-full">
         <div className="p-3">
           <div className="text-left mt-9 md:mt-14 mx-auto relative">
-            <img
+            {/* <img
               src="/images/Tastyfood.png"
               alt="Hero Title Background"
               className="absolute transform -translate-y-1/2"
-            />
+            /> */}
 
             <h2 className="text-white font-bold relative se-list-font-family">
               Best Online <br /> Food Delivery  in Train 

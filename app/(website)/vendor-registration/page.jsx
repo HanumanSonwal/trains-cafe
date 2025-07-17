@@ -532,7 +532,7 @@ const VendorRegistration = () => {
         </div>
       </div>
 
-      <footer className="bg-coffee-600 text-white py-4">
+      <footer className="bg-coffee-600 text-white px-4">
         <div style={{ color: "#704d25" }} className="text-center text-sm">
           <p>
             Need help? Reach us at{" "}
