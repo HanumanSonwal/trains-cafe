@@ -285,19 +285,23 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
 
 </Col>
 
-          <Col span={12}>
-            <Form.Item
-              name="Food_Type"
-              label="Food Type"
-              rules={[{ required: true, message: "Food type is required" }]}
-            >
-              <Select placeholder="Select food type">
-                <Option value="Veg & Non-Veg">Veg & Non-Veg</Option>
-                <Option value="Veg">Veg</Option>
-                <Option value="Non-Veg">Non-Veg</Option>
-              </Select>
-            </Form.Item>
-          </Col>
+      <Col span={12}>
+  <Form.Item
+    name="Food_Type"
+    label="Food Type"
+    rules={[{ required: true, message: "Food type is required" }]}
+  >
+    <Select
+      mode="multiple"
+      placeholder="Select food type"
+      allowClear
+    >
+      <Option value="Vegetarian">Vegetarian</Option>
+      <Option value="Non-Vegetarian">Non-Vegetarian</Option>
+    </Select>
+  </Form.Item>
+</Col>
+
         </Row>
         <Form.Item
           name="Address"

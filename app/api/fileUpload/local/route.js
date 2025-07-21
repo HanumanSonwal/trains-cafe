@@ -94,10 +94,49 @@ function toNodeReadable(stream) {
   return Readable.from(stream);
 }
 
+// export async function POST(req) {
+//   try {
+//     const formData = await req.formData();
+//     const file = formData.get("file");
+
+//     if (!file) {
+//       throw new Error("No file found in the request");
+//     }
+
+//     const extension = path.extname(file.name);
+//     const uniqueName = crypto.randomBytes(16).toString("hex") + extension;
+
+
+//     const fileStream = toNodeReadable(file.stream());
+
+
+//     const uploadResult = await new Promise((resolve, reject) => {
+//       const uploadStream = cloudinary.uploader.upload_stream(
+//         { folder: "trains-cafe/uploads", public_id: uniqueName },
+//         (error, result) => {
+//           if (error) reject(error);
+//           else resolve(result);
+//         }
+//       );
+//       fileStream.pipe(uploadStream);
+//     });
+
+//     return NextResponse.json({
+//       success: true,
+//       name: file.name,
+//       url: uploadResult.secure_url,
+//     });
+//   } catch (error) {
+//     return NextResponse.json({ success: false, message: error.message });
+//   }
+// }
+
+
 export async function POST(req) {
   try {
     const formData = await req.formData();
     const file = formData.get("file");
+    const folderName = formData.get("folderName"); // 👈 NEW
 
     if (!file) {
       throw new Error("No file found in the request");
@@ -106,13 +145,14 @@ export async function POST(req) {
     const extension = path.extname(file.name);
     const uniqueName = crypto.randomBytes(16).toString("hex") + extension;
 
-
     const fileStream = toNodeReadable(file.stream());
-
 
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: "trains-cafe/uploads", public_id: uniqueName },
+        {
+          folder: folderName || "trains-cafe/uploads", // 👈 dynamic!
+          public_id: uniqueName,
+        },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
@@ -130,5 +170,3 @@ export async function POST(req) {
     return NextResponse.json({ success: false, message: error.message });
   }
 }
-
-

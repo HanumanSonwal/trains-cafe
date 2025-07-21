@@ -14,6 +14,8 @@ const OrderConfirmation = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter(); 
 
+  console.log( orderData ,"orderData")
+
 
   useEffect(() => {
     const data = localStorage.getItem("orderData");
@@ -141,28 +143,28 @@ Total: ₹${orderData?.total}
           </Card>
 
           {/* Payment Summary Section */}
-          <Card className="mb-4 sm:mb-6 bg-gray-50">
-            <Title level={4} className="!text-lg sm:!text-xl mb-3 sm:mb-4">Payment Summary</Title>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex justify-between text-sm ">
-                <Text>Subtotal</Text>
-                <Text>₹{orderData.subTotal}</Text>
-              </div>
-              <div className="flex justify-between text-sm ">
-                <Text>Coupon Discount</Text>
-                <Text className="text-green-600">-₹{orderData.couponAmount}</Text>
-              </div>
-              <div className="flex justify-between text-sm ">
-                <Text>Tax</Text>
-                <Text>₹{orderData.payment.tax}</Text>
-              </div>
-              <Divider className="my-2 sm:my-3" />
-              <div className="flex justify-between text-sm ">
-                <Text strong>Total</Text>
-                <Text strong>₹{orderData.total}</Text>
-              </div>
-            </div>
-          </Card>
+   <Card className="mb-4 sm:mb-6 bg-gray-50">
+  <Title level={4} className="!text-lg sm:!text-xl mb-3 sm:mb-4">Payment Summary</Title>
+  <div className="space-y-2 sm:space-y-3">
+    <div className="flex justify-between text-sm ">
+      <Text>Subtotal</Text>
+      <Text>₹{Number(orderData.subTotal).toFixed(2)}</Text>
+    </div>
+    <div className="flex justify-between text-sm ">
+      <Text>Coupon Discount</Text>
+      <Text className="text-green-600">-₹{Number(orderData.couponAmount).toFixed(2)}</Text>
+    </div>
+    <div className="flex justify-between text-sm ">
+      <Text>Tax</Text>
+      <Text>₹{Number(orderData.payment.tax).toFixed(2)}</Text>
+    </div>
+    <Divider className="my-2 sm:my-3" />
+    <div className="flex justify-between text-sm ">
+      <Text strong>Total</Text>
+      <Text strong>₹{Number(orderData.total).toFixed(2)}</Text>
+    </div>
+  </div>
+</Card>
 
           {/* Action Buttons */}
           <div className="flex flex-col mt-2 sm:flex-row gap-3 sm:gap-4">

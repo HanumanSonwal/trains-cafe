@@ -20,6 +20,7 @@ const schema = z.object({
   email: z.string().email("Invalid email address").optional(),
   alternateMobile: z.string().optional(),
   pnr: z.string().length(10, "PNR must be exactly 10 digits"),
+  trainNo: z.string().min(1, "Train Number is required"), 
   coach: z.string().optional(),
   seatNo: z.string().optional(),
   instructions: z.string().optional(),
@@ -203,18 +204,32 @@ const CheckoutPage = () => {
     )}
   />
 
-  <Controller
-    name="pnr"
-    control={control}
-    defaultValue=""
-    render={({ field }) => (
-      <div className="mb-4">
-        <label className="block text-sm text-gray-700 mb-1">PNR</label>
-        <Input placeholder="Enter 10 Digit PNR" className="w-full" {...field} />
-        {errors.pnr && <span className="text-red-500 text-xs">{errors.pnr.message}</span>}
-      </div>
-    )}
-  />
+<Controller
+  name="pnr"
+  control={control}
+  defaultValue=""
+  render={({ field }) => (
+    <div className="mb-4">
+      <label className="block text-sm text-gray-700 mb-1">PNR</label>
+      <Input placeholder="Enter 10 Digit PNR" className="w-full" {...field} />
+      {errors.pnr && <span className="text-red-500 text-xs">{errors.pnr.message}</span>}
+    </div>
+  )}
+/>
+
+<Controller
+  name="trainNo"
+  control={control}
+  defaultValue=""
+  render={({ field }) => (
+    <div className="mb-4">
+      <label className="block text-sm text-gray-700 mb-1">Train Number</label>
+      <Input placeholder="Enter Train Number" className="w-full" {...field} />
+      {errors.trainNo && <span className="text-red-500 text-xs">{errors.trainNo.message}</span>}
+    </div>
+  )}
+/>
+
 
   <div className="flex flex-col sm:flex-row gap-2 mb-4">
     <Controller

@@ -8,6 +8,7 @@ import {
   Switch,
   Popconfirm,
   Spin,
+  Tag ,
 } from "antd";
 import {
   PlusOutlined,
@@ -209,18 +210,29 @@ const VendorsManagement = () => {
       key: "station",
       render: (val) => val || "N/A",
     },
-    {
-      title: "Food Type",
-      dataIndex: "Food_Type",
-      key: "food_type",
-      render: (Food_Type) => {
-        let color = "black";
-        if (Food_Type === "Veg") color = "green";
-        if (Food_Type === "Non-Veg") color = "red";
-        if (Food_Type === "Veg & Non-Veg") color = "orange";
-        return <span style={{ color }}>{Food_Type || "N/A"}</span>;
-      },
-    },
+{
+  title: "Food Type",
+  dataIndex: "Food_Type",
+  key: "food_type",
+  render: (Food_Type) => {
+    if (!Array.isArray(Food_Type) || Food_Type.length === 0) {
+      return <span>N/A</span>;
+    }
+
+    return (
+      <>
+        {Food_Type.map((type, index) => {
+          let color = type === "Vegetarian" ? "green" : "red";
+          return (
+            <Tag key={index} color={color}>
+              {type}
+            </Tag>
+          );
+        })}
+      </>
+    );
+  },
+},
 {
   title: "Weekly Off",
   dataIndex: "Weekly_Off",

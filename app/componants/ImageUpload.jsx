@@ -315,41 +315,134 @@
 
 // export default FileUploadComponent;
 
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
+// import { PlusOutlined } from "@ant-design/icons";
+// import { Upload, message, Image, Button } from "antd";
+
+// const FileUploadComponent = ({ url, setUrl, isreset }) => {
+//   const [fileList, setFileList] = useState([]);
+//   const [previewOpen, setPreviewOpen] = useState(false);
+//   const [previewImage, setPreviewImage] = useState("");
+
+//   // Reset fileList when form is reset
+//   useEffect(() => {
+//     if (isreset) {
+//       setFileList([]);
+//       setPreviewImage("");
+//       setUrl("");
+//     }
+//   }, [isreset]);
+
+
+//   useEffect(() => {
+//     if (url) {
+//       setFileList([
+//         {
+//           uid: "-1",
+//           name: "image.png",
+//           status: "done",
+//           url: url,
+//         },
+//       ]);
+//     }
+//   }, [url]);
+
+//   const handleFileUpload = async (file) => {
+//     const formData = new FormData();
+//     formData.append("file", file);
+
+//     try {
+//       const response = await fetch("/api/fileUpload/local", {
+//         method: "POST",
+//         body: formData,
+//       });
+
+//       const result = await response.json();
+
+//       if (result.success) {
+//         message.success("File uploaded successfully");
+//         setUrl(result.url);
+//       } else {
+//         message.error(result.message || "File upload failed");
+//       }
+//     } catch (error) {
+//       message.error("Error uploading file");
+//       console.error(error);
+//     }
+//   };
+
+//   const handleChange = ({ fileList: newFileList }) => {
+//     setFileList(newFileList);
+
+//     if (newFileList.length > 0 && newFileList[0].originFileObj) {
+//       handleFileUpload(newFileList[0].originFileObj);
+//     } else {
+//       setUrl(""); // Reset on remove
+//     }
+//   };
+
+//   const handlePreview = async (file) => {
+//     if (!file.url && !file.preview) {
+//       file.preview = await getBase64(file.originFileObj);
+//     }
+//     setPreviewImage(file.url || file.preview);
+//     setPreviewOpen(true);
+//   };
+
+//   return (
+//     <>
+//       <Upload
+//         listType="picture-card"
+//         fileList={fileList}
+//         onPreview={handlePreview}
+//         onChange={handleChange}
+//         beforeUpload={() => false} 
+//       >
+//         {fileList.length >= 1 ? null : (
+//           <Button icon={<PlusOutlined />}>Upload</Button>
+//         )}
+//       </Upload>
+
+//       {previewImage && (
+//         <Image
+//           preview={{
+//             visible: previewOpen,
+//             onVisibleChange: (visible) => setPreviewOpen(visible),
+//             afterOpenChange: (visible) => !visible && setPreviewImage(""),
+//           }}
+//           src={previewImage}
+//           wrapperStyle={{ display: "none" }}
+//         />
+//       )}
+//     </>
+//   );
+// };
+
+
+// const getBase64 = (file) =>
+//   new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result);
+//     reader.onerror = (error) => reject(error);
+//   });
+
+// export default FileUploadComponent;
+
+"use client";
+
+import React, { useState } from "react";
+import { Upload, message, Button, Input } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { Upload, message, Image, Button } from "antd";
 
-const FileUploadComponent = ({ url, setUrl, isreset }) => {
+const MultiFileUploadComponent = ({ onUploaded }) => {
   const [fileList, setFileList] = useState([]);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
+  const [folderName, setFolderName] = useState("");
 
-  // Reset fileList when form is reset
-  useEffect(() => {
-    if (isreset) {
-      setFileList([]);
-      setPreviewImage("");
-      setUrl("");
-    }
-  }, [isreset]);
-
-
-  useEffect(() => {
-    if (url) {
-      setFileList([
-        {
-          uid: "-1",
-          name: "image.png",
-          status: "done",
-          url: url,
-        },
-      ]);
-    }
-  }, [url]);
-
-  const handleFileUpload = async (file) => {
+  const handleUpload = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("folderName", `trains-cafe/vendors/${folderName}`);
 
     try {
       const response = await fetch("/api/fileUpload/local", {
@@ -360,71 +453,47 @@ const FileUploadComponent = ({ url, setUrl, isreset }) => {
       const result = await response.json();
 
       if (result.success) {
-        message.success("File uploaded successfully");
-        setUrl(result.url);
+        message.success(`Uploaded: ${file.name}`);
+        // Send uploaded URL back to parent
+        onUploaded(result.url);
       } else {
         message.error(result.message || "File upload failed");
       }
     } catch (error) {
       message.error("Error uploading file");
-      console.error(error);
     }
   };
 
-  const handleChange = ({ fileList: newFileList }) => {
+  const handleChange = ({ file, fileList: newFileList }) => {
     setFileList(newFileList);
 
-    if (newFileList.length > 0 && newFileList[0].originFileObj) {
-      handleFileUpload(newFileList[0].originFileObj);
-    } else {
-      setUrl(""); // Reset on remove
-    }
-  };
+    if (file.status === "removed") return;
 
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    if (file.originFileObj) {
+      handleUpload(file.originFileObj);
     }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
   };
 
   return (
     <>
+      <Input
+        placeholder="Vendor folder name"
+        value={folderName}
+        onChange={(e) => setFolderName(e.target.value)}
+        style={{ marginBottom: "1rem" }}
+      />
+
       <Upload
         listType="picture-card"
+        multiple
         fileList={fileList}
-        onPreview={handlePreview}
         onChange={handleChange}
-        beforeUpload={() => false} 
+        beforeUpload={() => false} // prevent auto upload
       >
-        {fileList.length >= 1 ? null : (
-          <Button icon={<PlusOutlined />}>Upload</Button>
-        )}
+        <Button icon={<PlusOutlined />}>Upload</Button>
       </Upload>
-
-      {previewImage && (
-        <Image
-          preview={{
-            visible: previewOpen,
-            onVisibleChange: (visible) => setPreviewOpen(visible),
-            afterOpenChange: (visible) => !visible && setPreviewImage(""),
-          }}
-          src={previewImage}
-          wrapperStyle={{ display: "none" }}
-        />
-      )}
     </>
   );
 };
 
-
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
-export default FileUploadComponent;
+export default MultiFileUploadComponent;

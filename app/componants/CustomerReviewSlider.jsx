@@ -69,7 +69,7 @@ const CustomerReviews = () => {
                   <div className="bg-white shadow-md rounded-lg p-8">
                     <div className="flex justify-between items-center mb-3">
                       <img
-                        src="/images/john-doe.png"
+                        src="/images/Review_icon.png"
                         alt={review.name}
                         className="w-10 h-10 rounded-full"
                       />

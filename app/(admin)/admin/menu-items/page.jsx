@@ -8,6 +8,7 @@ import {
   Popconfirm,
   Switch,
   Spin,
+  Tag,
 } from "antd";
 import {
   PlusOutlined,
@@ -120,21 +121,21 @@ const TablePage = () => {
     setEditingItem(record);
     setIsMenuItemModalOpen(true);
   };
-
 const handleStatusChange = async (checked, key) => {
   try {
-    const formData = new FormData();
-    formData.append("status", checked ? "true" : "false");
-
-    await axios.put(`/api/menu?id=${key}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    await axios.put(
+      `/api/menu?id=${key}`,
+      { status: checked }, 
+      {
+        headers: {
+          "Content-Type": "application/json", 
+        },
+      }
+    );
 
     message.success("Menu item status updated successfully");
 
-    // ✅ Properly re-fetch updated list:
+
     const { current, pageSize } = tableParams.pagination;
     fetchMenuItems(current, pageSize, searchText);
 
@@ -142,6 +143,7 @@ const handleStatusChange = async (checked, key) => {
     message.error("Failed to update status");
   }
 };
+
 
 
   const handleDeleteMenuItem = async (key) => {
@@ -223,11 +225,27 @@ const handleStatusChange = async (checked, key) => {
       dataIndex: "Category_Name",
       key: "Category",
     },
-    {
-      title: "Food Type",
-      dataIndex: "Food_Type",
-      key: "Category",
-    },
+{
+  title: "Food Type",
+  dataIndex: "Food_Type",
+  key: "Food_Type",
+  render: (type) => {
+    let color = "";
+
+    if (type === "Vegetarian") color = "green";
+    else if (type === "Non-Vegetarian") color = "volcano"; 
+    else if (type === "Vegan") color = "gold"; 
+
+    return type ? (
+      <Tag color={color}>{type}</Tag>
+    ) : (
+      <span>N/A</span>
+    );
+  },
+},
+
+
+
     {
       title: "Vendor",
       dataIndex: "Vendor_Name",

@@ -33,6 +33,8 @@ const MenuItemForm = ({
   const [imageError, setImageError] = useState("");
   const [isreset, setIsreset] = useState(false);
 
+
+
   useEffect(() => {
     const fetchCategories = async () => {
       const response = await fetchData("/api/categories");
@@ -88,43 +90,45 @@ const MenuItemForm = ({
     setIsreset(false);
   }, []);
 
-  const handleFinish = async (values) => {
-    if (!url) {
-      setImageError("Please upload an image.");
-      return;
-    } else {
-      setImageError("");
-    }
+const handleFinish = async (values) => {
+  if (!url) {
+    setImageError("Please upload an image.");
+    return;
+  } else {
+    setImageError("");
+  }
 
-    const formData = new FormData();
-    formData.append("Item_Name", values.Item_Name);
-    formData.append("Category_Id", values.Category_Id);
-    formData.append("Vendor", values.Vendor);
-    formData.append("Station", values.Station);
-    formData.append("Food_Type", values.Food_Type);
-    formData.append("Price", values.Price);
-    formData.append("Discount", values.Discount || "");
-    formData.append("Description", values.Description || "");
-    formData.append("image", url);
-
-    const urlPath = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
-    const method = initialValues ? updateData : postData;
-
-    try {
-      const response = await method(urlPath, formData);
-      if (response.success !== false) {
-        message.success(initialValues ? "Menu item updated successfully!" : "Menu item added successfully!");
-        fetchMenuItems();
-        form.resetFields();
-        setIsreset(true);
-        onCancel();
-      } else {
-        throw new Error(response.err || "Failed to save category");
-      }
-    } catch (error) {
-      message.error(error.message || "Something went wrong");
-    }
+  const body = {
+    Item_Name: values.Item_Name,
+    Category_Id: values.Category_Id,
+    Vendor: values.Vendor,
+    Station: values.Station,
+    Food_Type: values.Food_Type,
+    Price: parseFloat(values.Price),
+    Discount: parseFloat(values.Discount || "0"),
+    Description: values.Description || "",
+    image: url
   };
+
+  const urlPath = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
+  const method = initialValues ? updateData : postData;
+
+  try {
+    const response = await method(urlPath, body);
+    if (response.success !== false) {
+      message.success(initialValues ? "Menu item updated successfully!" : "Menu item added successfully!");
+      fetchMenuItems();
+      form.resetFields();
+      setIsreset(true);
+      onCancel();
+    } else {
+      throw new Error(response.err || "Failed to save menu item");
+    }
+  } catch (error) {
+    message.error(error.message || "Something went wrong");
+  }
+};
+
 
   return (
     <Modal
@@ -264,19 +268,21 @@ const MenuItemForm = ({
         </Row>
 
         <Row gutter={20}>
-          <Col span={12}>
-            <Form.Item
-              label="Food Type"
-              name="Food_Type"
-              rules={[{ required: true, message: "Food type is required" }]}
-            >
-              <Radio.Group>
-                <Radio value="Vegetarian">Veg</Radio>
-                <Radio value="Non-Vegetarian">Non-Veg</Radio>
-                <Radio value="Vegan">Vegan</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Col>
+<Col span={12}>
+  <Form.Item
+    label="Food Type"
+    name="Food_Type"
+    rules={[{ required: true, message: "Please select food type" }]}
+  >
+    <Select placeholder="Select food type" allowClear>
+      <Option value="Vegetarian">Vegetarian</Option>
+      <Option value="Non-Vegetarian">Non-Vegetarian</Option>
+
+    </Select>
+  </Form.Item>
+</Col>
+
+
           <Col span={12}>
             <Form.Item label="Image">
               <FileUploadComponent
