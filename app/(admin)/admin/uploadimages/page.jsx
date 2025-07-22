@@ -8,6 +8,7 @@ import {
   message,
   Input as AntdInput,
   Spin,
+  Select,
 } from "antd";
 import {
   PlusOutlined,
@@ -19,21 +20,61 @@ import {
 import axios from "axios";
 import UploadModal from "./UploadModal";
 
-const ImageTable = () => {
+const { Option } = Select;
+
+const ImageManager = () => {
+  const [folders, setFolders] = useState([]);
+  const [selectedFolder, setSelectedFolder] = useState("");
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingImage, setEditingImage] = useState(null);
   const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    pageSize: 10,
+    current: 1,
+    total: 0,
+  });
 
-  const fetchImages = async () => {
-    setLoading(true);
+  const fetchFolders = async () => {
     try {
-      const { data } = await axios.get(`/api/images?search=${searchText}`);
+      const { data } = await axios.get("/api/fileUpload/folders");
       if (data.success) {
-        setImages(data.images);
+        setFolders(data.folders);
       }
     } catch (err) {
+      console.error(err);
+      message.error("Failed to fetch folders");
+    }
+  };
+
+  const fetchImages = async (page = 1) => {
+    setLoading(true);
+    try {
+      const query = new URLSearchParams();
+      if (selectedFolder) {
+        query.append("folder", selectedFolder);
+      }
+      if (searchText) {
+        query.append("search", searchText);
+      }
+      query.append("page", page);
+      query.append("limit", pagination.pageSize);
+
+      const { data } = await axios.get(
+        `/api/fileUpload/list?${query.toString()}`
+      );
+
+      if (data.success) {
+        setImages(data.images);
+        setPagination({
+          ...pagination,
+          current: page,
+          total: data.total,
+        });
+      }
+    } catch (err) {
+      console.error(err);
       message.error("Failed to fetch images");
     } finally {
       setLoading(false);
@@ -41,15 +82,26 @@ const ImageTable = () => {
   };
 
   useEffect(() => {
-    fetchImages();
-  }, [searchText]);
+    fetchFolders();
+  }, []);
 
-  const handleDelete = async (id) => {
+  useEffect(() => {
+    fetchImages(1);
+  }, [selectedFolder, searchText]);
+
+  const handleDelete = async (public_id) => {
     try {
-      await axios.delete(`/api/images?id=${id}`);
-      message.success("Deleted successfully");
-      fetchImages();
-    } catch {
+      const res = await axios.delete(
+        `/api/fileUpload/delete?public_id=${public_id}`
+      );
+      if (res.data.success) {
+        message.success("Deleted successfully");
+        fetchImages(pagination.current);
+      } else {
+        throw new Error(res.data.message);
+      }
+    } catch (err) {
+      console.error(err);
       message.error("Delete failed");
     }
   };
@@ -73,7 +125,12 @@ const ImageTable = () => {
         <img
           src={url}
           alt="Uploaded"
-          style={{ width: 80, height: 50, borderRadius: 6, objectFit: "cover" }}
+          style={{
+            width: 80,
+            height: 50,
+            borderRadius: 6,
+            objectFit: "cover",
+          }}
         />
       ),
     },
@@ -85,7 +142,7 @@ const ImageTable = () => {
       title: "URL",
       dataIndex: "url",
       render: (url) => (
-        <div>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <AntdInput value={url} readOnly size="small" style={{ width: "80%" }} />
           <Button icon={<CopyOutlined />} onClick={() => handleCopy(url)} />
         </div>
@@ -98,11 +155,14 @@ const ImageTable = () => {
           <Button
             icon={<EditFilled />}
             onClick={() => handleEdit(record)}
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+            style={{
+              backgroundColor: "#D6872A",
+              borderColor: "#D6872A",
+            }}
           />
           <Popconfirm
             title="Delete image?"
-            onConfirm={() => handleDelete(record._id)}
+            onConfirm={() => handleDelete(record.public_id)}
           >
             <Button icon={<DeleteFilled />} danger />
           </Popconfirm>
@@ -112,16 +172,44 @@ const ImageTable = () => {
   ];
 
   return (
-    <div className="p-4" style={{ background: "#FAF3CC", borderRadius: 8 }}>
-      <div className="flex justify-between mb-4">
+    <div
+      className="p-4"
+      style={{
+        background: "#FAF3CC",
+        borderRadius: 8,
+      }}
+    >
+      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+        Image Manager
+      </h2>
+
+      <div className="flex justify-between items-center mb-4 gap-4">
+        <Select
+          placeholder="Select Folder"
+          style={{ minWidth: 200 }}
+          value={selectedFolder || undefined}
+          onChange={(value) => {
+            setSelectedFolder(value);
+            setPagination((prev) => ({ ...prev, current: 1 }));
+          }}
+          allowClear
+        >
+          {folders.map((folder) => (
+            <Option key={folder} value={folder}>
+              {folder}
+            </Option>
+          ))}
+        </Select>
+
         <AntdInput
-          placeholder="Search images"
+          placeholder="Search by name"
           allowClear
           prefix={<SearchOutlined />}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          style={{ maxWidth: 300, borderColor: "#D6872A" }}
+          style={{ maxWidth: 250, borderColor: "#D6872A" }}
         />
+
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -138,19 +226,25 @@ const ImageTable = () => {
       <Spin spinning={loading}>
         <Table
           columns={columns}
-          dataSource={images.map((img) => ({ ...img, key: img._id }))}
-          pagination={{ pageSize: 10 }}
+          dataSource={images.map((img) => ({ ...img, key: img.public_id }))}
+          pagination={{
+            pageSize: pagination.pageSize,
+            current: pagination.current,
+            total: pagination.total,
+            onChange: (page) => fetchImages(page),
+          }}
         />
       </Spin>
 
       <UploadModal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        fetchImages={fetchImages}
+        folderName={selectedFolder}
+        fetchImages={() => fetchImages(pagination.current)}
         editingImage={editingImage}
       />
     </div>
   );
 };
 
-export default ImageTable;
+export default ImageManager;

@@ -138,6 +138,11 @@ const Menubar = () => {
             label: <Link href="/admin/advertisements">Advertisements </Link>,
             path: '/admin/advertisements',
           },
+            {
+            key: 'ps-6',
+            label: <Link href="/admin/uploadimages">Images Managment </Link>,
+            path: '/admin/uploadimages',
+          },
         ],
       },
     {
