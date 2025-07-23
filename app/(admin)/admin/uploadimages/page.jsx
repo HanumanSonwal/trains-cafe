@@ -242,6 +242,7 @@ const ImageManager = () => {
         folderName={selectedFolder}
         fetchImages={() => fetchImages(pagination.current)}
         editingImage={editingImage}
+          fetchFolders={fetchFolders}
       />
     </div>
   );

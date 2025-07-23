@@ -5,37 +5,40 @@ import { useState, useEffect } from "react";
 import MultiImageUploader from "./MultiImageUploader";
 import axios from "axios";
 
-const UploadModal = ({ open, onCancel, fetchImages }) => {
+const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState("");
+  const [createNew, setCreateNew] = useState(false);
   const [newFolder, setNewFolder] = useState("");
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    getFolders();
-    setSelectedFolder("");
-    setNewFolder("");
-    setFiles([]);
+    if (open) {
+      getFolders();
+      setSelectedFolder("");
+      setNewFolder("");
+      setCreateNew(false);
+      setFiles([]);
+    }
   }, [open]);
 
-
-    const getFolders = async () => {
-      try {
-        const { data } = await axios.get("/api/fileUpload/folders");
-        if (data.success) {
-          setFolders(data.folders);
-        }
-      } catch (err) {
-        console.error(err);
-        message.error("Failed to fetch folders");
+  const getFolders = async () => {
+    try {
+      const { data } = await axios.get("/api/fileUpload/folders");
+      if (data.success) {
+        setFolders(data.folders);
       }
-    };
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to fetch folders");
+    }
+  };
 
   const handleSave = async () => {
-    const finalFolder = newFolder.trim() || selectedFolder;
+    const finalFolder = createNew ? newFolder.trim() : selectedFolder;
 
     if (!finalFolder) {
-      message.error("Please select or add folder");
+      message.error("Please select or create a folder first");
       return;
     }
 
@@ -44,22 +47,49 @@ const UploadModal = ({ open, onCancel, fetchImages }) => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("folder", finalFolder);
-    files.forEach((file) => formData.append("files", file));
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      message.error("Cloudinary env config missing");
+      return;
+    }
 
     try {
-      const { data } = await axios.post("/api/fileUpload/bulk", formData);
-      if (data.success) {
-        message.success("Uploaded successfully!");
-        fetchImages();
-        onCancel();
-      } else {
-        throw new Error(data.message);
+      message.loading({ content: "Uploading...", key: "uploading" });
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+        formData.append("folder", `trains-cafe/${finalFolder}`);
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const result = await res.json();
+
+        if (!result.secure_url) {
+          throw new Error(result.error?.message || "Upload failed");
+        }
       }
+
+      message.success({ content: "All images uploaded!", key: "uploading" });
+      fetchImages();
+
+      if (createNew) {
+        await fetchFolders();
+      }
+
+      onCancel();
     } catch (err) {
       console.error(err);
-      message.error("Upload failed");
+      message.error({ content: `Upload failed: ${err.message}`, key: "uploading" });
     }
   };
 
@@ -81,26 +111,53 @@ const UploadModal = ({ open, onCancel, fetchImages }) => {
       ]}
     >
       <Col span={24} className="mb-4">
-        <label className="block mb-1">Select Existing Folder</label>
-        <Select
-          value={selectedFolder}
-          style={{ width: "100%", marginBottom: 8 }}
-          placeholder="Select folder"
-          options={folders.map((f) => ({ label: f, value: f }))}
-          onChange={(val) => {
-            setSelectedFolder(val);
-            setNewFolder("");
-          }}
-        />
-        <label className="block mb-1">Or Create New Folder</label>
-        <Input
-          placeholder="Type new folder name"
-          value={newFolder}
-          onChange={(e) => {
-            setNewFolder(e.target.value);
-            if (e.target.value) setSelectedFolder("");
-          }}
-        />
+
+        {/* ✅ Existing Folder Selector */}
+        {!createNew && (
+          <>
+            <label className="block mb-1">Select Existing Folder</label>
+            <Select
+              value={selectedFolder}
+              style={{ width: "100%", marginBottom: 8 }}
+              placeholder="Select folder"
+              options={folders.map((f) => ({ label: f, value: f }))}
+              onChange={(val) => {
+                setSelectedFolder(val);
+              }}
+            />
+            <Button
+              type="link"
+              onClick={() => {
+                setCreateNew(true);
+                setSelectedFolder("");
+              }}
+            >
+              + Create New Folder
+            </Button>
+          </>
+        )}
+
+        {/* ✅ New Folder Input */}
+        {createNew && (
+          <>
+            <label className="block mb-1">Create New Folder</label>
+            <Input
+              placeholder="Type new folder name"
+              value={newFolder}
+              onChange={(e) => setNewFolder(e.target.value)}
+              style={{ marginBottom: 8 }}
+            />
+            <Button
+              type="link"
+              onClick={() => {
+                setCreateNew(false);
+                setNewFolder("");
+              }}
+            >
+              ← Back to Select Existing
+            </Button>
+          </>
+        )}
       </Col>
 
       <Col span={24}>
