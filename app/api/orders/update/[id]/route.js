@@ -1,39 +1,22 @@
-// import { NextResponse } from "next/server";
-
-
-// export async function POST(req, context) {
-//     try {
-//         const { id } = req.context;
-
-//         if(!id) {
-//          NextResponse.json({ message: "Order id is required" }, 400);   
-//         }
-
-//     } catch (error) {
-        
-//     }
-// }
 import dbConnect from '@/app/lib/dbConnect';
 import Order from '@/app/models/order';
 import { NextResponse } from 'next/server';
 
 export async function PUT(req, { params }) {
     try {
-        const { id } = params; // Get the `id` from the request params
-        const { status } = await req.json(); // Parse the `status` from the request body
+        const { id } = params; 
+        const { status } = await req.json(); 
 
-        // Validate that `status` is provided
         if (!status) {
             return NextResponse.json({ success: false, message: "Order status is required" }, { status: 400 });
         }
 
         await dbConnect();
 
-        // Find the order by id and update the `status` field
         const updatedOrder = await Order.findByIdAndUpdate(
             id,
             { status },
-            { new: true } // Return the updated document
+            { new: true } 
         );
 
         if (!updatedOrder) {

@@ -65,6 +65,7 @@ const MenuItemForm = ({
   }, [selectedStationName]);
 
   const fetchVendors = async (stationName) => {
+    console.log(stationName, 'station-Name')
     try {
       const response = await fetchData(`/api/vendors?page=1&limit=10&search=${stationName}`);
       if (response && response.success !== false) {

@@ -219,10 +219,10 @@
 //         });
 //     }
 // }
-import dbConnect from '@/app/lib/dbConnect';
-import Order from '@/app/models/order';
-import { NextResponse } from 'next/server';
-import '@/app/models/vendor';
+// import dbConnect from '@/app/lib/dbConnect';
+// import Order from '@/app/models/order';
+// import { NextResponse } from 'next/server';
+// import '@/app/models/vendor';
 
 // export async function GET(req) {
 //     try {
@@ -371,6 +371,12 @@ import '@/app/models/vendor';
 //         });
 //     }
 // }
+
+
+import dbConnect from '@/app/lib/dbConnect';
+import Order from '@/app/models/order';
+import { NextResponse } from 'next/server';
+import '@/app/models/vendor';
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -389,7 +395,7 @@ export async function GET(req) {
       sort: { createdAt: -1 },
       populate: {
         path: 'vendor',
-        select: 'Vendor_Name' // Only get Vendor_Name
+        select: 'Vendor_Name' 
       }
     };
 
@@ -424,14 +430,13 @@ export async function GET(req) {
       });
     }
 
-    // ✅ Flatten vendor info into top-level fields
     const transformedDocs = orders.docs.map(order => {
       const vendor = order.vendor || {};
       return {
         ...order.toObject(),
         Vendor_Name: vendor.Vendor_Name || null,
-        _id: order._id, // keep original order ID
-        vendor: undefined // remove nested vendor if needed
+        _id: order._id, 
+        vendor: undefined 
       };
     });
 
