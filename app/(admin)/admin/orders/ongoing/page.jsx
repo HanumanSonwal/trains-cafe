@@ -5,13 +5,14 @@ import { Table, Button, DatePicker, Select, Input, Space, Tag } from "antd";
 import { PlusOutlined, DownloadOutlined } from "@ant-design/icons";
 import CreateOrderModal from "../CreateOrderModal";
 
-
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const OrdersTable = () => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [editingOrder, setEditingOrder] = useState(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     status: "pending",
@@ -45,7 +46,11 @@ const OrdersTable = () => {
           couponAmount: order?.couponAmount || 0,
           contact: order?.user_details?.mobile || "N/A",
           altContact: order?.user_details?.alternateMobile || "N/A",
-          details: `SubTotal: ₹${order?.subTotal || 0} | Tax: ₹${order?.payment?.tax || 0} | Coupon: ₹${order?.couponAmount || 0} | Total: ₹${order?.total || 0}`,
+          details: `SubTotal: ₹${order?.subTotal || 0} | Tax: ₹${
+            order?.payment?.tax || 0
+          } | Coupon: ₹${order?.couponAmount || 0} | Total: ₹${
+            order?.total || 0
+          }`,
           deliveryDetails: {
             name: order?.user_details?.name || "N/A",
             mobile: order?.user_details?.mobile || "N/A",
@@ -102,10 +107,20 @@ const OrdersTable = () => {
       key: "vendor",
       render: (text, record) => (
         <div>
-          <p><strong>Vendor:</strong> {text}</p>
-          <p><strong>Contact:</strong> {record.contact} | {record.altContact}</p>
-          <p><strong>SubTotal:</strong> ₹{record.subTotal} | <strong>Tax:</strong> ₹{record.tax} | <strong>Coupon:</strong> -₹{record.couponAmount}</p>
-          <p><strong>Total:</strong> ₹{record.amount}</p>
+          <p>
+            <strong>Vendor:</strong> {text}
+          </p>
+          <p>
+            <strong>Contact:</strong> {record.contact} | {record.altContact}
+          </p>
+          <p>
+            <strong>SubTotal:</strong> ₹{record.subTotal} |{" "}
+            <strong>Tax:</strong> ₹{record.tax} | <strong>Coupon:</strong> -₹
+            {record.couponAmount}
+          </p>
+          <p>
+            <strong>Total:</strong> ₹{record.amount}
+          </p>
         </div>
       ),
     },
@@ -115,13 +130,28 @@ const OrdersTable = () => {
       key: "deliveryDetails",
       render: (details) => (
         <div>
-          <p><strong>Name:</strong> {details.name}</p>
-          <p><strong>Mobile:</strong> {details.mobile} | {details.altMobile}</p>
-          <p><strong>Train No:</strong> {details.trainNo}</p>
-          <p><strong>PNR:</strong> {details.pnr}</p>
-          <p><strong>Coach:</strong> {details.coach} | <strong>Seat:</strong> {details.seatNo}</p>
-          <p><strong>Instructions:</strong> {details.instructions}</p>
-          <p><strong>Station:</strong> {details.station}</p>
+          <p>
+            <strong>Name:</strong> {details.name}
+          </p>
+          <p>
+            <strong>Mobile:</strong> {details.mobile} | {details.altMobile}
+          </p>
+          <p>
+            <strong>Train No:</strong> {details.trainNo}
+          </p>
+          <p>
+            <strong>PNR:</strong> {details.pnr}
+          </p>
+          <p>
+            <strong>Coach:</strong> {details.coach} | <strong>Seat:</strong>{" "}
+            {details.seatNo}
+          </p>
+          <p>
+            <strong>Instructions:</strong> {details.instructions}
+          </p>
+          <p>
+            <strong>Station:</strong> {details.station}
+          </p>
         </div>
       ),
     },
@@ -131,9 +161,15 @@ const OrdersTable = () => {
       key: "amount",
       render: (amount, record) => (
         <div>
-          <p><strong>Net Total:</strong> ₹{amount}</p>
-          <p><strong>Tax:</strong> ₹{record.tax}</p>
-          <p><strong>Coupon:</strong> -₹{record.couponAmount}</p>
+          <p>
+            <strong>Net Total:</strong> ₹{amount}
+          </p>
+          <p>
+            <strong>Tax:</strong> ₹{record.tax}
+          </p>
+          <p>
+            <strong>Coupon:</strong> -₹{record.couponAmount}
+          </p>
         </div>
       ),
     },
@@ -160,6 +196,22 @@ const OrdersTable = () => {
         </Space>
       ),
     },
+    {
+  title: "Actions",
+  key: "actions",
+  render: (_, record) => (
+    <Button
+      type="link"
+      onClick={() => {
+        setEditingOrder(record); // Set current order
+        setIsModalOpen(true);    // Open modal
+      }}
+    >
+      Edit
+    </Button>
+  ),
+},
+
   ];
 
   return (
@@ -187,14 +239,15 @@ const OrdersTable = () => {
           <Input placeholder="Search" disabled />
         </div>
         <div className="flex space-x-2">
-      <Button
-  type="primary"
-  icon={<PlusOutlined />}
-  className="bg-brown"
-  onClick={() => setIsModalOpen(true)}
->
-  Add New Orders
-</Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            className="bg-brown"
+              style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Add New Orders
+          </Button>
           <Button icon={<DownloadOutlined />}>Download</Button>
         </div>
       </div>
@@ -205,7 +258,7 @@ const OrdersTable = () => {
         loading={loading}
         pagination={{
           current: currentPage,
-          total: totalPages * 10, // assuming 10 per page
+          total: totalPages * 10, 
           onChange: handlePageChange,
           pageSize: 10,
         }}
@@ -216,13 +269,15 @@ const OrdersTable = () => {
         }}
       />
       <CreateOrderModal
-  open={isModalOpen}
-  onCancel={() => setIsModalOpen(false)}
-  onSuccess={() => {
-    setIsModalOpen(false);
-    fetchData();
-  }}
-/>
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          setIsModalOpen(false);
+          fetchData();
+        }}
+          initialData={editingOrder}
+
+      />
     </div>
   );
 };

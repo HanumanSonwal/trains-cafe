@@ -55,9 +55,10 @@ export async function GET(req, context) {
       { $unwind: "$station" },
       {
         $group: {
-          _id: null, 
+          _id: null,
           categories: {
             $push: {
+              categoryId: "$category._id", // ✅ Added categoryId
               categoryName: "$category.title",
               categoryImage: "$category.image",
               vendor: "$vendor.Vendor_Name",
@@ -76,12 +77,11 @@ export async function GET(req, context) {
           },
         },
       },
-      {
-        $unwind: "$categories",
-      },
+      { $unwind: "$categories" },
       {
         $group: {
-          _id: "$categories.categoryName",
+          _id: "$categories.categoryId", // ✅ Use actual ObjectId here
+          categoryId: { $first: "$categories.categoryId" },
           categoryName: { $first: "$categories.categoryName" },
           categoryImage: { $first: "$categories.categoryImage" },
           vendor: { $first: "$categories.vendor" },

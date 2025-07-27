@@ -23,6 +23,16 @@ h4{
   font-size: 1.1rem !important;
 }
 
+.no-arrows input::-webkit-outer-spin-button,
+.no-arrows input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-arrows input[type=number] {
+  -moz-appearance: textfield;}
+
+
 
 .ck-content ol,
 .ck-content ul,

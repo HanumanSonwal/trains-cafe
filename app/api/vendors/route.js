@@ -2,6 +2,8 @@ import dbConnect from "@/app/lib/dbConnect";
 import VendorModel from "@/app/models/vendor";
 import StationModel from "@/app/models/station";
 
+
+
 export async function GET(req) {
   try {
     const url = new URL(req.url);
@@ -16,6 +18,7 @@ export async function GET(req) {
 
     let andConditions = [];
 
+    // 🔍 Search by keyword (station name/code or vendor)
     if (search) {
       const stations = await StationModel.find({
         $or: [
@@ -23,6 +26,7 @@ export async function GET(req) {
           { code: { $regex: search, $options: "i" } },
         ],
       });
+
       const stationIds = stations.map((station) => station._id);
 
       andConditions.push({
@@ -33,9 +37,10 @@ export async function GET(req) {
       });
     }
 
+    // ✅ Filter by stationname
     if (stationname) {
       const station = await StationModel.findOne({
-        name: { $regex: stationname, $options: "i" },
+        name: { $regex: `^${stationname}$`, $options: "i" },
       });
       if (!station) {
         return new Response(
@@ -46,9 +51,10 @@ export async function GET(req) {
       andConditions.push({ Station: station._id });
     }
 
+    // ✅ Filter by stationcode — FIXED: Exact match with ignore case
     if (stationcode) {
       const station = await StationModel.findOne({
-        code: { $regex: stationcode, $options: "i" },
+        code: { $regex: `^${stationcode}$`, $options: "i" },
       });
       if (!station) {
         return new Response(
@@ -59,6 +65,7 @@ export async function GET(req) {
       andConditions.push({ Station: station._id });
     }
 
+    // ✅ Filter by Vendor Name
     if (vendorname) {
       andConditions.push({
         Vendor_Name: { $regex: vendorname, $options: "i" },
@@ -80,7 +87,7 @@ export async function GET(req) {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "No items found for the search criteria",
+          message: "No vendors found for the given filters",
         }),
         { status: 404 }
       );
@@ -116,6 +123,7 @@ export async function GET(req) {
     );
   }
 }
+
 
 export async function POST(req) {
   try {
