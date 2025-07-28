@@ -13,7 +13,7 @@ import {
   message,
   Card,
 } from "antd";
-import MenuSelector from "./ongoing/MenuSelector";
+import MenuSelector from "./MenuSelector";
 
 export default function CreateOrderModal({
   open,
@@ -41,25 +41,49 @@ export default function CreateOrderModal({
     setCart([]);
   };
 
-  useEffect(() => {
-    if (initialData && isEditMode) {
-      form.setFieldsValue({
-        trainNo: initialData.train?.trainNo,
-        trainName: initialData.train?.trainName,
-        name: initialData.user_details?.name,
-        email: initialData.user_details?.email,
-        mobile: initialData.user_details?.mobile,
-        paymentMethod: initialData.payment?.method,
-      });
+useEffect(() => {
+  if (initialData && isEditMode) {
+    // Transform vendor
+    const vendorObj =
+      typeof initialData.vendor === "object"
+        ? initialData.vendor
+        : {
+            Vendor_Name: initialData.vendor,
+          };
 
-      setStation(initialData.station || null);
-      setVendor(initialData.vendor || null);
-      setCategories(initialData.categories || []);
-      setCart(initialData.cart || []);
-    } else {
-      resetAll();
-    }
-  }, [initialData, isEditMode, open]);
+    // Transform delivery details
+    const delivery = initialData.deliveryDetails || {};
+
+    // Set form fields
+    form.setFieldsValue({
+      trainNo: delivery.trainNo || "",
+      trainName: delivery.trainName || "", // Add this to deliveryDetails if needed
+      name: delivery.name || "",
+      email: delivery.email || "",
+      mobile: delivery.mobile || "",
+      paymentMethod: initialData.paymentMethod || "",
+    });
+
+    // Set state values
+    setVendor(vendorObj);
+    setStation(
+      typeof initialData.station === "object"
+        ? initialData.station
+        : { name: delivery.station || "N/A" }
+    );
+    setCategories(initialData.categories || []);
+    setCart(
+      initialData.cart?.map((item) => ({
+        ...item,
+        itemId: item._id, // for compatibility
+      })) || []
+    );
+  } else {
+    resetAll();
+  }
+}, [initialData, isEditMode, open]);
+
+
 
   const subTotal = cart.reduce(
     (sum, i) => sum + (i.price || 0) * (i.quantity || 0),
@@ -78,10 +102,14 @@ export default function CreateOrderModal({
       vendor,
       station,
       categories,
-      train: {
-        trainNo: values.trainNo,
-        trainName: values.trainName,
-      },
+train: {
+  trainNo: values.trainNo,
+  trainName: values.trainName,
+  pnr: values.pnr,
+  seatNo: values.seatNo,
+  coach: values.coach,
+},
+
       payment: {
         method: values.paymentMethod,
         amount: total,
@@ -94,11 +122,13 @@ export default function CreateOrderModal({
       })),
       total,
       subTotal,
-      user_details: {
-        name: values.name,
-        email: values.email,
-        mobile: values.mobile,
-      },
+user_details: {
+  name: values.name,
+  email: values.email,
+  mobile: values.mobile,
+  notes: values.notes,
+},
+
     };
 
     try {
@@ -202,28 +232,57 @@ export default function CreateOrderModal({
         >
           Train Details
         </Divider>
-        <Form form={form} layout="vertical" onFinish={handleFinish}>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="trainNo"
-                label="Train Number"
-                rules={[{ required: true }]}
-              >
-                <Input placeholder="Train Number" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="trainName"
-                label="Train Name"
-                rules={[{ required: true }]}
-              >
-                <Input placeholder="Train Name" />
-              </Form.Item>
-            </Col>
-          </Row>
+       <Form form={form} layout="vertical" onFinish={handleFinish}>
+  <Row gutter={16}>
+    <Col span={12}>
+      <Form.Item
+        name="trainNo"
+        label="Train Number"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="Train Number" />
+      </Form.Item>
+    </Col>
+    <Col span={12}>
+      <Form.Item
+        name="trainName"
+        label="Train Name"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="Train Name" />
+      </Form.Item>
+    </Col>
+  </Row>
 
+  <Row gutter={16}>
+    <Col span={8}>
+      <Form.Item
+        name="pnr"
+        label="PNR Number"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="PNR Number" />
+      </Form.Item>
+    </Col>
+    <Col span={8}>
+      <Form.Item
+        name="seatNo"
+        label="Seat Number"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="Seat Number" />
+      </Form.Item>
+    </Col>
+    <Col span={8}>
+      <Form.Item
+        name="coach"
+        label="Coach"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="Coach (e.g. S1, A3)" />
+      </Form.Item>
+    </Col>
+  </Row>
           <Divider
             style={{
               fontSize: 14,
@@ -280,6 +339,17 @@ export default function CreateOrderModal({
               </Form.Item>
             </Col>
           </Row>
+          <Row gutter={16}>
+  <Col span={24}>
+    <Form.Item
+      name="notes"
+      label="Notes"
+      rules={[{ required: false }]}
+    >
+      <Input.TextArea placeholder="Any special instructions..." rows={4} />
+    </Form.Item>
+  </Col>
+</Row>
 
           <Divider
             style={{

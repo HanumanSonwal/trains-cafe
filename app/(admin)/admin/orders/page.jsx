@@ -1,9 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Table, Button, DatePicker, Select, Input, Space, Tag } from "antd";
-import { PlusOutlined, DownloadOutlined } from "@ant-design/icons";
-import CreateOrderModal from "../CreateOrderModal";
+import {
+  Table,
+  Button,
+  DatePicker,
+  Select,
+  Input,
+  Space,
+  Tag,
+  message,
+} from "antd";
+import {
+  PlusOutlined,
+  DownloadOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import CreateOrderModal from "./CreateOrderModal";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -12,10 +25,9 @@ const OrdersTable = () => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingOrder, setEditingOrder] = useState(null);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filters, setFilters] = useState({
-    status: "pending",
+    status: "All",
     startDate: null,
     endDate: null,
   });
@@ -36,33 +48,17 @@ const OrdersTable = () => {
 
       if (result.success) {
         const mappedData = result.docs.map((order) => ({
+          key: order._id,
           orderID: order._id,
           date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
-          admin: "Admin",
-          vendor: order?.Vendor_Name || "N/A",
-          amount: order?.total || 0,
+          Vendor_Name: order?.Vendor_Name || "N/A",
+          Items: order?.Items || [],
           subTotal: order?.subTotal || 0,
           tax: order?.payment?.tax || 0,
           couponAmount: order?.couponAmount || 0,
-          contact: order?.user_details?.mobile || "N/A",
-          altContact: order?.user_details?.alternateMobile || "N/A",
-          details: `SubTotal: ₹${order?.subTotal || 0} | Tax: ₹${
-            order?.payment?.tax || 0
-          } | Coupon: ₹${order?.couponAmount || 0} | Total: ₹${
-            order?.total || 0
-          }`,
-          deliveryDetails: {
-            name: order?.user_details?.name || "N/A",
-            mobile: order?.user_details?.mobile || "N/A",
-            altMobile: order?.user_details?.alternateMobile || "N/A",
-            trainNo: order?.user_details?.trainNo || "N/A",
-            pnr: order?.user_details?.pnr || "N/A",
-            coach: order?.user_details?.coach || "N/A",
-            seatNo: order?.user_details?.seatNo || "N/A",
-            instructions: order?.user_details?.instructions || "N/A",
-            station: order?.stationDetails?.Station_Name || "N/A",
-            deliveryTime: "TBD",
-          },
+          total: order?.total || 0,
+          userDetails: order?.user_details || {},
+          station: order?.stationDetails?.Station_Name || "N/A",
           status: order?.status || "Pending",
           paymentStatus: order?.payment?.payment_status || "N/A",
           paymentMethod: order?.payment?.payment_method || "N/A",
@@ -71,7 +67,7 @@ const OrdersTable = () => {
         setDataSource(mappedData);
         setTotalPages(result.totalPages);
       } else {
-        console.error("Failed to fetch data");
+        message.error("Failed to fetch data");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -88,134 +84,117 @@ const OrdersTable = () => {
     setCurrentPage(page);
   };
 
+  const handleStatusChange = async (value, record) => {
+    try {
+      const response = await fetch(`/api/orders/update/${record.orderID}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: value }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        message.success("Status updated successfully");
+        fetchData(currentPage);
+      } else {
+        message.error("Failed to update status");
+      }
+    } catch (error) {
+      message.error("Error updating status");
+    }
+  };
+
   const columns = [
     {
       title: "Order ID",
       dataIndex: "orderID",
-      key: "orderID",
       render: (text, record) => (
-        <>
-          <p>{`(${record.date})`}</p>
+        <div>
           <p>{text}</p>
-          <p>({record.admin})</p>
-        </>
+          <small>{record.date}</small>
+        </div>
       ),
     },
     {
-      title: "Order Details",
-      dataIndex: "vendor",
+      title: "Vendor + Items",
+      dataIndex: "Vendor_Name",
       key: "vendor",
-      render: (text, record) => (
+      render: (_, record) => (
         <div>
-          <p>
-            <strong>Vendor:</strong> {text}
-          </p>
-          <p>
-            <strong>Contact:</strong> {record.contact} | {record.altContact}
-          </p>
-          <p>
-            <strong>SubTotal:</strong> ₹{record.subTotal} |{" "}
-            <strong>Tax:</strong> ₹{record.tax} | <strong>Coupon:</strong> -₹
-            {record.couponAmount}
-          </p>
-          <p>
-            <strong>Total:</strong> ₹{record.amount}
-          </p>
+          <div><strong>{record.Vendor_Name || "N/A"}</strong></div>
+          {record.Items?.length > 0 ? (
+            <ul className="pl-4 list-disc">
+              {record.Items.map((item, idx) => (
+                <li key={idx}>
+                  {item.Quantity}x {item?.MenuItem?.Item_Name || "Unnamed Item"}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="text-gray-400">No Items</div>
+          )}
         </div>
       ),
     },
     {
-      title: "Delivery Details",
-      dataIndex: "deliveryDetails",
-      key: "deliveryDetails",
-      render: (details) => (
+      title: "User Info",
+      render: (_, record) => (
         <div>
-          <p>
-            <strong>Name:</strong> {details.name}
-          </p>
-          <p>
-            <strong>Mobile:</strong> {details.mobile} | {details.altMobile}
-          </p>
-          <p>
-            <strong>Train No:</strong> {details.trainNo}
-          </p>
-          <p>
-            <strong>PNR:</strong> {details.pnr}
-          </p>
-          <p>
-            <strong>Coach:</strong> {details.coach} | <strong>Seat:</strong>{" "}
-            {details.seatNo}
-          </p>
-          <p>
-            <strong>Instructions:</strong> {details.instructions}
-          </p>
-          <p>
-            <strong>Station:</strong> {details.station}
-          </p>
+          <p><strong>Name:</strong> {record.userDetails.name || "N/A"}</p>
+          <p><strong>Mobile:</strong> {record.userDetails.mobile || "N/A"}</p>
+          <p><strong>Train:</strong> {record.userDetails.trainNo || "N/A"} | Coach: {record.userDetails.coach || "N/A"} | Seat: {record.userDetails.seatNo || "N/A"}</p>
+          <p><strong>PNR:</strong> {record.userDetails.pnr || "N/A"}</p>
         </div>
       ),
     },
     {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (amount, record) => (
+      title: "Bill",
+      render: (_, record) => (
         <div>
-          <p>
-            <strong>Net Total:</strong> ₹{amount}
-          </p>
-          <p>
-            <strong>Tax:</strong> ₹{record.tax}
-          </p>
-          <p>
-            <strong>Coupon:</strong> -₹{record.couponAmount}
-          </p>
+          <p>SubTotal: ₹{record.subTotal} | Tax: ₹{record.tax}</p>
+          <p>Coupon: ₹{record.couponAmount} | Total: ₹{record.total}</p>
         </div>
       ),
     },
     {
       title: "Status",
       dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Space>
-          <Tag color={status === "pending" ? "orange" : "green"}>{status}</Tag>
-          <Button type="link">Change</Button>
-        </Space>
+      render: (status, record) => (
+        <Select
+          value={status}
+          style={{ width: 120 }}
+          onChange={(value) => handleStatusChange(value, record)}
+        >
+          <Option value="pending">Pending</Option>
+          <Option value="confirmed">Confirmed</Option>
+          <Option value="delivered">Delivered</Option>
+        </Select>
       ),
     },
     {
       title: "Payment",
-      dataIndex: "paymentStatus",
-      key: "paymentStatus",
-      render: (text, record) => (
+      render: (_, record) => (
         <Space>
           <Tag color="blue">{record.paymentStatus}</Tag>
           <Tag color="purple">{record.paymentMethod}</Tag>
-          <Button type="link">Change</Button>
         </Space>
       ),
     },
     {
-  title: "Actions",
-  key: "actions",
-  render: (_, record) => (
-    <Button
-      type="link"
-      onClick={() => {
-        setEditingOrder(record); // Set current order
-        setIsModalOpen(true);    // Open modal
-      }}
-    >
-      Edit
-    </Button>
-  ),
-},
-
+      title: "Action",
+      render: (_, record) => (
+        <Button
+          icon={<EditOutlined />}
+          onClick={() => {
+            setEditingOrder(record);
+            setIsModalOpen(true);
+          }}
+        />
+      ),
+    },
   ];
 
   return (
-    <div className="orders-table">
+    <div>
       <div className="filters flex justify-between mb-4">
         <div className="flex space-x-4">
           <RangePicker
@@ -235,6 +214,7 @@ const OrdersTable = () => {
             <Option value="All">All</Option>
             <Option value="pending">Pending</Option>
             <Option value="confirmed">Confirmed</Option>
+            <Option value="delivered">Delivered</Option>
           </Select>
           <Input placeholder="Search" disabled />
         </div>
@@ -242,8 +222,7 @@ const OrdersTable = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            className="bg-brown"
-              style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
             onClick={() => setIsModalOpen(true)}
           >
             Add New Orders
@@ -258,16 +237,19 @@ const OrdersTable = () => {
         loading={loading}
         pagination={{
           current: currentPage,
-          total: totalPages * 10, 
+          total: totalPages * 10,
           onChange: handlePageChange,
           pageSize: 10,
         }}
         expandable={{
           expandedRowRender: (record) => (
-            <p style={{ margin: 0 }}>{record.details}</p>
+            <p style={{ margin: 0 }}>
+              SubTotal: ₹{record.subTotal}, Tax: ₹{record.tax}, Coupon: ₹{record.couponAmount}, Total: ₹{record.total}
+            </p>
           ),
         }}
       />
+
       <CreateOrderModal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -275,8 +257,7 @@ const OrdersTable = () => {
           setIsModalOpen(false);
           fetchData();
         }}
-          initialData={editingOrder}
-
+        initialData={editingOrder}
       />
     </div>
   );

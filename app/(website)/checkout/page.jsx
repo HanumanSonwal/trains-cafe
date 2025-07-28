@@ -270,51 +270,58 @@ const CheckoutPage = () => {
 </div>
 
 
-        <div className="bg-white shadow rounded-lg p-6 lg:p-8">
-          <h2 className="text-lg font-bold mb-6 text-gray-800">Order Details</h2>
-          <table className="w-full mb-6 text-sm lg:text-base">
-            <thead>
-              <tr className="text-left border-b">
-                <th className="pb-2">Items</th>
-                <th className="pb-2">Quantity</th>
-                <th className="pb-2">Price</th>
-                <th className="pb-2">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, idx) => (
-                <tr key={idx} className="border-b">
-                  <td className="py-2">{item.name}</td>
-                  <td className="py-2">{item.quantity}</td>
-                  <td className="py-2">₹ {item.price}</td>
-                  <td className="py-2">₹ {parseInt(item.price) * parseInt(item.quantity, 10)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="font-semibold text-gray-700">Sub Total</span>
-              <span>₹ {totalAmount.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-semibold text-gray-700">GST</span>
-              <span>₹ {gstAmount.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-semibold text-gray-700">Discount</span>
-              <span>₹ {discount.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-semibold text-gray-700">Delivery Charge</span>
-              <span className="text-green-600">Free</span>
-            </div>
-            <div className="flex justify-between text-md font-bold border-t pt-2">
-              <span>Total</span>
-              <span>₹ {payableAmount.toFixed(2)}</span>
-            </div>
-          </div>
-        </div>
+      <div className="bg-white shadow rounded-lg p-6 lg:p-8">
+  <h2 className="text-lg font-bold mb-6 text-gray-800">Order Details</h2>
+
+  <div className="overflow-x-auto">
+    <table className="w-full mb-6 text-sm lg:text-base table-auto border-collapse">
+      <thead>
+        <tr className="text-left border-b text-gray-700 bg-gray-100">
+          <th className="pb-2 px-3 font-semibold">Items</th>
+          <th className="pb-2 px-3 font-semibold text-center">Quantity</th>
+          <th className="pb-2 px-3 font-semibold text-right">Price</th>
+          <th className="pb-2 px-3 font-semibold text-right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((item, idx) => (
+          <tr key={idx} className="border-b hover:bg-gray-50">
+            <td className="py-2 px-3">{item.name}</td>
+            <td className="py-2 px-3 text-center">{item.quantity}</td>
+            <td className="py-2 px-3 text-right">₹ {item.price}</td>
+            <td className="py-2 px-3 text-right">
+              ₹ {parseInt(item.price) * parseInt(item.quantity, 10)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div className="space-y-2">
+    <div className="flex justify-between">
+      <span className="font-semibold text-gray-700">Sub Total</span>
+      <span>₹ {totalAmount.toFixed(2)}</span>
+    </div>
+    <div className="flex justify-between">
+      <span className="font-semibold text-gray-700">GST</span>
+      <span>₹ {gstAmount.toFixed(2)}</span>
+    </div>
+    <div className="flex justify-between">
+      <span className="font-semibold text-gray-700">Discount</span>
+      <span>₹ {discount.toFixed(2)}</span>
+    </div>
+    <div className="flex justify-between">
+      <span className="font-semibold text-gray-700">Delivery Charge</span>
+      <span className="text-green-600">Free</span>
+    </div>
+    <div className="flex justify-between text-md font-bold border-t pt-2">
+      <span>Total</span>
+      <span>₹ {payableAmount.toFixed(2)}</span>
+    </div>
+  </div>
+</div>
+
       </div>
        <div className="bg-white shadow rounded-lg p-4 mt-4">
        <CSSTransition
