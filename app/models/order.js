@@ -76,7 +76,7 @@ const OrderSchema = new mongoose.Schema(
   {
    vendor: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "vendor" },
 
-    station: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "stations" },
+    station: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Station" },
 
     train: {
       train_number: { type: String, required: false },
