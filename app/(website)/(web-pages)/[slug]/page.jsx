@@ -1,25 +1,20 @@
 import DynamicPage from "./DynamicPage";
 
+export const dynamicParams = true; // allow dynamic routing if needed
+
+// ✅ SEO Metadata Generator (SSR)
 export async function generateMetadata({ params }) {
   const slug = params.slug;
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
-
-  console.log("SEO CALL:", `${baseUrl}/api/web-pages?slug=${slug}`);
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
 
   try {
     const res = await fetch(`${baseUrl}/api/web-pages?slug=${slug}`, {
       cache: "no-store",
     });
 
-    console.log("SEO STATUS:", res.status);
-
-    if (!res.ok) {
-      console.log("SEO API FAILED");
-      throw new Error(`Fetch failed: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
     const data = await res.json();
-    console.log("SEO DATA:", data);
 
     const page = data.docs.find(
       (page) => page.slug === slug && page.status === "published"
@@ -28,7 +23,6 @@ export async function generateMetadata({ params }) {
     const canonicalUrl = `${baseUrl}/${slug}`;
 
     if (!page) {
-      console.log("SEO PAGE NOT FOUND");
       return {
         title: "Page Not Found - Trains Cafe",
         description: "This page is not available or unpublished.",
@@ -52,8 +46,6 @@ export async function generateMetadata({ params }) {
       };
     }
 
-    console.log("SEO PAGE FOUND:", page);
-
     const safeTitle = page.title || "Trains Cafe";
     const safeDesc = page.description || "Order food online in train.";
     const safeKeywords = Array.isArray(page.keywords)
@@ -66,6 +58,7 @@ export async function generateMetadata({ params }) {
       description: safeDesc,
       keywords: safeKeywords,
       robots: "index, follow",
+      metadataBase: new URL(baseUrl),
       alternates: {
         canonical: canonicalUrl,
       },
@@ -117,6 +110,31 @@ export async function generateMetadata({ params }) {
   }
 }
 
+// ✅ Static Params for pre-rendering slugs (SEO 💯)
+export async function generateStaticParams() {
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+
+  try {
+    const res = await fetch(`${baseUrl}/api/web-pages`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) throw new Error("Static params fetch failed");
+
+    const data = await res.json();
+
+    return data.docs
+      .filter((page) => page.status === "published")
+      .map((page) => ({
+        slug: page.slug,
+      }));
+  } catch (error) {
+    console.error("generateStaticParams ERROR:", error);
+    return [];
+  }
+}
+
+// ✅ Page renderer (client-side UI logic)
 export default function Page({ params }) {
   return <DynamicPage params={params} />;
 }
