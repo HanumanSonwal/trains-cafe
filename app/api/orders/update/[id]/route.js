@@ -67,6 +67,12 @@ export async function PUT(req, { params }) {
         }
 
         await dbConnect();
+         if (updatedData.status === "delivered") {
+            updatedData.payment = {
+                ...updatedData.payment,
+                payment_status: "paid"
+            };
+        }
 
         // Find the order by ID and update all fields
         const updatedOrder = await Order.findByIdAndUpdate(

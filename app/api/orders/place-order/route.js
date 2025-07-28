@@ -10,7 +10,7 @@ import * as EmailValidator from 'email-validator';
 
 export async function POST(req, context) {
   try {
-    const { vendor, station, train, payment, cart, user_details, couponCode } = await req.json();
+    const { vendor, station,  cacategory,train, payment, cart, user_details, couponCode } = await req.json();
 
     if (!vendor || !station || !train || !payment) {
       return NextResponse.json({
@@ -125,13 +125,14 @@ export async function POST(req, context) {
     const order = new Order({
       vendor: vendor._id,
       station: stationRes._id,
+    //  cacategory: cacategory._id,
       total,
       subTotal,
       train,
       couponAmount: discount,
       user_details,
       payment: paymentBody,
-      status: "pending"
+      status: "placed"
     });
 
     await order.save();
