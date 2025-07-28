@@ -42,46 +42,77 @@ export default function CreateOrderModal({
   };
 
 useEffect(() => {
-  if (initialData && isEditMode) {
-    // Transform vendor
-    const vendorObj =
-      typeof initialData.vendor === "object"
-        ? initialData.vendor
-        : {
-            Vendor_Name: initialData.vendor,
-          };
+  const fetchOrderDetails = async () => {
+    if (!initialData?.orderID) {
+      resetAll();
+      return;
+    }
 
-    // Transform delivery details
-    const delivery = initialData.deliveryDetails || {};
+    try {
+      const res = await fetch(`/api/orders/get?id=${initialData.orderID}`);
+      const { success, order } = await res.json();
 
-    // Set form fields
-    form.setFieldsValue({
-      trainNo: delivery.trainNo || "",
-      trainName: delivery.trainName || "", // Add this to deliveryDetails if needed
-      name: delivery.name || "",
-      email: delivery.email || "",
-      mobile: delivery.mobile || "",
-      paymentMethod: initialData.paymentMethod || "",
-    });
+      if (!success || !order) {
+        message.error("Failed to load order");
+        return;
+      }
 
-    // Set state values
-    setVendor(vendorObj);
-    setStation(
-      typeof initialData.station === "object"
-        ? initialData.station
-        : { name: delivery.station || "N/A" }
-    );
-    setCategories(initialData.categories || []);
-    setCart(
-      initialData.cart?.map((item) => ({
-        ...item,
-        itemId: item._id, // for compatibility
-      })) || []
-    );
-  } else {
-    resetAll();
+      // Set vendor & station
+      const vendorObj = {
+        Vendor_Name: order.Vendor_Name,
+        ...order.Vendor_Details,
+      };
+
+      const stationObj = {
+        ...order.Station_Details,
+      };
+
+      // Fill form
+      form.setFieldsValue({
+        name: order.user_details?.name || "",
+        email: order.user_details?.email || "",
+        mobile: order.user_details?.mobile || "",
+        alternateMobile: order.user_details?.alternateMobile || "",
+        pnr: order.user_details?.pnr || "",
+        coach: order.user_details?.coach || "",
+        seatNo: order.user_details?.seatNo || "",
+        instructions: order.user_details?.instructions || "",
+        paymentMethod: order.payment?.payment_method || "",
+        trainNo: order.train?.train_number || "",
+        trainName: "", // optional: not in API
+      });
+
+      // Convert items
+      const cartItems = order.Items?.map((item) => ({
+        Item_Id: item.MenuItem?.Item_Id,
+        Item_Name: item.MenuItem?.Item_Name,
+        Price: item.MenuItem?.Price,
+        image: item.MenuItem?.image,
+        Quantity: item.Quantity,
+        Description: item.MenuItem?.Description || "",
+        vendor: vendorObj,
+        Food_Type: item.MenuItem?.Food_Type,
+      })) || [];
+
+      setVendor(vendorObj);
+      setStation(stationObj);
+      setCart(cartItems);
+
+      // categories agar API se nahi milti toh default empty
+      setCategories([]);
+
+    } catch (error) {
+      console.error("Order fetch error:", error);
+      message.error("Error fetching order details");
+    }
+  };
+
+  if (open) {
+    fetchOrderDetails();
   }
-}, [initialData, isEditMode, open]);
+}, [initialData?.orderID, open]);
+
+
 
 
 
@@ -98,38 +129,43 @@ useEffect(() => {
       return;
     }
 
-    const body = {
-      vendor,
-      station,
-      categories,
-train: {
-  trainNo: values.trainNo,
-  trainName: values.trainName,
-  pnr: values.pnr,
-  seatNo: values.seatNo,
-  coach: values.coach,
-},
-
-      payment: {
-        method: values.paymentMethod,
-        amount: total,
-        tax: tax,
-      },
-      cart: cart.map((i) => ({
-        _id: i.itemId,
-        quantity: i.quantity,
-        price: i.price,
-      })),
-      total,
-      subTotal,
-user_details: {
-  name: values.name,
-  email: values.email,
-  mobile: values.mobile,
-  notes: values.notes,
-},
-
-    };
+  const body = {
+    vendor,
+    station,
+    train: {
+      trainNo: values.trainNo,
+      pnr: values.pnr,
+      seatNo: values.seatNo,
+      coach: values.coach,
+    },
+    payment: {
+      method: values.paymentMethod,
+    },
+    cart: cart.map((i) => ({
+      _id: i.itemId,
+      name: i.name,
+      price: i.price,
+      description: i.description,
+      vendor: i.vendor,
+      foodType: i.foodType,
+      image: i.image,
+      quantity: i.quantity,
+    })),
+    user_details: {
+      name: values.name,
+      email: values.email,
+      mobile: values.mobile,
+      alternateMobile: values.alternateMobile || "", // optional
+      instructions: values.notes || "",
+      pnr: values.pnr,
+      trainNo: values.trainNo,
+      coach: values.coach,
+      seatNo: values.seatNo,
+      instructions: values.instructions,
+    },
+    couponCode: "", // You can update based on context
+    discount: 0,
+  };
 
     try {
       const url = isEditMode
@@ -207,18 +243,19 @@ user_details: {
           Menu Details
         </Divider>
 
-        <MenuSelector
-          onUpdate={(data) => {
-            setStation(data.station);
-            setVendor(data.vendor);
-            setCategories(data.categories);
-            setCart(data.cart);
-          }}
-          initialStation={station}
-          initialVendor={vendor}
-          initialCategory={categories}
-          initialCart={cart}
-        />
+ <MenuSelector
+  onUpdate={(data) => {
+    setStation(data.station);
+    setVendor(data.vendor);
+    setCategories(data.categories);
+    setCart(data.cart);
+  }}
+  initialStation={station}
+  initialVendor={vendor}
+  initialCategory={categories}
+  initialCart={cart}
+/>
+
 
         <Divider
           style={{
@@ -314,7 +351,13 @@ user_details: {
                 <Input placeholder="Email" />
               </Form.Item>
             </Col>
+            <Col span={12}>
+  <Form.Item name="alternateMobile" label="Alternate Mobile">
+    <Input placeholder="Alternate Mobile Number" />
+  </Form.Item>
+</Col>
           </Row>
+
 
           <Row gutter={16}>
             <Col span={12}>
@@ -342,8 +385,8 @@ user_details: {
           <Row gutter={16}>
   <Col span={24}>
     <Form.Item
-      name="notes"
-      label="Notes"
+      name="instructions"
+      label="Instructions"
       rules={[{ required: false }]}
     >
       <Input.TextArea placeholder="Any special instructions..." rows={4} />

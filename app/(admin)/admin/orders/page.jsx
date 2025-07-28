@@ -103,95 +103,116 @@ const OrdersTable = () => {
     }
   };
 
-  const columns = [
-    {
-      title: "Order ID",
-      dataIndex: "orderID",
-      render: (text, record) => (
-        <div>
-          <p>{text}</p>
-          <small>{record.date}</small>
-        </div>
-      ),
-    },
-    {
-      title: "Vendor + Items",
-      dataIndex: "Vendor_Name",
-      key: "vendor",
-      render: (_, record) => (
-        <div>
-          <div><strong>{record.Vendor_Name || "N/A"}</strong></div>
-          {record.Items?.length > 0 ? (
-            <ul className="pl-4 list-disc">
-              {record.Items.map((item, idx) => (
-                <li key={idx}>
-                  {item.Quantity}x {item?.MenuItem?.Item_Name || "Unnamed Item"}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-gray-400">No Items</div>
-          )}
-        </div>
-      ),
-    },
-    {
-      title: "User Info",
-      render: (_, record) => (
-        <div>
-          <p><strong>Name:</strong> {record.userDetails.name || "N/A"}</p>
-          <p><strong>Mobile:</strong> {record.userDetails.mobile || "N/A"}</p>
-          <p><strong>Train:</strong> {record.userDetails.trainNo || "N/A"} | Coach: {record.userDetails.coach || "N/A"} | Seat: {record.userDetails.seatNo || "N/A"}</p>
-          <p><strong>PNR:</strong> {record.userDetails.pnr || "N/A"}</p>
-        </div>
-      ),
-    },
-    {
-      title: "Bill",
-      render: (_, record) => (
-        <div>
-          <p>SubTotal: ₹{record.subTotal} | Tax: ₹{record.tax}</p>
-          <p>Coupon: ₹{record.couponAmount} | Total: ₹{record.total}</p>
-        </div>
-      ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (status, record) => (
+
+  const handlePaymentStatusChange = (value, record) => {
+  const updatedRecord = { ...record, paymentStatus: value };
+  console.log("Updated Payment Status:", updatedRecord);
+
+  // ✅ Optional: Call your API to update it in backend
+  // await updateOrderPaymentStatus(record.orderID, value);
+
+  // ✅ Update locally if needed
+  // Example: setOrders(prev => prev.map(order => order.orderID === record.orderID ? updatedRecord : order));
+};
+
+
+const columns = [
+  {
+    title: "Order ID",
+    dataIndex: "orderID",
+    render: (text, record) => (
+      <div>
+        <p>{text}</p>
+        <small>{record.date}</small>
+      </div>
+    ),
+  },
+  {
+    title: "Vendor & Items",
+    key: "vendor",
+    render: (_, record) => (
+      <div>
+        <div><strong>{record.Vendor_Name || "N/A"}</strong></div>
+        {record.Items?.length > 0 ? (
+          <ul className="pl-4 list-disc">
+            {record.Items.map((item, idx) => (
+              <li key={idx}>
+                {item.Quantity}x {item?.MenuItem?.Item_Name || "Unnamed Item"}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-gray-400">No Items</div>
+        )}
+      </div>
+    ),
+  },
+  {
+    title: "User Info",
+    render: (_, record) => (
+      <div>
+        <p><strong>Name:</strong> {record.userDetails.name || "N/A"}</p>
+        <p><strong>Mobile:</strong> {record.userDetails.mobile || "N/A"}</p>
+        <p><strong>Train:</strong> {record.userDetails.trainNo || "N/A"} | Coach: {record.userDetails.coach || "N/A"} | Seat: {record.userDetails.seatNo || "N/A"}</p>
+        <p><strong>PNR:</strong> {record.userDetails.pnr || "N/A"}</p>
+      </div>
+    ),
+  },
+  {
+    title: "Bill",
+    render: (_, record) => (
+      <div>
+        <p>SubTotal: ₹{record.subTotal} | Tax: ₹{record.tax}</p>
+        <p>Coupon: ₹{record.couponAmount} | Total: ₹{record.total}</p>
+      </div>
+    ),
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    render: (status, record) => (
+      <Select
+        value={status}
+        style={{ width: 120 }}
+        onChange={(value) => handleStatusChange(value, record)}
+      >
+        <Option value="pending">Pending</Option>
+        <Option value="confirmed">Confirmed</Option>
+        <Option value="delivered">Delivered</Option>
+      </Select>
+    ),
+  },
+  {
+    title: "Payment",
+    render: (_, record) => (
+      <Space>
         <Select
-          value={status}
+          value={record.paymentStatus}
           style={{ width: 120 }}
-          onChange={(value) => handleStatusChange(value, record)}
+          onChange={(value) => handlePaymentStatusChange(value, record)}
         >
           <Option value="pending">Pending</Option>
-          <Option value="confirmed">Confirmed</Option>
-          <Option value="delivered">Delivered</Option>
+          <Option value="paid">Paid</Option>
+          <Option value="failed">Failed</Option>
         </Select>
-      ),
-    },
-    {
-      title: "Payment",
-      render: (_, record) => (
-        <Space>
-          <Tag color="blue">{record.paymentStatus}</Tag>
-          <Tag color="purple">{record.paymentMethod}</Tag>
-        </Space>
-      ),
-    },
-    {
-      title: "Action",
-      render: (_, record) => (
-        <Button
-          icon={<EditOutlined />}
-          onClick={() => {
-            setEditingOrder(record);
-            setIsModalOpen(true);
-          }}
-        />
-      ),
-    },
-  ];
+        <Tag color="purple">{record.paymentMethod}</Tag>
+      </Space>
+    ),
+  },
+  {
+    title: "Action",
+    render: (_, record) => (
+      <Button
+        icon={<EditOutlined />}
+        onClick={() => {
+          setEditingOrder(record);
+          setIsModalOpen(true);
+        }}
+      />
+    ),
+  },
+];
+
 
   return (
     <div>
@@ -241,13 +262,7 @@ const OrdersTable = () => {
           onChange: handlePageChange,
           pageSize: 10,
         }}
-        expandable={{
-          expandedRowRender: (record) => (
-            <p style={{ margin: 0 }}>
-              SubTotal: ₹{record.subTotal}, Tax: ₹{record.tax}, Coupon: ₹{record.couponAmount}, Total: ₹{record.total}
-            </p>
-          ),
-        }}
+     
       />
 
       <CreateOrderModal

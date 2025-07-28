@@ -10,7 +10,7 @@ export default function MenuSelector({
   onUpdate,
   initialStation,
   initialVendor,
-  initialCategory,
+  initialCategory, // not coming — so we derive it
   initialCart,
 }) {
   const [stations, setStations] = useState([]);
@@ -18,35 +18,56 @@ export default function MenuSelector({
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState(initialCart || []);
-  const [selectedStation, setSelectedStation] = useState(
-    initialStation || null
-  );
+  const [selectedStation, setSelectedStation] = useState(initialStation || null);
   const [selectedVendor, setSelectedVendor] = useState(initialVendor || null);
-  const [selectedCategories, setSelectedCategories] = useState(
-    initialCategory || []
-  );
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
-  console.log(selectedCategories, "selected-Categories");
-
+  // 🧠 Fill stations & vendors from initial props
   useEffect(() => {
     setSelectedStation(initialStation || null);
     setSelectedVendor(initialVendor || null);
-    setSelectedCategories(initialCategory || []);
     setCart(initialCart || []);
-  }, [initialStation, initialVendor, initialCategory, initialCart]);
 
-  useEffect(() => {
-    fetchStations();
-  }, []);
+    // inject station
+    if (initialStation && initialStation._id) {
+      setStations((prev) => {
+        const exists = prev.some((s) => s._id === initialStation._id);
+        return exists ? prev : [initialStation, ...prev];
+      });
+    }
 
+    // inject vendor
+    if (initialVendor && initialVendor._id) {
+      setVendors((prev) => {
+        const exists = prev.some((v) => v._id === initialVendor._id);
+        return exists ? prev : [initialVendor, ...prev];
+      });
+    }
+
+    // 🧠 From initialCart, collect menu items
+    if (initialCart && Array.isArray(initialCart)) {
+      const itemsFromCart = initialCart.map((item) => ({
+        _id: item.itemId,
+        name: item.name,
+        price: item.price,
+      }));
+      setMenuItems((prev) => {
+        const ids = new Set(prev.map((i) => i._id));
+        const merged = [...prev];
+        for (const item of itemsFromCart) {
+          if (!ids.has(item._id)) merged.push(item);
+        }
+        return merged;
+      });
+    }
+  }, [initialStation, initialVendor, initialCart]);
+
+  // 🌟 NEW: Fetch categories if in edit mode
   useEffect(() => {
-    onUpdate({
-      station: selectedStation,
-      vendor: selectedVendor,
-      categories: selectedCategories,
-      cart,
-    });
-  }, [selectedStation, selectedVendor, selectedCategories, cart]);
+    if (initialVendor && initialVendor._id) {
+      fetchCategoriesAndPreselect(initialVendor._id);
+    }
+  }, [initialVendor]);
 
   const fetchStations = async () => {
     const res = await fetch("/api/station?search=&page=0");
@@ -65,17 +86,46 @@ export default function MenuSelector({
   const fetchCategories = useCallback(async (vendorId) => {
     try {
       const response = await getVendorCategoriesAndMenuItems(vendorId, true);
-      console.log(response, "category-response");
-
-      if (response) {
-        setCategories(response);
-      } else {
-        console.warn("No valid category data found");
-      }
+      if (response) setCategories(response);
+      else console.warn("No valid category data found");
+      return response;
     } catch (error) {
       console.error("Error fetching categories:", error);
+      return null;
     }
   }, []);
+
+  // 🌟 Helper: Fetch categories and auto-select from initialCart items
+  const fetchCategoriesAndPreselect = async (vendorId) => {
+    const fetchedCategories = await fetchCategories(vendorId);
+    if (!fetchedCategories || !Array.isArray(fetchedCategories)) return;
+
+    setCategories(fetchedCategories);
+
+    // 🧠 Auto-select categories from items in cart
+    const cartItemIds = new Set(cart.map((item) => item.itemId));
+    const matchedCategories = fetchedCategories.filter((cat) =>
+      (cat.items || []).some((item) => cartItemIds.has(item._id))
+    );
+    setSelectedCategories(matchedCategories);
+
+    // Also set menu items again for safety
+    const allItems = matchedCategories.flatMap((c) => c.items || []);
+    setMenuItems(allItems);
+  };
+
+  useEffect(() => {
+    fetchStations();
+  }, []);
+
+  useEffect(() => {
+    onUpdate({
+      station: selectedStation,
+      vendor: selectedVendor,
+      categories: selectedCategories,
+      cart,
+    });
+  }, [selectedStation, selectedVendor, selectedCategories, cart]);
 
   const handleStationChange = (id) => {
     const s = stations.find((s) => s._id === id);
@@ -96,7 +146,7 @@ export default function MenuSelector({
     setCategories([]);
     setMenuItems([]);
     setCart([]);
-    if (v) fetchCategories(v._id);
+    if (v) fetchCategoriesAndPreselect(v._id);
   };
 
   const handleCategoryChange = (ids) => {
@@ -223,17 +273,19 @@ export default function MenuSelector({
         <Row key={index} align="middle" gutter={20} style={{ marginBottom: 8 }}>
           <Col flex="0 0 500px">
             <Select
-              placeholder="Select item"
-              value={row.itemId}
-              style={{ width: "100%" }}
-              onChange={(val) => handleItemChange(index, val)}
-            >
-              {menuItems.map((item) => (
-                <Option key={item._id} value={item._id}>
-                  <b>{item.name}</b> — ₹{item.price}
-                </Option>
-              ))}
-            </Select>
+  placeholder="Select item"
+  value={row.itemId}
+  style={{ width: "100%" }}
+  onChange={(val) => handleItemChange(index, val)}
+  notFoundContent="Item not found"
+>
+  {menuItems.map((item) => (
+    <Option key={item._id} value={item._id}>
+      <b>{item.name}</b> — ₹{item.price}
+    </Option>
+  ))}
+</Select>
+
           </Col>
           <Col
             flex="0 0 auto"
