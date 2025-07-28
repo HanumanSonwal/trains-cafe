@@ -4,6 +4,7 @@ import OrderItems from '@/app/models/orderItems';
 import Menu from '@/app/models/menu';
 import { NextResponse } from 'next/server';
 import '@/app/models/vendor';
+import '@/app/models/station';
 
 export async function GET(req) {
   try {
@@ -17,15 +18,32 @@ export async function GET(req) {
 
     await dbConnect();
 
-    const options = {
-      page,
-      limit,
-      sort: { createdAt: -1 },
-      populate: {
-        path: 'vendor',
-        select: 'Vendor_Name',
-      },
-    };
+    // const options = {
+    //   page,
+    //   limit,
+    //   sort: { createdAt: -1 },
+    //   populate: {
+    //     path: 'vendor',
+    //     select: 'Vendor_Name',
+    //   },
+    // };
+   const options = {
+  page,
+  limit,
+  sort: { createdAt: -1 },
+  populate: [
+    {
+      path: 'vendor',
+      model: 'vendor'
+    },
+    {
+      path: 'station',
+      model: 'Station'
+    }
+  ]
+};
+
+    
 
     const searchOptions = {};
 
@@ -51,6 +69,9 @@ export async function GET(req) {
     // Fetch order items for each order
     const enrichedOrders = await Promise.all(orders.docs.map(async (order) => {
       const vendor = order.vendor || {};
+      
+  const station = order.station || {}; // ✅ FIXED HERE
+
 
       // Find all OrderItems related to this order
       const orderItems = await OrderItems.find({ Order_Id: order._id }).populate({
@@ -76,6 +97,9 @@ export async function GET(req) {
       return {
         ...order.toObject(),
         Vendor_Name: vendor.Vendor_Name || null,
+       
+         Vendor_Details: vendor, // include all vendor info
+         //Station_Details: station,
         Items: items,
         vendor: undefined
       };
