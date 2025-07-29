@@ -1,100 +1,49 @@
-// import { NextResponse } from "next/server";
-
-
-// export async function POST(req, context) {
-//     try {
-//         const { id } = req.context;
-
-//         if(!id) {
-//          NextResponse.json({ message: "Order id is required" }, 400);   
-//         }
-
-//     } catch (error) {
-        
-//     }
-// // }
-// import dbConnect from '@/app/lib/dbConnect';
-// import Order from '@/app/models/order';
-// import { NextResponse } from 'next/server';
-
-// export async function PUT(req, { params }) {
-//     try {
-//         const { id } = params; // Get the `id` from the request params
-//         const { status } = await req.json(); // Parse the `status` from the request body
-
-//         // Validate that `status` is provided
-//         if (!status) {
-//             return NextResponse.json({ success: false, message: "Order status is required" }, { status: 400 });
-//         }
-
-//         await dbConnect();
-
-//         // Find the order by id and update the `status` field
-//         const updatedOrder = await Order.findByIdAndUpdate(
-//             id,
-//             { status },
-//             { new: true } // Return the updated document
-//         );
-
-//         if (!updatedOrder) {
-//             return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });
-//         }
-
-//         return NextResponse.json({
-//             success: true,
-//             message: "Order status updated successfully",
-//             data: updatedOrder
-//         });
-//     } catch (error) {
-//         return NextResponse.json({
-//             success: false,
-//             message: "Error updating order status",
-//             error: error.message
-//         }, { status: 500 });
-//     }
-// }
-import dbConnect from '@/app/lib/dbConnect';
-import Order from '@/app/models/order';
-import { NextResponse } from 'next/server';
+import dbConnect from "@/app/lib/dbConnect";
+import Order from "@/app/models/order";
+import OrderItems from "@/app/models/orderItems";
+import { NextResponse } from "next/server";
 
 export async function PUT(req, { params }) {
-    try {
-        const { id } = params; // Extract order ID
-        const updatedData = await req.json(); // Get all fields from request body
+  try {
+    await dbConnect();
+    const { id } = params;
+    const { user_details, train, payment, cart } = await req.json();
 
-        if (!updatedData || Object.keys(updatedData).length === 0) {
-            return NextResponse.json({ success: false, message: "No data provided to update" }, { status: 400 });
-        }
-
-        await dbConnect();
-         if (updatedData.status === "delivered") {
-            updatedData.payment = {
-                ...updatedData.payment,
-                payment_status: "paid"
-            };
-        }
-
-        // Find the order by ID and update all fields
-        const updatedOrder = await Order.findByIdAndUpdate(
-            id,
-            updatedData,
-            { new: true, runValidators: true } // Return updated doc and validate schema
-        );
-
-        if (!updatedOrder) {
-            return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });
-        }
-
-        return NextResponse.json({
-            success: true,
-            message: "Order updated successfully",
-            data: updatedOrder
-        });
-    } catch (error) {
-        return NextResponse.json({
-            success: false,
-            message: "Error updating order",
-            error: error.message
-        }, { status: 500 });
+    const order = await Order.findById(id);
+    if (!order) {
+      return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });
     }
+
+    if (user_details) order.user_details = { ...order.user_details, ...user_details };
+    if (train) order.train = { ...order.train, ...train };
+    if (payment) order.payment = { ...order.payment, ...payment };
+
+    if (cart && Array.isArray(cart)) {
+      await OrderItems.deleteMany({ Order_Id: order._id });
+
+      const newItems = cart.map((item) => ({
+        Order_Id: order._id,
+        Item_Id: item._id,
+        Quantity: item.quantity,
+        Price: item.price,
+      }));
+
+      await OrderItems.insertMany(newItems);
+    }
+
+    await order.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Order updated successfully",
+      data: order,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      message: "Failed to update order",
+      error: error.message,
+    }, { status: 500 });
+  }
 }
+

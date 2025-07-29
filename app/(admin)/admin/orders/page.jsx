@@ -84,36 +84,55 @@ const OrdersTable = () => {
     setCurrentPage(page);
   };
 
+
   const handleStatusChange = async (value, record) => {
-    try {
-      const response = await fetch(`/api/orders/update/${record.orderID}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: value }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        message.success("Status updated successfully");
-        fetchData(currentPage);
-      } else {
-        message.error("Failed to update status");
-      }
-    } catch (error) {
-      message.error("Error updating status");
+  try {
+    const res = await fetch(`/api/orders/status/${record.orderID}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: value }),
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      message.success("Order status updated");
+      fetchData(currentPage);
+    } else {
+      message.error(result.message || "Failed to update order status");
     }
-  };
-
-
-  const handlePaymentStatusChange = (value, record) => {
-  const updatedRecord = { ...record, paymentStatus: value };
-  console.log("Updated Payment Status:", updatedRecord);
-
-  // ✅ Optional: Call your API to update it in backend
-  // await updateOrderPaymentStatus(record.orderID, value);
-
-  // ✅ Update locally if needed
-  // Example: setOrders(prev => prev.map(order => order.orderID === record.orderID ? updatedRecord : order));
+  } catch (error) {
+    console.error("Status update error:", error);
+    message.error("Error updating order status");
+  }
 };
+
+const handlePaymentStatusChange = async (value, record) => {
+  try {
+    const res = await fetch(`/api/orders/paymentstatus/${record.orderID}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ payment_status: value }),
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      message.success("Payment status updated");
+      fetchData(currentPage);
+    } else {
+      message.error(result.message || "Failed to update payment status");
+    }
+  } catch (error) {
+    console.error("Payment status update error:", error);
+    message.error("Error updating payment status");
+  }
+};
+
+
+
 
 
 const columns = [
@@ -171,15 +190,18 @@ const columns = [
     title: "Status",
     dataIndex: "status",
     render: (status, record) => (
-      <Select
-        value={status}
-        style={{ width: 120 }}
-        onChange={(value) => handleStatusChange(value, record)}
-      >
-        <Option value="pending">Pending</Option>
-        <Option value="confirmed">Confirmed</Option>
-        <Option value="delivered">Delivered</Option>
-      </Select>
+   <Select
+  value={status}
+  style={{ width: 140 }}
+  onChange={(value) => handleStatusChange(value, record)}
+>
+  <Option value="placed">Placed</Option>
+  <Option value="confirm">Confirm</Option>
+  <Option value="cancel">Cancel</Option>
+  <Option value="dispatch">Dispatch</Option>
+  <Option value="delivered">Delivered</Option>
+</Select>
+
     ),
   },
   {
