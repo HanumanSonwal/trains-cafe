@@ -128,7 +128,11 @@ export async function POST(req, context) {
     //  cacategory: cacategory._id,
       total,
       subTotal,
-      train,
+     // train,
+     train: {
+    train_number: train?.train_number || user_details?.trainNo || "",
+    train_pnr: user_details?.pnr || "", // Backup from user_details if needed
+  },
       couponAmount: discount,
       user_details,
       payment: paymentBody,
