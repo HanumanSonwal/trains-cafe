@@ -304,18 +304,6 @@ const [submitting, setSubmitting] = useState(false);
             </Col>
             <Col span={12}>
               <Form.Item
-                name="trainName"
-                label="Train Name"
-                rules={[{ required: true }]}
-              >
-                <Input placeholder="Train Name" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
                 name="pnr"
                 label="PNR Number"
                 rules={[{ required: true }]}
@@ -323,7 +311,11 @@ const [submitting, setSubmitting] = useState(false);
                 <Input placeholder="PNR Number" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+          </Row>
+
+          <Row gutter={16}>
+           
+            <Col span={12}>
               <Form.Item
                 name="seatNo"
                 label="Seat Number"
@@ -332,7 +324,7 @@ const [submitting, setSubmitting] = useState(false);
                 <Input placeholder="Seat Number" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 name="coach"
                 label="Coach"
@@ -373,15 +365,7 @@ const [submitting, setSubmitting] = useState(false);
                 <Input placeholder="Email" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item name="alternateMobile" label="Alternate Mobile">
-                <Input placeholder="Alternate Mobile Number" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
+                        <Col span={12}>
               <Form.Item
                 name="mobile"
                 label="Mobile"
@@ -390,6 +374,17 @@ const [submitting, setSubmitting] = useState(false);
                 <Input placeholder="Mobile Number" />
               </Form.Item>
             </Col>
+
+            <Col span={12}>
+              <Form.Item name="alternateMobile" label="Alternate Mobile">
+                <Input placeholder="Alternate Mobile Number" />
+              </Form.Item>
+            </Col>
+
+          </Row>
+
+          <Row gutter={16}>
+
             <Col span={12}>
               <Form.Item
                 name="paymentMethod"
@@ -456,6 +451,7 @@ const [submitting, setSubmitting] = useState(false);
               </Col>
             </Row>
           </Card>
+            
         </Form>
       </div>
     </Modal>
