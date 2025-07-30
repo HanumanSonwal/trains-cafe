@@ -17,83 +17,80 @@ export default function MenuSelector({
   initialVendor,
   initialCart,
   initialCategory,
+  resetKey,
 }) {
   const dispatch = useDispatch();
   const { stations, vendors, categories } = useSelector((state) => state.menu);
 
-  const [selectedStation, setSelectedStation] = useState(initialStation || null);
+  console.log(vendors, "vendors-data");
+
+  const [selectedStation, setSelectedStation] = useState(
+    initialStation || null
+  );
   const [selectedVendor, setSelectedVendor] = useState(initialVendor || null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState([]);
   const [categoriesInitialized, setCategoriesInitialized] = useState(false);
-  const [categoriesManuallySelected, setCategoriesManuallySelected] = useState(false);
-  const [cartInitializedFromProps, setCartInitializedFromProps] = useState(false); // NEW
+  const [categoriesManuallySelected, setCategoriesManuallySelected] =
+    useState(false);
+  const [cartInitializedFromProps, setCartInitializedFromProps] =
+    useState(false);
 
-  console.log(initialCart ,"initial-Cart-data")
+  console.log(selectedVendor, "selected-Vendor");
 
-  // Load stations
+  const initializedRef = useRef(false);
+
   useEffect(() => {
     dispatch(fetchStations());
   }, []);
 
+  useEffect(() => {
+    if (
+      initializedRef.current ||
+      !initialStation ||
+      !initialVendor ||
+      !initialCategory
+    )
+      return;
 
-  const initializedRef = useRef(false);
+    initializedRef.current = true;
 
-useEffect(() => {
-  // Wait for props to be available
-  if (
-    initializedRef.current ||
-    !initialStation ||
-    !initialVendor ||
-    !initialCart ||
-    !initialCategory
-  )
-    return;
-
-  initializedRef.current = true;
-
-  if (initialStation?._id) {
     setSelectedStation(initialStation);
     dispatch(fetchVendorsByStation(initialStation.code || initialStation.name));
-  }
 
-  if (initialVendor?._id) {
     setSelectedVendor(initialVendor);
-    dispatch(fetchCategoriesByVendor({ vendorId: initialVendor._id, isVeg: true }));
-  }
+    dispatch(
+      fetchCategoriesByVendor({ vendorId: initialVendor._id, isVeg: true })
+    );
 
-  if (initialCart?.length) {
-    const items = initialCart.map(({ Item_Id, Item_Name, Price }) => ({
-      Item_Id,
-      Item_Name,
-      Price,
-    }));
+    if (initialCategory?.length) {
+      setSelectedCategories(initialCategory);
 
-    const cartItems = initialCart.map(({ Item_Id, Quantity, Price, Item_Name }) => ({
-      itemId: Item_Id,
-      quantity: Quantity || 1,
-      price: Price || 0,
-      name: Item_Name,
-    }));
+      const allItems = initialCategory.flatMap((cat) => cat.items || []);
+      setMenuItems(allItems);
 
-    setMenuItems((prev) => {
-      const ids = new Set(prev.map((i) => i.Item_Id));
-      return [...prev, ...items.filter((i) => !ids.has(i.Item_Id))];
-    });
+      if (allItems?.length) {
+        const derivedCart = allItems.map((item) => ({
+          itemId: item._id,
+          quantity: item.quantity || 1,
+          price: item.price || item.Price || 0,
+          name: item.name || item.Item_Name || "",
+        }));
 
-    setCart(cartItems);
-    setCartInitializedFromProps(true);
-  }
+        setCart(derivedCart);
+        setCartInitializedFromProps(true);
+      }
+    }
+  }, [initialStation, initialVendor, initialCategory]);
 
-  if (initialCategory?.length) {
-    setSelectedCategories(initialCategory);
-    setMenuItems(initialCategory.flatMap((cat) => cat.menuItems || []));
-  }
-}, [initialStation, initialVendor, initialCart, initialCategory]); // dependencies added
+  useEffect(() => {
+    const allItems = selectedCategories.flatMap(
+      (cat) => cat.items || cat.menuItems || []
+    );
+    setMenuItems(allItems);
+  }, [selectedCategories]);
 
-
-  // Auto-select categories based on cart
   useEffect(() => {
     if (
       categories.length &&
@@ -103,16 +100,21 @@ useEffect(() => {
     ) {
       const cartItemIds = new Set(cart.map((item) => item.itemId));
       const matched = categories.filter((cat) =>
-        (cat.menuItems || []).some((i) => cartItemIds.has(i.Item_Id))
+        (cat.items || cat.menuItems || []).some((i) =>
+          cartItemIds.has(i._id || i.Item_Id)
+        )
       );
-      if (!matched.length && selectedCategories.length) return;
       setSelectedCategories(matched);
-      setMenuItems(matched.flatMap((cat) => cat.menuItems || []));
       setCategoriesInitialized(true);
     }
-  }, [categories, cart, categoriesInitialized, categoriesManuallySelected, cartInitializedFromProps]);
+  }, [
+    categories,
+    cart,
+    categoriesInitialized,
+    categoriesManuallySelected,
+    cartInitializedFromProps,
+  ]);
 
-  // Update parent on change
   useEffect(() => {
     onUpdate({
       station: selectedStation,
@@ -131,17 +133,19 @@ useEffect(() => {
 
   const handleVendorChange = (id) => {
     const vendor = vendors.find((v) => v._id === id);
+
     setSelectedVendor(vendor);
     resetAll();
     dispatch(fetchCategoriesByVendor({ vendorId: vendor._id, isVeg: true }));
   };
 
   const handleCategoryChange = (ids) => {
-    const selected = categories.filter((c) => ids.includes(c._id || c.Category_Id));
+    const selected = categories.filter((c) =>
+      ids.includes(c._id || c.Category_Id)
+    );
     setSelectedCategories(selected);
-    setMenuItems(selected.flatMap((c) => c.menuItems || []));
     setCategoriesManuallySelected(true);
-    setCartInitializedFromProps(false); // now allow auto changes
+    setCartInitializedFromProps(false);
   };
 
   const handleAddItem = () => {
@@ -149,13 +153,13 @@ useEffect(() => {
   };
 
   const handleItemChange = (index, id) => {
-    const item = menuItems.find((i) => i.Item_Id === id);
+    const item = menuItems.find((i) => i._id === id || i.Item_Id === id);
     const newCart = [...cart];
     newCart[index] = {
       ...newCart[index],
       itemId: id,
-      price: item?.Price || 0,
-      name: item?.Item_Name || "",
+      price: item?.price || item?.Price || 0,
+      name: item?.name || item?.Item_Name || "",
     };
     setCart(newCart);
   };
@@ -185,14 +189,35 @@ useEffect(() => {
   };
 
   const resetAll = () => {
-    setSelectedVendor(null);
     setSelectedCategories([]);
     setMenuItems([]);
     setCart([]);
     setCategoriesInitialized(false);
     setCategoriesManuallySelected(false);
     setCartInitializedFromProps(false);
+    initializedRef.current = false;
   };
+
+  useEffect(() => {
+    const isEditMode =
+      !!initialStation && !!initialVendor && !!initialCart?.length;
+
+    if (!isEditMode) {
+      resetAll();
+      setSelectedStation(null);
+      setSelectedVendor(null);
+      setCart([]);
+    } else {
+      setSelectedStation(initialStation);
+      setSelectedVendor(initialVendor);
+      setCart(initialCart || []);
+    }
+
+    setCategoriesInitialized(false);
+    setCategoriesManuallySelected(false);
+    setCartInitializedFromProps(false);
+    initializedRef.current = false;
+  }, [resetKey]);
 
   return (
     <>
@@ -205,10 +230,16 @@ useEffect(() => {
             placeholder="Select station"
             style={{ width: "100%" }}
             onChange={handleStationChange}
+            filterOption={(input, option) =>
+              option?.children
+                ?.toString()
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
           >
             {stations.map((s) => (
               <Option key={s._id} value={s._id}>
-                {s.Station_Name || s.name}
+                {s.Station_Name || s.name || ""}
               </Option>
             ))}
           </Select>
@@ -242,7 +273,10 @@ useEffect(() => {
             onChange={handleCategoryChange}
           >
             {categories.map((c) => (
-              <Option key={c._id || c.Category_Id} value={c._id || c.Category_Id}>
+              <Option
+                key={c._id || c.Category_Id}
+                value={c._id || c.Category_Id}
+              >
                 {c.Title || c.categoryName}
               </Option>
             ))}
@@ -262,22 +296,30 @@ useEffect(() => {
               onChange={(val) => handleItemChange(index, val)}
             >
               {menuItems.map((item) => (
-                <Option key={item.Item_Id} value={item.Item_Id}>
-                  <b>{item.Item_Name}</b> — ₹{item.Price}
+                <Option
+                  key={item._id || item.Item_Id}
+                  value={item._id || item.Item_Id}
+                >
+                  <b>{item.name || item.Item_Name}</b> — ₹
+                  {item.price || item.Price}
                 </Option>
               ))}
             </Select>
           </Col>
 
           <Col flex="0 0 auto">
-            <Button size="small" onClick={() => decrementQty(index)}>-</Button>
+            <Button size="small" onClick={() => decrementQty(index)}>
+              -
+            </Button>
             <InputNumber
               min={1}
               value={row.quantity}
               onChange={(val) => handleQtyChange(index, val)}
               style={{ width: 50, margin: "0 8px" }}
             />
-            <Button size="small" onClick={() => incrementQty(index)}>+</Button>
+            <Button size="small" onClick={() => incrementQty(index)}>
+              +
+            </Button>
           </Col>
 
           <Col flex="0 0 auto" style={{ fontWeight: "bold", color: "#16ADA8" }}>
