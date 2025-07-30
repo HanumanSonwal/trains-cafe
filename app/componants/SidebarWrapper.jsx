@@ -3,6 +3,8 @@ import { useState } from 'react';
 import Sidebar from './Sidebar';
 import DashHeader from './DashHeader';
 import { SessionProvider } from 'next-auth/react';
+import { Provider } from "react-redux";
+import store from "../redux/store";
 
 const SidebarWrapper = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -13,6 +15,7 @@ const SidebarWrapper = ({ children }) => {
 
   return (
     <SessionProvider>
+       <Provider store={store}>
   <div className="flex h-screen">
   <Sidebar collapsed={collapsed} width={256} className="fixed top-0 left-0 h-full" />
   
@@ -24,6 +27,7 @@ const SidebarWrapper = ({ children }) => {
     </main>
   </div>
 </div>
+</Provider>
 
     </SessionProvider>
   );
