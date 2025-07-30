@@ -144,7 +144,7 @@ const OrdersTable = () => {
       dataIndex: "order_id",
       render: (text, record) => (
         <div>
-          <p>{text}</p>
+          <p> <strong>{text}</strong></p>
           <small>{record.date}</small>
         </div>
       ),
