@@ -192,19 +192,26 @@ const OrdersTable = () => {
         </div>
       ),
     },
-    {
-      title: "Bill",
-      render: (_, record) => (
-        <div>
-          <p>
-            SubTotal: ₹{record.subTotal} | Tax: ₹{record.tax}
-          </p>
-          <p>
-            Coupon: ₹{record.couponAmount} | Total: ₹{record.total}
-          </p>
-        </div>
-      ),
-    },
+   {
+  title: "Bill",
+  render: (_, record) => (
+    <div style={{ lineHeight: "1.5" }}>
+      <p>
+        <span style={{ marginRight: 8 }}>SubTotal:</span> ₹{record.subTotal}
+      </p>
+      <p>
+        <span style={{ marginRight: 8 }}>Tax:</span> ₹{record.tax}
+      </p>
+      <p>
+        <span style={{ marginRight: 8 }}>Coupon:</span> ₹{record.couponAmount}
+      </p>
+      <p style={{ fontWeight: "bold", marginTop: 4 }}>
+        <span style={{ marginRight: 8 }}>Total:</span> ₹{record.total}
+      </p>
+    </div>
+  ),
+}
+,
     {
       title: "Status",
       dataIndex: "status",
