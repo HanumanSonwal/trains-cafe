@@ -231,7 +231,11 @@ const OrderSchema = new mongoose.Schema(
       },
       vpa: { type: String },
     },
-
+train: {
+  train_number: { type: String, required: false },
+  train_pnr: { type: String, required: false },
+}
+,
     status: {
       type: String,
       enum: ["placed", "confirm", "cancel", "dispatch", "delivered"],
