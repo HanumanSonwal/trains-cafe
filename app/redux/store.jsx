@@ -29,11 +29,15 @@
 // export default store;
 
 
+// app/redux/store.jsx
+
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; 
+import storage from 'redux-persist/lib/storage';
 import cartReducer from './cartSlice';
 import stationReducer from "./stationSlice";
+import menuReducer from './menuSlice'; // ✅ fix
+
 import { combineReducers } from 'redux';
 
 const persistConfig = {
@@ -45,6 +49,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   cart: cartReducer,
   station: stationReducer,
+  menu: menuReducer, // ✅ added here
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -53,7 +58,7 @@ const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, 
+      serializableCheck: false,
     }),
 });
 

@@ -221,9 +221,10 @@ const columns = [
       </Space>
     ),
   },
-  {
-    title: "Action",
-    render: (_, record) => (
+ {
+  title: "Action",
+  render: (_, record) => (
+    <Space>
       <Button
         icon={<EditOutlined />}
         onClick={() => {
@@ -231,8 +232,16 @@ const columns = [
           setIsModalOpen(true);
         }}
       />
-    ),
-  },
+      <Button
+        type="link"
+        onClick={() => window.open(`/api/orders/invoice/${record.orderID}`, "_blank")}
+      >
+        Download Invoice
+      </Button>
+    </Space>
+  ),
+},
+
 ];
 
 
@@ -255,9 +264,11 @@ const columns = [
             style={{ width: 140 }}
           >
             <Option value="All">All</Option>
-            <Option value="pending">Pending</Option>
-            <Option value="confirmed">Confirmed</Option>
-            <Option value="delivered">Delivered</Option>
+            <Option value="placed">Placed</Option>
+  <Option value="confirm">Confirm</Option>
+  <Option value="cancel">Cancel</Option>
+  <Option value="dispatch">Dispatch</Option>
+  <Option value="delivered">Delivered</Option>
           </Select>
           <Input placeholder="Search" disabled />
         </div>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice - {{orderID}}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      font-size: 14px;
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #444;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #1c1c1c;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    .summary-table td {
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+      text-align: center;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Invoice</h1>
+    <p><strong>Invoice No:</strong> {{orderID}}</p>
+    <p>This is a computer generated invoice. No signature is required.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Customer Details</div>
+    <table>
+      <tr><th>Name</th><td>{{customerName}}</td></tr>
+      <tr><th>Mobile</th><td>{{mobile}}</td></tr>
+      <tr><th>Email</th><td>{{email}}</td></tr>
+      <tr><th>Delivery Station</th><td>{{station}}</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Train Information</div>
+    <table>
+      <tr><th>Train No.</th><td>{{trainNumber}}</td></tr>
+      <tr><th>Coach</th><td>{{coach}}</td></tr>
+      <tr><th>Seat No.</th><td>{{seat}}</td></tr>
+      <tr><th>PNR</th><td>{{pnr}}</td></tr>
+      <tr><th>Delivery Date</th><td>{{deliveryDate}} {{deliveryTime}}</td></tr>
+      <tr><th>Payment Mode</th><td>{{paymentMethod}}</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Order Items</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Sr. No.</th>
+          <th>Item</th>
+          <th>Quantity x Price</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each items}}
+        <tr>
+          <td>{{serial}}</td>
+          <td>{{name}}</td>
+          <td>{{quantity}} x ₹{{price}}</td>
+          <td>₹{{total}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Invoice Summary</div>
+    <table class="summary-table">
+      <tr><td>Sub Total</td><td>₹{{subTotal}}</td></tr>
+      <tr><td>Discount</td><td>₹{{discount}}</td></tr>
+      <tr><td>Delivery Charges</td><td>₹{{deliveryCharge}}</td></tr>
+      <tr><td>Advance</td><td>₹{{advance}}</td></tr>
+      <tr><td><strong>Total Amount</strong></td><td><strong>₹{{total}}</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>For any queries, contact us at 8696963496</p>
+    <p>Thanks and Regards, <br />Trainscafe Team</p>
+  </div>
+</body>
+</html>
