@@ -56,6 +56,8 @@ const OrdersTable = () => {
         const mappedData = result.docs.map((order) => ({
           key: order._id,
           orderID: order._id,
+          order_id: order.order_id,
+
           date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
           Vendor_Name: order?.Vendor_Name || "N/A",
           Items: order?.Items || [],
@@ -137,17 +139,16 @@ const OrdersTable = () => {
   };
 
   const columns = [
-{
-  title: "Order ID",
-  dataIndex: "order_id", 
-  render: (_, record) => (
-    <div>
-      <p>{record.order_id}</p> 
-      <small>{record.date}</small>
-    </div>
-  ),
-}
-,
+    {
+      title: "Order ID",
+      dataIndex: "order_id",
+      render: (text, record) => (
+        <div>
+          <p>{text}</p>
+          <small>{record.date}</small>
+        </div>
+      ),
+    },
     {
       title: "Vendor & Items",
       key: "vendor",
