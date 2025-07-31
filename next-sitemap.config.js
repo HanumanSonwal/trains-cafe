@@ -12,7 +12,7 @@
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: "http://localhost:3000", // production mein domain use karna
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000", // production mein domain use karna
   generateRobotsTxt: true,
   exclude: ['/admin/*', '/api/*', '/admin-auth/*','/dashboard/*'],
   experimental: {
