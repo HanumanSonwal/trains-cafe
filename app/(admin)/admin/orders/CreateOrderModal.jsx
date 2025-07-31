@@ -26,8 +26,10 @@ export default function CreateOrderModal({
   const [vendor, setVendor] = useState(null);
   const [categories, setCategories] = useState([]);
   const [cart, setCart] = useState([]);
+  const [resetKey, setResetKey] = useState(0);
+const [submitting, setSubmitting] = useState(false);
 
-  console.log(categories, "initial-Data-categories");
+  console.log(station, vendor, "initial-Data-categories");
 
   const isEditMode = !!initialData?.orderID;
 
@@ -79,47 +81,46 @@ export default function CreateOrderModal({
           trainName: order.train?.train_name || "",
         });
 
-        const cartItems =
-          order.Items?.map((item) => ({
-            Item_Id: item.MenuItem?.Item_Id,
-            Item_Name: item.MenuItem?.Item_Name,
-            Price: item.MenuItem?.Price,
-            image: item.MenuItem?.image,
-            Quantity: item.Quantity,
-            Description: item.MenuItem?.Description || "",
-            vendor: vendorObj,
-            Food_Type: item.MenuItem?.Food_Type,
-          })) || [];
-
-        const categoriesMap = {};
+        const categoryMap = {};
 
         order.Items?.forEach((item) => {
           const cat = item.MenuItem?.Category;
-
           if (!cat?.Category_Id) return;
 
-          if (!categoriesMap[cat.Category_Id]) {
-            categoriesMap[cat.Category_Id] = {
-              Category_Id: cat.Category_Id,
-              Title: cat.Title,
-              Image: cat.Image,
-              menuItems: [],
+          const categoryId = cat.Category_Id;
+
+          if (!categoryMap[categoryId]) {
+            categoryMap[categoryId] = {
+              _id: categoryId,
+              categoryId: categoryId,
+              categoryName: cat.Title,
+              categoryImage: cat.Image,
+              station: stationObj,
+              vendor: vendorObj,
+              items: [],
             };
           }
 
-          categoriesMap[cat.Category_Id].menuItems.push({
-            ...item.MenuItem,
-            Quantity: item.Quantity || 1,
+          categoryMap[categoryId].items.push({
+            _id: item.MenuItem.Item_Id,
+            name: item.MenuItem.Item_Name,
+            price: item.MenuItem.Price,
+            description: item.MenuItem.Description,
+            vendor: vendorObj,
+            foodType: item.MenuItem.Food_Type,
+            image: item.MenuItem.image,
+            quantity: item.Quantity || 1,
           });
         });
 
-        const extractedCategories = Object.values(categoriesMap);
-        console.log(categoriesMap, "categories-Map");
+        const formattedCategoryList = Object.values(categoryMap);
 
-        setVendor(vendorObj);
         setStation(stationObj);
-        setCart(cartItems);
-        setCategories(extractedCategories);
+        setVendor(vendorObj);
+        setCategories(formattedCategoryList);
+
+        const fullCart = formattedCategoryList.flatMap((cat) => cat.items);
+        setCart(fullCart);
       } catch (error) {
         console.error("Order fetch error:", error);
         message.error("Error fetching order details");
@@ -143,7 +144,7 @@ export default function CreateOrderModal({
       message.error("Please select station, vendor and add at least 1 item!");
       return;
     }
-
+  setSubmitting(true);
     const body = {
       vendor,
       station,
@@ -203,16 +204,21 @@ export default function CreateOrderModal({
         );
         onSuccess?.();
         resetAll();
+        setResetKey((prev) => prev + 1);
       } else {
         message.error(result.message || "Something went wrong");
       }
-    } catch (err) {
-      message.error("Server error");
-    }
-  };
+  } catch (err) {
+    message.error("Server error");
+  } finally {
+    setSubmitting(false); // ✅ Stop loading
+  }
+};
 
   const handleCancel = () => {
     resetAll();
+    setResetKey((prev) => prev + 1);
+
     onCancel?.();
   };
 
@@ -223,13 +229,15 @@ export default function CreateOrderModal({
       title={isEditMode ? "Edit Order" : "Create Order"}
       footer={
         <Button
-          type="primary"
-          onClick={() => form.submit()}
-          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-          disabled={cart.length === 0}
-        >
-          {isEditMode ? "Update Order" : "Place Order"}
-        </Button>
+  type="primary"
+  onClick={() => form.submit()}
+  style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+  disabled={cart.length === 0}
+  loading={submitting} // 🔁 Here is the change
+>
+  {isEditMode ? "Update Order" : "Place Order"}
+</Button>
+
       }
       width={900}
       bodyStyle={{
@@ -268,6 +276,7 @@ export default function CreateOrderModal({
           initialVendor={vendor}
           initialCategory={categories}
           initialCart={cart}
+          resetKey={resetKey}
         />
 
         <Divider
@@ -295,18 +304,6 @@ export default function CreateOrderModal({
             </Col>
             <Col span={12}>
               <Form.Item
-                name="trainName"
-                label="Train Name"
-                rules={[{ required: true }]}
-              >
-                <Input placeholder="Train Name" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
                 name="pnr"
                 label="PNR Number"
                 rules={[{ required: true }]}
@@ -314,7 +311,11 @@ export default function CreateOrderModal({
                 <Input placeholder="PNR Number" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+          </Row>
+
+          <Row gutter={16}>
+           
+            <Col span={12}>
               <Form.Item
                 name="seatNo"
                 label="Seat Number"
@@ -323,7 +324,7 @@ export default function CreateOrderModal({
                 <Input placeholder="Seat Number" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 name="coach"
                 label="Coach"
@@ -364,15 +365,7 @@ export default function CreateOrderModal({
                 <Input placeholder="Email" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item name="alternateMobile" label="Alternate Mobile">
-                <Input placeholder="Alternate Mobile Number" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
+                        <Col span={12}>
               <Form.Item
                 name="mobile"
                 label="Mobile"
@@ -381,6 +374,17 @@ export default function CreateOrderModal({
                 <Input placeholder="Mobile Number" />
               </Form.Item>
             </Col>
+
+            <Col span={12}>
+              <Form.Item name="alternateMobile" label="Alternate Mobile">
+                <Input placeholder="Alternate Mobile Number" />
+              </Form.Item>
+            </Col>
+
+          </Row>
+
+          <Row gutter={16}>
+
             <Col span={12}>
               <Form.Item
                 name="paymentMethod"
@@ -447,6 +451,7 @@ export default function CreateOrderModal({
               </Col>
             </Row>
           </Card>
+            
         </Form>
       </div>
     </Modal>

@@ -100,7 +100,7 @@ const Menubar = () => {
     },
         {
       key: '20',
-      icon: <MessageOutlined />,
+      icon: <OrderedListOutlined />,
       label: <Link href="/admin/orders">Orders Managment</Link>,
       path: '/admin/orders',
     },
@@ -151,28 +151,7 @@ const Menubar = () => {
           },
         ],
       },
-    {
-      key: 'sub1',
-      icon: <OrderedListOutlined />,
-      label: 'Orders',
-      children: [
-        {
-          key: '15',
-          label: <Link href="/admin/orders/ongoing">Ongoing</Link>,
-          path: '/admin/orders/ongoing',
-        },
-        {
-          key: '16',
-          label: <Link href="/admin/orders/delivered">Delivered</Link>,
-          path: '/admin/orders/delivered',
-        },
-        {
-          key: '17',
-          label: <Link href="/admin/orders/cancelled">Cancelled</Link>,
-          path: '/admin/orders/cancelled',
-        },
-      ],
-    },
+    
     {
       key: 'sub2',
       icon: <SettingOutlined />,
