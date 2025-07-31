@@ -10,11 +10,14 @@ import {
   Space,
   Tag,
   message,
+  Dropdown,
+  Menu ,
   Tooltip,
 } from "antd";
 import {
   PlusOutlined,
   DownloadOutlined,
+  DownOutlined,
   EditOutlined,
 } from "@ant-design/icons";
 import CreateOrderModal from "./CreateOrderModal";
@@ -38,51 +41,72 @@ const OrdersTable = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-  console.log(editingOrder, "editing-Order-in-table");
+const buildQueryParams = (filters, extra = {}) => {
+  const { status, startDate, endDate } = filters;
+  let query = [];
 
-  const fetchData = async (page = 1, limit = 10) => {
-    setLoading(true);
-    try {
-      const { status, startDate, endDate } = filters;
-      const start = startDate ? `&startDate=${startDate}` : "";
-      const end = endDate ? `&endDate=${endDate}` : "";
-      const statusQuery = status && status !== "All" ? `&status=${status}` : "";
-      const response = await fetch(
-        `/api/orders?page=${page}&limit=${limit}${statusQuery}${start}${end}`
-      );
-      const result = await response.json();
+  if (status && status !== "All") {
+    query.push(`status=${encodeURIComponent(status)}`);
+  }
+  if (startDate) {
+    query.push(`startDate=${encodeURIComponent(startDate)}`);
+  }
+  if (endDate) {
+    query.push(`endDate=${encodeURIComponent(endDate)}`);
+  }
 
-      if (result.success) {
-        const mappedData = result.docs.map((order) => ({
-          key: order._id,
-          orderID: order._id,
-          order_id: order.order_id,
-
-          date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
-          Vendor_Name: order?.Vendor_Name || "N/A",
-          Items: order?.Items || [],
-          subTotal: order?.subTotal || 0,
-          tax: order?.payment?.tax || 0,
-          couponAmount: order?.couponAmount || 0,
-          total: order?.total || 0,
-          userDetails: order?.user_details || {},
-          station: order?.stationDetails?.Station_Name || "N/A",
-          status: order?.status || "Pending",
-          paymentStatus: order?.payment?.payment_status || "N/A",
-          paymentMethod: order?.payment?.payment_method || "N/A",
-        }));
-
-        setDataSource(mappedData);
-        setTotalPages(result.totalPages);
-      } else {
-        message.error("Failed to fetch data");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
+  for (const key in extra) {
+    if (extra[key] !== undefined && extra[key] !== "") {
+      query.push(`${key}=${encodeURIComponent(extra[key])}`);
     }
-  };
+  }
+
+  return query.length > 0 ? `?${query.join("&")}` : "";
+};
+const handleExport = (format) => {
+  const query = buildQueryParams(filters, { format }); 
+  const url = `/api/orders/export${query}`;
+  window.open(url, "_blank"); 
+};
+
+const fetchData = async (page = 1, limit = 10) => {
+  setLoading(true);
+  try {
+    const query = buildQueryParams(filters, { page, limit });
+    const response = await fetch(`/api/orders${query}`);
+    const result = await response.json();
+
+    if (result.success) {
+      const mappedData = result.docs.map((order) => ({
+        key: order._id,
+        orderID: order._id,
+        order_id: order.order_id,
+        date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
+        Vendor_Name: order?.Vendor_Name || "N/A",
+        Items: order?.Items || [],
+        subTotal: order?.subTotal || 0,
+        tax: order?.payment?.tax || 0,
+        couponAmount: order?.couponAmount || 0,
+        total: order?.total || 0,
+        userDetails: order?.user_details || {},
+        station: order?.stationDetails?.Station_Name || "N/A",
+        status: order?.status || "Pending",
+        paymentStatus: order?.payment?.payment_status || "N/A",
+        paymentMethod: order?.payment?.payment_method || "N/A",
+      }));
+
+      setDataSource(mappedData);
+      setTotalPages(result.totalPages);
+    } else {
+      message.error("Failed to fetch data");
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchData(currentPage);
@@ -144,7 +168,10 @@ const OrdersTable = () => {
       dataIndex: "order_id",
       render: (text, record) => (
         <div>
-          <p> <strong>{text}</strong></p>
+          <p>
+            {" "}
+            <strong>{text}</strong>
+          </p>
           <small>{record.date}</small>
         </div>
       ),
@@ -192,26 +219,26 @@ const OrdersTable = () => {
         </div>
       ),
     },
-   {
-  title: "Bill",
-  render: (_, record) => (
-    <div style={{ lineHeight: "1.5" }}>
-      <p>
-        <span style={{ marginRight: 8 }}>SubTotal:</span> ₹{record.subTotal}
-      </p>
-      <p>
-        <span style={{ marginRight: 8 }}>Tax:</span> ₹{record.tax}
-      </p>
-      <p>
-        <span style={{ marginRight: 8 }}>Coupon:</span> ₹{record.couponAmount}
-      </p>
-      <p style={{ fontWeight: "bold", marginTop: 4 }}>
-        <span style={{ marginRight: 8 }}>Total:</span> ₹{record.total}
-      </p>
-    </div>
-  ),
-}
-,
+    {
+      title: "Bill",
+      render: (_, record) => (
+        <div style={{ lineHeight: "1.5" }}>
+          <p>
+            <span style={{ marginRight: 8 }}>SubTotal:</span> ₹{record.subTotal}
+          </p>
+          <p>
+            <span style={{ marginRight: 8 }}>Tax:</span> ₹{record.tax}
+          </p>
+          <p>
+            <span style={{ marginRight: 8 }}>Coupon:</span> ₹
+            {record.couponAmount}
+          </p>
+          <p style={{ fontWeight: "bold", marginTop: 4 }}>
+            <span style={{ marginRight: 8 }}>Total:</span> ₹{record.total}
+          </p>
+        </div>
+      ),
+    },
     {
       title: "Status",
       dataIndex: "status",
@@ -246,31 +273,29 @@ const OrdersTable = () => {
         </Space>
       ),
     },
-   {
-  title: "Action",
-  render: (_, record) => (
-    <Space>
-      <Button
-        icon={<EditOutlined />}
-        onClick={() => {
-          setEditingOrder(record);
-          setIsModalOpen(true);
-        }}
-      />
+    {
+      title: "Action",
+      render: (_, record) => (
+        <Space>
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => {
+              setEditingOrder(record);
+              setIsModalOpen(true);
+            }}
+          />
 
-     <Tooltip title="Download Invoice">
-  <Button
-    icon={<DownloadOutlined />}
-    onClick={() =>
-      window.open(`/api/orders/invoice/${record.orderID}`, "_blank")
-    }
-  />
-</Tooltip>
-
-    </Space>
-  ),
-}
-,
+          <Tooltip title="Download Invoice">
+            <Button
+              icon={<DownloadOutlined />}
+              onClick={() =>
+                window.open(`/api/orders/invoice/${record.orderID}`, "_blank")
+              }
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
   ];
 
   return (
@@ -312,7 +337,23 @@ const OrdersTable = () => {
           >
             Add New Orders
           </Button>
-          <Button icon={<DownloadOutlined />}>Download</Button>
+          <Dropdown
+  overlay={
+    <Menu
+      onClick={({ key }) => {
+        handleExport(key); 
+      }}
+    >
+      <Menu.Item key="pdf">Export as PDF</Menu.Item>
+      <Menu.Item key="xlsx">Export as Excel</Menu.Item>
+    </Menu>
+  }
+>
+  <Button icon={<DownloadOutlined />}>
+    Download <DownOutlined />
+  </Button>
+</Dropdown>
+
         </div>
       </div>
 
