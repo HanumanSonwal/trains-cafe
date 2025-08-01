@@ -75,12 +75,12 @@ const CartPage = () => {
       {cartItems.length > 0 ? (
         <>
           {cartItems.map((item) => (
-          <div
+      <div
   key={item._id}
-  className="bg-white shadow hover:shadow-lg transition rounded-xl flex justify-between items-center gap-4 mb-4 p-4"
+  className="bg-white shadow hover:shadow-lg transition rounded-xl flex justify-between items-center gap-4 mb-4 p-4 max-[320px]:flex-col max-[320px]:items-start"
 >
   {/* Left: Image & Details */}
-  <div className="flex items-center gap-4 flex-1">
+  <div className="flex items-center gap-4 flex-1 max-[320px]:w-full">
     <div className="w-24 h-24 relative flex-shrink-0 rounded-lg overflow-hidden">
       <Image
         src={item.image}
@@ -109,24 +109,24 @@ const CartPage = () => {
   </div>
 
   {/* Right: Quantity Controls */}
-  <div className="flex items-center gap-3">
-    <Button
-      size="small"
-      shape="circle"
-      icon={<MinusOutlined />}
-      onClick={() => handleDecreaseQuantity(item)}
-      className="border border-gray-300 hover:border-[#D6872A] text-gray-700 hover:text-white hover:bg-[#D6872A] transition"
-    />
-    <span className="text-lg font-medium">{item.quantity}</span>
-    <Button
-      size="small"
-      shape="circle"
-      icon={<PlusOutlined />}
-      onClick={() => handleIncreaseQuantity(item)}
-      className="border border-gray-300 hover:border-[#D6872A] text-gray-700 hover:text-white hover:bg-[#D6872A] transition"
-    />
-  </div>
+ <div className="flex items-center max-[320px]:mt-2 max-[320px]:self-end border border-[#D6872A] rounded-full overflow-hidden">
+  <Button
+    size="small"
+    icon={<MinusOutlined />}
+    onClick={() => handleDecreaseQuantity(item)}
+    className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
+  />
+  <div className="px-3 text-[#D6872A] font-bold">{item.quantity}</div>
+  <Button
+    size="small"
+    icon={<PlusOutlined />}
+    onClick={() => handleIncreaseQuantity(item)}
+    className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
+  />
 </div>
+
+</div>
+
 
           ))}
 
