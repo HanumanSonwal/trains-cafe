@@ -1,162 +1,209 @@
-import { cartCalculation } from '@/app/lib';
-import Order from '@/app/models/order';
-import OrderItems from '@/app/models/orderItems';
-import Station from '@/app/models/station';
-import CouponUsage from '@/app/models/couponUsage';
-import Coupon from '@/app/models/coupon';
-import { NextResponse } from 'next/server';
-import { parsePhoneNumber } from 'libphonenumber-js';
-import * as EmailValidator from 'email-validator';
+import { cartCalculation } from "@/app/lib";
+import Order from "@/app/models/order";
+import OrderItems from "@/app/models/orderItems";
+import Station from "@/app/models/station";
+import CouponUsage from "@/app/models/couponUsage";
+import Coupon from "@/app/models/coupon";
+import { NextResponse } from "next/server";
+import { parsePhoneNumber } from "libphonenumber-js";
+import * as EmailValidator from "email-validator";
+import Razorpay from "razorpay";
 
-export async function POST(req, context) {
+const razorpay = new Razorpay({
+  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+  key_secret: process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET,
+});
+
+export async function POST(req) {
   try {
-    const { vendor, station,  cacategory,train, payment, cart, user_details, couponCode } = await req.json();
+    const {
+      vendor,
+      station,
+      cacategory,
+      train,
+      payment,
+      cart,
+      user_details,
+      couponCode,
+      adminDiscountPercent = 0,
+    } = await req.json();
 
     if (!vendor || !station || !train || !payment) {
       return NextResponse.json({
         success: false,
-        message: "Invalid request. Required fields missing."
+        message: "Invalid request. Required fields missing.",
       });
     }
 
     const { email, mobile } = user_details;
 
-    // Validate email
     if (!EmailValidator.validate(email)) {
       return NextResponse.json({
         success: false,
-        message: "Invalid email for applying coupon"
+        message: "Invalid email for applying coupon",
       });
     }
 
-    // Validate mobile number (assume India)
     try {
-      const phoneNumber = parsePhoneNumber(mobile, 'IN');
+      const phoneNumber = parsePhoneNumber(mobile, "IN");
       if (!phoneNumber?.isValid()) {
         return NextResponse.json({
           success: false,
-          message: "Invalid phone number"
+          message: "Invalid phone number",
         });
       }
     } catch (err) {
       return NextResponse.json({
         success: false,
-        message: "Invalid phone number format"
+        message: "Invalid phone number format",
       });
     }
 
     let coupon = null;
-
     if (couponCode) {
-      // Check if coupon already used
       const isCouponUsed = await CouponUsage.findOne({
         code: couponCode,
         email,
-        phone: mobile
+        phone: mobile,
       });
 
       if (isCouponUsed) {
         return NextResponse.json({
           success: false,
-          message: "Coupon already used"
+          message: "Coupon already used",
         });
       }
 
-      // Check if coupon exists and is active
       coupon = await Coupon.findOne({
         code: couponCode,
-        status: "published"
+        status: "published",
       });
 
       if (!coupon) {
         return NextResponse.json({
           success: false,
-          message: "Coupon not found"
+          message: "Coupon not found",
         });
       }
 
-      // Check date validity
       const now = new Date();
       if (coupon.startDate > now || coupon.endDate < now) {
         return NextResponse.json({
           success: false,
-          message: "Coupon is expired"
+          message: "Coupon is expired",
         });
       }
     }
 
-    // Validate cart and calculate totals
-    const { subTotal, tax, total, discount } = cartCalculation(cart, coupon);
+    const {
+      subTotal,
+      tax,
+      total,
+      discount,
+      adminDiscountAmount,
+      couponDiscount,
+    } = cartCalculation(cart, coupon, adminDiscountPercent);
 
     if (coupon && coupon.minimumAmount > subTotal) {
       return NextResponse.json({
         success: false,
-        message: "Minimum amount not reached for coupon"
+        message: "Minimum amount not reached for coupon",
       });
     }
 
-    // Prepare payment details
+    let rp_order = null;
+    let paymentDetails = {};
+
+    if (payment.method === "RAZORPAY") {
+      rp_order = await razorpay.orders.create({
+        amount: Math.round(total * 100),
+        currency: "INR",
+        receipt: `receipt_order_${Date.now()}`,
+      });
+
+      paymentDetails = {
+        method: "RAZORPAY",
+        payment_status: "pending",
+        amount: total,
+        tax: tax,
+        vpa: "",
+        rp_order_id: rp_order.id,
+        rp_payment_id: "",
+        rp_signature: "",
+        rp_order_status: rp_order.status,
+        rp_receipt: rp_order.receipt,
+      };
+    } else {
+      paymentDetails = {
+        method: payment.method,
+      };
+    }
+
     let paymentBody = {};
-    if (payment.method === 'COD') {
+    if (payment.method === "COD") {
       paymentBody = {
         payment_method: "COD",
         payment_status: "pending",
         amount: total,
         tax: tax,
         vpa: "",
-        rp_payement_id: ""
+        rp_payment_id: "",
+        rp_order_id: "",
+        rp_signature: "",
       };
-    } else {
-      // Razorpay integration if needed
+    } else if (payment.method === "RAZORPAY") {
+      paymentBody = {
+        payment_method: "RAZORPAY",
+        payment_status: "pending",
+        amount: total,
+        tax: tax,
+        vpa: "",
+        rp_payment_id: "",
+        rp_order_id: rp_order.id,
+        rp_signature: "",
+      };
     }
 
-    // Validate station
-    // const stationRes = await Station.findOne({ code: station.station_code });
     const stationRes = await Station.findOne({ code: station.code });
-
     if (!stationRes) {
       return NextResponse.json({
         success: false,
-        message: "Invalid station"
+        message: "Invalid station",
       });
     }
-
-    // Create and save order
     const order = new Order({
       vendor: vendor._id,
       station: stationRes._id,
-    //  cacategory: cacategory._id,
       total,
       subTotal,
-     // train,
-     train: {
-    train_number: train?.train_number || user_details?.trainNo || "",
-    train_pnr: user_details?.pnr || "", // Backup from user_details if needed
-  },
-      couponAmount: discount,
+      train: {
+        train_number: train?.train_number || user_details?.trainNo || "",
+        train_pnr: user_details?.pnr || "",
+      },
+      couponAmount: couponDiscount,
+      adminDiscountPercent,
+      adminDiscountValue: adminDiscountAmount,
+      totalDiscount: discount,
       user_details,
-      payment: paymentBody,
-      status: "placed"
+      payment: paymentDetails,
+      status: "placed",
     });
 
     await order.save();
 
-    // Save order items
     const orderItems = cart.map((item) => ({
       Order_Id: order._id,
       Item_Id: item._id,
       Quantity: item.quantity,
-      Price: item.price
+      Price: item.price,
     }));
-
     await OrderItems.insertMany(orderItems);
 
-    // Save coupon usage if coupon applied
     if (coupon) {
       const couponUsage = new CouponUsage({
         code: couponCode,
         email,
-        phone: mobile
+        phone: mobile,
       });
       await couponUsage.save();
     }
@@ -164,14 +211,31 @@ export async function POST(req, context) {
     return NextResponse.json({
       success: true,
       message: "Order placed successfully",
-      data: order
+      data: {
+        vendor: order.vendor,
+        station: order.station,
+        train: order.train,
+        total: order.total,
+        subTotal: order.subTotal,
+        couponAmount: order.couponAmount,
+        couponDiscountAmount: order.couponDiscountAmount,
+        adminDiscountAmount: order.adminDiscountAmount,
+        adminDiscountPercent: order.adminDiscountPercent,
+        totalDiscount: order.totalDiscount,
+        user_details: order.user_details,
+        status: order.status,
+        _id: order._id,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        order_id: order.order_id,
+        payment: paymentDetails,
+      },
     });
-
   } catch (error) {
     console.error("Error placing order:", error);
     return NextResponse.json({
       success: false,
-      message: error.message || "Something went wrong"
+      message: error.message || "Something went wrong",
     });
   }
 }

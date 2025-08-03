@@ -1,6 +1,8 @@
-import DynamicPage from "./DynamicPage";
+// ✅ Force server-side rendering for SEO (important!)
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
-export const dynamicParams = true; // allow dynamic routing if needed
+import DynamicPage from "./DynamicPage";
 
 // ✅ SEO Metadata Generator (SSR)
 export async function generateMetadata({ params }) {

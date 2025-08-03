@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Order Report</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Order Report</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Order ID</th>
+          <th>Vendor</th>
+          <th>Station</th>
+          <th>Status</th>
+          <th>Payment</th>
+          <th>Subtotal</th>
+          <th>Tax</th>
+          <th>Coupon</th>
+          <th>Total</th>
+          <th>Date</th>
+          <th>Items</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{tableRows}}
+      </tbody>
+    </table>
+  </body>
+</html>
