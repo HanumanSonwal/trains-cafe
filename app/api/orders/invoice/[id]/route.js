@@ -33,7 +33,8 @@ export async function GET(req, { params }) {
     const htmlPath = path.join(process.cwd(), "templates", "invoiceTemplate.html");
     const htmlTemplate = fs.readFileSync(htmlPath, "utf-8");
     const compile = handlebars.compile(htmlTemplate);
-
+const coupon = order.couponAmount || 0;
+const adminDiscount = order.adminDiscountValue || 0;
     const html = compile({
       orderID: order.order_id || order._id,
       customerName: order.user_details?.name || "N/A",
@@ -50,7 +51,11 @@ export async function GET(req, { params }) {
        tax: order.payment?.tax || 0,  
       items,
       subTotal: order.subTotal || 0,
-      discount: order.couponAmount || 0,
+      // discount: order.couponAmount || 0,
+        discount: coupon.toFixed(2),
+  adminDiscountValue: adminDiscount.toFixed(2),
+  adminDiscountPercent: order.adminDiscountPercent || 0,
+  totalDiscount: (coupon + adminDiscount).toFixed(2),
       deliveryCharge: order.vendor?.Delivery_Charges || 0,
       advance: 0,
       total: order.total || 0,

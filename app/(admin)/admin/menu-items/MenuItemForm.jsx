@@ -98,18 +98,34 @@ const handleFinish = async (values) => {
   } else {
     setImageError("");
   }
+const originalPrice = parseFloat(values.Price);
+    const discountPercent = parseFloat(values.Discount || "0");
+    const discountAmount = (discountPercent / 100) * originalPrice;
+    const finalPrice = Math.round(originalPrice - discountAmount);
 
-  const body = {
-    Item_Name: values.Item_Name,
-    Category_Id: values.Category_Id,
-    Vendor: values.Vendor,
-    Station: values.Station,
-    Food_Type: values.Food_Type,
-    Price: parseFloat(values.Price),
-    Discount: parseFloat(values.Discount || "0"),
-    Description: values.Description || "",
-    image: url
-  };
+    const body = {
+      Item_Name: values.Item_Name,
+      Category_Id: values.Category_Id,
+      Vendor: values.Vendor,
+      Station: values.Station,
+      Food_Type: values.Food_Type,
+      Price: originalPrice,
+      Discount: discountPercent,
+      Final_Price: finalPrice,
+      Description: values.Description || "",
+      image: url,
+    };
+  // const body = {
+  //   Item_Name: values.Item_Name,
+  //   Category_Id: values.Category_Id,
+  //   Vendor: values.Vendor,
+  //   Station: values.Station,
+  //   Food_Type: values.Food_Type,
+  //   Price: parseFloat(values.Price),
+  //   Discount: parseFloat(values.Discount || "0"),
+  //   Description: values.Description || "",
+  //   image: url
+  // };
 
   const urlPath = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
   const method = initialValues ? updateData : postData;

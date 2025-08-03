@@ -32,6 +32,11 @@ const MenuSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    Final_Price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
     Discount: {
       type: Number,
       required: true,
