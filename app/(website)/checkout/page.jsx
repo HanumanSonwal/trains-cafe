@@ -126,7 +126,7 @@ const CheckoutPage = () => {
 
   return (
     <>
-      <div className="max-w-[575px] mx-auto bg-gray-100 min-h-screen">
+      <div className="max-w-3xl mx-auto bg-gray-100 min-h-screen">
         <div className="relative h-40 md:h-60 mb-4">
           <img
             src="/images/checkoutbanner.png"
@@ -136,43 +136,71 @@ const CheckoutPage = () => {
         </div>
 
         <div className="p-4">
-          <h1 className="text-xl font-bold mb-6 text-center text-gray-800">
-            Your Order at <span style={{ color: "#704d25" }}>Jaipur</span> from{" "}
+          <h1 className="text-xl font-bold mb-2 text-center text-gray-800">
+            Your Order at{" "}
+            <span style={{ color: "#704d25" }}>{station.name}</span> from{" "}
             <span style={{ color: "#704d25" }}>Trains Cafe</span>
           </h1>
 
+          <div className="flex justify-center mb-2">
+            <span className="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+              Delivered to 10,000+ Train Passengers
+            </span>
+          </div>
+
+          <p className="text-center text-gray-600 text-sm max-w-md mx-auto mb-6">
+            We deliver hot & hygienic food right to your train seat. Please
+            verify your travel and contact details carefully before placing the
+            order.
+          </p>
+
           <Form layout="vertical" form={form} onFinish={handlePlaceOrder}>
-            <div className="bg-white shadow rounded-lg p-4 sm:p-6">
+            <div className="bg-white shadow rounded-lg p-2 sm:p-4">
               <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
                 Customer Order Details
               </h2>
 
               <Divider orientation="left">User Details</Divider>
-              <Row gutter={16}>
+              <Row gutter={[8, 8]}>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="mobile"
                     label="Mobile Number"
+                    style={{ marginBottom: 12 }}
                     rules={[
                       { required: true, message: "Mobile number is required" },
+                      {
+                        pattern: /^\d{10}$/,
+                        message: "Enter a valid 10-digit mobile number",
+                      },
                     ]}
                   >
-                    <Input placeholder="Mobile Number" />
+                    <Input placeholder="Mobile Number" maxLength={10} />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="name"
                     label="Name"
-                    rules={[{ required: true, message: "Name is required" }]}
+                    style={{ marginBottom: 12 }}
+                    rules={[
+                      { required: true, message: "Name is required" },
+                      {
+                        pattern: /^[A-Za-z\s]+$/,
+                        message: "Name should contain only letters",
+                      },
+                    ]}
                   >
                     <Input placeholder="Name" />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="email"
                     label="Email"
+                    style={{ marginBottom: 12 }}
                     rules={[
                       { required: true, message: "Email is required" },
                       { type: "email", message: "Enter a valid email address" },
@@ -181,53 +209,86 @@ const CheckoutPage = () => {
                     <Input placeholder="Email" />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="alternateMobile"
                     label="Alternate Mobile (Optional)"
+                    style={{ marginBottom: 12 }}
+                    rules={[
+                      {
+                        pattern: /^\d{10}$/,
+                        message: "Enter a valid 10-digit mobile number",
+                      },
+                    ]}
                   >
-                    <Input placeholder="Alternate Mobile" />
+                    <Input placeholder="Alternate Mobile" maxLength={10} />
                   </Form.Item>
                 </Col>
               </Row>
 
               <Divider orientation="left">Train Details</Divider>
-              <Row gutter={16}>
+              <Row gutter={[8, 8]}>
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="pnr"
                     label="PNR"
+                    style={{ marginBottom: 12 }}
                     rules={[
                       { required: true, message: "PNR is required" },
-                      { len: 10, message: "PNR must be exactly 10 digits" },
+                      {
+                        pattern: /^\d{10}$/,
+                        message: "PNR must be exactly 10 digits",
+                      },
                     ]}
                   >
-                    <Input placeholder="Enter 10 Digit PNR" />
+                    <Input placeholder="Enter 10 Digit PNR" maxLength={10} />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} sm={12}>
                   <Form.Item
                     name="trainNo"
                     label="Train Number"
+                    style={{ marginBottom: 12 }}
                     rules={[
                       { required: true, message: "Train number is required" },
+                      {
+                        pattern: /^\d+$/,
+                        message: "Train number should contain only digits",
+                      },
                     ]}
                   >
                     <Input placeholder="Train Number" />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} sm={12}>
-                  <Form.Item name="coach" label="Coach">
+                  <Form.Item
+                    name="coach"
+                    label="Coach"
+                    style={{ marginBottom: 12 }}
+                  >
                     <Input placeholder="Coach" />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} sm={12}>
-                  <Form.Item name="seatNo" label="Seat No.">
+                  <Form.Item
+                    name="seatNo"
+                    label="Seat No."
+                    style={{ marginBottom: 12 }}
+                  >
                     <Input placeholder="Seat No." />
                   </Form.Item>
                 </Col>
+
                 <Col span={24}>
-                  <Form.Item name="instructions" label="Optional Instructions">
+                  <Form.Item
+                    name="instructions"
+                    label="Optional Instructions"
+                    style={{ marginBottom: 0 }}
+                  >
                     <Input.TextArea
                       placeholder="Optional Instructions"
                       rows={3}
@@ -238,13 +299,11 @@ const CheckoutPage = () => {
             </div>
 
             <div className="bg-white shadow rounded-lg p-4 mt-4">
-              <h2 className="text-lg font-bold mb-4 text-gray-800">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
                 Order Details
               </h2>
               <ItemTable items={items} />
-
               <Divider className="!my-4" />
-
               <TotalSection
                 totalAmount={totalAmount}
                 gstAmount={gstAmount}
@@ -263,19 +322,18 @@ const CheckoutPage = () => {
             />
 
             <div className="bg-white shadow rounded-lg p-4 mt-4">
-              <h2 className="text-lg font-bold mb-4 text-gray-800">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
                 Payment Options
               </h2>
 
               <Radio.Group
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="flex flex-col justify-around md:flex-row gap-4 "
+                className="flex flex-col justify-around md:flex-row gap-4"
               >
-                {/* PAYTM */}
                 <Radio.Button
                   value="RAZORPAY"
-                  className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px]  ${
+                  className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px] ${
                     paymentMethod === "RAZORPAY"
                       ? "!border-[2px] !border-[#D49929]"
                       : "!border !border-gray-200"
@@ -295,7 +353,6 @@ const CheckoutPage = () => {
                   />
                 </Radio.Button>
 
-                {/* COD */}
                 <Radio.Button
                   value="COD"
                   className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px] ${

@@ -119,6 +119,9 @@ h4{
           padding: 8px !important;
     } */
   
+    .ant-form-item {
+  margin-bottom: 12px !important;
+}
       
     .hero-banner h2 {
       font-size: 22px !important;
