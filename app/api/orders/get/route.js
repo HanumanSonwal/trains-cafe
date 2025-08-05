@@ -329,6 +329,9 @@ export async function GET(req) {
           stationId: order.station.stationId,
         }
       : null;
+      const total = order.total || 0;
+const advanced = order.payment?.advanced || 0;
+const remainingAmount = total - advanced;
 
     return NextResponse.json({
       success: true,
@@ -338,6 +341,7 @@ export async function GET(req) {
         Vendor_Details: vendorDetails,
         Station_Details: stationDetails,
         Items: items,
+       remainingAmount, 
         vendor: undefined,
         station: undefined,
       },
