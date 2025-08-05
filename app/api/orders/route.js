@@ -94,7 +94,9 @@ export async function GET(req) {
               }
             : null,
         }));
-
+ const total = order.total || 0;
+const advanced = order.payment?.advanced || 0;
+    const remainingAmount = total - advanced;
         return {
           ...order.toObject(),
           Vendor_Name: vendor.Vendor_Name || null,
@@ -102,6 +104,7 @@ export async function GET(req) {
           Station_Details: station,
           Items: items,
           vendor: undefined, 
+           remainingAmount, 
             payment: {
     ...order.payment,
     tax: Number(order.payment.tax?.toFixed(2)), 

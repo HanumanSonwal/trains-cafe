@@ -49,8 +49,11 @@ const CartPage = () => {
     setModalOpen(false);
     setItemToRemove(null);
   };
+ 
+
 
   const totalPrice = cartItems.reduce((total, item) => {
+    
     return total + parseInt(item.price, 10) * parseInt(item.quantity, 10);
   }, 0);
 

@@ -89,6 +89,10 @@ const OrderSchema = new mongoose.Schema(
         type: Number,
         min: 0,
       },
+      advanced: {
+        type: Number,
+        min: 0,
+      },
       tax: {
         type: Number,
         min: 0,
