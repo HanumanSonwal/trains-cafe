@@ -108,6 +108,7 @@ export async function POST(req) {
 
     body.Price = parseFloat(body.Price || "0");
     body.Discount = parseFloat(body.Discount || "0");
+    body.Final_Price = parseFloat(body.Final_Price || "0");
 
     if (body.Category_Id) body.Category_Id = new mongoose.Types.ObjectId(body.Category_Id);
     if (body.Vendor) body.Vendor = new mongoose.Types.ObjectId(body.Vendor);

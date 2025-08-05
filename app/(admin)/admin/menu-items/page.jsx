@@ -251,17 +251,27 @@ const handleStatusChange = async (checked, key) => {
       dataIndex: "Vendor_Name",
       key: "Vendor",
     },
-    {
-      title: "Price",
-      dataIndex: "Price",
-      key: "Price",
-      render: (price) => (
-        <>
-          <strong style={{ color: "green", fontSize: "16px" }}>₹</strong>{" "}
-          {price}
-        </>
-      ),
-    },
+    // {
+    //   title: "Price",
+    //   dataIndex: "Price",
+    //   key: "Price",
+    //   render: (final_price) => (
+    //     <>
+    //       <strong style={{ color: "green", fontSize: "16px" }}>₹</strong>{" "}
+    //       {final_price}
+    //     </>
+    //   ),
+    // },
+{
+  title: "Final Price",
+  dataIndex: "Final_Price",
+  key: "Final_Price",
+  render: (price) => (
+    <>
+      <strong style={{ color: "green", fontSize: "16px" }}>₹</strong> {price}
+    </>
+  ),
+},
 
     {
       title: "Discount",

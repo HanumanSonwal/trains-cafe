@@ -86,7 +86,7 @@ const fetchData = async (page = 1, limit = 10) => {
         Items: order?.Items || [],
         subTotal: order?.subTotal || 0,
         tax: order?.payment?.tax || 0,
-        couponAmount: order?.couponAmount || 0,
+        couponAmount: Math.max(order?.couponAmount || 0, order?.adminDiscountValue || 0),
         total: order?.total || 0,
         userDetails: order?.user_details || {},
         station: order?.stationDetails?.Station_Name || "N/A",
