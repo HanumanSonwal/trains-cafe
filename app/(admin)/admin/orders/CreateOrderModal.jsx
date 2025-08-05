@@ -17,6 +17,8 @@ export default function CreateOrderModal({
   const [resetKey, setResetKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [advance, setAdvance] = useState(0);
+
 
   const isEditMode = !!initialData?.orderID;
 
@@ -27,6 +29,7 @@ export default function CreateOrderModal({
     setCategories([]);
     setCart([]);
     setDiscountPercentage(0);
+     setAdvance(0);
   };
 
   useEffect(() => {
@@ -117,6 +120,8 @@ export default function CreateOrderModal({
   const discountedSubtotal = subTotal - discountAmount;
   const tax = discountedSubtotal * 0.05;
   const total = discountedSubtotal + tax;
+  const remainingAmount = total - advance;
+
 
   const handleFinish = async (values) => {
     if (!station || !vendor || !cart.length)
@@ -159,6 +164,7 @@ export default function CreateOrderModal({
       couponCode: "",
       discount: 0,
       adminDiscountPercent: discountPercentage,
+      advance,
     };
 
     try {
@@ -232,6 +238,9 @@ export default function CreateOrderModal({
         discountAmount={discountAmount}
         tax={tax}
         total={total}
+          advance={advance}                        // ✅ Added
+  setAdvance={setAdvance}                  // ✅ Added
+  remainingAmount={remainingAmount}        // ✅ Added
         handleFinish={handleFinish}
       />
     </Modal>
