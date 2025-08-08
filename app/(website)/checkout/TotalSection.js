@@ -8,6 +8,7 @@ export default function TotalSection({
   gstAmount = 0,
   discount = 0,
   payableAmount = 0,
+  totalItem,
   isOpen,
   setIsOpen,
 }) {
@@ -25,20 +26,25 @@ export default function TotalSection({
   return (
     <div className="border border-dashed p-4 rounded-md">
       <div
-        className="flex justify-between items-center cursor-pointer"
+        className="flex justify-between items-center cursor-pointer flex-wrap"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="font-semibold">Total Payment</div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">(1 items)</span>
-          <span className="font-bold text-lg">
+        <div className="font-semibold text-sm sm:text-base">Total Payment</div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs sm:text-sm text-gray-500 whitespace-nowrap">
+            ({totalItem} items)
+          </span>
+          <span className="font-bold text-base sm:text-lg whitespace-nowrap">
             ₹ {payableAmount?.toFixed(2)}
           </span>
-          {isOpen ? <CaretUpOutlined /> : <CaretDownOutlined />}
+          {isOpen ? (
+            <CaretUpOutlined style={{ fontSize: "1rem" }} />
+          ) : (
+            <CaretDownOutlined style={{ fontSize: "1rem" }} />
+          )}
         </div>
       </div>
 
-      {/* Smooth Transition */}
       <div
         ref={contentRef}
         style={{
@@ -50,7 +56,7 @@ export default function TotalSection({
         <div className="pt-4 text-sm text-gray-700">
           <div className="flex justify-between py-1 border-b border-dashed">
             <span>Order Amount</span>
-            <span>₹ {totalAmount?.toFixed(2)}</span>
+            <span className="text-sm">₹ {totalAmount?.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-1 border-b border-dashed">
             <span>GST</span>

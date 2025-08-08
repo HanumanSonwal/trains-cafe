@@ -9,9 +9,10 @@ export default function CouponSection({
   email,
   mobile,
   items = [],
+  couponCode,
+  onCouponCodeChange,
   onDiscountChange,
 }) {
-  const [couponCode, setCouponCode] = useState("");
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,9 @@ export default function CouponSection({
   const handleApplyCoupon = async () => {
     if (!couponCode) return message.warning("Please enter a coupon code");
     if (!email || !mobile) {
-      return message.error("Please fill in email and mobile before applying coupon.");
+      return message.error(
+        "Please fill in email and mobile before applying coupon."
+      );
     }
 
     setLoading(true);
@@ -54,7 +57,7 @@ export default function CouponSection({
   };
 
   const handleRemoveCoupon = () => {
-    setCouponCode("");
+    onCouponCodeChange("");
     setIsCouponApplied(false);
     setCouponError(false);
     onDiscountChange(0);
@@ -72,9 +75,7 @@ export default function CouponSection({
         <div className="flex justify-between items-center">
           <span className="text-green-700 font-medium">
             ✅ Coupon applied:{" "}
-            <span className="bg-green-100 px-2 py-1 rounded">
-              {couponCode}
-            </span>
+            <span className="bg-green-100 px-2 py-1 rounded">{couponCode}</span>
           </span>
           <Tooltip title="Remove Coupon">
             <Button
@@ -98,7 +99,7 @@ export default function CouponSection({
           className="mb-2"
           value={couponCode}
           onChange={(e) => {
-            setCouponCode(e.target.value);
+            onCouponCodeChange(e.target.value);
             setCouponError(false);
           }}
           suffix={

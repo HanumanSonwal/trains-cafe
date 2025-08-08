@@ -101,21 +101,17 @@ const OrderDetailsForm = () => {
             rules={[
               { required: true, message: "Train number is required" },
               {
-                pattern: /^\d+$/,
-                message: "Train number should contain only digits",
+                pattern: /^\d{5}$/,
+                message: "Train number should be exactly 5 digits only",
               },
             ]}
           >
-            <Input placeholder="Train Number" />
+            <Input placeholder="Train Number" maxLength={5} />
           </Form.Item>
         </Col>
 
         <Col xs={24} sm={12}>
-          <Form.Item
-            name="coach"
-            label="Coach"
-            style={{ marginBottom: 12 }}
-          >
+          <Form.Item name="coach" label="Coach" style={{ marginBottom: 12 }}>
             <Input placeholder="Coach" />
           </Form.Item>
         </Col>

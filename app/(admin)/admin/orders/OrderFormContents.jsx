@@ -1,183 +1,6 @@
-// "use client";
-// import React from "react";
-// import {
-//   Form,
-//   Input,
-//   Radio,
-//   Row,
-//   Col,
-//   Divider,
-//   Card,
-// } from "antd";
-// import MenuSelector from "./MenuSelector";
-
-// export default function OrderFormContents({
-//   form,
-//   cart,
-//   station,
-//   vendor,
-//   categories,
-//   discountPercentage,
-//   setDiscountPercentage,
-//   resetKey,
-//   setStation,
-//   setVendor,
-//   setCart,
-//   setCategories,
-//   subTotal,
-//   discountAmount,
-//   tax,
-//   total,
-//   handleFinish,
-// }) {
-//   return (
-//     <div
-//       style={{
-//         maxHeight: "65vh",
-//         overflowY: "auto",
-//         paddingRight: 8,
-//         paddingBottom: 24,
-//       }}
-//     >
-//       <Divider orientation="left">Menu Details</Divider>
-//       <MenuSelector
-//         onUpdate={({ station, vendor, categories, cart }) => {
-//           setStation(station);
-//           setVendor(vendor);
-//           setCategories(categories);
-//           setCart(cart);
-//         }}
-//         initialStation={station}
-//         initialVendor={vendor}
-//         initialCategory={categories}
-//         initialCart={cart}
-//         resetKey={resetKey}
-//       />
-
-//       <Divider orientation="left">Train Details</Divider>
-//       <Form form={form} layout="vertical" onFinish={handleFinish}>
-//         <Row gutter={16}>
-//           <Col span={12}>
-//             <Form.Item name="trainNo" label="Train Number" rules={[{ required: true }]}>
-//               <Input placeholder="Train Number" />
-//             </Form.Item>
-//           </Col>
-//           <Col span={12}>
-//             <Form.Item name="pnr" label="PNR Number" rules={[{ required: true }]}>
-//               <Input placeholder="PNR Number" />
-//             </Form.Item>
-//           </Col>
-//         </Row>
-
-//         <Row gutter={16}>
-//           <Col span={12}>
-//             <Form.Item name="seatNo" label="Seat Number" rules={[{ required: true }]}>
-//               <Input placeholder="Seat Number" />
-//             </Form.Item>
-//           </Col>
-//           <Col span={12}>
-//             <Form.Item name="coach" label="Coach" rules={[{ required: true }]}>
-//               <Input placeholder="Coach (e.g. S1, A3)" />
-//             </Form.Item>
-//           </Col>
-//         </Row>
-
-//         <Divider orientation="left">Passenger Details</Divider>
-//         <Row gutter={16}>
-//           <Col span={12}>
-//             <Form.Item name="name" label="Passenger Name" rules={[{ required: true }]}>
-//               <Input placeholder="Full Name" />
-//             </Form.Item>
-//           </Col>
-//           <Col span={12}>
-//             <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
-//               <Input placeholder="Email" />
-//             </Form.Item>
-//           </Col>
-//           <Col span={12}>
-//             <Form.Item name="mobile" label="Mobile" rules={[{ required: true }]}>
-//               <Input placeholder="Mobile Number" />
-//             </Form.Item>
-//           </Col>
-//           <Col span={12}>
-//             <Form.Item name="alternateMobile" label="Alternate Mobile">
-//               <Input placeholder="Alternate Mobile Number" />
-//             </Form.Item>
-//           </Col>
-//         </Row>
-
-//         <Row gutter={16}>
-//           <Col span={12}>
-//             <Form.Item name="paymentMethod" label="Payment Method" rules={[{ required: true }]}>
-//               <Radio.Group>
-//                 <Radio value="COD">Cash on Delivery</Radio>
-//                 <Radio value="Online">Online</Radio>
-//               </Radio.Group>
-//             </Form.Item>
-//           </Col>
-//           <Col span={12}>
-//             <Form.Item name="adminDiscount" label="Discount (%)">
-//               <Input
-//                 type="number"
-//                 min={0}
-//                 max={100}
-//                 placeholder="Optional (e.g. 10)"
-//                 value={discountPercentage}
-//                 onChange={(e) => {
-//                   const val = parseFloat(e.target.value || "0");
-//                   setDiscountPercentage(isNaN(val) ? 0 : val);
-//                   form.setFieldsValue({ adminDiscount: val });
-//                 }}
-//               />
-//             </Form.Item>
-//           </Col>
-//         </Row>
-
-//         <Row gutter={16}>
-//           <Col span={24}>
-//             <Form.Item name="instructions" label="Instructions">
-//               <Input.TextArea placeholder="Any special instructions..." rows={4} />
-//             </Form.Item>
-//           </Col>
-//         </Row>
-
-//         <Divider orientation="left">Order Summary</Divider>
-//         <Card size="small" bordered style={{ maxWidth: 400, marginTop: 8 }}>
-//           <Row justify="space-between" style={{ marginBottom: 8 }}>
-//             <Col>Subtotal:</Col>
-//             <Col>₹{subTotal.toFixed(2)}</Col>
-//           </Row>
-//           <Row justify="space-between" style={{ marginBottom: 8 }}>
-//             <Col>Discount ({discountPercentage}%):</Col>
-//             <Col>- ₹{discountAmount.toFixed(2)}</Col>
-//           </Row>
-//           <Row justify="space-between" style={{ marginBottom: 8 }}>
-//             <Col>Tax (5%):</Col>
-//             <Col>₹{tax.toFixed(2)}</Col>
-//           </Row>
-//           <Divider style={{ margin: "8px 0" }} />
-//           <Row justify="space-between">
-//             <Col><b>Total:</b></Col>
-//             <Col><b>₹{total.toFixed(2)}</b></Col>
-//           </Row>
-//         </Card>
-//       </Form>
-//     </div>
-//   );
-// }
-
-
 "use client";
 import React from "react";
-import {
-  Form,
-  Input,
-  Radio,
-  Row,
-  Col,
-  Divider,
-  Card,
-} from "antd";
+import { Form, Input, Radio, Row, Col, Divider, Card, Typography } from "antd";
 import MenuSelector from "./MenuSelector";
 
 export default function OrderFormContents({
@@ -186,7 +9,7 @@ export default function OrderFormContents({
   station,
   vendor,
   categories,
-  discountPercentage,
+  adminDiscountPercent,
   setDiscountPercentage,
   resetKey,
   setStation,
@@ -197,12 +20,13 @@ export default function OrderFormContents({
   discountAmount,
   tax,
   total,
-   advance,
+  advanced,
   setAdvance,
   remainingAmount,
   handleFinish,
 }) {
-
+  console.log(adminDiscountPercent, "admin-Discount-Percent");
+  const { Text } = Typography;
 
   return (
     <div
@@ -233,18 +57,25 @@ export default function OrderFormContents({
         form={form}
         layout="vertical"
         onFinish={(values) => {
-          // advance bhi payload me bhejna hai
-          handleFinish({ ...values, advance });
+          handleFinish({ ...values, advanced });
         }}
       >
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="trainNo" label="Train Number" rules={[{ required: true }]}>
+            <Form.Item
+              name="trainNo"
+              label="Train Number"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="Train Number" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="pnr" label="PNR Number" rules={[{ required: true }]}>
+            <Form.Item
+              name="pnr"
+              label="PNR Number"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="PNR Number" />
             </Form.Item>
           </Col>
@@ -252,7 +83,11 @@ export default function OrderFormContents({
 
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="seatNo" label="Seat Number" rules={[{ required: true }]}>
+            <Form.Item
+              name="seatNo"
+              label="Seat Number"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="Seat Number" />
             </Form.Item>
           </Col>
@@ -266,17 +101,29 @@ export default function OrderFormContents({
         <Divider orientation="left">Passenger Details</Divider>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="name" label="Passenger Name" rules={[{ required: true }]}>
+            <Form.Item
+              name="name"
+              label="Passenger Name"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="Full Name" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[{ required: true, type: "email" }]}
+            >
               <Input placeholder="Email" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="mobile" label="Mobile" rules={[{ required: true }]}>
+            <Form.Item
+              name="mobile"
+              label="Mobile"
+              rules={[{ required: true }]}
+            >
               <Input placeholder="Mobile Number" />
             </Form.Item>
           </Col>
@@ -286,80 +133,117 @@ export default function OrderFormContents({
             </Form.Item>
           </Col>
         </Row>
+        <Divider orientation="left">Order Details</Divider>
 
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="paymentMethod" label="Payment Method" rules={[{ required: true }]}>
+            <Form.Item
+              label="Admin Discount %"
+              name="adminDiscountPercent"
+              rules={[{ required: true, message: "Please enter discount" }]}
+            >
+              <Input
+                min={0}
+                max={100}
+                style={{ width: "100%" }}
+                value={adminDiscountPercent}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value || "0");
+                  setDiscountPercentage(val);
+                  form.setFieldValue("adminDiscountPercent", val);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item name="advanced" label="Advance Payment (₹)">
+              <Input
+                type="number"
+                min={0}
+                placeholder="Advance amount"
+                value={advanced}
+                onChange={(e) => {
+                  const val = parseFloat(e.target.value || "0");
+                  setAdvance(isNaN(val) ? 0 : val);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="paymentMethod"
+              label="Payment Method"
+              rules={[{ required: true }]}
+            >
               <Radio.Group>
                 <Radio value="COD">Cash on Delivery</Radio>
                 <Radio value="Online">Online</Radio>
               </Radio.Group>
             </Form.Item>
           </Col>
-        </Row>
 
-        {/* New Row: Left input, Right card */}
-        <Row gutter={16}>
-          {/* Left Input Fields */}
-          <Col span={12}>
-            <Form.Item name="adminDiscount" label="Discount (%)">
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                placeholder="Optional (e.g. 10)"
-                value={discountPercentage}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value || "0");
-                  setDiscountPercentage(isNaN(val) ? 0 : val);
-                  form.setFieldsValue({ adminDiscount: val });
-                }}
-              />
-            </Form.Item>
-
-          <Form.Item name="advanced" label="Advance Payment (₹)">
-  <Input
-    type="number"
-    min={0}
-    placeholder="Advance amount"
-    value={advance}
-    onChange={(e) => {
-      const val = parseFloat(e.target.value || "0");
-      setAdvance(isNaN(val) ? 0 : val);
-    }}
-  />
-</Form.Item>
-
-          </Col>
-
-          {/* Right Summary Card */}
           <Col span={12}>
             <Card size="small" bordered style={{ marginTop: 8 }}>
               <Row justify="space-between" style={{ marginBottom: 8 }}>
-                <Col>Subtotal:</Col>
-                <Col>₹{subTotal.toFixed(2)}</Col>
+                <Col>
+                  <Text>Subtotal:</Text>
+                </Col>
+                <Col>
+                  <Text strong style={{ color: "green" }}>
+                    ₹{subTotal.toFixed(2)}
+                  </Text>
+                </Col>
               </Row>
+
               <Row justify="space-between" style={{ marginBottom: 8 }}>
-                <Col>Discount ({discountPercentage}%):</Col>
-                <Col>- ₹{discountAmount.toFixed(2)}</Col>
+                <Col>
+                  <Text>Discount ({adminDiscountPercent}%):</Text>
+                </Col>
+                <Col>
+                  <Text type="danger">- ₹{discountAmount.toFixed(2)}</Text>
+                </Col>
               </Row>
+
               <Row justify="space-between" style={{ marginBottom: 8 }}>
-                <Col>Tax (5%):</Col>
-                <Col>₹{tax.toFixed(2)}</Col>
+                <Col>
+                  <Text>Tax (5%):</Text>
+                </Col>
+                <Col>
+                  <Text style={{ color: "green" }}>₹{tax.toFixed(2)}</Text>
+                </Col>
               </Row>
+
               <Divider style={{ margin: "8px 0" }} />
+
               <Row justify="space-between" style={{ marginBottom: 8 }}>
-                <Col><b>Total:</b></Col>
-                <Col><b>₹{total.toFixed(2)}</b></Col>
+                <Col>
+                  <Text strong>Total:</Text>
+                </Col>
+                <Col>
+                  <Text strong style={{ color: "#1677ff" }}>
+                    ₹{total.toFixed(2)}
+                  </Text>
+                </Col>
               </Row>
+
               <Row justify="space-between" style={{ marginBottom: 4 }}>
-                <Col>Advance:</Col>
-                <Col>- ₹{advance.toFixed(2)}</Col>
+                <Col>
+                  <Text>Advance:</Text>
+                </Col>
+                <Col>
+                  <Text type="danger">- ₹{advanced.toFixed(2)}</Text>
+                </Col>
               </Row>
+
               <Divider style={{ margin: "8px 0" }} />
+
               <Row justify="space-between">
-                <Col><b>Remaining:</b></Col>
-                <Col><b>₹{remainingAmount.toFixed(2)}</b></Col>
+                <Col>
+                  <Text strong>Remaining:</Text>
+                </Col>
+                <Col>
+                  <Text strong style={{ color: "green" }}>
+                    ₹{remainingAmount.toFixed(2)}
+                  </Text>
+                </Col>
               </Row>
             </Card>
           </Col>
@@ -368,7 +252,10 @@ export default function OrderFormContents({
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item name="instructions" label="Instructions">
-              <Input.TextArea placeholder="Any special instructions..." rows={4} />
+              <Input.TextArea
+                placeholder="Any special instructions..."
+                rows={4}
+              />
             </Form.Item>
           </Col>
         </Row>

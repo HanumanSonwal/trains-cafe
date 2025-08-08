@@ -7,6 +7,8 @@ import {
   fetchStations,
   fetchVendorsByStation,
   fetchCategoriesByVendor,
+    clearVendors,
+  clearCategories,
 } from "@/app/redux/menuSlice";
 
 const { Option } = Select;
@@ -20,7 +22,8 @@ export default function MenuSelector({
   resetKey,
 }) {
   const dispatch = useDispatch();
-  const { stations, vendors, categories } = useSelector((state) => state.menu);
+  const { stations, vendors, categories, loading } = useSelector((state) => state.menu);
+
 
   console.log(vendors, "vendors-data");
 
@@ -124,20 +127,29 @@ export default function MenuSelector({
     });
   }, [selectedStation, selectedVendor, selectedCategories, cart]);
 
-  const handleStationChange = (id) => {
-    const station = stations.find((s) => s._id === id);
-    setSelectedStation(station);
-    resetAll();
-    dispatch(fetchVendorsByStation(station.code || station.name));
-  };
+const handleStationChange = (id) => {
+  const station = stations.find((s) => s._id === id);
+  setSelectedStation(station);
 
-  const handleVendorChange = (id) => {
-    const vendor = vendors.find((v) => v._id === id);
+  resetAll();
 
-    setSelectedVendor(vendor);
-    resetAll();
-    dispatch(fetchCategoriesByVendor({ vendorId: vendor._id, isVeg: true }));
-  };
+  dispatch(clearVendors()); 
+  dispatch(clearCategories()); 
+
+  dispatch(fetchVendorsByStation(station.code || station.name));
+};
+
+const handleVendorChange = (id) => {
+  const vendor = vendors.find((v) => v._id === id);
+  setSelectedVendor(vendor);
+
+  resetAll();
+
+  dispatch(clearCategories());
+
+  dispatch(fetchCategoriesByVendor({ vendorId: vendor._id, isVeg: true }));
+};
+
 
   const handleCategoryChange = (ids) => {
     const selected = categories.filter((c) =>
@@ -236,6 +248,7 @@ export default function MenuSelector({
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
+             loading={loading} 
           >
             {stations.map((s) => (
               <Option key={s._id} value={s._id}>
@@ -253,6 +266,7 @@ export default function MenuSelector({
             placeholder="Select vendor"
             style={{ width: "100%" }}
             onChange={handleVendorChange}
+             loading={loading} 
           >
             {vendors.map((v) => (
               <Option key={v._id} value={v._id}>
@@ -271,6 +285,7 @@ export default function MenuSelector({
             placeholder="Select categories"
             style={{ width: "100%" }}
             onChange={handleCategoryChange}
+             loading={loading} 
           >
             {categories.map((c) => (
               <Option

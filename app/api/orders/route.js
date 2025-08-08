@@ -1,11 +1,11 @@
-import dbConnect from '@/app/lib/dbConnect';
-import Order from '@/app/models/order';
-import OrderItems from '@/app/models/orderItems';
-import Menu from '@/app/models/menu';
-import { NextResponse } from 'next/server';
-import '@/app/models/vendor';
-import '@/app/models/station';
-import '@/app/models/category'; 
+import dbConnect from "@/app/lib/dbConnect";
+import Order from "@/app/models/order";
+import OrderItems from "@/app/models/orderItems";
+import Menu from "@/app/models/menu";
+import { NextResponse } from "next/server";
+import "@/app/models/vendor";
+import "@/app/models/station";
+import "@/app/models/category";
 
 export async function GET(req) {
   try {
@@ -25,12 +25,12 @@ export async function GET(req) {
       sort: { createdAt: -1 },
       populate: [
         {
-          path: 'vendor',
-          model: 'vendor',
+          path: "vendor",
+          model: "vendor",
         },
         {
-          path: 'station',
-          model: 'Station',
+          path: "station",
+          model: "Station",
         },
       ],
     };
@@ -38,7 +38,8 @@ export async function GET(req) {
     const searchOptions = {};
 
     if (statusParam) searchOptions.status = statusParam;
-    if (payment_statusParam) searchOptions["payment.payment_status"] = payment_statusParam;
+    if (payment_statusParam)
+      searchOptions["payment.payment_status"] = payment_statusParam;
 
     if (fromDate || toDate) {
       searchOptions.createdAt = {};
@@ -56,20 +57,21 @@ export async function GET(req) {
       return NextResponse.json({ success: false, message: "Orders not found" });
     }
 
-    // Fetch and enrich order items for each order
     const enrichedOrders = await Promise.all(
       orders.docs.map(async (order) => {
         const vendor = order.vendor || {};
         const station = order.station || {};
 
-        const orderItems = await OrderItems.find({ Order_Id: order._id }).populate({
-          path: 'Item_Id',
+        const orderItems = await OrderItems.find({
+          Order_Id: order._id,
+        }).populate({
+          path: "Item_Id",
           model: Menu,
-          select: 'Item_Name image Price Food_Type Description Category_Id',
+          select: "Item_Name image Price Food_Type Description Category_Id",
           populate: {
-            path: 'Category_Id',
-            model: 'Category',
-            select: 'title image',
+            path: "Category_Id",
+            model: "Category",
+            select: "title image",
           },
         });
 
@@ -94,21 +96,23 @@ export async function GET(req) {
               }
             : null,
         }));
- const total = order.total || 0;
-const advanced = order.payment?.advanced || 0;
-    const remainingAmount = total - advanced;
+        const total = order.total ?? 0;
+        const advancedAmount = order.payment?.advanced ?? 0;
+        const remainingAmount = Number((total - advancedAmount).toFixed(2));
+
         return {
           ...order.toObject(),
-          Vendor_Name: vendor.Vendor_Name || null,
+          Vendor_Name: vendor?.Vendor_Name || null,
           Vendor_Details: vendor,
           Station_Details: station,
           Items: items,
-          vendor: undefined, 
-           remainingAmount, 
-            payment: {
-    ...order.payment,
-    tax: Number(order.payment.tax?.toFixed(2)), 
-  },
+          vendor: undefined,
+          remainingAmount,
+          advancedAmount,
+          payment: {
+            ...order.payment,
+            tax: Number(order.payment?.tax?.toFixed(2) ?? 0),
+          },
         };
       })
     );

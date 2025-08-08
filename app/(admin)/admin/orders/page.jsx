@@ -11,16 +11,19 @@ import {
   Tag,
   message,
   Dropdown,
-  Menu ,
+  Menu,
   Tooltip,
+  Spin,
 } from "antd";
 import {
   PlusOutlined,
   DownloadOutlined,
   DownOutlined,
   EditOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import CreateOrderModal from "./CreateOrderModal";
+import ItemsColumn from "./ItemsColumn";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -41,33 +44,33 @@ const OrdersTable = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
 
-const buildQueryParams = (filters, extra = {}) => {
-  const { status, startDate, endDate } = filters;
-  let query = [];
+  const buildQueryParams = (filters, extra = {}) => {
+    const { status, startDate, endDate } = filters;
+    let query = [];
 
-  if (status && status !== "All") {
-    query.push(`status=${encodeURIComponent(status)}`);
-  }
-  if (startDate) {
-    query.push(`startDate=${encodeURIComponent(startDate)}`);
-  }
-  if (endDate) {
-    query.push(`endDate=${encodeURIComponent(endDate)}`);
-  }
-
-  for (const key in extra) {
-    if (extra[key] !== undefined && extra[key] !== "") {
-      query.push(`${key}=${encodeURIComponent(extra[key])}`);
+    if (status && status !== "All") {
+      query.push(`status=${encodeURIComponent(status)}`);
     }
-  }
+    if (startDate) {
+      query.push(`startDate=${encodeURIComponent(startDate)}`);
+    }
+    if (endDate) {
+      query.push(`endDate=${encodeURIComponent(endDate)}`);
+    }
 
-  return query.length > 0 ? `?${query.join("&")}` : "";
-};
-const handleExport = (format) => {
-  const query = buildQueryParams(filters, { format }); 
-  const url = `/api/orders/export${query}`;
-  window.open(url, "_blank"); 
-};
+    for (const key in extra) {
+      if (extra[key] !== undefined && extra[key] !== "") {
+        query.push(`${key}=${encodeURIComponent(extra[key])}`);
+      }
+    }
+
+    return query.length > 0 ? `?${query.join("&")}` : "";
+  };
+  const handleExport = (format) => {
+    const query = buildQueryParams(filters, { format });
+    const url = `/api/orders/export${query}`;
+    window.open(url, "_blank");
+  };
 
 const fetchData = async (page = 1, limit = 10) => {
   setLoading(true);
@@ -83,14 +86,20 @@ const fetchData = async (page = 1, limit = 10) => {
         order_id: order.order_id,
         date: new Date(order.createdAt || order.updatedAt).toLocaleString(),
         Vendor_Name: order?.Vendor_Name || "N/A",
+        Vendor_Details: order?.Vendor_Details || {},  
         Items: order?.Items || [],
         subTotal: order?.subTotal || 0,
         tax: order?.payment?.tax || 0,
-        couponAmount: Math.max(order?.couponAmount || 0, order?.adminDiscountValue || 0),
+        couponAmount: order?.couponAmount || 0,                
+        adminDiscountValue: order?.adminDiscountValue || 0,    
+        advancedAmount: order?.payment?.advanced || 0,
+        remainingAmount: order?.remainingAmount || 0,
         total: order?.total || 0,
         userDetails: order?.user_details || {},
-        station: order?.stationDetails?.Station_Name || "N/A",
+          trainDetails: order?.train || {},   
+        station: order?.station?.name || "N/A",
         status: order?.status || "Pending",
+        payment: order.payment || {}, 
         paymentStatus: order?.payment?.payment_status || "N/A",
         paymentMethod: order?.payment?.payment_method || "N/A",
       }));
@@ -102,6 +111,7 @@ const fetchData = async (page = 1, limit = 10) => {
     }
   } catch (error) {
     console.error("Error fetching data:", error);
+    message.error("Error fetching data");
   } finally {
     setLoading(false);
   }
@@ -176,69 +186,141 @@ const fetchData = async (page = 1, limit = 10) => {
         </div>
       ),
     },
-    {
-      title: "Vendor & Items",
-      key: "vendor",
-      render: (_, record) => (
+   {
+    title: "User Info",
+    dataIndex: "userDetails",
+    key: "userDetails",
+    render: (userDetails) => (
+      <div>
+        <p><strong>Name:</strong> {userDetails?.name || "N/A"}</p>
+        <p><strong>Mobile:</strong> {userDetails?.mobile || "N/A"}</p>
+        <p><strong>Email:</strong> {userDetails?.email || "N/A"}</p>
+        <p><strong>Coach:</strong> {userDetails?.coach || "N/A"}</p>
+        <p><strong>Seat No:</strong> {userDetails?.seatNo || "N/A"}</p>
+        <p><strong>PNR:</strong> {userDetails?.pnr || "N/A"}</p>
+      </div>
+    ),
+  },
+  {
+    title: "Vendor Info",
+    key: "vendor",
+    render: (_, record) => {
+      const v = record.Vendor_Details || {};
+      return (
         <div>
-          <div>
-            <strong>{record.Vendor_Name || "N/A"}</strong>
-          </div>
-          {record.Items?.length > 0 ? (
-            <ul className="pl-4 list-disc">
-              {record.Items.map((item, idx) => (
-                <li key={idx}>
-                  {item.Quantity}x {item?.MenuItem?.Item_Name || "Unnamed Item"}
+          <p><strong>Name:</strong> {record.Vendor_Name || v.Vendor_Name || "N/A"}</p>
+          <p><strong>Contact:</strong> {v.Contact_No || "N/A"}{v.Alternate_Contact_No ? ` / ${v.Alternate_Contact_No}` : ""}</p>
+          <p><strong>Address:</strong> {v.Address || "N/A"}</p>
+          <p><strong>Working Time:</strong> {v.Working_Time || "N/A"}</p>
+          <p><strong>Weekly Off:</strong> {v.Weekly_Off || "N/A"}</p>
+          
+        </div>
+      );
+    },
+  },
+  {
+    title: "Items",
+    key: "items",
+    render: (_, record) => {
+      const maxItemsToShow = 3;
+      if (record.Items.length <= maxItemsToShow) {
+        return (
+          <ul style={{ paddingLeft: 16, listStyleType: "disc", margin: 0 }}>
+            {record.Items.map((item, idx) => {
+              const menu = item.MenuItem || {};
+              const category = menu.Category || {};
+              return (
+                <li key={idx} style={{ marginBottom: 6 }}>
+                  <strong>
+                    {item.Quantity}x {menu.Item_Name || "Unnamed Item"}
+                  </strong>
+                  <br />
+                  <small>Category: {category.Title || "N/A"}</small>
+                  <br />
+                  <small>Price: ₹{menu.Price || item.Price || 0}</small>
+                  <br />
+                  <small>Description: {menu.Description || "N/A"}</small>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-gray-400">No Items</div>
-          )}
-        </div>
-      ),
+              );
+            })}
+          </ul>
+        );
+      } else {
+        return <ItemsColumn items={record.Items} />;
+      }
     },
-    {
-      title: "User Info",
-      render: (_, record) => (
-        <div>
+  },
+{
+  title: "Bill",
+  render: (_, record) => {
+    const {
+      subTotal = 0,
+      tax = 0,
+      couponAmount = 0,
+      adminDiscountValue = 0,
+      remainingAmount = 0,
+      advancedAmount = 0,
+      total = 0,
+      payment = {},
+    } = record;
+
+  const paymentStatus = payment.payment_status || "pending";
+    const effectiveRemainingAmount = advancedAmount > 0 ? remainingAmount : total;
+
+    return (
+      <div style={{ lineHeight: "1.5" }}>
+        <p>
+          <span style={{ marginRight: 8 }}>SubTotal:</span> ₹{subTotal.toFixed(2)}
+        </p>
+        <p>
+          <span style={{ marginRight: 8 }}>Tax:</span> ₹{tax.toFixed(2)}
+        </p>
+        {couponAmount > 0 && (
           <p>
-            <strong>Name:</strong> {record.userDetails.name || "N/A"}
+            <span style={{ marginRight: 8 }}>Coupon Discount:</span> -₹{couponAmount.toFixed(2)}
           </p>
+        )}
+        {adminDiscountValue > 0 && (
           <p>
-            <strong>Mobile:</strong> {record.userDetails.mobile || "N/A"}
+            <span style={{ marginRight: 8 }}>Admin Discount:</span> -₹{adminDiscountValue.toFixed(2)}
           </p>
-          <p>
-            <strong>Train:</strong> {record.userDetails.trainNo || "N/A"} |
-            Coach: {record.userDetails.coach || "N/A"} | Seat:{" "}
-            {record.userDetails.seatNo || "N/A"}
-          </p>
-          <p>
-            <strong>PNR:</strong> {record.userDetails.pnr || "N/A"}
-          </p>
-        </div>
-      ),
-    },
-    {
-      title: "Bill",
-      render: (_, record) => (
-        <div style={{ lineHeight: "1.5" }}>
-          <p>
-            <span style={{ marginRight: 8 }}>SubTotal:</span> ₹{record.subTotal}
-          </p>
-          <p>
-            <span style={{ marginRight: 8 }}>Tax:</span> ₹{record.tax}
-          </p>
-          <p>
-            <span style={{ marginRight: 8 }}>Coupon:</span> ₹
-            {record.couponAmount}
-          </p>
-          <p style={{ fontWeight: "bold", marginTop: 4 }}>
-            <span style={{ marginRight: 8 }}>Total:</span> ₹{record.total}
-          </p>
-        </div>
-      ),
-    },
+        )}
+        {advancedAmount > 0 && (
+          <>
+            <p style={{ color: "green" }}>
+              <span style={{ marginRight: 8 }}>Advanced Paid:</span> ₹{advancedAmount.toFixed(2)}
+            </p>
+            <p style={{ color: "red" }}>
+              <span style={{ marginRight: 8 }}>Remaining Amount:</span> ₹{effectiveRemainingAmount.toFixed(2)}
+            </p>
+          </>
+        )}
+
+        <p style={{ fontWeight: "bold", marginTop: 4 }}>
+          <span style={{ marginRight: 8 }}>Total:</span> ₹{total.toFixed(2)}
+        </p>
+
+        <p>
+          <span style={{ marginRight: 8 }}>Payment Status:</span>{" "}
+          <Tag
+            color={
+              paymentStatus === "paid"
+                ? "green"
+                : paymentStatus === "pending"
+                ? "orange"
+                : "red"
+            }
+          >
+            {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+          </Tag>
+        </p>
+      </div>
+    );
+  },
+}
+
+
+,
     {
       title: "Status",
       dataIndex: "status",
@@ -278,28 +360,42 @@ const fetchData = async (page = 1, limit = 10) => {
       render: (_, record) => (
         <Space>
           <Button
-            icon={<EditOutlined />}
+            icon={<EditOutlined className="text-white"/>}
             onClick={() => {
               setEditingOrder(record);
               setIsModalOpen(true);
             }}
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+
           />
 
           <Tooltip title="Download Invoice">
             <Button
-              icon={<DownloadOutlined />}
+              icon={<DownloadOutlined  className="text-white"/>}
               onClick={() =>
                 window.open(`/api/orders/invoice/${record.orderID}`, "_blank")
               }
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+
             />
           </Tooltip>
         </Space>
       ),
     },
   ];
-
+ const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
   return (
-    <div>
+     <div
+      className="p-4"
+      style={{
+        backgroundColor: "#FAF3CC",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+        Orders Management
+      </h2>
       <div className="filters flex justify-between mb-4">
         <div className="flex space-x-4">
           <RangePicker
@@ -338,29 +434,27 @@ const fetchData = async (page = 1, limit = 10) => {
             Add New Orders
           </Button>
           <Dropdown
-  overlay={
-    <Menu
-      onClick={({ key }) => {
-        handleExport(key); 
-      }}
-    >
-      <Menu.Item key="pdf">Export as PDF</Menu.Item>
-      <Menu.Item key="xlsx">Export as Excel</Menu.Item>
-    </Menu>
-  }
->
-  <Button icon={<DownloadOutlined />}>
-    Download <DownOutlined />
-  </Button>
-</Dropdown>
-
+            overlay={
+              <Menu
+                onClick={({ key }) => {
+                  handleExport(key);
+                }}
+              >
+                <Menu.Item key="pdf">Export as PDF</Menu.Item>
+                <Menu.Item key="xlsx">Export as Excel</Menu.Item>
+              </Menu>
+            }
+          >
+            <Button icon={<DownloadOutlined />}>
+              Download <DownOutlined />
+            </Button>
+          </Dropdown>
         </div>
       </div>
-
+ <Spin spinning={loading} indicator={antIcon}>
       <Table
         columns={columns}
         dataSource={dataSource}
-        loading={loading}
         pagination={{
           current: currentPage,
           total: totalPages * 10,
@@ -368,6 +462,7 @@ const fetchData = async (page = 1, limit = 10) => {
           pageSize: 10,
         }}
       />
+      </Spin>
 
       <CreateOrderModal
         open={isModalOpen}

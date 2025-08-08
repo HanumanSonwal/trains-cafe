@@ -7,14 +7,45 @@ export async function PUT(req, { params }) {
   try {
     await dbConnect();
     const { id } = params;
-    const { user_details, train, payment, cart , vendor, station} = await req.json();
+    const {
+      user_details,
+      train,
+      payment,
+      cart,
+      vendor,
+      station,
+      total,
+      subTotal,
+      couponAmount,
+      adminDiscountPercent,
+      adminDiscountValue,
+      totalDiscount,
+      status,
+      order_id,
+    } = await req.json();
 
     const order = await Order.findById(id);
     if (!order) {
-      return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "Order not found" },
+        { status: 404 }
+      );
     }
 
-    if (user_details) order.user_details = { ...order.user_details, ...user_details };
+    if (typeof total !== "undefined") order.total = total;
+    if (typeof subTotal !== "undefined") order.subTotal = subTotal;
+    if (typeof couponAmount !== "undefined") order.couponAmount = couponAmount;
+    if (typeof adminDiscountPercent !== "undefined")
+      order.adminDiscountPercent = adminDiscountPercent;
+    if (typeof adminDiscountValue !== "undefined")
+      order.adminDiscountValue = adminDiscountValue;
+    if (typeof totalDiscount !== "undefined")
+      order.totalDiscount = totalDiscount;
+    if (typeof status !== "undefined") order.status = status;
+    if (typeof order_id !== "undefined") order.order_id = order_id;
+
+    if (user_details)
+      order.user_details = { ...order.user_details, ...user_details };
     if (train) order.train = { ...order.train, ...train };
     if (payment) order.payment = { ...order.payment, ...payment };
     if (vendor) order.vendor = vendor;
@@ -41,11 +72,13 @@ export async function PUT(req, { params }) {
       data: order,
     });
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      message: "Failed to update order",
-      error: error.message,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to update order",
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
-

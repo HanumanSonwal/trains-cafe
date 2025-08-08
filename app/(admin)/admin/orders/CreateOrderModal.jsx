@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Modal, Button, message, Form } from "antd";
+import { Modal, Button, message, Form, Spin } from "antd";
 import OrderFormContents from "./OrderFormContents";
+import { LoadingOutlined } from "@ant-design/icons";
 
 export default function CreateOrderModal({
   open,
@@ -16,9 +17,9 @@ export default function CreateOrderModal({
   const [cart, setCart] = useState([]);
   const [resetKey, setResetKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [advance, setAdvance] = useState(0);
-
+  const [adminDiscountPercent, setDiscountPercentage] = useState(0);
+  const [advanced, setAdvance] = useState(0);
+  const [loadingOrder, setLoadingOrder] = useState(false);
 
   const isEditMode = !!initialData?.orderID;
 
@@ -29,7 +30,7 @@ export default function CreateOrderModal({
     setCategories([]);
     setCart([]);
     setDiscountPercentage(0);
-     setAdvance(0);
+    setAdvance(0);
   };
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function CreateOrderModal({
         resetAll();
         return;
       }
-
+      setLoadingOrder(true);
       try {
         const res = await fetch(`/api/orders/get?id=${initialData.orderID}`);
         const { success, order } = await res.json();
@@ -56,6 +57,8 @@ export default function CreateOrderModal({
           ...order.Vendor_Details,
         };
         const stationObj = { ...order.Station_Details };
+
+        console.log(order, "all-order-data");
 
         form.setFieldsValue({
           name: order.user_details?.name || "",
@@ -69,7 +72,12 @@ export default function CreateOrderModal({
           paymentMethod: order.payment?.payment_method || "",
           trainNo: order.train?.train_number || "",
           trainName: order.train?.train_name || "",
+          adminDiscountPercent: order?.adminDiscountPercent || "",
+          advanced: order?.payment?.advanced || "",
+          remainingAmount: order?.payment?.remainingAmount || "",
         });
+        setDiscountPercentage(order?.adminDiscountPercent || 0);
+        setAdvance(order?.payment?.advanced || 0);
 
         const categoryMap = {};
         order.Items?.forEach((item) => {
@@ -109,19 +117,23 @@ export default function CreateOrderModal({
       } catch (error) {
         console.error("Order fetch error:", error);
         message.error("Error fetching order details");
+      } finally {
+        setLoadingOrder(false);
       }
     };
 
     if (open) fetchOrderDetails();
   }, [initialData?.orderID, open]);
 
-  const subTotal = cart.reduce((sum, i) => sum + (i.price || 0) * (i.quantity || 0), 0);
-  const discountAmount = (subTotal * discountPercentage) / 100;
+  const subTotal = cart.reduce(
+    (sum, i) => sum + (i.price || 0) * (i.quantity || 0),
+    0
+  );
+  const discountAmount = (subTotal * adminDiscountPercent) / 100;
   const discountedSubtotal = subTotal - discountAmount;
   const tax = discountedSubtotal * 0.05;
   const total = discountedSubtotal + tax;
-  const remainingAmount = total - advance;
-
+  const remainingAmount = total - advanced;
 
   const handleFinish = async (values) => {
     if (!station || !vendor || !cart.length)
@@ -139,6 +151,7 @@ export default function CreateOrderModal({
       },
       payment: {
         method: values.paymentMethod,
+        advanced,
       },
       cart: cart.map((i) => ({
         _id: i.itemId,
@@ -163,10 +176,9 @@ export default function CreateOrderModal({
       },
       couponCode: "",
       discount: 0,
-      adminDiscountPercent: discountPercentage,
-      advance,
+      adminDiscountPercent: adminDiscountPercent,
     };
-
+    console.log(body, "payload admin create order");
     try {
       const url = isEditMode
         ? `/api/orders/update/${initialData.orderID}`
@@ -182,7 +194,9 @@ export default function CreateOrderModal({
       const result = await res.json();
 
       if (result.success) {
-        message.success(`Order ${isEditMode ? "updated" : "placed"} successfully!`);
+        message.success(
+          `Order ${isEditMode ? "updated" : "placed"} successfully!`
+        );
         onSuccess?.();
         resetAll();
         setResetKey((prev) => prev + 1);
@@ -201,6 +215,7 @@ export default function CreateOrderModal({
     setResetKey((prev) => prev + 1);
     onCancel?.();
   };
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
     <Modal
@@ -213,7 +228,7 @@ export default function CreateOrderModal({
           onClick={() => form.submit()}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           disabled={cart.length === 0}
-          loading={submitting}
+          loading={submitting || loadingOrder} 
         >
           {isEditMode ? "Update Order" : "Place Order"}
         </Button>
@@ -221,28 +236,30 @@ export default function CreateOrderModal({
       width={900}
       bodyStyle={{ paddingBottom: 0 }}
     >
-      <OrderFormContents
-        form={form}
-        cart={cart}
-        station={station}
-        vendor={vendor}
-        categories={categories}
-        discountPercentage={discountPercentage}
-        setDiscountPercentage={setDiscountPercentage}
-        resetKey={resetKey}
-        setStation={setStation}
-        setVendor={setVendor}
-        setCart={setCart}
-        setCategories={setCategories}
-        subTotal={subTotal}
-        discountAmount={discountAmount}
-        tax={tax}
-        total={total}
-          advance={advance}                        // ✅ Added
-  setAdvance={setAdvance}                  // ✅ Added
-  remainingAmount={remainingAmount}        // ✅ Added
-        handleFinish={handleFinish}
-      />
+      <Spin spinning={loadingOrder} indicator={antIcon}>
+        <OrderFormContents
+          form={form}
+          cart={cart}
+          station={station}
+          vendor={vendor}
+          categories={categories}
+          adminDiscountPercent={adminDiscountPercent}
+          setDiscountPercentage={setDiscountPercentage}
+          resetKey={resetKey}
+          setStation={setStation}
+          setVendor={setVendor}
+          setCart={setCart}
+          setCategories={setCategories}
+          subTotal={subTotal}
+          discountAmount={discountAmount}
+          tax={tax}
+          total={total}
+          advanced={advanced}
+          setAdvance={setAdvance}
+          remainingAmount={remainingAmount}
+          handleFinish={handleFinish}
+        />
+      </Spin>
     </Modal>
   );
 }

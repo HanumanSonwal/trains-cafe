@@ -1,25 +1,24 @@
 export const cartCalculation = (cart, coupon = null, extraDiscount = null) => {
-  console.log(extraDiscount, "extra-Discount");
   if (!Array.isArray(cart) || !cart.length) {
     throw new Error("Invalid cart data");
   }
 
   try {
     let subTotal = 0;
-    let tax = 0;
     let couponDiscount = 0;
     let manualDiscount = 0;
+    let tax = 0;
     let total = 0;
 
     cart.forEach((item) => {
-      subTotal += parseInt(item.price, 10) * parseInt(item.quantity, 10);
+      subTotal += parseFloat(item.price) * parseInt(item.quantity, 10);
     });
 
     if (coupon) {
       if (coupon.discount.type === "percentage") {
-        couponDiscount = (parseInt(coupon.discount.value, 10) / 100) * subTotal;
+        couponDiscount = (parseFloat(coupon.discount.value) / 100) * subTotal;
       } else {
-        couponDiscount = parseInt(coupon.discount.value, 10);
+        couponDiscount = parseFloat(coupon.discount.value);
       }
     }
 
@@ -27,9 +26,11 @@ export const cartCalculation = (cart, coupon = null, extraDiscount = null) => {
       manualDiscount = (parseFloat(extraDiscount) / 100) * subTotal;
     }
 
-    tax = subTotal * 0.05;
+    const afterDiscount = subTotal - couponDiscount - manualDiscount;
 
-    total = subTotal + tax - couponDiscount - manualDiscount;
+    tax = afterDiscount * 0.05;
+
+    total = afterDiscount + tax;
 
     return {
       subTotal,

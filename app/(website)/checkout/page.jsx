@@ -21,50 +21,82 @@ const CheckoutPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
 
-
-  
   const totalAmount = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const gstAmount = totalAmount * 0.05;
-  const WithGstAmount = totalAmount + gstAmount;
-  const payableAmount = WithGstAmount - discount;
 
-  console.log(payableAmount ,"payable-Amount")
+  const discountedAmount = totalAmount - discount;
+  const gstAmount = discountedAmount * 0.05;
+  const payableAmount = discountedAmount + gstAmount;
 
   const handlePlaceOrder = async (values) => {
     try {
+      setLoading(true);
       const methodToSend = paymentMethod === "RAZORPAY" ? "RAZORPAY" : "COD";
-      const payment = { method: methodToSend };
+      const payload = {
+        vendor: vendor,
+        station,
+        train: {
+          train_number: train?.train_number || values.trainNo || "",
+          train_pnr: values.pnr || "",
+        },
+        payment: {
+          method: methodToSend,
+          advanced: values.advancedPayment || 0,
+        },
+        cart: items.map((item) => ({
+          _id: item._id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        user_details: {
+          name: values.name,
+          email: values.email,
+          mobile: values.mobile,
+          alternateMobile: values.alternateMobile,
+          pnr: values.pnr,
+          trainNo: values.trainNo,
+          coach: values.coach,
+          seatNo: values.seatNo,
+          instructions: values.instructions,
+        },
+        couponCode: couponCode || "",
+        adminDiscountPercent: 0,
+      };
 
       const response = await placeOrder(
-        vendor,
-        station,
-        train,
-        payment,
-        items,
-        values,
-        couponCode,
-        discount
+        payload.vendor,
+        payload.station,
+        payload.train,
+        payload.payment,
+        payload.cart,
+        payload.user_details,
+        payload.couponCode
       );
 
       const order = response?.data;
 
       if (!order || !order._id) {
         message.error("Invalid order response.");
+        setLoading(false);
         return;
       }
 
       if (paymentMethod === "RAZORPAY") {
         if (!window.Razorpay) {
           message.error("Payment system not ready. Please try again.");
+          setLoading(false);
           return;
         }
+        setLoading(false);
+        setPaymentProcessing(true);
 
         const razorpayOptions = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
@@ -94,10 +126,12 @@ const CheckoutPage = () => {
                 router.push("/orderconfirmation");
               } else {
                 message.error("Payment verification failed.");
+                setPaymentProcessing(false);
               }
             } catch (error) {
               console.error("Razorpay Verify Error:", error);
               message.error("Payment verification failed.");
+              setPaymentProcessing(false);
             }
           },
           prefill: {
@@ -123,14 +157,16 @@ const CheckoutPage = () => {
       form.resetFields();
       setCouponCode("");
       setDiscount(0);
+      setLoading(false);
 
       router.push("/orderconfirmation");
     } catch (error) {
       console.error("Order Error:", error);
       message.error("Error placing order. Please try again.");
+      setLoading(false);
+      setPaymentProcessing(false);
     }
   };
-
 
   return (
     <>
@@ -178,13 +214,15 @@ const CheckoutPage = () => {
                 payableAmount={payableAmount}
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
+                totalItem={items.length}
               />
             </div>
-
             <CouponSection
               email={email}
               mobile={mobile}
               items={items}
+              couponCode={couponCode}
+              onCouponCodeChange={setCouponCode}
               onDiscountChange={(disc) => setDiscount(disc)}
             />
 
@@ -240,7 +278,12 @@ const CheckoutPage = () => {
               </Radio.Group>
             </div>
 
-            <Button type="primary" className="mt-6 order-btn" htmlType="submit">
+            <Button
+              type="primary"
+              className="mt-6 order-btn"
+              htmlType="submit"
+              loading={loading || paymentProcessing}
+            >
               Place Order
             </Button>
           </Form>
@@ -250,6 +293,24 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+      {paymentProcessing && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(255,255,255,0.7)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div className="loader"></div>
+        </div>
+      )}
     </>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { Table } from "antd";
+
 export default function ItemTable({ items }) {
   const columns = [
     {
@@ -8,33 +9,54 @@ export default function ItemTable({ items }) {
       dataIndex: "name",
       key: "name",
       render: (text) => (
-        <span className="font-medium text-gray-800">{text}</span>
+        <span className="font-medium text-gray-800 whitespace-nowrap">
+          {text}
+        </span>
       ),
     },
-    { title: "Qty", dataIndex: "quantity", key: "quantity", align: "center" },
+    {
+      title: "Qty",
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center",
+      width: 70,
+      render: (qty) => <span className="whitespace-nowrap">{qty}</span>,
+    },
     {
       title: "Price",
       dataIndex: "price",
       key: "price",
       align: "right",
-      render: (price) => `₹ ${price}`,
+      render: (price) => (
+        <span className="whitespace-nowrap">{`₹ ${price}`}</span>
+      ),
+      width: 100,
     },
     {
       title: "Amount",
       key: "amount",
       align: "right",
-      render: (_, record) => `₹ ${record.price * record.quantity}`,
+      render: (_, record) => (
+        <span className="whitespace-nowrap">{`₹ ${
+          record.price * record.quantity
+        }`}</span>
+      ),
+      width: 120,
     },
   ];
 
   return (
-    <Table
-      dataSource={items}
-      columns={columns}
-      rowKey={(record, index) => index}
-      pagination={false}
-      size="middle"
-      className="mb-4"
-    />
+    <div style={{ overflowX: "auto", width: "100%" }}>
+      <Table
+        dataSource={items}
+        columns={columns}
+        rowKey={(record, index) => index}
+        pagination={false}
+        size="middle"
+        className="mb-4"
+        scroll={{ x: true }}
+        style={{ width: "100%", minWidth: "auto" }}
+      />
+    </div>
   );
 }
