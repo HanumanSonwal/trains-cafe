@@ -1,6 +1,6 @@
 import OnlineHotelBooking from "./OnlineHotelBooking";
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 const pageUrl = `${baseUrl}/online-hotel-booking`;
 
 export const metadata = {

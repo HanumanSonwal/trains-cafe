@@ -1,151 +1,100 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "antd";
 import Spinner from "@/app/componants/spinner/Spinner";
 import OrderFood from "@/app/componants/OrderFood";
 import Custom404 from "@/app/componants/Custom404";
 import HeroSection from "@/app/componants/HeroSection";
-import CustomerReviews from "@/app/componants/CustomerReviewSlider";
-import PromoBanner from "@/app/componants/PromoBanner";
-import RecentOrders from "@/app/componants/RecentOrders";
+import dynamic from "next/dynamic";
 
-const fetchPage = async (slug) => {
-  try {
-    const res = await fetch(`/api/web-pages?slug=${slug}`);
-    if (!res.ok) {
-      throw new Error(`Network response was not ok: ${res.status}`);
-    }
-    const data = await res.json();
-    return (
-      data.docs.find(
-        (page) => page.slug === slug && page.status === "published"
-      ) || null
-    );
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return null;
-  }
-};
+const CustomerReviews = dynamic(
+  () => import("@/app/componants/CustomerReviewSlider"),
+  { ssr: false, loading: () => <Spinner /> }
+);
+const PromoBanner = dynamic(() => import("@/app/componants/PromoBanner"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
+const RecentOrders = dynamic(() => import("@/app/componants/RecentOrders"), {
+  ssr: false,
+  loading: () => <Spinner />,
+});
 
-export default function Page({ params }) {
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function DynamicPage({
+  page,
+  slug,
+  previewHtml,
+  shouldTruncate,
+}) {
   const [showFullContent, setShowFullContent] = useState(false);
 
-  const slug = params.slug;
+  if (!page) return <Custom404 />;
 
-  useEffect(() => {
-    fetchPage(slug)
-      .then((data) => {
-        if (data) {
-          setPage(data);
-        } else {
-          setError("Page not found or unpublished");
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [slug]);
+  const isExceptionSlug = slug === "stations" || slug === "trains";
 
-  if (loading) return <Spinner />;
-  if (error || !page) return <Custom404 />;
+  const rawHtml = page.pageData || "<p>No content available.</p>";
 
-  // Slug exceptions:
-  const isExceptionSlug =
-    slug === "stations" || slug === "trains";
-
-  const rawContent = page.pageData || "<p>No content available for this page.</p>";
-
-  let plainText = "";
-  if (typeof window !== "undefined") {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = rawContent;
-    plainText = tempDiv.innerText;
-  }
-
-  const previewLength = 300;
-  const shouldTruncate = !isExceptionSlug && plainText.length > previewLength;
-
-  const truncatedHTML = shouldTruncate
-    ? plainText.slice(0, previewLength) + "..."
-    : plainText;
+  const contentToRender =
+    showFullContent || isExceptionSlug ? rawHtml : previewHtml || rawHtml;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroSection />
       <OrderFood />
 
-      {/* Dynamic Page Content */}
-      <div className="max-w-4xl mx-auto p-6 sm:p-10 bg-white shadow-lg rounded-lg">
-        <h2
-          style={{ color: "#704d25" }}
-          className="text-2xl md:text-3xl font-bold text-center mb-4"
-        >
+      <main className="max-w-4xl mx-auto p-6 sm:p-10 bg-white shadow-lg rounded-lg">
+        <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 text-[#704d25]">
           {page.title || "No Title Provided"}
-        </h2>
+        </h1>
 
         <div
           className="text-gray-700 text-base md:text-lg leading-relaxed ck-content mb-6"
-          dangerouslySetInnerHTML={{
-            __html: showFullContent || isExceptionSlug ? rawContent : truncatedHTML,
-          }}
+          dangerouslySetInnerHTML={{ __html: contentToRender }}
         />
 
-        {/* Show More Toggle */}
         {shouldTruncate && (
           <div className="text-center mb-4">
             <Button
-              type="btn"
-              className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]"
-              onClick={() => setShowFullContent(!showFullContent)}
+              className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white"
+              onClick={() => setShowFullContent((s) => !s)}
             >
               {showFullContent ? "Show Less" : "View More"}
             </Button>
           </div>
         )}
+      </main>
 
-        {/* CTA */}
-   
-      </div>
-
-        <PromoBanner />
+      <PromoBanner />
       <RecentOrders />
       <CustomerReviews />
 
-      {/* Footer */}
-      <footer className="bg-coffee-600 text-white py-6 mt-8">
-        <div style={{ color: "#704d25" }} className="text-center text-sm">
+      <footer className="bg-coffee-600 text-white py-6 mt-8 text-center">
+        <div style={{ color: "#704d25" }}>
           <p>
-            Need help? Reach us at{" "}
+            Need help?{" "}
             <Link
               href="tel:+918696963496"
-              className="font-bold text-blue-600 hover:text-blue-800 underline"
+              className="font-bold text-blue-600 hover:underline"
             >
               +91-8696963496
             </Link>{" "}
             |{" "}
             <Link
               href="mailto:support@trainscafe.in"
-              className="font-bold text-blue-600 hover:text-blue-800 underline"
+              className="font-bold text-blue-600 hover:underline"
             >
               support@trainscafe.in
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} Trainscafe.com. All rights reserved.
+            &copy; {new Date().getFullYear()} Trainscafe.com
           </p>
         </div>
-             <div className="text-center">
-          <Link href="/contactus" passHref>
-            <Button
-              type="btn"
-              className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]"
-            >
+        <div className="mt-3">
+          <Link href="/contactus">
+            <Button className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white">
               Contact Us
             </Button>
           </Link>

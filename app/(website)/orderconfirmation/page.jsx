@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, Button, Spin, Typography, Divider } from "antd";
+import { Card, Button, Spin, Typography, Table, Tag } from "antd";
 import {
   CheckCircleFilled,
   DownloadOutlined,
@@ -19,15 +19,12 @@ const OrderConfirmation = () => {
 
   useEffect(() => {
     const data = localStorage.getItem("orderData");
-    if (data) {
-      setOrderData(JSON.parse(data));
-    }
+    if (data) setOrderData(JSON.parse(data));
     setLoading(false);
   }, []);
 
   const handleDownload = () => {
     const htmlContent = generateInvoiceTemplate(orderData);
-
     const blob = new Blob([htmlContent], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -55,255 +52,235 @@ const OrderConfirmation = () => {
     );
   }
 
+  const taxValue =
+    orderData.payment?.tax ?? Number((orderData.subTotal * 0.05).toFixed(2));
+  const taxPercent = orderData.payment?.tax
+    ? ((orderData.payment.tax / orderData.subTotal) * 100).toFixed(2)
+    : 5;
+
+  const statusColors = {
+    placed: "blue",
+    delivered: "green",
+    pending: "orange",
+  };
+
+  const columns = [
+    {
+      title: "Item",
+      dataIndex: "name",
+      key: "name",
+      render: (text) => (
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+          <Text>{text}</Text>
+        </div>
+      ),
+    },
+    {
+      title: "Qty",
+      dataIndex: "quantity",
+      key: "quantity",
+      align: "center",
+      render: (qty) => (
+        <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded-md text-xs font-medium">
+          {qty}x
+        </span>
+      ),
+    },
+    {
+      title: "Unit Price",
+      dataIndex: "price",
+      key: "price",
+      align: "right",
+      render: (price) => `₹${price.toFixed(2)}`,
+    },
+    {
+      title: "Total",
+      key: "total",
+      align: "right",
+      render: (item) => `₹${(item.price * item.quantity).toFixed(2)}`,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#fafafa] p-4 sm:p-6 md:p-8">
-      <div className="max-w-3xl mx-auto animate-fadeIn">
+    <div className="min-h-screen bg-[#fffdf5] p-3 sm:p-4">
+      <div className="max-w-3xl mx-auto space-y-4">
+        <div className="bg-white rounded-xl shadow p-4 text-center border border-gray-100">
+          <CheckCircleFilled className="text-3xl sm:text-3xl text-[#704d25] animate-bounce" />
+          <Title level={3} className="!mb-0 text-[#704D25]">
+            {" "}
+            Thank you for your order!
+          </Title>
+          <Text type="secondary" className="text-sm">
+            Your meal will be delivered soon.
+          </Text>
+        </div>
+
         <Card
-          className="shadow-md overflow-hidden rounded-lg"
-          bordered={false}
-          style={{ backgroundColor: "#fff" }}
+          className="rounded-xl border border-yellow-100"
+          bodyStyle={{ padding: "14px" }}
         >
-          {/* Header */}
-          <div className="text-center mb-6">
-            <CheckCircleFilled
-              className="text-4xl text-[#4caf50] animate-bounce mb-3"
-              aria-label="Order success icon"
-            />
-            <Title level={2} className="!mb-0 !text-2xl sm:!text-3xl font-semibold">
-              Thank you for your order!
-            </Title>
-            <Text type="secondary" className="block mt-1">
-              Your delicious meal will be delivered on the train soon.
-            </Text>
-          </div>
-
-          {/* Order Details */}
-          <Card
-            className="mb-6"
-            bordered={false}
-            style={{ backgroundColor: "#f0f5ff", borderRadius: 8 }}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Title level={5} className="!mb-3">
+            Order Summary
+          </Title>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+            <div>
+              <Text type="secondary">Order ID</Text>
+              <div>{orderData.order_id || "N/A"}</div>
+            </div>
+            <div>
+              <Text type="secondary">Order Date</Text>
               <div>
-                <Text type="secondary" className="text-sm">
-                  Date of Order
-                </Text>
-                <div className="font-medium text-base">
-                  {new Date(orderData.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Order ID
-                </Text>
-                <div className="font-medium text-base break-all">{orderData.order_id}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Payment Method
-                </Text>
-                <div className="font-medium text-base">
-                  {orderData.payment?.payment_method || "N/A"}
-                </div>
+                {orderData.createdAt
+                  ? new Date(orderData.createdAt).toLocaleString("en-IN", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })
+                  : "N/A"}
               </div>
             </div>
-          </Card>
-
-          {/* Train Details */}
-          <Card
-            className="mb-6"
-            bordered={false}
-            style={{ backgroundColor: "#fff", borderRadius: 8 }}
-          >
-            <Title level={4} className="mb-4 font-semibold">
-              Train Details
-            </Title>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Train Number
-                </Text>
-                <div className="font-medium text-base">{orderData.train?.train_number || "N/A"}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Train PNR
-                </Text>
-                <div className="font-medium text-base">{orderData.train?.train_pnr || "N/A"}</div>
-              </div>
+            <div>
+              <Text type="secondary">Payment Method</Text>
+              <div>{orderData.payment?.method || "N/A"}</div>
             </div>
-          </Card>
-
-          {/* User Details */}
-          <Card
-            className="mb-6"
-            bordered={false}
-            style={{ backgroundColor: "#f0f5ff", borderRadius: 8 }}
-          >
-            <Title level={4} className="mb-4 font-semibold">
-              User Details
-            </Title>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Name
-                </Text>
-                <div className="font-medium text-base">{orderData.user_details?.name || "N/A"}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Email
-                </Text>
-                <div className="font-medium text-base break-all">{orderData.user_details?.email || "N/A"}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Mobile
-                </Text>
-                <div className="font-medium text-base">{orderData.user_details?.mobile || "N/A"}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  PNR No.
-                </Text>
-                <div className="font-medium text-base">{orderData.user_details?.pnr || "N/A"}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Coach
-                </Text>
-                <div className="font-medium text-base">{orderData.user_details?.coach || "N/A"}</div>
-              </div>
-              <div>
-                <Text type="secondary" className="text-sm">
-                  Seat No
-                </Text>
-                <div className="font-medium text-base">{orderData.user_details?.seatNo || "N/A"}</div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Special Instructions */}
-          {orderData.user_details?.instructions && (
-            <Card
-              className="mb-6"
-              bordered={false}
-              style={{ backgroundColor: "#fff", borderRadius: 8 }}
-            >
-              <Title level={4} className="mb-4 font-semibold">
-                Special Instructions
-              </Title>
-              <Text>{orderData.user_details.instructions}</Text>
-            </Card>
-          )}
-
-          {/* Order Status */}
-          <Card
-            className="mb-6"
-            bordered={false}
-            style={{ backgroundColor: "#f0f5ff", borderRadius: 8 }}
-          >
-            <Title level={4} className="mb-4 font-semibold">
-              Order Status
-            </Title>
-            <Text
-              className="text-base font-medium capitalize"
-              style={{
-                color:
-                  orderData.status === "placed"
-                    ? "#1890ff"
-                    : orderData.status === "delivered"
-                    ? "#52c41a"
-                    : "#faad14",
-              }}
-            >
-              {orderData.status || "N/A"}
-            </Text>
-          </Card>
-
-          {/* Payment Summary */}
-          <Card
-            className="mb-6"
-            bordered={false}
-            style={{ backgroundColor: "#fff", borderRadius: 8 }}
-          >
-            <Title level={4} className="mb-4 font-semibold">
-              Payment Summary
-            </Title>
-            <div className="space-y-3">
-              <div className="flex justify-between text-base">
-                <Text>Subtotal</Text>
-                <Text>₹{Number(orderData.subTotal).toFixed(2)}</Text>
-              </div>
-              {orderData.couponAmount > 0 && (
-                <div className="flex justify-between text-base text-green-600">
-                  <Text>Coupon Discount</Text>
-                  <Text>-₹{Number(orderData.couponAmount).toFixed(2)}</Text>
-                </div>
-              )}
-              <div className="flex justify-between text-base">
-                <Text>Tax</Text>
-                <Text>₹{Number(orderData.payment.tax).toFixed(2)}</Text>
-              </div>
-              <Divider className="my-3" />
-              <div className="flex justify-between text-base font-semibold">
-                <Text>Total</Text>
-                <Text>₹{Number(orderData.total).toFixed(2)}</Text>
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Button
-              type="primary"
-              icon={<DownloadOutlined />}
-              onClick={handleDownload}
-              className="flex-1 text-base font-semibold"
-            >
-              Download Invoice
-            </Button>
-
-            <Button
-              icon={<HomeOutlined />}
-              onClick={() => router.push("/")}
-              className="flex-1 text-base font-semibold"
-              type="default"
-            >
-              Back to Home
-            </Button>
           </div>
         </Card>
-      </div>
 
-      {/* Animations */}
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes bounce {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        .animate-bounce {
-          animation: bounce 2s infinite;
-        }
-      `}</style>
+        <Card
+          className="rounded-xl border border-yellow-100"
+          bodyStyle={{ padding: "14px" }}
+        >
+          <Title level={5} className="!mb-3">
+            Order & Delivery Info
+          </Title>
+
+          <div className="mb-4">
+            <Text strong className="block mb-1 text-[#704D25]">
+              Delivery (Train) Details
+            </Text>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+              <div>
+                <Text type="secondary">Train No.</Text>
+                <div>{orderData.train?.train_number || "N/A"}</div>
+              </div>
+              <div>
+                <Text type="secondary">PNR</Text>
+                <div>{orderData.train?.train_pnr || "N/A"}</div>
+              </div>
+              <div>
+                <Text type="secondary">Coach / Seat</Text>
+                <div>
+                  {orderData.user_details?.coach || "N/A"} /{" "}
+                  {orderData.user_details?.seatNo || "N/A"}
+                </div>
+              </div>
+              <div>
+                <Text type="secondary">Station</Text>
+                <div>
+                  {orderData.station?.name} ({orderData.station?.code})
+                </div>
+              </div>
+              <div className="sm:col-span-2">
+                <Text type="secondary">Address</Text>
+                <div>{orderData.station?.address}</div>
+              </div>
+            </div>
+          </div>
+
+          <hr className="my-3" />
+
+          <div>
+            <Text strong className="block mb-1 text-[#704D25]">
+              Customer Details
+            </Text>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+              <div>
+                <Text type="secondary">Name</Text>
+                <div>{orderData.user_details?.name}</div>
+              </div>
+              <div>
+                <Text type="secondary">Mobile</Text>
+                <div>{orderData.user_details?.mobile}</div>
+              </div>
+              <div>
+                <Text type="secondary">Alternate Mobile</Text>
+                <div>{orderData.user_details?.alternateMobile || "N/A"}</div>
+              </div>
+              <div className="sm:col-span-2">
+                <Text type="secondary">Email</Text>
+                <div>{orderData.user_details?.email}</div>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          className="rounded-xl border border-yellow-100"
+          bodyStyle={{ padding: "14px" }}
+        >
+          <Title level={5} className="!mb-2">
+            Your Order
+          </Title>
+          <Table
+            columns={columns}
+            dataSource={orderData.items || []}
+            pagination={false}
+            rowKey="_id"
+            size="small"
+            bordered={false}
+          />
+
+          <div className="bg-gray-50 rounded-lg p-3 mt-3 text-sm">
+            <div className="flex justify-between mb-1">
+              <Text>Subtotal ({orderData.items.length} items)</Text>
+              <Text>₹{orderData.subTotal.toFixed(2)}</Text>
+            </div>
+            {orderData.couponAmount > 0 && (
+              <div className="flex justify-between mb-1 text-green-600">
+                <span className="flex items-center gap-1">
+                  💳 Coupon Discount
+                </span>
+                <span>-₹{orderData.couponAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between mb-1">
+              <Text>Tax ({taxPercent}%)</Text>
+              <Text>₹{taxValue.toFixed(2)}</Text>
+            </div>
+            <hr className="my-2" />
+            <div className="flex justify-between font-semibold text-base">
+              <Text>Total</Text>
+              <Text>₹{orderData.total.toFixed(2)}</Text>
+            </div>
+            <div className="flex justify-between items-center mt-2">
+              <Text>Status</Text>
+              <Tag color={statusColors[orderData.status] || "orange"}>
+                {orderData.status?.toUpperCase()}
+              </Tag>
+            </div>
+          </div>
+        </Card>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            onClick={handleDownload}
+            className="flex-1 h-10 font-medium border-none"
+            style={{ backgroundColor: "#D49929" }}
+          >
+            Download Invoice
+          </Button>
+          <Button
+            icon={<HomeOutlined />}
+            onClick={() => router.push("/")}
+            className="flex-1 h-10 font-medium border-none"
+            style={{ backgroundColor: "#704D25", color: "#fff" }}
+          >
+            Back to Home
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

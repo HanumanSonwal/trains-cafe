@@ -1,189 +1,203 @@
 "use client";
 import { Input, Button, Tabs, Select, message } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import { createTrainSlug, createStationSlug } from "@/utils/slugify";
 
-const { Option } = Select;
+const stationsCache = new Map();
+const rapidCache = new Map();
 
-const OrderFood = () => {
+const useDebounce = (fn, delay = 500) => {
+  const tRef = useRef(null);
+  return useCallback(
+    (...args) => {
+      if (tRef.current) clearTimeout(tRef.current);
+      tRef.current = setTimeout(() => fn(...args), delay);
+    },
+    [fn, delay]
+  );
+};
+
+const timeoutFetch = async (url, opts = {}, ms = 8000) => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  try {
+    const res = await fetch(url, { ...opts, signal: controller.signal });
+    clearTimeout(id);
+    return res;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+};
+
+export default function OrderFood() {
   const [activeKey, setActiveKey] = useState("2");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
   const [station, setStation] = useState(undefined);
   const [stationOptions, setStationOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
-  useEffect(() => {
-    fetchStations("");
+  const fetchStations = useCallback(async (search = "") => {
+    const q = (search || "").trim();
+    const cacheKey = q === "" ? "__default__" : q.toLowerCase();
+    try {
+      if (stationsCache.has(cacheKey)) {
+        setStationOptions(stationsCache.get(cacheKey));
+        return;
+      }
+      const query = q ? `?search=${encodeURIComponent(q)}` : "?limit=10";
+      const res = await timeoutFetch(`/api/station${query}`, {}, 7000);
+      const result = await res.json();
+      if (!res.ok)
+        throw new Error(result?.message || "Failed to fetch stations.");
+      const options = (result.data || []).map((s) => ({
+        value: s.code,
+        label: `${s.name} (${s.code})`,
+        name: s.name,
+        slug: s.slug,
+      }));
+      stationsCache.set(cacheKey, options);
+      setStationOptions(options);
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        message.error(err?.message || "Error fetching stations.");
+      }
+    }
   }, []);
 
-  const fetchStations = async (search) => {
+  const debouncedFetchStations = useDebounce(fetchStations, 450);
+
+  useEffect(() => {
+    fetchStations(""); 
+  }, [fetchStations]);
+
+  async function handleSearch(type) {
     try {
-      const query = search?.trim() ? `?search=${search}` : "?limit=10";
-      const response = await fetch(`/api/station${query}`);
-      const result = await response.json();
+      setLoading(true);
 
-      if (response.ok) {
-        const options = result.data.map((station) => ({
-          value: station.code,
-          label: `${station.name} (${station.code})`,
-          name: station.name,
-          slug: station.slug,
-        }));
-        setStationOptions(options);
-      } else {
-        throw new Error(result.message);
+      if (type === "pnr") {
+        if (!pnr.trim()) {
+          setLoading(false);
+          return message.error("Please enter a valid PNR number.");
+        }
+        await searchTrainOrPNR(`/api/rapid/pnr?query=${pnr}`, pnr);
+
+      } else if (type === "train") {
+        if (!trainNumber.trim()) {
+          setLoading(false);
+          return message.error("Please enter a valid train number.");
+        }
+        const date = dayjs().format("YYYY-MM-DD");
+        await searchTrainOrPNR(
+          `/api/rapid/live?trainNo=${trainNumber}&date=${date}`,
+          trainNumber
+        );
+
+      } else if (type === "station") {
+        if (!station) {
+          setLoading(false);
+          return message.error("Please select a station.");
+        }
+        const selected = stationOptions.find((s) => s.value === station);
+        if (!selected) {
+          setLoading(false);
+          return message.error("Selected station not found.");
+        }
+
+        const slug = selected.slug || createStationSlug(selected.name, selected.value);
+        router.push(`/stations/${slug}`);
+
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
       }
-    } catch (error) {
-      message.error(`Error: ${error.message}`);
-    }
-  };
-
-  const searchPNR = async () => {
-    if (!pnr) return message.error("Please enter a valid PNR number.");
-
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/rapid/pnr?query=${pnr}`);
-      const result = await response.json();
-
-      if (response.ok) {
-        const slug = createTrainSlug(result.data.train_name, result.data.train_number);
-        message.success("PNR found! Redirecting...");
-        router.push(`/trains/${slug}`);
-      } else {
-        throw new Error(result.message);
-      }
-    } catch (error) {
-      message.error(`Error: ${error.message}`);
-    } finally {
+    } catch (err) {
+      console.error(err);
+      message.error(err?.message || "Something went wrong.");
       setLoading(false);
     }
-  };
+  }
 
-  const searchTrain = async () => {
-    if (!trainNumber) return message.error("Please enter a valid train number.");
-
-    setLoading(true);
-    try {
-      const formattedDate = dayjs().format("YYYY-MM-DD");
-      const response = await fetch(`/api/rapid/live?trainNo=${trainNumber}&date=${formattedDate}`);
-      const result = await response.json();
-
-      if (response.ok) {
-        const slug = createTrainSlug(result.data.train_name, result.data.train_number);
-        message.success("Train found! Redirecting...");
-        router.push(`/trains/${slug}`);
-      } else {
-        throw new Error(result.message);
-      }
-    } catch (error) {
-      message.error(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+  async function searchTrainOrPNR(apiUrl, fallbackValue) {
+    const cacheKey = apiUrl;
+    if (rapidCache.has(cacheKey)) {
+      const cached = rapidCache.get(cacheKey);
+      return router.push(
+        `/trains/${createTrainSlug(
+          cached.train_name || cached.train_number,
+          cached.train_number
+        )}`
+      );
     }
-  };
+    let didOptimistic = false;
+    const optimisticTimer = setTimeout(() => {
+      didOptimistic = true;
+      router.push(`/trains/${createTrainSlug(fallbackValue, fallbackValue)}`);
+    }, 700);
 
-  const searchStation = async () => {
-    if (!station) return message.error("Please select a station.");
+    const res = await timeoutFetch(apiUrl, {}, 8000);
+    clearTimeout(optimisticTimer);
+    const result = await res.json();
+    if (!res.ok) throw new Error(result?.message || "Lookup failed.");
+    rapidCache.set(cacheKey, result.data);
 
-    setLoading(true);
-    try {
-      const selectedStation = stationOptions.find((s) => s.value === station);
+    const slug = createTrainSlug(
+      result.data.train_name || result.data.train_number,
+      result.data.train_number
+    );
+    if (!didOptimistic) router.push(`/trains/${slug}`);
+    else message.success("Details found! Redirecting...");
+  }
 
-      console.log(selectedStation ,"selectedStation")
-
-      if (!selectedStation) return message.error("Selected station not found.");
-      const slug = selectedStation.slug || createStationSlug(selectedStation.name, selectedStation.value);
-      message.success("Station found! Redirecting...");
-      router.push(`/stations/${slug}`);
-    } catch (error) {
-      message.error(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const tabItems = [
-    {
-      key: "1",
-      label: "10 Digit PNR",
-      onSearch: searchPNR,
-      children: (
-        <div className="flex items-center space-x-2 p-6">
-          <Input
-            placeholder="Enter PNR No."
-            className="flex-grow"
-            value={pnr}
-            onChange={(e) => setPnr(e.target.value)}
-          />
-          <Button
-            onClick={searchPNR}
-            disabled={!pnr || loading}
-            loading={loading}
-            className="order-btn text-white border-none rounded-full px-4 py-2 text-xs font-[600]"
-          >
-            Order Now
-          </Button>
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: "Train No.",
-      onSearch: searchTrain,
-      children: (
-        <div className="flex items-center space-x-2 p-6">
-          <Input
-            placeholder="Enter Train No."
-            className="flex-grow"
-            value={trainNumber}
-            onChange={(e) => setTrainNumber(e.target.value)}
-          />
-          <Button
-            onClick={searchTrain}
-            disabled={!trainNumber || loading}
-            loading={loading}
-            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
-          >
-            Order Now
-          </Button>
-        </div>
-      ),
-    },
-    {
-      key: "3",
-      label: "Station Name",
-      onSearch: searchStation,
-      children: (
-        <div className="flex items-center space-x-2 p-6">
-          <Select
-            showSearch
-            placeholder="Enter Station Name"
-            className="flex-grow"
-            value={station}
-            onFocus={() => fetchStations("")}
-            onSearch={fetchStations}
-            onChange={(value) => setStation(value)}
-            options={stationOptions}
-            filterOption={false}
-          />
-          <Button
-            onClick={searchStation}
-            disabled={!station || loading}
-            loading={loading}
-            className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600]"
-          >
-            Order Now
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  const tabItems = useMemo(
+    () => [
+      {
+        key: "1",
+        label: "10 Digit PNR",
+        children: renderInputTab(pnr, setPnr, () => handleSearch("pnr"), loading),
+      },
+      {
+        key: "2",
+        label: "Train No.",
+        children: renderInputTab(trainNumber, setTrainNumber, () => handleSearch("train"), loading),
+      },
+      {
+        key: "3",
+        label: "Station Name",
+        children: (
+          <div className="flex items-center space-x-2 p-6">
+            <Select
+              showSearch
+              placeholder="Enter Station Name"
+              className="flex-grow"
+              value={station}
+              onSearch={debouncedFetchStations}
+              onFocus={() => {
+                if (!stationsCache.has("__default__")) fetchStations("");
+              }}
+              onChange={(val) => setStation(val)}
+              options={stationOptions}
+              filterOption={false}
+              disabled={loading}
+            />
+            <Button
+              onClick={() => handleSearch("station")}
+              disabled={!station || loading}
+              loading={loading}
+              className="order-btn rounded-full px-4 py-2 text-xs font-[600]"
+            >
+              Order Now
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [pnr, trainNumber, station, stationOptions, loading, debouncedFetchStations, fetchStations]
+  );
 
   return (
     <div className="px-2 mt-8">
@@ -197,6 +211,7 @@ const OrderFood = () => {
           Order Your Food
         </h2>
       </div>
+
       <Tabs
         className="custom-tabs shadow-lg rounded-lg"
         activeKey={activeKey}
@@ -206,7 +221,26 @@ const OrderFood = () => {
       />
     </div>
   );
-};
+}
 
-export default OrderFood;
-
+function renderInputTab(value, setValue, onSearch, loading) {
+  return (
+    <div className="flex items-center space-x-2 p-6">
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Enter value"
+        className="flex-grow"
+        disabled={loading}
+      />
+      <Button
+        onClick={onSearch}
+        disabled={!value || loading}
+        loading={loading}
+        className="order-btn rounded-full px-4 py-2 text-xs font-[600]"
+      >
+        Order Now
+      </Button>
+    </div>
+  );
+}

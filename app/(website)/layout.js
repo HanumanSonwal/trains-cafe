@@ -6,7 +6,7 @@ import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://trainscafe.in";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000/";
 
 export const metadata = {
   title: {
@@ -19,6 +19,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  
   return (
     <html lang="en">
       <head>
@@ -26,36 +27,40 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#D28927" />
 
-        {/* ✅ Favicon */}
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="shortcut icon" href="/favicon.ico" />
 
-        {/* ✅ Apple Touch Icons */}
         <link rel="apple-touch-icon" href="/apple-touch-icon-57x57.png" />
-        <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png" />
-        <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png" />
-        <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="72x72"
+          href="/apple-touch-icon-72x72.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="114x114"
+          href="/apple-touch-icon-114x114.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="144x144"
+          href="/apple-touch-icon-144x144.png"
+        />
 
-        {/* ✅ PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
 
-        {/* ✅ PWA Icons */}
         <link rel="icon" sizes="192x192" href="/icons/icon-192x192.png" />
         <link rel="icon" sizes="512x512" href="/icons/icon-512x512.png" />
 
-        {/* ✅ Robots meta */}
         <meta name="robots" content="index, follow" />
 
-        {/* ✅ Open Graph fallback image */}
         <meta property="og:site_name" content="Trains Cafe" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="/images/meta_image.png" />
         <meta name="twitter:image" content="/images/meta_image.png" />
 
-        {/* ✅ Twitter Card fallback */}
         <meta name="twitter:card" content="summary_large_image" />
 
-        {/* ✅ LocalBusiness Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -96,7 +101,6 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* ✅ SearchAction Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -124,7 +128,7 @@ export default function RootLayout({ children }) {
           <ProviderWrapper>{children}</ProviderWrapper>
         </AntdRegistry>
 
-           <Script
+        <Script
           src="https://checkout.razorpay.com/v1/checkout.js"
           strategy="beforeInteractive"
         />

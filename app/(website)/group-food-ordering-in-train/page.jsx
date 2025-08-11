@@ -1,6 +1,6 @@
 import BulkOrderForm from "./GroupFoodOrder";
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 const pageUrl = `${baseUrl}/group-food-ordering-in-train`;
 
 export const metadata = {

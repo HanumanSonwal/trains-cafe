@@ -1,6 +1,6 @@
 import VendorRegistration from "./VendorRegistration";
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 const pageUrl = `${baseUrl}/vendor-registration`;
 
 export const metadata = {

@@ -8,6 +8,8 @@ import { NextResponse } from "next/server";
 import { parsePhoneNumber } from "libphonenumber-js";
 import * as EmailValidator from "email-validator";
 import Razorpay from "razorpay";
+import Menu from "@/app/models/menu"; 
+import Category from "@/app/models/category";
 
 const razorpay = new Razorpay({
   key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -185,6 +187,7 @@ export async function POST(req) {
       station: stationRes._id,
       total,
       subTotal,
+       tax,
       train: {
         train_number: train?.train_number || user_details?.trainNo || "",
         train_pnr: user_details?.pnr || "",
@@ -208,6 +211,32 @@ export async function POST(req) {
     }));
     await OrderItems.insertMany(orderItems);
 
+
+
+await OrderItems.insertMany(orderItems);
+
+const itemIds = cart.map((item) => item._id);
+
+const dbItems = await Menu.find({ _id: { $in: itemIds } })
+  .populate("Category_Id", "title");
+
+const populatedItems = dbItems.map((dbItem) => {
+  const cartItem = cart.find((c) => c._id === dbItem._id.toString());
+  return {
+    _id: dbItem._id,
+    name: dbItem.Item_Name,
+    category: dbItem.Category_Id?.title || "",
+    image: dbItem.image,
+    price: cartItem?.price || dbItem.Price,
+    final_price: dbItem.Final_Price,
+    discount: dbItem.Discount,
+    quantity: cartItem?.quantity || 1,
+    food_type: dbItem.Food_Type,
+    description: dbItem.Description,
+  };
+});
+await order.populate("station");
+
     if (coupon) {
       const couponUsage = new CouponUsage({
         code: couponCode,
@@ -217,35 +246,43 @@ export async function POST(req) {
       await couponUsage.save();
     }
 
-    return NextResponse.json({
-      success: true,
-      message: "Order placed successfully",
-      data: {
-        vendor: order.vendor,
-        station: order.station,
-        train: order.train,
-        total: order.total,
-        subTotal: order.subTotal,
-        couponAmount: order.couponAmount,
-        couponDiscountAmount: order.couponAmount,
-        adminDiscountAmount: order.adminDiscountAmount,
-        adminDiscountPercent: order.adminDiscountPercent,
-        totalDiscount: order.totalDiscount,
-        user_details: order.user_details,
-        status: order.status,
-        _id: order._id,
-        createdAt: order.createdAt,
-        updatedAt: order.updatedAt,
-        order_id: order.order_id,
-        payment: {
-          ...paymentDetails,
-          advanced: payment?.advanced || 0,
-          remainingAmount: Number(
-            (order.total - (payment?.advanced || 0)).toFixed(2)
-          ),
-        },
-      },
-    });
+  return NextResponse.json({
+  success: true,
+  message: "Order placed successfully",
+  data: {
+    vendor: order.vendor,
+   station: {
+      _id: order.station._id,
+      code: order.station.code,
+      name: order.station.name,
+      address: order.station.address || "",
+    },
+    train: order.train,
+    total: order.total,
+    subTotal: order.subTotal,
+      tax:order.tax,
+    couponAmount: order.couponAmount,
+    couponDiscountAmount: order.couponAmount,
+    adminDiscountAmount: order.adminDiscountAmount,
+    adminDiscountPercent: order.adminDiscountPercent,
+    totalDiscount: order.totalDiscount,
+    user_details: order.user_details,
+    status: order.status,
+    _id: order._id,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    order_id: order.order_id,
+    items: populatedItems,
+    payment: {
+      ...paymentDetails,
+      advanced: payment?.advanced || 0,
+      remainingAmount: Number(
+        (order.total - (payment?.advanced || 0)).toFixed(2)
+      ),
+    },
+  },
+});
+
   } catch (error) {
     console.error("Error placing order:", error);
     return NextResponse.json({

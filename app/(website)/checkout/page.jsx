@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button, Input, message, Radio, Row, Col, Divider, Form } from "antd";
+import React, { useState } from "react";
+import { Button, message, Radio, Divider, Form } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { placeOrder } from "@/services/orders";
@@ -17,7 +17,9 @@ const CheckoutPage = () => {
   const [form] = Form.useForm();
   const email = Form.useWatch("email", form);
   const mobile = Form.useWatch("mobile", form);
-  const [paymentMethod, setPaymentMethod] = useState("PAYTM");
+
+  const [paymentMethod, setPaymentMethod] = useState(null);
+
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -31,46 +33,91 @@ const CheckoutPage = () => {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-
   const discountedAmount = totalAmount - discount;
   const gstAmount = discountedAmount * 0.05;
   const payableAmount = discountedAmount + gstAmount;
 
+  const createOrderPayload = (values) => ({
+    vendor,
+    station,
+    train: {
+      train_number: train?.train_number || values.trainNo || "",
+      train_pnr: values.pnr || "",
+    },
+    payment: {
+      method: paymentMethod === "RAZORPAY" ? "RAZORPAY" : "COD",
+      advanced: values.advancedPayment || 0,
+    },
+    cart: items.map(({ _id, quantity, price }) => ({ _id, quantity, price })),
+    user_details: { ...values },
+    couponCode: couponCode || "",
+    adminDiscountPercent: 0,
+  });
+
+  const handleCODFlow = (order) => {
+    localStorage.setItem("orderData", JSON.stringify(order));
+    dispatch(resetCart());
+    message.success("Order placed successfully!");
+    form.resetFields();
+    setCouponCode("");
+    setDiscount(0);
+    setLoading(false);
+    router.push("/orderconfirmation");
+  };
+
+  const handleRazorpayFlow = (order, values) => {
+    setLoading(false);
+    setPaymentProcessing(true);
+
+    const razorpayOptions = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+      amount: payableAmount * 100,
+      currency: "INR",
+      name: "Trains Cafe",
+      description: "Train Food Order",
+      order_id: order.payment.rp_order_id,
+      handler: async (response) => {
+        try {
+          const verifyRes = await fetch("/api/orders/verify-payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...response, orderId: order._id }),
+          });
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.success) {
+            localStorage.setItem("orderData", JSON.stringify(order));
+            dispatch(resetCart());
+            router.push("/orderconfirmation");
+          } else message.error("Payment verification failed.");
+        } catch {
+          message.error("Payment verification failed.");
+        } finally {
+          setPaymentProcessing(false);
+        }
+      },
+      modal: { ondismiss: () => setPaymentProcessing(false) },
+      prefill: {
+        name: values.name,
+        email: values.email,
+        contact: values.mobile,
+      },
+      notes: { order_id: order._id },
+      theme: { color: "#D49929" },
+    };
+
+    new window.Razorpay(razorpayOptions).open();
+  };
+
   const handlePlaceOrder = async (values) => {
+    if (!paymentMethod) {
+      message.error("Please select a payment method before placing the order.");
+      return;
+    }
+
     try {
       setLoading(true);
-      const methodToSend = paymentMethod === "RAZORPAY" ? "RAZORPAY" : "COD";
-      const payload = {
-        vendor: vendor,
-        station,
-        train: {
-          train_number: train?.train_number || values.trainNo || "",
-          train_pnr: values.pnr || "",
-        },
-        payment: {
-          method: methodToSend,
-          advanced: values.advancedPayment || 0,
-        },
-        cart: items.map((item) => ({
-          _id: item._id,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        user_details: {
-          name: values.name,
-          email: values.email,
-          mobile: values.mobile,
-          alternateMobile: values.alternateMobile,
-          pnr: values.pnr,
-          trainNo: values.trainNo,
-          coach: values.coach,
-          seatNo: values.seatNo,
-          instructions: values.instructions,
-        },
-        couponCode: couponCode || "",
-        adminDiscountPercent: 0,
-      };
-
+      const payload = createOrderPayload(values);
       const response = await placeOrder(
         payload.vendor,
         payload.station,
@@ -81,88 +128,27 @@ const CheckoutPage = () => {
         payload.couponCode
       );
 
-      const order = response?.data;
+      if (response?.success) {
+        // message.success(response?.message || "Order placed successfully!");
 
-      if (!order || !order._id) {
-        message.error("Invalid order response.");
-        setLoading(false);
-        return;
-      }
-
-      if (paymentMethod === "RAZORPAY") {
-        if (!window.Razorpay) {
-          message.error("Payment system not ready. Please try again.");
+        const order = response?.data;
+        if (!order?._id) {
+          message.error("Invalid order response.");
           setLoading(false);
           return;
         }
+
+        paymentMethod === "RAZORPAY"
+          ? handleRazorpayFlow(order, values)
+          : handleCODFlow(order);
+      } else {
+        message.error(
+          response?.message || response?.error || "Something went wrong."
+        );
         setLoading(false);
-        setPaymentProcessing(true);
-
-        const razorpayOptions = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-          amount: payableAmount * 100,
-          currency: "INR",
-          name: "Trains Cafe",
-          description: "Train Food Order",
-          order_id: order.payment.rp_order_id,
-          handler: async function (response) {
-            try {
-              const verifyRes = await fetch("/api/orders/verify-payment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                  orderId: order._id,
-                }),
-              });
-
-              const verifyData = await verifyRes.json();
-
-              if (verifyData.success) {
-                localStorage.setItem("orderData", JSON.stringify(order));
-                dispatch(resetCart());
-                router.push("/orderconfirmation");
-              } else {
-                message.error("Payment verification failed.");
-                setPaymentProcessing(false);
-              }
-            } catch (error) {
-              console.error("Razorpay Verify Error:", error);
-              message.error("Payment verification failed.");
-              setPaymentProcessing(false);
-            }
-          },
-          prefill: {
-            name: values.name,
-            email: values.email,
-            contact: values.mobile,
-          },
-          notes: {
-            order_id: order._id,
-          },
-          theme: {
-            color: "#D49929",
-          },
-        };
-
-        const rzp = new window.Razorpay(razorpayOptions);
-        rzp.open();
-        return;
       }
-      localStorage.setItem("orderData", JSON.stringify(order));
-      dispatch(resetCart());
-      message.success("Order placed successfully!");
-      form.resetFields();
-      setCouponCode("");
-      setDiscount(0);
-      setLoading(false);
-
-      router.push("/orderconfirmation");
     } catch (error) {
-      console.error("Order Error:", error);
-      message.error("Error placing order. Please try again.");
+      message.error(error?.message || "Error placing order. Please try again.");
       setLoading(false);
       setPaymentProcessing(false);
     }
@@ -186,95 +172,65 @@ const CheckoutPage = () => {
             <span style={{ color: "#704d25" }}>Trains Cafe</span>
           </h1>
 
-          <div className="flex justify-center mb-2">
-            <span className="inline-block bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
-              Delivered to 10,000+ Train Passengers
-            </span>
-          </div>
-
-          <p className="text-center text-gray-600 text-sm max-w-md mx-auto mb-6">
-            We deliver hot & hygienic food right to your train seat. Please
-            verify your travel and contact details carefully before placing the
-            order.
-          </p>
-
           <Form layout="vertical" form={form} onFinish={handlePlaceOrder}>
             <OrderDetailsForm />
 
             <div className="bg-white shadow rounded-lg p-4 mt-4">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Order Details
-              </h2>
+              <h2 className="text-xl font-bold mb-4">Order Details</h2>
               <ItemTable items={items} />
               <Divider className="!my-4" />
               <TotalSection
-                totalAmount={totalAmount}
-                gstAmount={gstAmount}
-                discount={discount}
-                payableAmount={payableAmount}
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
+                {...{
+                  totalAmount,
+                  gstAmount,
+                  discount,
+                  payableAmount,
+                  isOpen,
+                  setIsOpen,
+                }}
                 totalItem={items.length}
               />
             </div>
+
             <CouponSection
-              email={email}
-              mobile={mobile}
-              items={items}
-              couponCode={couponCode}
+              {...{ email, mobile, items, couponCode }}
               onCouponCodeChange={setCouponCode}
-              onDiscountChange={(disc) => setDiscount(disc)}
+              onDiscountChange={setDiscount}
             />
 
             <div className="bg-white shadow rounded-lg p-4 mt-4">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
-                Payment Options
-              </h2>
-
+              <h2 className="text-xl font-bold mb-4">Payment Options</h2>
               <Radio.Group
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="flex flex-col justify-around md:flex-row gap-4"
+                className="flex flex-col md:flex-row gap-4"
               >
-                <Radio.Button
-                  value="RAZORPAY"
-                  className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px] ${
-                    paymentMethod === "RAZORPAY"
-                      ? "!border-[2px] !border-[#D49929]"
-                      : "!border !border-gray-200"
-                  }`}
-                  style={{
-                    boxShadow: "none",
-                    height: "55px",
-                    marginRight: "20px",
-                  }}
-                >
-                  <Image
-                    src="/images/paymentMethod/img1.svg"
-                    alt="Razorpay"
-                    width={120}
-                    height={30}
-                    className="object-contain"
-                  />
-                </Radio.Button>
-
-                <Radio.Button
-                  value="COD"
-                  className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px] ${
-                    paymentMethod === "COD"
-                      ? "!border-[2px] !border-[#D49929]"
-                      : "!border !border-gray-200"
-                  }`}
-                  style={{ boxShadow: "none", height: "55px" }}
-                >
-                  <Image
-                    src="/images/paymentMethod/img2.svg"
-                    alt="COD"
-                    width={120}
-                    height={40}
-                    className="object-contain"
-                  />
-                </Radio.Button>
+                {["RAZORPAY", "COD"].map((method) => (
+                  <Radio.Button
+                    key={method}
+                    value={method}
+                    className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px] ${
+                      paymentMethod === method
+                        ? "!border-[2px] !border-[#D49929]"
+                        : "!border !border-gray-200"
+                    }`}
+                    style={{
+                      boxShadow: "none",
+                      height: "55px",
+                      marginRight: "20px",
+                    }}
+                  >
+                    <Image
+                      src={`/images/paymentMethod/${
+                        method === "RAZORPAY" ? "img1.svg" : "img2.svg"
+                      }`}
+                      alt={method}
+                      width={120}
+                      height={method === "RAZORPAY" ? 30 : 40}
+                      className="object-contain"
+                    />
+                  </Radio.Button>
+                ))}
               </Radio.Group>
             </div>
 
@@ -293,21 +249,9 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+
       {paymentProcessing && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(255,255,255,0.7)",
-            zIndex: 9999,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className="fixed inset-0 bg-white/70 z-[9999] flex justify-center items-center">
           <div className="loader"></div>
         </div>
       )}

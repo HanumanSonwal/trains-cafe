@@ -24,6 +24,7 @@ import {
 } from "@ant-design/icons";
 import CreateOrderModal from "./CreateOrderModal";
 import ItemsColumn from "./ItemsColumn";
+import OrderTableColumns from "./OrderTableColumns";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -172,217 +173,15 @@ const fetchData = async (page = 1, limit = 10) => {
     }
   };
 
-  const columns = [
-    {
-      title: "Order ID",
-      dataIndex: "order_id",
-      render: (text, record) => (
-        <div>
-          <p>
-            {" "}
-            <strong>{text}</strong>
-          </p>
-          <small>{record.date}</small>
-        </div>
-      ),
-    },
-   {
-    title: "User Info",
-    dataIndex: "userDetails",
-    key: "userDetails",
-    render: (userDetails) => (
-      <div>
-        <p><strong>Name:</strong> {userDetails?.name || "N/A"}</p>
-        <p><strong>Mobile:</strong> {userDetails?.mobile || "N/A"}</p>
-        <p><strong>Email:</strong> {userDetails?.email || "N/A"}</p>
-        <p><strong>Coach:</strong> {userDetails?.coach || "N/A"}</p>
-        <p><strong>Seat No:</strong> {userDetails?.seatNo || "N/A"}</p>
-        <p><strong>PNR:</strong> {userDetails?.pnr || "N/A"}</p>
-      </div>
-    ),
-  },
-  {
-    title: "Vendor Info",
-    key: "vendor",
-    render: (_, record) => {
-      const v = record.Vendor_Details || {};
-      return (
-        <div>
-          <p><strong>Name:</strong> {record.Vendor_Name || v.Vendor_Name || "N/A"}</p>
-          <p><strong>Contact:</strong> {v.Contact_No || "N/A"}{v.Alternate_Contact_No ? ` / ${v.Alternate_Contact_No}` : ""}</p>
-          <p><strong>Address:</strong> {v.Address || "N/A"}</p>
-          <p><strong>Working Time:</strong> {v.Working_Time || "N/A"}</p>
-          <p><strong>Weekly Off:</strong> {v.Weekly_Off || "N/A"}</p>
-          
-        </div>
-      );
-    },
-  },
-  {
-    title: "Items",
-    key: "items",
-    render: (_, record) => {
-      const maxItemsToShow = 3;
-      if (record.Items.length <= maxItemsToShow) {
-        return (
-          <ul style={{ paddingLeft: 16, listStyleType: "disc", margin: 0 }}>
-            {record.Items.map((item, idx) => {
-              const menu = item.MenuItem || {};
-              const category = menu.Category || {};
-              return (
-                <li key={idx} style={{ marginBottom: 6 }}>
-                  <strong>
-                    {item.Quantity}x {menu.Item_Name || "Unnamed Item"}
-                  </strong>
-                  <br />
-                  <small>Category: {category.Title || "N/A"}</small>
-                  <br />
-                  <small>Price: ₹{menu.Price || item.Price || 0}</small>
-                  <br />
-                  <small>Description: {menu.Description || "N/A"}</small>
-                </li>
-              );
-            })}
-          </ul>
-        );
-      } else {
-        return <ItemsColumn items={record.Items} />;
-      }
-    },
-  },
-{
-  title: "Bill",
-  render: (_, record) => {
-    const {
-      subTotal = 0,
-      tax = 0,
-      couponAmount = 0,
-      adminDiscountValue = 0,
-      remainingAmount = 0,
-      advancedAmount = 0,
-      total = 0,
-      payment = {},
-    } = record;
+  const columns = OrderTableColumns({
+    handleStatusChange,
+    handlePaymentStatusChange,
+    setEditingOrder,
+    setIsModalOpen,
+    fetchData,
+    currentPage,
+  });
 
-  const paymentStatus = payment.payment_status || "pending";
-    const effectiveRemainingAmount = advancedAmount > 0 ? remainingAmount : total;
-
-    return (
-      <div style={{ lineHeight: "1.5" }}>
-        <p>
-          <span style={{ marginRight: 8 }}>SubTotal:</span> ₹{subTotal.toFixed(2)}
-        </p>
-        <p>
-          <span style={{ marginRight: 8 }}>Tax:</span> ₹{tax.toFixed(2)}
-        </p>
-        {couponAmount > 0 && (
-          <p>
-            <span style={{ marginRight: 8 }}>Coupon Discount:</span> -₹{couponAmount.toFixed(2)}
-          </p>
-        )}
-        {adminDiscountValue > 0 && (
-          <p>
-            <span style={{ marginRight: 8 }}>Admin Discount:</span> -₹{adminDiscountValue.toFixed(2)}
-          </p>
-        )}
-        {advancedAmount > 0 && (
-          <>
-            <p style={{ color: "green" }}>
-              <span style={{ marginRight: 8 }}>Advanced Paid:</span> ₹{advancedAmount.toFixed(2)}
-            </p>
-            <p style={{ color: "red" }}>
-              <span style={{ marginRight: 8 }}>Remaining Amount:</span> ₹{effectiveRemainingAmount.toFixed(2)}
-            </p>
-          </>
-        )}
-
-        <p style={{ fontWeight: "bold", marginTop: 4 }}>
-          <span style={{ marginRight: 8 }}>Total:</span> ₹{total.toFixed(2)}
-        </p>
-
-        <p>
-          <span style={{ marginRight: 8 }}>Payment Status:</span>{" "}
-          <Tag
-            color={
-              paymentStatus === "paid"
-                ? "green"
-                : paymentStatus === "pending"
-                ? "orange"
-                : "red"
-            }
-          >
-            {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
-          </Tag>
-        </p>
-      </div>
-    );
-  },
-}
-
-
-,
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (status, record) => (
-        <Select
-          value={status}
-          style={{ width: 140 }}
-          onChange={(value) => handleStatusChange(value, record)}
-        >
-          <Option value="placed">Placed</Option>
-          <Option value="confirm">Confirm</Option>
-          <Option value="cancel">Cancel</Option>
-          <Option value="dispatch">Dispatch</Option>
-          <Option value="delivered">Delivered</Option>
-        </Select>
-      ),
-    },
-    {
-      title: "Payment",
-      render: (_, record) => (
-        <Space>
-          <Select
-            value={record.paymentStatus}
-            style={{ width: 120 }}
-            onChange={(value) => handlePaymentStatusChange(value, record)}
-          >
-            <Option value="pending">Pending</Option>
-            <Option value="paid">Paid</Option>
-            <Option value="failed">Failed</Option>
-          </Select>
-          <Tag color="purple">{record.paymentMethod}</Tag>
-        </Space>
-      ),
-    },
-    {
-      title: "Action",
-      render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EditOutlined className="text-white"/>}
-            onClick={() => {
-              setEditingOrder(record);
-              setIsModalOpen(true);
-            }}
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-
-          />
-
-          <Tooltip title="Download Invoice">
-            <Button
-              icon={<DownloadOutlined  className="text-white"/>}
-              onClick={() =>
-                window.open(`/api/orders/invoice/${record.orderID}`, "_blank")
-              }
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-
-            />
-          </Tooltip>
-        </Space>
-      ),
-    },
-  ];
  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
   return (
      <div

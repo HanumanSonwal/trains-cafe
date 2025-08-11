@@ -1,142 +1,165 @@
-// ✅ Force server-side rendering for SEO (important!)
 export const dynamic = "force-dynamic";
-export const dynamicParams = true;
+export const revalidate = 60;
 
 import DynamicPage from "./DynamicPage";
 
-// ✅ SEO Metadata Generator (SSR)
-export async function generateMetadata({ params }) {
-  const slug = params.slug;
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
 
+async function getPageData(slug) {
   try {
-    const res = await fetch(`${baseUrl}/api/web-pages?slug=${slug}`, {
-      cache: "no-store",
+    const res = await fetch(`${BASE_URL}/api/web-pages?slug=${slug}`, {
+      next: { revalidate: revalidate ?? 60 },
     });
-
-    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    if (!res.ok) return { page: null };
 
     const data = await res.json();
+    const page =
+      (data?.docs || []).find(
+        (p) => p.slug === slug && p.status === "published"
+      ) || null;
 
-    const page = data.docs.find(
-      (page) => page.slug === slug && page.status === "published"
-    );
+    if (!page) return { page: null };
 
-    const canonicalUrl = `${baseUrl}/${slug}`;
+    const rawHtml = page.pageData || "<p>No content available.</p>";
+    const plainText = rawHtml
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const previewLength = 300;
+    const shouldTruncate =
+      plainText.length > previewLength &&
+      !["stations", "trains"].includes(slug);
+    const truncatedText = shouldTruncate
+      ? plainText.slice(0, previewLength) + "..."
+      : plainText;
 
-    if (!page) {
-      return {
-        title: "Page Not Found - Trains Cafe",
-        description: "This page is not available or unpublished.",
-        robots: "noindex",
-        alternates: {
-          canonical: canonicalUrl,
-        },
-        openGraph: {
-          title: "Page Not Found - Trains Cafe",
-          description: "This page is not available or unpublished.",
-          url: canonicalUrl,
-          type: "website",
-          images: [`${baseUrl}/images/meta_image.png`],
-        },
-        twitter: {
-          card: "summary_large_image",
-          title: "Page Not Found - Trains Cafe",
-          description: "This page is not available or unpublished.",
-          images: [`${baseUrl}/images/meta_image.png`],
-        },
-      };
-    }
-
-    const safeTitle = page.title || "Trains Cafe";
-    const safeDesc = page.description || "Order food online in train.";
-    const safeKeywords = Array.isArray(page.keywords)
-      ? page.keywords.join(", ")
-      : page.keywords || "";
-    const ogImage = page.ogImage || "/images/meta_image.png";
+    const previewHtml = `<p>${truncatedText}</p>`;
 
     return {
-      title: safeTitle,
-      description: safeDesc,
-      keywords: safeKeywords,
-      robots: "index, follow",
-      metadataBase: new URL(baseUrl),
-      alternates: {
-        canonical: canonicalUrl,
-      },
-      openGraph: {
-        title: safeTitle,
-        description: safeDesc,
-        url: canonicalUrl,
-        type: "website",
-        images: [
-          ogImage.startsWith("http")
-            ? ogImage
-            : `${baseUrl}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
-        ],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: safeTitle,
-        description: safeDesc,
-        images: [
-          ogImage.startsWith("http")
-            ? ogImage
-            : `${baseUrl}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
-        ],
-      },
+      page,
+      baseUrl: BASE_URL,
+      canonicalUrl: `${BASE_URL}/${slug}`,
+      previewHtml,
+      shouldTruncate,
     };
-  } catch (error) {
-    console.error("SEO ERROR:", error);
-    return {
-      title: "Error - Trains Cafe",
-      description: "Something went wrong.",
-      robots: "noindex",
-      alternates: {
-        canonical: `${baseUrl}/${slug}`,
-      },
-      openGraph: {
-        title: "Error - Trains Cafe",
-        description: "Something went wrong.",
-        url: `${baseUrl}/${slug}`,
-        type: "website",
-        images: [`${baseUrl}/images/meta_image.png`],
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "Error - Trains Cafe",
-        description: "Something went wrong.",
-        images: [`${baseUrl}/images/meta_image.png`],
-      },
-    };
+  } catch (err) {
+    console.error("getPageData error:", err);
+    return { page: null };
   }
 }
 
-// ✅ Static Params for pre-rendering slugs (SEO 💯)
-export async function generateStaticParams() {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+export async function generateMetadata({ params }) {
+  const slug = params.slug;
+  const { page, canonicalUrl } = await getPageData(slug);
 
+  if (!page) {
+    return {
+      title: "Page Not Found - Trains Cafe",
+      description: "This page is not available or unpublished.",
+      robots: "noindex",
+      alternates: { canonical: canonicalUrl || `${BASE_URL}/${slug}` },
+    };
+  }
+
+  const ogImage = page.ogImage || "/images/meta_image.png";
+  const safeKeywords = Array.isArray(page.keywords)
+    ? page.keywords.join(", ")
+    : page.keywords || "";
+
+  return {
+    title: page.title || "Trains Cafe",
+    description: page.description || "Order food online in train.",
+    keywords: safeKeywords,
+    robots: "index, follow",
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title: page.title,
+      description: page.description,
+      url: canonicalUrl,
+      type: "website",
+      images: [
+        ogImage.startsWith("http")
+          ? ogImage
+          : `${BASE_URL}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: page.title,
+      description: page.description,
+      images: [
+        ogImage.startsWith("http")
+          ? ogImage
+          : `${BASE_URL}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
+      ],
+    },
+  };
+}
+
+export async function generateStaticParams() {
   try {
-    const res = await fetch(`${baseUrl}/api/web-pages`, {
+    const res = await fetch(`${BASE_URL}/api/web-pages`, {
       cache: "no-store",
     });
-
-    if (!res.ok) throw new Error("Static params fetch failed");
-
+    if (!res.ok) return [];
     const data = await res.json();
-
-    return data.docs
-      .filter((page) => page.status === "published")
-      .map((page) => ({
-        slug: page.slug,
-      }));
-  } catch (error) {
-    console.error("generateStaticParams ERROR:", error);
+    return (data.docs || [])
+      .filter((p) => p.status === "published")
+      .map((p) => ({ slug: p.slug }));
+  } catch (err) {
+    console.error("generateStaticParams error:", err);
     return [];
   }
 }
 
-// ✅ Page renderer (client-side UI logic)
-export default function Page({ params }) {
-  return <DynamicPage params={params} />;
+export default async function Page({ params }) {
+  const slug = params.slug;
+  const { page, baseUrl, canonicalUrl, previewHtml, shouldTruncate } =
+    await getPageData(slug);
+
+  if (!page) {
+    return (
+      <DynamicPage
+        page={null}
+        slug={slug}
+        previewHtml={null}
+        shouldTruncate={false}
+      />
+    );
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: page.title || `Trains Cafe`,
+    description: page.description || "Order food online in train.",
+    url: canonicalUrl,
+    keywords: Array.isArray(page.keywords)
+      ? page.keywords.join(", ")
+      : page.keywords || "",
+    publisher: {
+      "@type": "Organization",
+      name: "Trains Cafe",
+      url: baseUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/images/meta_image.png`,
+      },
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <DynamicPage
+        page={page}
+        slug={slug}
+        previewHtml={previewHtml}
+        shouldTruncate={shouldTruncate}
+      />
+    </>
+  );
 }

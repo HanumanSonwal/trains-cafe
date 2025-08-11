@@ -9,7 +9,6 @@ const MenuItems = memo(({ items }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
 
-  // ✅ Stable random ratings only once
   const ratingsMap = useMemo(() => {
     const map = {};
     items.forEach((item) => {
@@ -76,9 +75,7 @@ const MenuItems = memo(({ items }) => {
                   {item.name}
                 </h3>
 
-                <p className="text-xs text-gray-500 mb-1">
-                  {item.description}
-                </p>
+                <p className="text-xs text-gray-500 mb-1">{item.description}</p>
 
                 <div className="flex items-center gap-2 mb-1">
                   <Rate
@@ -97,58 +94,56 @@ const MenuItems = memo(({ items }) => {
                 )}
               </div>
 
-            <div className="flex items-center justify-between mt-2 gap-2 max-[320px]:flex-col max-[320px]:items-start">
-  {/* Price Section */}
-  <div>
-    {item.discount > 0 ? (
-      <div className="flex items-center gap-2">
-        <span className="line-through text-xs text-gray-400">
-          ₹{item.price}
-        </span>
-        <span className="text-base font-semibold text-green-600">
-          ₹{discountedPrice}
-        </span>
-      </div>
-    ) : (
-      <span className="text-base font-semibold text-black">
-        ₹{item.price}
-      </span>
-    )}
-  </div>
+              <div className="flex items-center justify-between mt-2 gap-2 max-[320px]:flex-col max-[320px]:items-start">
+              
+                <div>
+                  {item.discount > 0 ? (
+                    <div className="flex items-center gap-2">
+                      <span className="line-through text-xs text-gray-400">
+                        ₹{item.price}
+                      </span>
+                      <span className="text-base font-semibold text-green-600">
+                        ₹{discountedPrice}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-base font-semibold text-black">
+                      ₹{item.price}
+                    </span>
+                  )}
+                </div>
 
-  {/* Cart Controls */}
-  <div className="max-[320px]:w-full">
-    {cartItem && cartItem.quantity > 0 ? (
-      <div className="flex items-center border border-[#D6872A] rounded-full overflow-hidden max-[320px]:w-full max-[320px]:justify-between">
-        <Button
-          icon={<MinusOutlined />}
-          size="small"
-          onClick={() => handleDecrement(item)}
-        className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
-        />
-        <div className="px-3 text-[#D6872A] font-bold">
-          {cartItem.quantity}
-        </div>
-        <Button
-          icon={<PlusOutlined />}
-          size="small"
-          onClick={() => handleIncrement(item)}
-          className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
-        />
-      </div>
-    ) : (
-      <Button
-        icon={<PlusOutlined />}
-        size="small"
-        className="border border-red-500 text-red-500 font-bold rounded-full w-full max-[320px]:mt-1"
-        onClick={() => handleAdd(item)}
-      >
-        ADD
-      </Button>
-    )}
-  </div>
-</div>
-
+                <div className="max-[320px]:w-full">
+                  {cartItem && cartItem.quantity > 0 ? (
+                    <div className="flex items-center border border-[#D6872A] rounded-full overflow-hidden max-[320px]:w-full max-[320px]:justify-between">
+                      <Button
+                        icon={<MinusOutlined />}
+                        size="small"
+                        onClick={() => handleDecrement(item)}
+                        className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
+                      />
+                      <div className="px-3 text-[#D6872A] font-bold">
+                        {cartItem.quantity}
+                      </div>
+                      <Button
+                        icon={<PlusOutlined />}
+                        size="small"
+                        onClick={() => handleIncrement(item)}
+                        className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
+                      />
+                    </div>
+                  ) : (
+                    <Button
+                      icon={<PlusOutlined />}
+                      size="small"
+                      className="border border-red-500 text-red-500 font-bold rounded-full w-full max-[320px]:mt-1"
+                      onClick={() => handleAdd(item)}
+                    >
+                      ADD
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         );

@@ -1,6 +1,5 @@
 import Articles from "../componants/Article";
 import BlogSection from "../componants/BlogSection";
-import Breadcrumbs from "../componants/Breadcrumbs";
 import CustomerReviewSlider from "../componants/CustomerReviewSlider";
 import HeroSection from "../componants/HeroSection";
 import OrderFood from "../componants/OrderFood";
@@ -8,8 +7,8 @@ import PromoBanner from "../componants/PromoBanner";
 import RecentOrders from "../componants/RecentOrders";
 import StepsSection from "../componants/StepsSection";
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || "https://yourdomain.com";
-const pageUrl = `${baseUrl}/`; // Home page root URL
+const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
+const pageUrl = `${baseUrl}/`;
 
 export const metadata = {
   title: "Trains Cafe | Order Food in Train | Fresh Meals Delivered to Your Seat",
