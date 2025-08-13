@@ -58,18 +58,19 @@ export default function TotalSection({
             <span>Order Amount</span>
             <span className="text-sm">₹ {totalAmount?.toFixed(2)}</span>
           </div>
+              <div className="flex justify-between py-1 border-b border-dashed">
+            <span>Discount</span>
+            <span className="text-red-500">₹ {discount?.toFixed(2)}</span>
+          </div>
           <div className="flex justify-between py-1 border-b border-dashed">
-            <span>GST</span>
+            <span>GST (5%) </span>
             <span>₹ {gstAmount?.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-1 border-b border-dashed">
             <span>Delivery Charges</span>
             <span className="text-teal-500">FREE</span>
           </div>
-          <div className="flex justify-between py-1 border-b border-dashed">
-            <span>Discount</span>
-            <span className="text-red-500">₹ {discount?.toFixed(2)}</span>
-          </div>
+      
         </div>
       </div>
     </div>

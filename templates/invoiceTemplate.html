@@ -6,127 +6,217 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 40px;
+      margin: 30px;
       font-size: 14px;
       color: #333;
+      line-height: 1.4;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
+    
+    .logo-section {
+      text-align: left;
+      margin-bottom: 30px;
     }
-    .header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #444;
+    
+    .company-logo {
+      max-height: 80px;
+      max-width: 200px;
+      object-fit: contain;
     }
-    .section {
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 18px;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #1c1c1c;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 4px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      padding: 8px 12px;
-      border: 1px solid #ddd;
+    
+    .company-name {
       text-align: left;
     }
-    th {
-      background-color: #f0f0f0;
-    }
-    .summary-table td {
+    
+    .company-name h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #8B4513;
       font-weight: bold;
     }
+    
+    .company-name p {
+      margin: 2px 0 0 0;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .customer-greeting {
+      margin: 20px 0 5px 0;
+      font-weight: bold;
+    }
+    
+    .thank-you-text {
+      margin: 0 0 25px 0;
+    }
+    
+    .section-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin: 20px 0 10px 0;
+    }
+    
+    .summary-table,
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 20px 0;
+    }
+    
+    .summary-table th,
+    .summary-table td,
+    .items-table th,
+    .items-table td {
+      border: 1px solid #333;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    
+    .summary-table th,
+    .items-table th {
+      background-color: #f8f8f8;
+      font-weight: bold;
+    }
+    
+    /* Summary table specific styling */
+    .summary-table th {
+      width: 200px;
+    }
+    
+    /* Items table specific styling */
+    .items-table .serial-col { width: 80px; text-align: center; }
+    .items-table .item-col { width: 200px; }
+    .items-table .qty-price-col { width: 150px; text-align: center; }
+    .items-table .amount-col { width: 100px; text-align: right; }
+    
+    .items-table .summary-row {
+      background-color: #f9f9f9;
+    }
+    
+    .items-table .summary-row td {
+      font-weight: normal;
+    }
+    
+    .items-table .total-row {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    
     .footer {
       margin-top: 30px;
-      font-size: 13px;
-      text-align: center;
-      color: #555;
+    }
+    
+    .footer p {
+      margin: 5px 0;
+    }
+    
+    .contact-info {
+      margin: 30px 0 20px 0;
+    }
+    
+    .signature-section {
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Invoice</h1>
-    <p><strong>Invoice No:</strong> {{orderID}}</p>
-    <p>This is a computer generated invoice. No signature is required.</p>
+  <div class="logo-section">
+    <img src="https://res.cloudinary.com/daemwtus7/image/upload/v1755094436/trains-cafe/Logo/rercqpljocitukrnzwoo.png" alt="Trainscafe Logo" class="company-logo" />
   </div>
-
-  <div class="section">
-    <div class="section-title">Customer Details</div>
-    <table>
-      <tr><th>Name</th><td>{{customerName}}</td></tr>
-      <tr><th>Mobile</th><td>{{mobile}}</td></tr>
-      <tr><th>Email</th><td>{{email}}</td></tr>
-      <tr><th>Delivery Station</th><td>{{station}}</td></tr>
-    </table>
+  
+  <div class="customer-greeting">
+    Dear {{customerName}},
   </div>
-
-  <div class="section">
-    <div class="section-title">Train Information</div>
-    <table>
-      <tr><th>Train No.</th><td>{{trainNumber}}</td></tr>
-      <tr><th>Coach</th><td>{{coach}}</td></tr>
-      <tr><th>Seat No.</th><td>{{seat}}</td></tr>
-      <tr><th>PNR</th><td>{{pnr}}</td></tr>
-      <tr><th>Delivery Date</th><td>{{deliveryDate}} {{deliveryTime}}</td></tr>
-      <tr><th>Payment Mode</th><td>{{paymentMethod}}</td></tr>
-    </table>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Order Items</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Sr. No.</th>
-          <th>Item</th>
-          <th>Quantity x Price</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each items}}
-        <tr>
-          <td>{{serial}}</td>
-          <td>{{name}}</td>
-          <td>{{quantity}} x ₹{{price}}</td>
-          <td>₹{{total}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Invoice Summary</div>
-    <table class="summary-table">
-      <tr><td>Sub Total</td><td>₹{{subTotal}}</td></tr>
-      <!-- <tr><td>Discount</td><td>₹{{discount}}</td></tr> -->
+  
+  <p class="thank-you-text">Thank you for place order from Trainscafe. Please be on your seat at delivery time.</p>
+  
+  <div class="section-title">Order Summary:</div>
+  
+  <table class="summary-table">
+    <tr>
+      <th>Order No:</th>
+      <td>{{orderID}}</td>
+    </tr>
+    <tr>
+      <th>Customer Name:</th>
+      <td>{{customerName}}</td>
+    </tr>
+    <tr>
+      <th>Train Information:</th>
+      <td>Train No: {{trainNumber}} / Coach No:{{coach}} / Seat No: {{seat}}/ PNR {{pnr}}</td>
+    </tr>
+    <tr>
+      <th>Contact No:</th>
+      <td>{{mobile}}</td>
+    </tr>
+    <tr>
+      <th>Date of Delivery & Time:</th>
+      <td>{{deliveryDate}} {{deliveryTime}}</td>
+    </tr>
+    <tr>
+      <th>Delivery At:</th>
+      <td>{{station}}</td>
+    </tr>
+    <tr>
+      <th>Mode of Payment:</th>
+      <td>{{paymentMethod}}</td>
+    </tr>
+  </table>
+  
+  <div class="section-title">Order Details:</div>
+  
+  <table class="items-table">
+    <thead>
       <tr>
-  <td>Discount</td>
-  <td>₹{{totalDiscount}} </td>
-</tr>
-      <tr><td>Delivery Charges</td><td>₹{{deliveryCharge}}</td></tr>
-      <tr><td>Advance</td><td>₹{{advance}}</td></tr>
-    <tr><td>Tax</td><td>₹{{tax}}</td></tr>
-
-      <tr><td><strong>Total Amount</strong></td><td><strong>₹{{total}}</strong></td></tr>
-    </table>
+        <th class="serial-col">Serial No.</th>
+        <th class="item-col">Item Name</th>
+        <th class="qty-price-col">Quantity x Price</th>
+        <th class="amount-col">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each items}}
+      <tr>
+        <td class="serial-col">{{serial}}</td>
+        <td class="item-col">{{name}}</td>
+        <td class="qty-price-col">{{quantity}} x ₹ {{price}}</td>
+        <td class="amount-col">₹ {{total}}</td>
+      </tr>
+      {{/each}}
+      
+      <tr class="summary-row">
+        <td colspan="3" style="text-align: right; font-weight: bold;">Sub Total</td>
+        <td class="amount-col">₹ {{subTotal}}</td>
+      </tr>
+      
+      <tr class="summary-row">
+        <td colspan="3" style="text-align: right; font-weight: bold;">Discount</td>
+        <td class="amount-col">₹ {{totalDiscount}}</td>
+      </tr>
+      
+      <tr class="summary-row">
+        <td colspan="3" style="text-align: right; font-weight: bold;">Delivery Charges</td>
+        <td class="amount-col">₹ {{deliveryCharge}}</td>
+      </tr>
+      
+      <tr class="summary-row">
+        <td colspan="3" style="text-align: right; font-weight: bold;">Advance Payment</td>
+        <td class="amount-col">₹ {{advance}}</td>
+      </tr>
+      
+      <tr class="total-row">
+        <td colspan="3" style="text-align: right; font-weight: bold;">Total Amount</td>
+        <td class="amount-col" style="font-weight: bold;">₹ {{total}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="contact-info">
+    <p>For further Query Please contact on 8696963496</p>
   </div>
-
-  <div class="footer">
-    <p>For any queries, contact us at 8696963496</p>
-    <p>Thanks and Regards, <br />Trainscafe Team</p>
+  
+  <div class="signature-section">
+    <p>Thanks and Regards,<br />
+    <strong>Trainscafe Team</strong></p>
   </div>
 </body>
 </html>

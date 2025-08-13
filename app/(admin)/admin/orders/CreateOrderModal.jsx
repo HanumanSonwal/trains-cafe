@@ -21,6 +21,13 @@ export default function CreateOrderModal({
   const [advanced, setAdvance] = useState(0);
   const [loadingOrder, setLoadingOrder] = useState(false);
 
+  // These hold fetched values directly from API when editing
+  const [subTotal, setSubTotal] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [remainingAmount, setRemainingAmount] = useState(0);
+
   const isEditMode = !!initialData?.orderID;
 
   const resetAll = () => {
@@ -31,14 +38,19 @@ export default function CreateOrderModal({
     setCart([]);
     setDiscountPercentage(0);
     setAdvance(0);
+    setSubTotal(0);
+    setDiscountAmount(0);
+    setTax(0);
+    setTotal(0);
+    setRemainingAmount(0);
   };
 
   useEffect(() => {
-    if (cart.length === 0) {
+    if (cart.length === 0 && !isEditMode) {
       setDiscountPercentage(0);
       form.setFieldsValue({ adminDiscount: 0 });
     }
-  }, [cart]);
+  }, [cart, isEditMode]);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -58,8 +70,6 @@ export default function CreateOrderModal({
         };
         const stationObj = { ...order.Station_Details };
 
-        console.log(order, "all-order-data");
-
         form.setFieldsValue({
           name: order.user_details?.name || "",
           email: order.user_details?.email || "",
@@ -73,12 +83,21 @@ export default function CreateOrderModal({
           trainNo: order.train?.train_number || "",
           trainName: order.train?.train_name || "",
           adminDiscountPercent: order?.adminDiscountPercent || "",
+          couponAmount: order?.couponAmount || 0,
           advanced: order?.payment?.advanced || "",
-          remainingAmount: order?.payment?.remainingAmount || "",
+          remainingAmount: order?.remainingAmount || "",
         });
-        setDiscountPercentage(order?.adminDiscountPercent || 0);
-        setAdvance(order?.payment?.advanced || 0);
 
+        // Set calculation fields directly from API response
+        setSubTotal(order.subTotal || 0);
+        setDiscountPercentage(order?.adminDiscountPercent || 0);
+        setDiscountAmount(order?.adminDiscountValue || 0);
+        setTax(order?.payment?.tax || order.tax || 0);
+        setTotal(order?.total || 0);
+        setAdvance(order?.payment?.advanced || 0);
+        setRemainingAmount(order?.remainingAmount || 0);
+
+        // Build categories & cart
         const categoryMap = {};
         order.Items?.forEach((item) => {
           const cat = item.MenuItem?.Category;
@@ -125,15 +144,24 @@ export default function CreateOrderModal({
     if (open) fetchOrderDetails();
   }, [initialData?.orderID, open]);
 
-  const subTotal = cart.reduce(
-    (sum, i) => sum + (i.price || 0) * (i.quantity || 0),
-    0
-  );
-  const discountAmount = (subTotal * adminDiscountPercent) / 100;
-  const discountedSubtotal = subTotal - discountAmount;
-  const tax = discountedSubtotal * 0.05;
-  const total = discountedSubtotal + tax;
-  const remainingAmount = total - advanced;
+  // For create mode, calculate locally
+  const calculatedSubTotal = !isEditMode
+    ? cart.reduce((sum, i) => sum + (i.price || 0) * (i.quantity || 0), 0)
+    : subTotal;
+  const calculatedDiscountAmount = !isEditMode
+    ? (calculatedSubTotal * adminDiscountPercent) / 100
+    : discountAmount;
+  const calculatedDiscountedSubtotal =
+    calculatedSubTotal - calculatedDiscountAmount;
+  const calculatedTax = !isEditMode
+    ? calculatedDiscountedSubtotal * 0.05
+    : tax;
+  const calculatedTotal = !isEditMode
+    ? calculatedDiscountedSubtotal + calculatedTax
+    : total;
+  const calculatedRemainingAmount = !isEditMode
+    ? calculatedTotal - advanced
+    : remainingAmount;
 
   const handleFinish = async (values) => {
     if (!station || !vendor || !cart.length)
@@ -178,7 +206,6 @@ export default function CreateOrderModal({
       discount: 0,
       adminDiscountPercent: adminDiscountPercent,
     };
-    console.log(body, "payload admin create order");
     try {
       const url = isEditMode
         ? `/api/orders/update/${initialData.orderID}`
@@ -228,7 +255,7 @@ export default function CreateOrderModal({
           onClick={() => form.submit()}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
           disabled={cart.length === 0}
-          loading={submitting || loadingOrder} 
+          loading={submitting || loadingOrder}
         >
           {isEditMode ? "Update Order" : "Place Order"}
         </Button>
@@ -250,13 +277,13 @@ export default function CreateOrderModal({
           setVendor={setVendor}
           setCart={setCart}
           setCategories={setCategories}
-          subTotal={subTotal}
-          discountAmount={discountAmount}
-          tax={tax}
-          total={total}
+          subTotal={calculatedSubTotal}
+          discountAmount={calculatedDiscountAmount}
+          tax={calculatedTax}
+          total={calculatedTotal}
           advanced={advanced}
           setAdvance={setAdvance}
-          remainingAmount={remainingAmount}
+          remainingAmount={calculatedRemainingAmount}
           handleFinish={handleFinish}
         />
       </Spin>
