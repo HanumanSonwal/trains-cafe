@@ -2,13 +2,16 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchStations = createAsyncThunk(
   "menu/fetchStations",
-  async () => {
-    const res = await fetch("/api/station?search=&page=0");
+  async (searchTerm = "") => {
+    const query = searchTerm.trim();
+    const res = await fetch(`/api/station?search=${encodeURIComponent(query)}`);
     const data = await res.json();
     if (!data.success) throw new Error("Failed to load stations");
     return data.data;
   }
 );
+
+
 
 export const fetchVendorsByStation = createAsyncThunk(
   "menu/fetchVendorsByStation",

@@ -21,7 +21,6 @@ export default function CreateOrderModal({
   const [advanced, setAdvance] = useState(0);
   const [loadingOrder, setLoadingOrder] = useState(false);
 
-  // These hold fetched values directly from API when editing
   const [subTotal, setSubTotal] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [tax, setTax] = useState(0);
@@ -51,13 +50,13 @@ export default function CreateOrderModal({
       form.setFieldsValue({ adminDiscount: 0 });
     }
   }, [cart, isEditMode]);
-
   useEffect(() => {
     const fetchOrderDetails = async () => {
       if (!initialData?.orderID) {
         resetAll();
         return;
       }
+
       setLoadingOrder(true);
       try {
         const res = await fetch(`/api/orders/get?id=${initialData.orderID}`);
@@ -88,7 +87,6 @@ export default function CreateOrderModal({
           remainingAmount: order?.remainingAmount || "",
         });
 
-        // Set calculation fields directly from API response
         setSubTotal(order.subTotal || 0);
         setDiscountPercentage(order?.adminDiscountPercent || 0);
         setDiscountAmount(order?.adminDiscountValue || 0);
@@ -97,8 +95,9 @@ export default function CreateOrderModal({
         setAdvance(order?.payment?.advanced || 0);
         setRemainingAmount(order?.remainingAmount || 0);
 
-        // Build categories & cart
         const categoryMap = {};
+        const itemMap = {};
+
         order.Items?.forEach((item) => {
           const cat = item.MenuItem?.Category;
           if (!cat?.Category_Id) return;
@@ -116,23 +115,35 @@ export default function CreateOrderModal({
             };
           }
 
-          categoryMap[categoryId].items.push({
-            _id: item.MenuItem.Item_Id,
+          const itemData = {
+            itemId: item.MenuItem.Item_Id,
             name: item.MenuItem.Item_Name,
             price: item.MenuItem.Price,
             description: item.MenuItem.Description,
             vendor: vendorObj,
             foodType: item.MenuItem.Food_Type,
             image: item.MenuItem.image,
-            quantity: item.Quantity || 1,
-          });
+            quantity: Number(item.Quantity) || 1,
+          };
+
+          if (
+            !categoryMap[categoryId].items.some(
+              (i) => i.itemId === itemData.itemId
+            )
+          ) {
+            categoryMap[categoryId].items.push(itemData);
+          }
+
+          itemMap[itemData.itemId] = itemData;
         });
 
         const formattedCategoryList = Object.values(categoryMap);
+        const formattedCart = Object.values(itemMap);
+
         setStation(stationObj);
         setVendor(vendorObj);
         setCategories(formattedCategoryList);
-        setCart(formattedCategoryList.flatMap((cat) => cat.items));
+        setCart(formattedCart);
       } catch (error) {
         console.error("Order fetch error:", error);
         message.error("Error fetching order details");
@@ -144,24 +155,17 @@ export default function CreateOrderModal({
     if (open) fetchOrderDetails();
   }, [initialData?.orderID, open]);
 
-  // For create mode, calculate locally
-  const calculatedSubTotal = !isEditMode
-    ? cart.reduce((sum, i) => sum + (i.price || 0) * (i.quantity || 0), 0)
-    : subTotal;
-  const calculatedDiscountAmount = !isEditMode
-    ? (calculatedSubTotal * adminDiscountPercent) / 100
-    : discountAmount;
+  const calculatedSubTotal = cart.reduce(
+    (sum, i) => sum + (i.price || 0) * (i.quantity || 0),
+    0
+  );
+  const calculatedDiscountAmount =
+    (calculatedSubTotal * adminDiscountPercent) / 100;
   const calculatedDiscountedSubtotal =
     calculatedSubTotal - calculatedDiscountAmount;
-  const calculatedTax = !isEditMode
-    ? calculatedDiscountedSubtotal * 0.05
-    : tax;
-  const calculatedTotal = !isEditMode
-    ? calculatedDiscountedSubtotal + calculatedTax
-    : total;
-  const calculatedRemainingAmount = !isEditMode
-    ? calculatedTotal - advanced
-    : remainingAmount;
+  const calculatedTax = calculatedDiscountedSubtotal * 0.05;
+  const calculatedTotal = calculatedDiscountedSubtotal + calculatedTax;
+  const calculatedRemainingAmount = calculatedTotal - advanced;
 
   const handleFinish = async (values) => {
     if (!station || !vendor || !cart.length)
@@ -180,6 +184,7 @@ export default function CreateOrderModal({
       payment: {
         method: values.paymentMethod,
         advanced,
+        tax: calculatedTax,
       },
       cart: cart.map((i) => ({
         _id: i.itemId,
@@ -203,8 +208,11 @@ export default function CreateOrderModal({
         seatNo: values.seatNo,
       },
       couponCode: "",
-      discount: 0,
+      discount: calculatedDiscountAmount,
       adminDiscountPercent: adminDiscountPercent,
+      subTotal: calculatedSubTotal,
+      total: calculatedTotal,
+      remainingAmount: calculatedRemainingAmount,
     };
     try {
       const url = isEditMode

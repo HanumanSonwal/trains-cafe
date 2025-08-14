@@ -13,13 +13,15 @@ const OrderTableColumns = ({
   fetchData,
   currentPage,
 }) => {
+  const fontSize = 14;
+
   return [
     {
       title: "Order ID",
       dataIndex: "order_id",
-      width: 110,
+      width: 120,
       render: (text, record) => (
-        <div style={{ whiteSpace: "pre-line", fontSize: 12 }}>
+        <div style={{ whiteSpace: "pre-line", fontSize, lineHeight: 1.5 }}>
           <strong>{text}</strong>
           <br />
           <small>{record.date}</small>
@@ -29,25 +31,25 @@ const OrderTableColumns = ({
     {
       title: "User Info",
       dataIndex: "userDetails",
-      width: 200,
+      width: 220,
       render: (userDetails) => (
-        <div style={{ fontSize: 12, maxWidth: 200, lineHeight: "1.4" }}>
-          <p style={{ margin: "1px 0", wordBreak: "break-word" }}>
+        <div style={{ fontSize, maxWidth: 220, lineHeight: 1.6 }}>
+          <p style={{ margin: "2px 0", wordBreak: "break-word" }}>
             <strong>Name:</strong> {userDetails?.name || "N/A"}
           </p>
-          <p style={{ margin: "1px 0", wordBreak: "break-word" }}>
+          <p style={{ margin: "2px 0", wordBreak: "break-word" }}>
             <strong>Mobile:</strong> {userDetails?.mobile || "N/A"}
           </p>
-          <p style={{ margin: "1px 0", wordBreak: "break-word" }}>
+          <p style={{ margin: "2px 0", wordBreak: "break-word" }}>
             <strong>Email:</strong> {userDetails?.email || "N/A"}
           </p>
-          <p style={{ margin: "1px 0" }}>
+          <p style={{ margin: "2px 0" }}>
             <strong>Coach:</strong> {userDetails?.coach || "N/A"}
           </p>
-          <p style={{ margin: "1px 0" }}>
+          <p style={{ margin: "2px 0" }}>
             <strong>Seat:</strong> {userDetails?.seatNo || "N/A"}
           </p>
-          <p style={{ margin: "1px 0" }}>
+          <p style={{ margin: "2px 0" }}>
             <strong>PNR:</strong> {userDetails?.pnr || "N/A"}
           </p>
         </div>
@@ -56,16 +58,23 @@ const OrderTableColumns = ({
     {
       title: "Vendor",
       key: "vendor",
-      width: 150,
+      width: 180,
       render: (_, record) => {
         const v = record.Vendor_Details || {};
         return (
-          <div style={{ fontSize: 12, maxWidth: 150, lineHeight: "1.4" }}>
-            <p style={{ margin: "1px 0", fontWeight: "bold", wordBreak: "break-word" }}>
+          <div style={{ fontSize, maxWidth: 180, lineHeight: 1.5 }}>
+            <p
+              style={{
+                margin: "2px 0",
+                fontWeight: "bold",
+                wordBreak: "break-word",
+              }}
+            >
               {record.Vendor_Name || v.Vendor_Name || "N/A"}
             </p>
-            <p style={{ margin: "1px 0" }}>
-              <strong>Contact:</strong><br />
+            <p style={{ margin: "2px 0", wordBreak: "break-word" }}>
+              <strong>Contact:</strong>
+              <br />
               {v.Contact_No || "N/A"}
               {v.Alternate_Contact_No && (
                 <>
@@ -81,28 +90,21 @@ const OrderTableColumns = ({
     {
       title: "Items",
       key: "items",
-      width: 220,
+      width: 240,
       render: (_, record) => {
         const maxItemsToShow = 3;
         if (record.Items.length <= maxItemsToShow) {
           return (
-            <div style={{ maxHeight: "200px", overflowY: "auto", fontSize: 12 }}>
-              <ul
-                style={{
-                  paddingLeft: 14,
-                  listStyleType: "disc",
-                  margin: 0,
-                  maxWidth: 220,
-                }}
-              >
+            <div style={{ maxHeight: "220px", overflowY: "auto", fontSize }}>
+              <ul style={{ paddingLeft: 16, listStyleType: "disc", margin: 0 }}>
                 {record.Items.map((item, idx) => {
                   const menu = item.MenuItem || {};
                   return (
-                    <li key={idx} style={{ marginBottom: 4 }}>
-                      <div style={{ wordBreak: "break-word" }}>
-                        <strong>
-                          {item.Quantity}x {menu.Item_Name || "Unnamed Item"}
-                        </strong>
+                    <li key={idx} style={{ marginBottom: 6 }}>
+                      <div
+                        style={{ wordBreak: "break-word", fontWeight: "bold" }}
+                      >
+                        {item.Quantity}x {menu.Item_Name || "Unnamed Item"}
                       </div>
                       <div>
                         <small style={{ color: "#52c41a" }}>
@@ -122,7 +124,7 @@ const OrderTableColumns = ({
     },
     {
       title: "Bill Details",
-      width: 250,
+      width: 270,
       render: (_, record) => {
         const {
           subTotal = 0,
@@ -138,72 +140,115 @@ const OrderTableColumns = ({
         const paymentStatus = payment.payment_status || "pending";
 
         return (
-          <div style={{ 
-            lineHeight: "1.4", 
-            fontSize: 12, 
-            maxWidth: 250,
-            maxHeight: "200px",
-            overflowY: "auto",
-            padding: "4px"
-          }}>
-            <p style={{ margin: "2px 0", display: "flex", justifyContent: "space-between" }}>
-              <strong>SubTotal:</strong> 
+          <div
+            style={{
+              lineHeight: 1.5,
+              fontSize,
+              maxWidth: 270,
+              maxHeight: 220,
+              overflowY: "auto",
+              padding: 4,
+            }}
+          >
+            <p
+              style={{
+                margin: "2px 0",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <strong>SubTotal:</strong>
               <span style={{ color: "#1890ff" }}>₹{subTotal.toFixed(2)}</span>
             </p>
-            
-            <p style={{ margin: "2px 0", display: "flex", justifyContent: "space-between" }}>
-              <strong>Tax:</strong> 
+            <p
+              style={{
+                margin: "2px 0",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <strong>Tax:</strong>
               <span style={{ color: "#722ed1" }}>₹{tax.toFixed(2)}</span>
             </p>
-            
             {couponAmount > 0 && (
-              <p style={{ margin: "2px 0", display: "flex", justifyContent: "space-between" }}>
-                <strong style={{ color: "#ff4d4f" }}>Coupon Discount:</strong> 
-                <span style={{ color: "#ff4d4f" }}>-₹{couponAmount.toFixed(2)}</span>
+              <p
+                style={{
+                  margin: "2px 0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <strong style={{ color: "#ff4d4f" }}>Coupon Discount:</strong>
+                <span style={{ color: "#ff4d4f" }}>
+                  -₹{couponAmount.toFixed(2)}
+                </span>
               </p>
             )}
-            
             {adminDiscountValue > 0 && (
-              <p style={{ margin: "2px 0", display: "flex", justifyContent: "space-between" }}>
-                <strong style={{ color: "#f5222d" }}>Admin Discount:</strong> 
-                <span style={{ color: "#f5222d" }}>-₹{adminDiscountValue.toFixed(2)}</span>
+              <p
+                style={{
+                  margin: "2px 0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <strong style={{ color: "#f5222d" }}>Admin Discount:</strong>
+                <span style={{ color: "#f5222d" }}>
+                  -₹{adminDiscountValue.toFixed(2)}
+                </span>
               </p>
             )}
-            
             {advancedAmount > 0 && (
-              <p style={{ margin: "2px 0", display: "flex", justifyContent: "space-between" }}>
-                <strong style={{ color: "#52c41a" }}>Advanced Paid:</strong> 
-                <span style={{ color: "#52c41a" }}>₹{advancedAmount.toFixed(2)}</span>
+              <p
+                style={{
+                  margin: "2px 0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <strong style={{ color: "#52c41a" }}>Advanced Paid:</strong>
+                <span style={{ color: "#52c41a" }}>
+                  ₹{advancedAmount.toFixed(2)}
+                </span>
               </p>
             )}
-            
             {advancedAmount > 0 && (
-              <p style={{ margin: "2px 0", display: "flex", justifyContent: "space-between" }}>
-                <strong style={{ color: "#fa8c16" }}>Remaining:</strong> 
-                <span style={{ color: "#fa8c16" }}>₹{remainingAmount.toFixed(2)}</span>
+              <p
+                style={{
+                  margin: "2px 0",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <strong style={{ color: "#fa8c16" }}>Remaining:</strong>
+                <span style={{ color: "#fa8c16" }}>
+                  ₹{remainingAmount.toFixed(2)}
+                </span>
               </p>
             )}
-            
-            <div style={{ 
-              borderTop: "2px solid #d9d9d9", 
-              paddingTop: "4px", 
-              marginTop: "6px" 
-            }}>
-              <p style={{ 
-                fontWeight: "bold", 
-                margin: "2px 0", 
-                fontSize: "14px",
-                display: "flex", 
-                justifyContent: "space-between",
-                backgroundColor: "#f0f0f0",
-                padding: "2px 4px",
-                borderRadius: "4px"
-              }}>
+            <div
+              style={{
+                borderTop: "2px solid #d9d9d9",
+                paddingTop: 4,
+                marginTop: 6,
+              }}
+            >
+              <p
+                style={{
+                  fontWeight: "bold",
+                  margin: "2px 0",
+                  fontSize: 15,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  backgroundColor: "#f0f0f0",
+                  padding: "2px 6px",
+                  borderRadius: 4,
+                }}
+              >
                 <span>Total:</span>
                 <span style={{ color: "#1890ff" }}>₹{total.toFixed(2)}</span>
               </p>
-              
-              <div style={{ textAlign: "center", marginTop: "4px" }}>
+              <div style={{ textAlign: "center", marginTop: 4 }}>
                 <Tag
                   color={
                     paymentStatus === "paid"
@@ -212,9 +257,10 @@ const OrderTableColumns = ({
                       ? "orange"
                       : "red"
                   }
-                  style={{ fontSize: "11px", fontWeight: "bold" }}
+                  style={{ fontSize: 12, fontWeight: "bold" }}
                 >
-                  {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+                  {paymentStatus.charAt(0).toUpperCase() +
+                    paymentStatus.slice(1)}
                 </Tag>
               </div>
             </div>
@@ -225,7 +271,7 @@ const OrderTableColumns = ({
     {
       title: "Status",
       dataIndex: "status",
-      width: 120,
+      width: 130,
       render: (status, record) => (
         <Select
           value={status}
@@ -243,7 +289,7 @@ const OrderTableColumns = ({
     },
     {
       title: "Payment Status",
-      width: 120,
+      width: 130,
       render: (_, record) => (
         <Select
           value={record.paymentStatus}
@@ -259,53 +305,50 @@ const OrderTableColumns = ({
     },
     {
       title: "Payment Method",
-      width: 130,
+      width: 150,
       render: (_, record) => {
-        const paymentMethod = record.paymentMethod?.toLowerCase() || '';
-        
-        // Color mapping for payment methods
-        const getPaymentMethodColor = (method) => {
+        const paymentMethod = record.paymentMethod?.toLowerCase() || "";
+        const getColor = (method) => {
           switch (method) {
-            case 'razorpay':
-              return '#1890ff'; 
-            case 'cod':
-            case 'cash on delivery':
-              return '#52c41a'; 
-            case 'paytm':
-              return '#722ed1'; 
-            case 'phonepe':
-              return '#fa541c'; 
-            case 'gpay':
-            case 'google pay':
-              return '#13c2c2'; 
-            case 'upi':
-              return '#ff7a45'; 
-            case 'card':
-            case 'credit card':
-            case 'debit card':
-              return '#2f54eb'; 
-            case 'netbanking':
-              return '#eb2f96'; 
+            case "razorpay":
+              return "#1890ff";
+            case "cod":
+            case "cash on delivery":
+              return "#52c41a";
+            case "paytm":
+              return "#722ed1";
+            case "phonepe":
+              return "#fa541c";
+            case "gpay":
+            case "google pay":
+              return "#13c2c2";
+            case "upi":
+              return "#ff7a45";
+            case "card":
+            case "credit card":
+            case "debit card":
+              return "#2f54eb";
+            case "netbanking":
+              return "#eb2f96";
             default:
-              return '#8c8c8c'; 
+              return "#8c8c8c";
           }
         };
-
         return (
           <div style={{ textAlign: "center" }}>
-            <Tag 
-              style={{ 
-                backgroundColor: getPaymentMethodColor(paymentMethod),
-                color: 'white',
-                border: 'none',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                textTransform: 'uppercase',
-                padding: '4px 8px',
-                borderRadius: '6px'
+            <Tag
+              style={{
+                backgroundColor: getColor(paymentMethod),
+                color: "white",
+                border: "none",
+                fontSize: 13,
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                padding: "4px 8px",
+                borderRadius: 6,
               }}
             >
-              {record.paymentMethod || 'N/A'}
+              {record.paymentMethod || "N/A"}
             </Tag>
           </div>
         );
@@ -313,35 +356,35 @@ const OrderTableColumns = ({
     },
     {
       title: "Action",
-      width: 100,
+      width: 120,
       render: (_, record) => (
         <Space>
           <Tooltip title="Edit Order">
             <Button
-              icon={<EditOutlined className="text-white" />}
+              icon={<EditOutlined />}
               size="small"
               onClick={() => {
                 setEditingOrder(record);
                 setIsModalOpen(true);
               }}
-              style={{ 
-                backgroundColor: "#D6872A", 
+              style={{
+                backgroundColor: "#D6872A",
                 borderColor: "#D6872A",
-                color: "white"
+                color: "white",
               }}
             />
           </Tooltip>
           <Tooltip title="Download Invoice">
             <Button
-              icon={<DownloadOutlined className="text-white" />}
+              icon={<DownloadOutlined />}
               size="small"
               onClick={() =>
                 window.open(`/api/orders/invoice/${record.orderID}`, "_blank")
               }
-              style={{ 
-                backgroundColor: "#52c41a", 
+              style={{
+                backgroundColor: "#52c41a",
                 borderColor: "#52c41a",
-                color: "white"
+                color: "white",
               }}
             />
           </Tooltip>

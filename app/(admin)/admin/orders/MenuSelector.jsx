@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Select, Button, InputNumber, Row, Col, Divider } from "antd";
+import { Select, Button, Input, Row, Col, Divider } from "antd";
 import {
   fetchStations,
   fetchVendorsByStation,
   fetchCategoriesByVendor,
-    clearVendors,
+  clearVendors,
   clearCategories,
 } from "@/app/redux/menuSlice";
 
@@ -22,15 +22,12 @@ export default function MenuSelector({
   resetKey,
 }) {
   const dispatch = useDispatch();
-  const { stations, vendors, categories, loading } = useSelector((state) => state.menu);
-
-
-  console.log(vendors, "vendors-data");
-
-  const [selectedStation, setSelectedStation] = useState(
-    initialStation || null
+  const { stations, vendors, categories, loading } = useSelector(
+    (state) => state.menu
   );
-  const [selectedVendor, setSelectedVendor] = useState(initialVendor || null);
+
+  const [selectedStation, setSelectedStation] = useState(null);
+  const [selectedVendor, setSelectedVendor] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [cart, setCart] = useState([]);
@@ -40,52 +37,54 @@ export default function MenuSelector({
   const [cartInitializedFromProps, setCartInitializedFromProps] =
     useState(false);
 
-  console.log(selectedVendor, "selected-Vendor");
-
   const initializedRef = useRef(false);
+  const lastUpdateRef = useRef(null);
+
+  const handleUpdate = useCallback(() => {
+    const currentState = {
+      station: selectedStation,
+      vendor: selectedVendor,
+      categories: selectedCategories,
+      cart,
+    };
+
+    const stateString = JSON.stringify(currentState);
+    if (lastUpdateRef.current !== stateString) {
+      lastUpdateRef.current = stateString;
+      onUpdate?.(currentState);
+    }
+  }, [selectedStation, selectedVendor, selectedCategories, cart, onUpdate]);
 
   useEffect(() => {
     dispatch(fetchStations());
-  }, []);
+  }, [dispatch]);
+
+  const handleStationSearch = (searchTerm) => {
+    dispatch(fetchStations(searchTerm));
+  };
 
   useEffect(() => {
-    if (
-      initializedRef.current ||
-      !initialStation ||
-      !initialVendor ||
-      !initialCategory
-    )
-      return;
+    if (initializedRef.current || !initialStation || !initialVendor) return;
 
     initializedRef.current = true;
-
     setSelectedStation(initialStation);
-    dispatch(fetchVendorsByStation(initialStation.code || initialStation.name));
-
     setSelectedVendor(initialVendor);
+
+    dispatch(fetchVendorsByStation(initialStation.code || initialStation.name));
     dispatch(
       fetchCategoriesByVendor({ vendorId: initialVendor._id, isVeg: true })
     );
 
+    if (initialCart?.length) {
+      setCart(initialCart);
+      setCartInitializedFromProps(true);
+    }
+
     if (initialCategory?.length) {
       setSelectedCategories(initialCategory);
-
-      const allItems = initialCategory.flatMap((cat) => cat.items || []);
-      setMenuItems(allItems);
-
-      if (allItems?.length) {
-        const derivedCart = allItems.map((item) => ({
-          itemId: item._id,
-          quantity: item.quantity || 1,
-          price: item.price || item.Price || 0,
-          name: item.name || item.Item_Name || "",
-        }));
-
-        setCart(derivedCart);
-        setCartInitializedFromProps(true);
-      }
+      setCategoriesInitialized(true);
     }
-  }, [initialStation, initialVendor, initialCategory]);
+  }, [initialStation, initialVendor, initialCart, initialCategory, dispatch]);
 
   useEffect(() => {
     const allItems = selectedCategories.flatMap(
@@ -99,6 +98,7 @@ export default function MenuSelector({
       categories.length &&
       !categoriesInitialized &&
       !categoriesManuallySelected &&
+      cart.length &&
       !cartInitializedFromProps
     ) {
       const cartItemIds = new Set(cart.map((item) => item.itemId));
@@ -119,37 +119,36 @@ export default function MenuSelector({
   ]);
 
   useEffect(() => {
-    onUpdate({
-      station: selectedStation,
-      vendor: selectedVendor,
-      categories: selectedCategories,
-      cart,
-    });
-  }, [selectedStation, selectedVendor, selectedCategories, cart]);
+    handleUpdate();
+  }, [handleUpdate]);
 
-const handleStationChange = (id) => {
-  const station = stations.find((s) => s._id === id);
-  setSelectedStation(station);
+  const handleStationChange = (id) => {
+    const station = stations.find((s) => s._id === id);
 
-  resetAll();
+    dispatch(clearVendors());
+    dispatch(clearCategories());
 
-  dispatch(clearVendors()); 
-  dispatch(clearCategories()); 
+    setSelectedStation(station);
+    setSelectedVendor(null);
+    resetVendorData();
 
-  dispatch(fetchVendorsByStation(station.code || station.name));
-};
+    if (station) {
+      dispatch(fetchVendorsByStation(station.code || station.name));
+    }
+  };
 
-const handleVendorChange = (id) => {
-  const vendor = vendors.find((v) => v._id === id);
-  setSelectedVendor(vendor);
+  const handleVendorChange = (id) => {
+    const vendor = vendors.find((v) => v._id === id);
 
-  resetAll();
+    dispatch(clearCategories());
 
-  dispatch(clearCategories());
+    setSelectedVendor(vendor);
+    resetVendorData();
 
-  dispatch(fetchCategoriesByVendor({ vendorId: vendor._id, isVeg: true }));
-};
-
+    if (vendor) {
+      dispatch(fetchCategoriesByVendor({ vendorId: vendor._id, isVeg: true }));
+    }
+  };
 
   const handleCategoryChange = (ids) => {
     const selected = categories.filter((c) =>
@@ -161,53 +160,48 @@ const handleVendorChange = (id) => {
   };
 
   const handleAddItem = () => {
-    setCart([...cart, { itemId: null, quantity: 1, price: 0 }]);
+    setCart((prev) => [
+      ...prev,
+      { itemId: null, quantity: 1, price: 0, name: "" },
+    ]);
   };
 
   const handleItemChange = (index, id) => {
-    const item = menuItems.find((i) => i._id === id || i.Item_Id === id);
-    const newCart = [...cart];
-    newCart[index] = {
-      ...newCart[index],
-      itemId: id,
-      price: item?.price || item?.Price || 0,
-      name: item?.name || item?.Item_Name || "",
-    };
-    setCart(newCart);
+    const item = menuItems.find((i) => (i._id || i.Item_Id) === id);
+    setCart((prev) => {
+      const newCart = [...prev];
+      newCart[index] = {
+        ...newCart[index],
+        itemId: id,
+        price: item?.price || item?.Price || 0,
+        name: item?.name || item?.Item_Name || "",
+      };
+      return newCart;
+    });
   };
 
   const handleQtyChange = (index, qty) => {
-    const newCart = [...cart];
-    newCart[index].quantity = qty || 1;
-    setCart(newCart);
+    setCart((prev) => {
+      const newCart = [...prev];
+      newCart[index].quantity = qty || 1;
+      return newCart;
+    });
   };
 
-  const incrementQty = (index) => {
-    const newCart = [...cart];
-    newCart[index].quantity += 1;
-    setCart(newCart);
-  };
+  const incrementQty = (index) =>
+    handleQtyChange(index, cart[index].quantity + 1);
+  const decrementQty = (index) =>
+    handleQtyChange(index, Math.max(1, cart[index].quantity - 1));
+  const handleRemove = (index) =>
+    setCart((prev) => prev.filter((_, i) => i !== index));
 
-  const decrementQty = (index) => {
-    const newCart = [...cart];
-    if (newCart[index].quantity > 1) newCart[index].quantity -= 1;
-    setCart(newCart);
-  };
-
-  const handleRemove = (index) => {
-    const newCart = [...cart];
-    newCart.splice(index, 1);
-    setCart(newCart);
-  };
-
-  const resetAll = () => {
+  const resetVendorData = () => {
     setSelectedCategories([]);
     setMenuItems([]);
     setCart([]);
     setCategoriesInitialized(false);
     setCategoriesManuallySelected(false);
     setCartInitializedFromProps(false);
-    initializedRef.current = false;
   };
 
   useEffect(() => {
@@ -215,19 +209,18 @@ const handleVendorChange = (id) => {
       !!initialStation && !!initialVendor && !!initialCart?.length;
 
     if (!isEditMode) {
-      resetAll();
       setSelectedStation(null);
       setSelectedVendor(null);
-      setCart([]);
+      resetVendorData();
     } else {
       setSelectedStation(initialStation);
       setSelectedVendor(initialVendor);
       setCart(initialCart || []);
+      setCartInitializedFromProps(true);
     }
 
     setCategoriesInitialized(false);
     setCategoriesManuallySelected(false);
-    setCartInitializedFromProps(false);
     initializedRef.current = false;
   }, [resetKey]);
 
@@ -238,17 +231,22 @@ const handleVendorChange = (id) => {
           <label>Station</label>
           <Select
             showSearch
-            value={selectedStation?._id}
+            value={
+              selectedStation
+                ? {
+                    value: selectedStation._id,
+                    label: selectedStation.Station_Name || selectedStation.name,
+                  }
+                : undefined
+            }
+            labelInValue
             placeholder="Select station"
             style={{ width: "100%" }}
-            onChange={handleStationChange}
-            filterOption={(input, option) =>
-              option?.children
-                ?.toString()
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-             loading={loading} 
+            onChange={(val) => handleStationChange(val.value)}
+            onSearch={(value) => handleStationSearch(value)}
+            loading={loading}
+            filterOption={false}
+            notFoundContent={loading ? "Loading..." : "No stations found"}
           >
             {stations.map((s) => (
               <Option key={s._id} value={s._id}>
@@ -262,11 +260,17 @@ const handleVendorChange = (id) => {
           <label>Vendor</label>
           <Select
             showSearch
-            value={selectedVendor?._id}
+            value={selectedVendor?._id || undefined}
             placeholder="Select vendor"
             style={{ width: "100%" }}
             onChange={handleVendorChange}
-             loading={loading} 
+            loading={loading || !selectedStation}
+            filterOption={(input, option) =>
+              (option.children || "")
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+            disabled={!selectedStation}
           >
             {vendors.map((v) => (
               <Option key={v._id} value={v._id}>
@@ -281,11 +285,17 @@ const handleVendorChange = (id) => {
           <Select
             mode="multiple"
             showSearch
-            value={selectedCategories.map((c) => c._id || c.Category_Id)}
+            value={selectedCategories.map((c) => c._id)}
             placeholder="Select categories"
             style={{ width: "100%" }}
             onChange={handleCategoryChange}
-             loading={loading} 
+            loading={loading || !selectedVendor}
+            filterOption={(input, option) =>
+              (option.children || "")
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+            disabled={!selectedVendor}
           >
             {categories.map((c) => (
               <Option
@@ -306,19 +316,48 @@ const handleVendorChange = (id) => {
           <Col flex="0 0 500px">
             <Select
               placeholder="Select item"
-              value={row.itemId}
+              value={
+                row.itemId
+                  ? {
+                      value: row.itemId,
+                      label: `${row.name}  -   ₹${row.price?.toFixed(2) || 0}`,
+                    }
+                  : undefined
+              }
+              labelInValue
               style={{ width: "100%" }}
-              onChange={(val) => handleItemChange(index, val)}
+              onChange={(val) => handleItemChange(index, val.value)}
+              showSearch
+              optionFilterProp="label"
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
             >
-              {menuItems.map((item) => (
-                <Option
-                  key={item._id || item.Item_Id}
-                  value={item._id || item.Item_Id}
-                >
-                  <b>{item.name || item.Item_Name}</b> — ₹
-                  {item.price || item.Price}
-                </Option>
-              ))}
+              {menuItems.map((item) => {
+                const itemId = item._id || item.Item_Id;
+                const itemName = item.name || item.Item_Name || "";
+                const itemPrice = item.price || item.Price || 0;
+
+                return (
+                  <Option
+                    key={itemId}
+                    value={itemId}
+                    label={`${itemName} (₹${itemPrice.toFixed(2)})`}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span>{itemName}</span>
+                      <span style={{ color: "#16ADA8", fontWeight: "bold" }}>
+                        ₹{itemPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </Option>
+                );
+              })}
             </Select>
           </Col>
 
@@ -326,11 +365,11 @@ const handleVendorChange = (id) => {
             <Button size="small" onClick={() => decrementQty(index)}>
               -
             </Button>
-            <InputNumber
+            <Input
               min={1}
               value={row.quantity}
               onChange={(val) => handleQtyChange(index, val)}
-              style={{ width: 50, margin: "0 8px" }}
+              style={{ width: 50, margin: "0 8px", textAlign: "center" }}
             />
             <Button size="small" onClick={() => incrementQty(index)}>
               +
@@ -338,7 +377,7 @@ const handleVendorChange = (id) => {
           </Col>
 
           <Col flex="0 0 auto" style={{ fontWeight: "bold", color: "#16ADA8" }}>
-            ₹{(row.price || 0) * (row.quantity || 0)}
+            ₹{((row.price || 0) * (row.quantity || 0)).toFixed(2)}
           </Col>
 
           <Col flex="0 0 auto">

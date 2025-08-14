@@ -24,14 +24,8 @@ export async function GET(req) {
       limit,
       sort: { createdAt: -1 },
       populate: [
-        {
-          path: "vendor",
-          model: "vendor",
-        },
-        {
-          path: "station",
-          model: "Station",
-        },
+        { path: "vendor", model: "vendor" },
+        { path: "station", model: "Station" },
       ],
     };
 
@@ -75,27 +69,34 @@ export async function GET(req) {
           },
         });
 
-        const items = orderItems.map((oi) => ({
-          Quantity: oi.Quantity,
-          Price: oi.Price,
-          MenuItem: oi.Item_Id
-            ? {
-                Item_Id: oi.Item_Id._id,
-                Item_Name: oi.Item_Id.Item_Name,
-                image: oi.Item_Id.image,
-                Price: oi.Item_Id.Price,
-                Food_Type: oi.Item_Id.Food_Type,
-                Description: oi.Item_Id.Description,
-                Category: oi.Item_Id.Category_Id
-                  ? {
-                      Category_Id: oi.Item_Id.Category_Id._id,
-                      Title: oi.Item_Id.Category_Id.title,
-                      Image: oi.Item_Id.Category_Id.image,
-                    }
-                  : null,
-              }
-            : null,
-        }));
+        const itemMap = new Map();
+        for (const oi of orderItems) {
+          if (!oi.Item_Id) continue;
+          const key = oi.Item_Id._id.toString();
+
+          itemMap.set(key, {
+            Quantity: oi.Quantity,
+            Price: oi.Price,
+            MenuItem: {
+              Item_Id: oi.Item_Id._id,
+              Item_Name: oi.Item_Id.Item_Name,
+              image: oi.Item_Id.image,
+              Price: oi.Item_Id.Price,
+              Food_Type: oi.Item_Id.Food_Type,
+              Description: oi.Item_Id.Description,
+              Category: oi.Item_Id.Category_Id
+                ? {
+                    Category_Id: oi.Item_Id.Category_Id._id,
+                    Title: oi.Item_Id.Category_Id.title,
+                    Image: oi.Item_Id.Category_Id.image,
+                  }
+                : null,
+            },
+          });
+        }
+
+        const items = Array.from(itemMap.values());
+
         const total = order.total ?? 0;
         const advancedAmount = order.payment?.advanced ?? 0;
         const remainingAmount = Number((total - advancedAmount).toFixed(2));
