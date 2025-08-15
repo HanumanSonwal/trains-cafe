@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   Modal,
   Button,
@@ -12,6 +12,7 @@ import {
   TimePicker,
   Form,
   message,
+  Spin,
 } from "antd";
 import dynamic from "next/dynamic";
 import dayjs from "dayjs";
@@ -27,30 +28,50 @@ const TextEditor = dynamic(() => import("../../../componants/TextEditor"), {
 });
 
 const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
-  const [stations, setStations] = useState([]);
   const [form] = Form.useForm();
-  const [image, setimage] = useState("");
+  const [stations, setStations] = useState([]);
+  const [image, setImage] = useState("");
   const [imageError, setImageError] = useState("");
-  const [isreset, setIsreset] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+  const [loadingStations, setLoadingStations] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
-  console.log(initialValues, "initialValues -va;ues");
-
-  useEffect(() => {
-    const fetchStations = async () => {
-      try {
-        const response = await fetchData("/api/station?search=&page=0");
-        if (response && response.success !== false) {
-          setStations(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching stations:", error);
+  const fetchStations = useCallback(async (search = "", page = 1) => {
+    setLoadingStations(true);
+    try {
+      const response = await fetchData(
+        `/api/station?search=${encodeURIComponent(
+          search
+        )}&page=${page}&limit=50`
+      );
+      if (response.success) {
+        setStations(response.data);
+      } else {
+        message.error("Failed to fetch stations");
       }
-    };
-    fetchStations();
+    } catch {
+      message.error("Error fetching stations");
+    } finally {
+      setLoadingStations(false);
+    }
   }, []);
+
+  const debounce = (func, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  const debouncedFetchStations = useMemo(
+    () => debounce(fetchStations, 500),
+    [fetchStations]
+  );
 
   useEffect(() => {
     if (open) {
+      fetchStations();
       form.setFieldsValue({
         ...initialValues,
         Working_Time: initialValues?.Working_Time
@@ -58,81 +79,91 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
               dayjs(time, "hh:mm A")
             )
           : [],
-            Weekly_Off: initialValues?.Weekly_Off || "", 
+        Weekly_Off: initialValues?.Weekly_Off || "",
       });
-      setimage(initialValues?.image || "");
+      setImage(initialValues?.image || "");
     } else {
       form.resetFields();
-      setimage("");
-      setIsreset(true);
+      setImage("");
+      setIsReset(true);
     }
-  }, [open, initialValues, form]);
+  }, [open, initialValues, fetchStations, form]);
 
-  const handleFinish = async (values) => {
-    if (!image) {
-      setImageError("Please upload an image");
-      return;
-    }
-
-    const payload = {
-      ...values,
-      image: image,
-      Working_Time:
-        values.Working_Time?.length === 2
-          ? `${values.Working_Time[0].format(
-              "hh:mm A"
-            )} - ${values.Working_Time[1].format("hh:mm A")}`
-          : "",
-    };
-
-    console.log(payload ,"vendors-payload")
-
-    let response;
-    try {
-      if (initialValues?._id) {
-        response = await updateData(
-          `/api/vendors/?id=${initialValues._id}`,
-          payload
-        );
-      } else {
-        response = await postData("/api/vendors", payload);
+  const handleFinish = useCallback(
+    async (values) => {
+      if (!image) {
+        setImageError("Please upload an image");
+        return;
       }
 
-      if (response && response.success !== false) {
-        message.success("Vendor saved successfully!");
-        form.resetFields();
-        setimage("");
-        onSubmit(payload);
-        onCancel();
-      } else {
-        message.warning(response?.message || "Something went wrong!");
-      }
-    } catch (error) {
-      console.error(error);
-      message.error("Server error occurred.");
-    }
-  };
+      setSubmitLoading(true);
 
-  const handleCancel = () => {
+      const payload = {
+        ...values,
+        image,
+        Working_Time:
+          values.Working_Time?.length === 2
+            ? `${values.Working_Time[0].format(
+                "hh:mm A"
+              )} - ${values.Working_Time[1].format("hh:mm A")}`
+            : "",
+      };
+
+      try {
+        let response;
+        if (initialValues?._id) {
+          response = await updateData(
+            `/api/vendors/?id=${initialValues._id}`,
+            payload
+          );
+        } else {
+          response = await postData("/api/vendors", payload);
+        }
+
+        if (response && response.success !== false) {
+          form.resetFields();
+          setImage("");
+          onSubmit?.(payload);
+          onCancel();
+        } else {
+          message.warning(response?.message || "Something went wrong!");
+        }
+      } catch (error) {
+        console.error(error);
+        message.error("Server error occurred.");
+      } finally {
+        setSubmitLoading(false);
+      }
+    },
+    [image, initialValues, form, onSubmit, onCancel]
+  );
+
+  const handleCancel = useCallback(() => {
     form.resetFields();
-    setimage("");
+    setImage("");
     onCancel();
-  };
+  }, [form, onCancel]);
 
   return (
     <Modal
-      title={initialValues ? "Edit Vendor" : "Add Vendor"}
+      title={initialValues?._id ? "Edit Vendor" : "Add Vendor"}
       open={open}
       onCancel={handleCancel}
       width={800}
+      bodyStyle={{
+        maxHeight: "70vh",
+        overflowY: "auto",
+        paddingRight: "10px",
+      }}
       footer={[
         <Button
           key="submit"
           type="primary"
+          loading={submitLoading}
           onClick={() => form.submit()}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
-          {initialValues ? "Save" : "Submit"}
+          {initialValues?._id ? "Save" : "Submit"}
         </Button>,
       ]}
     >
@@ -155,7 +186,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
                 { required: true, message: "Contact number is required" },
                 {
                   pattern: /^[0-9]{10}$/,
-                  message: "Contact number must be exactly 10 digits",
+                  message: "Must be exactly 10 digits",
                 },
               ]}
             >
@@ -177,7 +208,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
               rules={[
                 {
                   pattern: /^$|^[0-9]{10}$/,
-                  message: "Alternate number must be exactly 10 digits",
+                  message: "Must be exactly 10 digits",
                 },
               ]}
             >
@@ -191,6 +222,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
               />
             </Form.Item>
           </Col>
+
           <Col span={12}>
             <Form.Item
               name="Station"
@@ -199,11 +231,10 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
             >
               <Select
                 showSearch
-                placeholder="Select station"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().includes(input.toLowerCase())
-                }
+                placeholder="Search for a station"
+                onSearch={(value) => debouncedFetchStations(value, 1)}
+                filterOption={false}
+                notFoundContent={loadingStations ? <Spin size="small" /> : null}
               >
                 {stations.map((station) => (
                   <Option key={station._id} value={station._id}>
@@ -265,44 +296,41 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
         </Row>
 
         <Row gutter={16}>
-      <Col span={12}>
+          <Col span={12}>
+            <Form.Item name="Weekly_Off" label="Weekly Off">
+              <Select placeholder="Select weekly off">
+                {[
+                  "No_Weekly_Off",
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ].map((day) => (
+                  <Option key={day} value={day}>
+                    {day}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
 
-  <Form.Item
-  name="Weekly_Off"
-  label="Weekly Off"
->
-  <Select placeholder="Select weekly off">
-    <Option value="No_Weekly_Off">No Weekly Off</Option>
-    <Option value="Monday">Monday</Option>
-    <Option value="Tuesday">Tuesday</Option>
-    <Option value="Wednesday">Wednesday</Option>
-    <Option value="Thursday">Thursday</Option>
-    <Option value="Friday">Friday</Option>
-    <Option value="Saturday">Saturday</Option>
-    <Option value="Sunday">Sunday</Option>
-  </Select>
-</Form.Item>
-
-</Col>
-
-      <Col span={12}>
-  <Form.Item
-    name="Food_Type"
-    label="Food Type"
-    rules={[{ required: true, message: "Food type is required" }]}
-  >
-    <Select
-      mode="multiple"
-      placeholder="Select food type"
-      allowClear
-    >
-      <Option value="Vegetarian">Vegetarian</Option>
-      <Option value="Non-Vegetarian">Non-Vegetarian</Option>
-    </Select>
-  </Form.Item>
-</Col>
-
+          <Col span={12}>
+            <Form.Item
+              name="Food_Type"
+              label="Food Type"
+              rules={[{ required: true, message: "Food type is required" }]}
+            >
+              <Select mode="multiple" placeholder="Select food type" allowClear>
+                <Option value="Vegetarian">Vegetarian</Option>
+                <Option value="Non-Vegetarian">Non-Vegetarian</Option>
+              </Select>
+            </Form.Item>
+          </Col>
         </Row>
+
         <Form.Item
           name="Address"
           label="Address"
@@ -310,6 +338,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
         >
           <Input.TextArea rows={4} placeholder="Enter address here" />
         </Form.Item>
+
         <Form.Item
           name="Description"
           label="Description"
@@ -327,11 +356,11 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
         <Form.Item label="Upload Image" required>
           <FileUploadComponent
             url={image}
-            setUrl={setimage}
-            isreset={isreset}
+            setUrl={setImage}
+            isreset={isReset}
             setImageError={setImageError}
           />
-          {imageError && <p className="text-red-500">{imageError}</p>}
+          {imageError && <p style={{ color: "red" }}>{imageError}</p>}
         </Form.Item>
       </Form>
     </Modal>

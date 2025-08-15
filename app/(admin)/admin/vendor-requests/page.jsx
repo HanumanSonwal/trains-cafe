@@ -202,7 +202,6 @@ const VendorsManagement = () => {
             onChange={handleSearch}
           />
         </div>
-   
       </div>
 
       <Spin spinning={loading} color="#D6872A" indicator={antIcon}>

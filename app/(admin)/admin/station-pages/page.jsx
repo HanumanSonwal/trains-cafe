@@ -3,7 +3,7 @@
 import { Table, Switch, Button, Input, Modal, Popconfirm, Spin ,Tooltip, message } from 'antd';
 import { EditFilled, DeleteOutlined, PlusOutlined, DeleteFilled , LoadingOutlined, SearchOutlined, CopyOutlined , CloseCircleOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
-import SattionPageModal from './WebsitePageModal';
+import SattionPageModal from './SattionPageModal';
 
 const { Search } = Input;
 

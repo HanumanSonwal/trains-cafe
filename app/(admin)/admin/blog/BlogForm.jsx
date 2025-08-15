@@ -1,82 +1,83 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Button, Input, Row, Select, Col, message } from "antd";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Modal, Button, Input, Row, Select, Col, message, Form } from "antd";
 import axios from "axios";
 import slugify from "slugify";
 import FileUploadComponent from "@/app/componants/ImageUpload";
 import TextEditor from "@/app/componants/TextEditor";
 
-const blogSchema = z.object({
-  title: z.string().nonempty("Please enter the blog title"),
-  description: z.string().nonempty("Please enter the blog description"),
-  content: z.string().nonempty("Please enter the content"),
-  status: z.string().nonempty("Please select a status"),
-  metakeyword: z.string().nonempty("Please enter meta keywords"),
-  metatitle: z.string().nonempty("Please enter a meta title"),
-  metadescription: z.string().nonempty("Please enter a meta description"),
-  image: z.string().optional(),
-  slug: z.string().optional(),
-  category: z.string().nonempty("Please select a category"),
-});
+const { Option } = Select;
 
 const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
-  const [url, setUrl] = useState(initialValues?.image || "");
+  const [form] = Form.useForm();
+  const [url, setUrl] = useState("");
   const [isReset, setIsReset] = useState(false);
-  const { Option } = Select;
+  const [loading, setLoading] = useState(false);
+  const [editorKey, setEditorKey] = useState(Date.now());
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(blogSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      content: "",
-      status: "",
-      metakeyword: "",
-      metatitle: "",
-      metadescription: "",
-      image: "",
-      slug: "",
-      category: "",
-      ...initialValues,
-    },
-  });
+  const categories = useMemo(() => ["Food", "Health", "Travel"], []);
+
+  console.log(isReset ,"is-reset in form")
+
+
+  const resetAll = useCallback(() => {
+    form.resetFields();
+    setUrl("");
+    setIsReset(true);
+    setEditorKey(Date.now());
+  setTimeout(() => setIsReset(false), 100);
+  }, [form]);
 
   useEffect(() => {
-    reset(initialValues);
-    setUrl(initialValues?.image || "");
-    setIsReset(true);
-  }, [initialValues, reset]);
-
-  const handleFormSubmit = async (data) => {
-    try {
-      data.slug = slugify(data.title, { lower: true, strict: true });
-      data.image = url;
-
-      if (initialValues?._id) {
-        await axios.put(`/api/blog?id=${initialValues._id}`, data);
-        message.success("Blog updated successfully");
-      } else {
-        await axios.post("/api/blog", data);
-        message.success("Blog added successfully");
-      }
-
-      fetchBlogs();
-      reset({});
-      setUrl("");
-      setIsReset(true);
-      onCancel();
-    } catch (error) {
-      console.error("Failed to submit the form:", error);
-      message.error("Failed to save the blog");
+    if (open) {
+      form.setFieldsValue({
+        title: "",
+        description: "",
+        content: "",
+        status: "",
+        metakeyword: "",
+        metatitle: "",
+        metadescription: "",
+        image: "",
+        slug: "",
+        category: "",
+        ...initialValues,
+      });
+      setUrl(initialValues?.image || "");
+      setEditorKey(Date.now());
     }
-  };
+  }, [initialValues, open, form]);
+
+  const handleFormSubmit = useCallback(
+    async (values) => {
+      try {
+        setLoading(true);
+        values.slug = slugify(values.title, { lower: true, strict: true });
+        values.image = url;
+
+        if (initialValues?._id) {
+          await axios.put(`/api/blog?id=${initialValues._id}`, values);
+          message.success("Blog updated successfully");
+        } else {
+          await axios.post("/api/blog", values);
+          message.success("Blog added successfully");
+        }
+
+        fetchBlogs();
+        resetAll();
+        onCancel();
+      } catch (error) {
+        console.error("Failed to submit the form:", error);
+        const errMsg =
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to save the blog";
+        message.error(errMsg);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [url, initialValues, fetchBlogs, onCancel, resetAll]
+  );
 
   return (
     <Modal
@@ -84,181 +85,144 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
       open={open}
       width={800}
       onCancel={onCancel}
+      afterClose={resetAll}
       footer={[
         <Button
           key="submit"
           type="primary"
-          onClick={handleSubmit(handleFormSubmit)}
+          loading={loading}
+          onClick={() => form.submit()}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           {initialValues?._id ? "Save" : "Submit"}
         </Button>,
       ]}
+      bodyStyle={{
+        maxHeight: "65vh",
+        overflowY: "auto",
+        paddingRight: "8px",
+      }}
     >
-      <form>
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={handleFormSubmit}
+        initialValues={{
+          title: "",
+          description: "",
+          content: "",
+          status: "",
+          metakeyword: "",
+          metatitle: "",
+          metadescription: "",
+          image: "",
+          slug: "",
+          category: "",
+          ...initialValues,
+        }}
+      >
         <Row gutter={[16, 16]}>
           <Col span={12}>
-            <Controller
+            <Form.Item
+              label="Blog Title"
               name="title"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Blog Title</label>
-                  <Input {...field} />
-                  {errors.title && (
-                    <p className="text-red-500">{errors.title.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please enter the blog title" }]}
+            >
+              <Input />
+            </Form.Item>
           </Col>
+
           <Col span={12}>
-            <Controller
+            <Form.Item
+              label="Status"
               name="status"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Status</label>
-                  <Select
-                    {...field}
-                    placeholder="Select Status"
-                    className="w-full"
-                  >
-                    <Option value="publish">Publish</Option>
-                    <Option value="draft">Draft</Option>
-                  </Select>
-                  {errors.status && (
-                    <p className="text-red-500">{errors.status.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please select a status" }]}
+            >
+              <Select placeholder="Select Status">
+                <Option value="publish">Publish</Option>
+                <Option value="draft">Draft</Option>
+              </Select>
+            </Form.Item>
           </Col>
+
           <Col span={12}>
-            <Controller
+            <Form.Item
+              label="Category"
               name="category"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Category</label>
-                  <Select
-                    {...field}
-                    placeholder="Select Category"
-                    className="w-full"
-                  >
-                    <Option value="Food">Food</Option>
-                    <Option value="Health">Health</Option>
-                    <Option value="Travel">Travel</Option>
-                  </Select>
-                  {errors.category && (
-                    <p className="text-red-500">{errors.category.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please select a category" }]}
+            >
+              <Select placeholder="Select Category">
+                {categories.map((cat) => (
+                  <Option key={cat} value={cat}>
+                    {cat}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Col>
+
           <Col span={12}>
-            <Controller
-              name="image"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Thumbnail Image</label>
-                  <FileUploadComponent
-                    {...field}
-                    url={url}
-                    isreset={isReset}
-                    setUrl={setUrl}
-                  />
-                </div>
-              )}
-            />
+            <Form.Item label="Thumbnail Image" name="image">
+              <FileUploadComponent url={url} isReset={isReset} setUrl={setUrl} />
+            </Form.Item>
           </Col>
+
           <Col span={24}>
-            <Controller
+            <Form.Item
+              label="Description"
               name="description"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Description</label>
-                  <Input.TextArea {...field} />
-                  {errors.description && (
-                    <p className="text-red-500">{errors.description.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please enter the description" }]}
+            >
+              <Input.TextArea />
+            </Form.Item>
           </Col>
+
           <Col span={12}>
-            <Controller
+            <Form.Item
+              label="Meta Keywords"
               name="metakeyword"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Meta Keywords</label>
-                  <Input {...field} />
-                  {errors.metakeyword && (
-                    <p className="text-red-500">{errors.metakeyword.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please enter meta keywords" }]}
+            >
+              <Input />
+            </Form.Item>
           </Col>
+
           <Col span={12}>
-            <Controller
+            <Form.Item
+              label="Meta Title"
               name="metatitle"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Meta Title</label>
-                  <Input {...field} />
-                  {errors.metatitle && (
-                    <p className="text-red-500">{errors.metatitle.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please enter meta title" }]}
+            >
+              <Input />
+            </Form.Item>
           </Col>
+
           <Col span={24}>
-            <Controller
+            <Form.Item
+              label="Content"
               name="content"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Content</label>
-                  <TextEditor
-                    previousValue={field.value}
-                    updatedValue={(value) => field.onChange(value)}
-                    onBlur={field.onBlur}
-                    placeholder="Start typing your content here..."
-                    height={200}
-                  />
-                  {errors.content && (
-                    <p className="text-red-500">{errors.content.message}</p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please enter the content" }]}
+            >
+              <TextEditor
+                key={editorKey}
+                previousValue={form.getFieldValue("content")}
+                updatedValue={(value) => form.setFieldsValue({ content: value })}
+                height={200}
+              />
+            </Form.Item>
           </Col>
+
           <Col span={24}>
-            <Controller
+            <Form.Item
+              label="Meta Description"
               name="metadescription"
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label>Meta Description</label>
-                  <Input.TextArea {...field} rows={3} />
-                  {errors.metadescription && (
-                    <p className="text-red-500">
-                      {errors.metadescription.message}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
+              rules={[{ required: true, message: "Please enter meta description" }]}
+            >
+              <Input.TextArea rows={3} />
+            </Form.Item>
           </Col>
         </Row>
-      </form>
+      </Form>
     </Modal>
   );
 };

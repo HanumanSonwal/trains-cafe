@@ -1,159 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Input, Form, message, Select } from 'antd';
-
-const { Option } = Select;
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { Modal, Input, Form, message, Select, Row, Col, Button } from "antd";
 import dynamic from "next/dynamic";
 
-const TextEditor = dynamic(() => import('../../../componants/TextEditor'), { ssr: false });
+const { Option } = Select;
+const TextEditor = dynamic(() => import("../../../componants/TextEditor"), { ssr: false });
 
 const TrainPageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) => {
   const [form] = Form.useForm();
-  const [editorContent, setEditorContent] = useState('');
+  const [editorContent, setEditorContent] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const defaultValues = useMemo(
+    () => ({
+      name: "",
+      title: "",
+      description: "",
+      keywords: "",
+      trainnumber: "",
+      trainname: "",
+      status: "published",
+    }),
+    []
+  );
 
   useEffect(() => {
-    if (visible && initialValues) {
-      form.setFieldsValue({
-        name: initialValues.name,
-        title: initialValues.title,
-        description: initialValues.description,
-        keywords: initialValues.keywords.join(', '),
-        trainnumber: initialValues.trainnumber,
-        trainname: initialValues.trainname,
-        status: initialValues.status || 'published',
-      });
-      setEditorContent(initialValues.pageData || '');
-    } else {
-      form.resetFields();
-      setEditorContent('');
+    if (visible) {
+      if (initialValues) {
+        form.setFieldsValue({
+          ...initialValues,
+          keywords: Array.isArray(initialValues.keywords)
+            ? initialValues.keywords.join(", ")
+            : "",
+          status: initialValues.status || "published",
+        });
+        setEditorContent(initialValues.pageData || "");
+      } else {
+        form.setFieldsValue(defaultValues);
+        setEditorContent("");
+      }
     }
-  }, [visible, initialValues, form]);
+  }, [visible, initialValues, defaultValues, form]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     try {
       const values = await form.validateFields();
+      setLoading(true);
+
       const submitData = {
-        name: values.name,
-        title: values.title,
-        description: values.description,
-        keywords: values.keywords.split(',').map(keyword => keyword.trim()),
-        trainnumber: values.trainnumber,
-        trainname: values.trainname,
-        status: mode === 'add' ? 'draft' : values.status, // Default to "draft" on add
+        ...values,
+        keywords: values.keywords.split(",").map((k) => k.trim()),
+        status: mode === "add" ? "draft" : values.status,
         pageData: editorContent,
       };
 
-      console.log('Submit Data:', submitData); // Debugging
+      const url =
+        mode === "add"
+          ? "/api/web-train/add"
+          : `/api/web-train/update/${initialValues._id}`;
+      const method = mode === "add" ? "POST" : "PUT";
 
-      let response;
-      if (mode === 'add') {
-        response = await fetch('/api/web-train/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submitData),
-        });
-      } else {
-        response = await fetch(`/api/web-train/update/${initialValues._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submitData),
-        });
-      }
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submitData),
+      });
 
-      if (response.ok) {
-        const responseData = await response.json();
-        message.success(mode === 'add' ? 'Page added successfully' : 'Page updated successfully');
-        onSubmit(responseData);
-      } else {
-        throw new Error(mode === 'add' ? 'Failed to add page' : 'Failed to update page');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      message.error(mode === 'add' ? 'Failed to add page' : 'Failed to update page');
+      if (!response.ok) throw new Error();
+      const data = await response.json();
+
+      message.success(mode === "add" ? "Page added successfully" : "Page updated successfully");
+      onSubmit(data);
+    } catch (err) {
+      message.error(mode === "add" ? "Failed to add page" : "Failed to update page");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [form, editorContent, mode, initialValues, onSubmit]);
 
   return (
     <Modal
-      title={mode === 'add' ? "Add Station Page" : "Edit Station Page"}
-      visible={visible}
+      title={mode === "add" ? "Add Station Page" : "Edit Station Page"}
+      open={visible}
       onCancel={onCancel}
-      onOk={handleSubmit}
-      width={800}
+      width={900}
+      footer={null}
+      bodyStyle={{ maxHeight: "70vh", overflowY: "auto", paddingRight: "8px" }}
+      destroyOnClose
     >
       <Form form={form} layout="vertical">
-        <Form.Item
-          name="name"
-          label="Page name"
-          rules={[{ required: true, message: 'Please input the page name!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="title"
-          label="Title"
-          rules={[{ required: true, message: 'Please input the title!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="description"
-          label="Description"
-          rules={[{ required: true, message: 'Please input the description!' }]}
-        >
-          <Input.TextArea rows={4} />
-        </Form.Item>
-        <Form.Item
-          name="keywords"
-          label="Keywords"
-          rules={[{ required: true, message: 'Please input the keywords!' }]}
-        >
-          <Input placeholder="Enter keywords separated by commas" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col span={8}>
+            <Form.Item name="name" label="Page Name" rules={[{ required: true }]}>
+              <Input placeholder="Enter page name" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item name="trainname" label="Train Name" rules={[{ required: true }]}>
+              <Input placeholder="Enter train name" />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item name="trainnumber" label="Train Number" rules={[{ required: true }]}>
+              <Input placeholder="Enter train number" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          name="trainnumber"
-          label="Train Number"
-          rules={[{ required: true, message: 'Please input the train number!' }]}
-        >
-          <Input placeholder="Enter the train number" />
-        </Form.Item>
+          <Col span={12}>
+            <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+              <Input placeholder="Enter title" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="keywords" label="Keywords" rules={[{ required: true }]}>
+              <Input placeholder="Enter keywords separated by commas" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          name="trainname"
-          label="Train Name"
-          rules={[{ required: true, message: 'Please input the train name!' }]}
-        >
-          <Input placeholder="Enter the train name" />
-        </Form.Item>
+          {mode !== "add" && (
+            <Col span={12}>
+              <Form.Item name="status" label="Status" rules={[{ required: true }]}>
+                <Select placeholder="Select status">
+                  <Option value="published">Published</Option>
+                  <Option value="draft">Draft</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          )}
 
-        {/* Only show the status selection during edit mode */}
-        {mode !== 'add' && (
-          <Form.Item
-            name="status"
-            label="Status"
-            rules={[{ required: true, message: 'Please select the status!' }]}
+          <Col span={24}>
+            <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+              <Input.TextArea rows={3} placeholder="Enter description" />
+            </Form.Item>
+          </Col>
+
+          <Col span={24}>
+            <Form.Item label="Page Data" required>
+              <TextEditor
+                previousValue={editorContent}
+                updatedValue={setEditorContent}
+                height={250}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <div style={{ textAlign: "right", marginTop: 10 }}>
+          <Button onClick={onCancel} style={{ marginRight: 8 }}>
+            Cancel
+          </Button>
+          <Button
+            type="primary"
+            loading={loading}
+            style={{
+              backgroundColor: "#D6872A", 
+              borderColor: "#D6872A",
+            }}
+            onClick={handleSubmit}
           >
-            <Select placeholder="Select status">
-              <Option value="published">Published</Option>
-              <Option value="draft">Draft</Option>
-            </Select>
-          </Form.Item>
-        )}
-
-        <Form.Item
-          label="Page data"
-          rules={[{ required: true, message: 'Please input the page content!' }]}
-        >
-          <TextEditor
-            previousValue={editorContent}
-            updatedValue={(content) => setEditorContent(content)}
-            height={200}
-          />
-        </Form.Item>
+            {mode === "add" ? "Add Page" : "Update Page"}
+          </Button>
+        </div>
       </Form>
     </Modal>
   );

@@ -1,121 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Input, Form, message, Select } from 'antd';
-
-const { Option } = Select;
+import React, { useEffect, useState } from "react";
+import { Modal, Input, Form, message, Select, Row, Col, Button } from "antd";
 import dynamic from "next/dynamic";
 
-const TextEditor = dynamic(() => import('../../../componants/TextEditor'), { ssr: false });
+const { Option } = Select;
+const TextEditor = dynamic(() => import("../../../componants/TextEditor"), {
+  ssr: false,
+});
 
-const WebsitePageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) => {
+const WebsitePageModal = ({
+  visible,
+  onCancel,
+  onSubmit,
+  initialValues = {},
+  mode,
+}) => {
   const [form] = Form.useForm();
-  const [editorContent, setEditorContent] = useState('');
+  const [editorContent, setEditorContent] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (visible && initialValues) {
+    if (visible) {
       form.setFieldsValue({
-        name: initialValues.name,
-        title: initialValues.title,
-        description: initialValues.description,
-        keywords: initialValues.keywords.join(', '),
-        status: initialValues.status || 'published',
+        name: initialValues?.name || "",
+        title: initialValues?.title || "",
+        description: initialValues?.description || "",
+        keywords: Array.isArray(initialValues?.keywords)
+          ? initialValues.keywords.join(", ")
+          : "",
+        status: initialValues?.status || "published",
       });
-      setEditorContent(initialValues.pageData || '');
+      setEditorContent(initialValues?.pageData || "");
     } else {
       form.resetFields();
-      setEditorContent('');
+      setEditorContent("");
     }
   }, [visible, initialValues, form]);
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       const values = await form.validateFields();
       const submitData = {
-        name: values.name,
-        title: values.title,
-        description: values.description,
-        keywords: values.keywords.split(',').map(keyword => keyword.trim()),
-        status: mode === 'add' ? 'draft' : values.status,  // Default to "draft" on add
-        pageData: editorContent,
+        ...values,
+        keywords: values.keywords?.split(",").map((k) => k.trim()) || [],
+        status: mode === "add" ? "draft" : values.status,
+        pageData: editorContent || "",
       };
 
-      console.log('Submit Data:', submitData); // Debugging
+      const url =
+        mode === "add"
+          ? "/api/web-pages/add"
+          : `/api/web-pages/update/${initialValues?._id || ""}`;
+      const method = mode === "add" ? "POST" : "PUT";
 
-      let response;
-      if (mode === 'add') {
-        response = await fetch('/api/web-pages/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submitData),
-        });
-      } else {
-        response = await fetch(`/api/web-pages/update/${initialValues._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submitData),
-        });
-      }
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submitData),
+      });
 
-      if (response.ok) {
-        const responseData = await response.json();
-        message.success(mode === 'add' ? 'Page added successfully' : 'Page updated successfully');
-        onSubmit(responseData);
-      } else {
-        throw new Error(mode === 'add' ? 'Failed to add page' : 'Failed to update page');
-      }
+      if (!response.ok) throw new Error("Failed to submit page");
+
+      const data = await response.json();
+      message.success(
+        mode === "add" ? "Page added successfully" : "Page updated successfully"
+      );
+      onSubmit(data);
+      onCancel();
     } catch (error) {
-      console.error('Error:', error);
-      message.error(mode === 'add' ? 'Failed to add page' : 'Failed to update page');
+      console.error(error);
+      message.error(
+        mode === "add" ? "Failed to add page" : "Failed to update page"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Modal
-      title={mode === 'add' ? "Add Website Page" : "Edit Website Page"}
+      title={mode === "add" ? "Add Website Page" : "Edit Website Page"}
       visible={visible}
       onCancel={onCancel}
-      onOk={handleSubmit}
+      footer={
+        <Button
+          type="primary"
+          onClick={handleSubmit}
+          loading={loading}
+          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+        >
+          {mode === "add" ? "Add Page" : "Update Page"}
+        </Button>
+      }
       width={800}
+      bodyStyle={{ maxHeight: "70vh", overflowY: "auto", paddingRight: 10 }}
+      centered
     >
       <Form form={form} layout="vertical">
-        <Form.Item
-          name="name"
-          label="Page name"
-          rules={[{ required: true, message: 'Please input the page name!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="title"
-          label="Title"
-          rules={[{ required: true, message: 'Please input the title!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="description"
-          label="Description"
-          rules={[{ required: true, message: 'Please input the description!' }]}
-        >
-          <Input.TextArea rows={4} />
-        </Form.Item>
-        <Form.Item
-          name="keywords"
-          label="Keywords"
-          rules={[{ required: true, message: 'Please input the keywords!' }]}
-        >
-          <Input placeholder="Enter keywords separated by commas" />
-        </Form.Item>
+        <Row gutter={16}>
+          {["name", "title"].map((field) => (
+            <Col span={12} key={field}>
+              <Form.Item
+                name={field}
+                label={field === "name" ? "Page Name" : "Title"}
+                rules={[
+                  {
+                    required: true,
+                    message: `Please input the ${
+                      field === "name" ? "page name" : "title"
+                    }!`,
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          ))}
+        </Row>
 
-        {/* Only show the status selection during edit mode */}
-        {mode !== 'add' && (
+        {["description", "keywords"].map((field) => (
+          <Form.Item
+            key={field}
+            name={field}
+            label={field.charAt(0).toUpperCase() + field.slice(1)}
+            rules={[{ required: true, message: `Please input the ${field}!` }]}
+          >
+            {field === "description" ? (
+              <Input.TextArea rows={3} />
+            ) : (
+              <Input placeholder="Enter keywords separated by commas" />
+            )}
+          </Form.Item>
+        ))}
+
+        {mode !== "add" && (
           <Form.Item
             name="status"
             label="Status"
-            rules={[{ required: true, message: 'Please select the status!' }]}
+            rules={[{ required: true, message: "Please select the status!" }]}
           >
             <Select placeholder="Select status">
               <Option value="published">Published</Option>
@@ -125,13 +147,15 @@ const WebsitePageModal = ({ visible, onCancel, onSubmit, initialValues, mode }) 
         )}
 
         <Form.Item
-          label="Page data"
-          rules={[{ required: true, message: 'Please input the page content!' }]}
+          rules={[
+            { required: true, message: "Please input the page content!" },
+          ]}
         >
           <TextEditor
             previousValue={editorContent}
-            updatedValue={(content) => setEditorContent(content)}
-            height={200}
+            updatedValue={setEditorContent}
+            height={150}
+            label="Page Data"
           />
         </Form.Item>
       </Form>

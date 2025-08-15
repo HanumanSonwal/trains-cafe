@@ -52,8 +52,8 @@ const Menubar = () => {
     {
       key: '2',
       icon: <ShopOutlined />,
-      label: <Link href="/admin/Stations">Stations</Link>,
-      path: '/admin/Stations',
+      label: <Link href="/admin/stations">Stations</Link>,
+      path: '/admin/stations',
     },
     {
       key: '3',
@@ -139,11 +139,11 @@ const Menubar = () => {
             label: <Link href="/admin/blog">Blog </Link>,
             path: '/admin/blog',
           },
-          {
-            key: 'ps-5',
-            label: <Link href="/admin/advertisements">Advertisements </Link>,
-            path: '/admin/advertisements',
-          },
+          // {
+          //   key: 'ps-5',
+          //   label: <Link href="/admin/advertisements">Advertisements </Link>,
+          //   path: '/admin/advertisements',
+          // },
             {
             key: 'ps-6',
             label: <Link href="/admin/uploadimages">Images Managment </Link>,
@@ -151,24 +151,6 @@ const Menubar = () => {
           },
         ],
       },
-    
-    {
-      key: 'sub2',
-      icon: <SettingOutlined />,
-      label: 'Settings',
-      children: [
-        {
-          key: '18',
-          label: <Link href="/admin/settings/profile">Profile</Link>,
-          path: '/admin/settings/profile',
-        },
-        {
-          key: '19',
-          label: <Link href="/admin/settings/account">Account</Link>,
-          path: '/admin/settings/account',
-        },
-      ],
-    },
   ];
 
   const menuStyles = {

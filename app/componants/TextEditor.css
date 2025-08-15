@@ -1,0 +1,33 @@
+/* Toolbar container chhota karo */
+.sun-editor .se-toolbar {
+  height: auto !important;
+  padding: 2px !important;
+  margin-bottom: 4px;
+}
+
+/* Buttons ka size aur spacing chhota karo */
+.sun-editor .se-toolbar .se-btn {
+  padding: 2px 4px !important;
+  font-size: 11px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  line-height: 1 !important;
+}
+
+/* Icon size chhota karo */
+.sun-editor .se-toolbar .se-btn .se-icon {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Editor ke andar text chhota aur clean */
+.sun-editor .se-wrapper-inner {
+  font-size: 13px;
+}
+
+/* Toolbar ke dropdowns chhota karo */
+.sun-editor .se-toolbar .se-select {
+  font-size: 12px !important;
+  height: 26px !important;
+  padding: 0 4px !important;
+}

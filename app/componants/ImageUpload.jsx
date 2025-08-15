@@ -2,18 +2,20 @@ import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Upload, message, Image, Button } from "antd";
 
-const FileUploadComponent = ({ url, setUrl, isreset }) => {
+const FileUploadComponent = ({ url, setUrl, isReset }) => {
+
+  console.log(isReset ,"is-reset in compoanant")
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
   useEffect(() => {
-    if (isreset) {
+    if (isReset) {
       setFileList([]);
       setPreviewImage("");
       setUrl("");
     }
-  }, [isreset]);
+  }, [isReset]);
 
 
   useEffect(() => {

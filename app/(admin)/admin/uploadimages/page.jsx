@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Table,
   Button,
@@ -16,6 +16,7 @@ import {
   EditFilled,
   CopyOutlined,
   SearchOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import UploadModal from "./UploadModal";
@@ -36,7 +37,7 @@ const ImageManager = () => {
     total: 0,
   });
 
-  const fetchFolders = async () => {
+  const fetchFolders = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/fileUpload/folders");
       if (data.success) {
@@ -46,169 +47,187 @@ const ImageManager = () => {
       console.error(err);
       message.error("Failed to fetch folders");
     }
-  };
-
-  const fetchImages = async (page = 1) => {
-    setLoading(true);
-    try {
-      const query = new URLSearchParams();
-      if (selectedFolder) {
-        query.append("folder", selectedFolder);
-      }
-      if (searchText) {
-        query.append("search", searchText);
-      }
-      query.append("page", page);
-      query.append("limit", pagination.pageSize);
-
-      const { data } = await axios.get(
-        `/api/fileUpload/list?${query.toString()}`
-      );
-
-      if (data.success) {
-        setImages(data.images);
-        setPagination({
-          ...pagination,
-          current: page,
-          total: data.total,
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      message.error("Failed to fetch images");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFolders();
   }, []);
 
-  useEffect(() => {
-    fetchImages(1);
-  }, [selectedFolder, searchText]);
+  const fetchImages = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const query = new URLSearchParams();
+        if (selectedFolder) query.append("folder", selectedFolder);
+        if (searchText) query.append("search", searchText);
+        query.append("page", page);
+        query.append("limit", pagination.pageSize);
 
-  const handleDelete = async (public_id) => {
-    try {
-      const res = await axios.delete(
-        `/api/fileUpload/delete?public_id=${public_id}`
-      );
-      if (res.data.success) {
-        message.success("Deleted successfully");
-        fetchImages(pagination.current);
-      } else {
-        throw new Error(res.data.message);
+        const { data } = await axios.get(
+          `/api/fileUpload/list?${query.toString()}`
+        );
+
+        if (data.success) {
+          setImages(data.images);
+          setPagination((prev) => ({
+            ...prev,
+            current: page,
+            total: data.total,
+          }));
+        }
+      } catch (err) {
+        console.error(err);
+        message.error("Failed to fetch images");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-      message.error("Delete failed");
-    }
-  };
+    },
+    [selectedFolder, searchText, pagination.pageSize]
+  );
 
-  const handleEdit = (record) => {
-    setEditingImage(record);
-    setIsModalOpen(true);
-  };
+  const handleDelete = useCallback(
+    async (public_id) => {
+      try {
+        const res = await axios.delete(
+          `/api/fileUpload/delete?public_id=${public_id}`
+        );
+        if (res.data.success) {
+          message.success("Deleted successfully");
+          fetchImages(pagination.current);
+        } else {
+          throw new Error(res.data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        message.error("Delete failed");
+      }
+    },
+    [fetchImages, pagination.current]
+  );
 
-  const handleCopy = (url) => {
+  const handleCopy = useCallback((url) => {
     navigator.clipboard.writeText(url).then(() => {
       message.success("URL copied");
     });
-  };
+  }, []);
 
-  const columns = [
-    {
-      title: "Image",
-      dataIndex: "url",
-      render: (url) => (
-        <img
-          src={url}
-          alt="Uploaded"
-          style={{
-            width: 80,
-            height: 50,
-            borderRadius: 6,
-            objectFit: "cover",
-          }}
-        />
-      ),
-    },
-    {
-      title: "Folder",
-      dataIndex: "folder",
-    },
-    {
-      title: "URL",
-      dataIndex: "url",
-      render: (url) => (
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <AntdInput value={url} readOnly size="small" style={{ width: "80%" }} />
-          <Button icon={<CopyOutlined />} onClick={() => handleCopy(url)} />
-        </div>
-      ),
-    },
-    {
-      title: "Actions",
-      render: (_, record) => (
-        <div className="space-x-2">
-          <Button
-            icon={<EditFilled />}
-            onClick={() => handleEdit(record)}
+  const columns = useMemo(
+    () => [
+      {
+        title: "Image",
+        dataIndex: "url",
+        render: (url) => (
+          <img
+            src={url}
+            alt="Uploaded"
             style={{
-              backgroundColor: "#D6872A",
-              borderColor: "#D6872A",
+              width: 80,
+              height: 50,
+              borderRadius: 6,
+              objectFit: "cover",
             }}
           />
-          <Popconfirm
-            title="Delete image?"
-            onConfirm={() => handleDelete(record.public_id)}
-          >
-            <Button icon={<DeleteFilled />} danger />
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
+        ),
+      },
+      {
+        title: "Folder",
+        dataIndex: "folder",
+      },
+      {
+        title: "URL",
+        dataIndex: "url",
+        render: (url) => (
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <AntdInput
+              value={url}
+              readOnly
+              size="small"
+              style={{ width: "80%" }}
+            />
+            <Button
+              icon={<CopyOutlined />}
+              onClick={() => handleCopy(url)}
+              size="small"
+            />
+          </div>
+        ),
+      },
+      {
+        title: "Actions",
+        render: (_, record) => (
+          <div style={{ display: "flex", gap: "6px" }}>
+            <Popconfirm
+              title="Delete image?"
+              onConfirm={() => handleDelete(record.public_id)}
+            >
+              <Button icon={<DeleteFilled />} danger size="small" />
+            </Popconfirm>
+          </div>
+        ),
+      },
+    ],
+    [handleCopy, handleDelete]
+  );
 
+  useEffect(() => {
+    fetchFolders();
+  }, [fetchFolders]);
+
+  useEffect(() => {
+    fetchImages(1);
+  }, [selectedFolder, searchText, fetchImages]);
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
   return (
     <div
-      className="p-4"
       style={{
         background: "#FAF3CC",
         borderRadius: 8,
+        padding: "16px",
       }}
     >
-      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+      <h2
+        style={{
+          color: "#6F4D27",
+          fontSize: "1.25rem",
+          fontWeight: "600",
+          marginBottom: "12px",
+        }}
+      >
         Image Manager
       </h2>
 
-      <div className="flex justify-between items-center mb-4 gap-4">
-        <Select
-          placeholder="Select Folder"
-          style={{ minWidth: 200 }}
-          value={selectedFolder || undefined}
-          onChange={(value) => {
-            setSelectedFolder(value);
-            setPagination((prev) => ({ ...prev, current: 1 }));
-          }}
-          allowClear
-        >
-          {folders.map((folder) => (
-            <Option key={folder} value={folder}>
-              {folder}
-            </Option>
-          ))}
-        </Select>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "12px",
+          marginBottom: "12px",
+          flexWrap: "wrap",
+        }}
+      >
+        <div className="flex gap-5">
+          <Select
+            placeholder="Select Folder"
+            style={{ minWidth: 200 }}
+            value={selectedFolder || undefined}
+            onChange={(value) => {
+              setSelectedFolder(value);
+              setPagination((prev) => ({ ...prev, current: 1 }));
+            }}
+            allowClear
+          >
+            {folders.map((folder) => (
+              <Option key={folder} value={folder}>
+                {folder}
+              </Option>
+            ))}
+          </Select>
 
-        <AntdInput
-          placeholder="Search by name"
-          allowClear
-          prefix={<SearchOutlined />}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          style={{ maxWidth: 250, borderColor: "#D6872A" }}
-        />
+          <AntdInput
+            placeholder="Search by name"
+            allowClear
+            prefix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ maxWidth: 250 }}
+          />
+        </div>
 
         <Button
           type="primary"
@@ -223,7 +242,7 @@ const ImageManager = () => {
         </Button>
       </div>
 
-      <Spin spinning={loading}>
+      <Spin spinning={loading} indicator={antIcon}>
         <Table
           columns={columns}
           dataSource={images.map((img) => ({ ...img, key: img.public_id }))}
@@ -233,6 +252,7 @@ const ImageManager = () => {
             total: pagination.total,
             onChange: (page) => fetchImages(page),
           }}
+          size="middle"
         />
       </Spin>
 
@@ -242,7 +262,7 @@ const ImageManager = () => {
         folderName={selectedFolder}
         fetchImages={() => fetchImages(pagination.current)}
         editingImage={editingImage}
-          fetchFolders={fetchFolders}
+        fetchFolders={fetchFolders}
       />
     </div>
   );

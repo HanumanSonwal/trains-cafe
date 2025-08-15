@@ -8,7 +8,6 @@ import {
   Col,
   Row,
   Select,
-  Radio,
   message,
   Form,
   InputNumber,
@@ -18,13 +17,9 @@ import FileUploadComponent from "@/app/componants/ImageUpload";
 
 const { Option } = Select;
 
-const MenuItemForm = ({
-  open,
-  onCancel,
-  initialValues,
-  fetchMenuItems,
-}) => {
+const MenuItemForm = ({ open, onCancel, initialValues, fetchMenuItems }) => {
   const [form] = Form.useForm();
+
   const [url, setUrl] = useState("");
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
@@ -32,51 +27,62 @@ const MenuItemForm = ({
   const [selectedStationName, setSelectedStationName] = useState("");
   const [imageError, setImageError] = useState("");
   const [isreset, setIsreset] = useState(false);
+  const [stationSearch, setStationSearch] = useState("");
+  const [vendorSearch, setVendorSearch] = useState("");
 
+  const fetchCategories = async () => {
+    const response = await fetchData("/api/categories");
+    if (response.success !== false) {
+      setCategories(response.data);
+    } else {
+      message.error("Failed to fetch categories");
+    }
+  };
 
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const response = await fetchData("/api/categories");
-      if (response.success !== false) {
-        setCategories(response.data);
-      } else {
-        message.error("Failed to fetch categories");
-      }
-    };
-
-    const fetchStations = async () => {
-      const response = await fetchData("/api/station?search=&page=0");
-      if (response.success !== false) {
+  const fetchStations = async (search = "", page = 1) => {
+    try {
+      const response = await fetchData(
+        `/api/station?search=${encodeURIComponent(
+          search
+        )}&page=${page}&limit=50`
+      );
+      if (response.success) {
         setStations(response.data);
       } else {
         message.error("Failed to fetch stations");
       }
-    };
-
-    fetchCategories();
-    fetchStations();
-  }, []);
-
-  useEffect(() => {
-    if (selectedStationName) {
-      fetchVendors(selectedStationName);
+    } catch {
+      message.error("Error fetching stations");
     }
-  }, [selectedStationName]);
+  };
 
-  const fetchVendors = async (stationName) => {
-    console.log(stationName, 'station-Name')
+  const fetchVendors = async (stationName, search = "", page = 1) => {
     try {
-      const response = await fetchData(`/api/vendors?page=1&limit=10&search=${stationName}`);
+      const response = await fetchData(
+        `/api/vendors?page=${page}&limit=50&search=${encodeURIComponent(
+          search || stationName
+        )}`
+      );
       if (response && response.success !== false) {
         setVendors(response.data);
       } else {
         message.error("Failed to fetch vendors");
       }
-    } catch (error) {
+    } catch {
       message.error("An error occurred while fetching vendors");
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchStations("", 1);
+  }, []);
+
+  useEffect(() => {
+    if (selectedStationName) {
+      fetchVendors(selectedStationName, "", 1);
+    }
+  }, [selectedStationName]);
 
   useEffect(() => {
     if (initialValues) {
@@ -91,14 +97,15 @@ const MenuItemForm = ({
     setIsreset(false);
   }, []);
 
-const handleFinish = async (values) => {
-  if (!url) {
-    setImageError("Please upload an image.");
-    return;
-  } else {
-    setImageError("");
-  }
-const originalPrice = parseFloat(values.Price);
+  const handleFinish = async (values) => {
+    if (!url) {
+      setImageError("Please upload an image.");
+      return;
+    } else {
+      setImageError("");
+    }
+
+    const originalPrice = parseFloat(values.Price);
     const discountPercent = parseFloat(values.Discount || "0");
     const discountAmount = (discountPercent / 100) * originalPrice;
     const finalPrice = Math.round(originalPrice - discountAmount);
@@ -115,37 +122,31 @@ const originalPrice = parseFloat(values.Price);
       Description: values.Description || "",
       image: url,
     };
-  // const body = {
-  //   Item_Name: values.Item_Name,
-  //   Category_Id: values.Category_Id,
-  //   Vendor: values.Vendor,
-  //   Station: values.Station,
-  //   Food_Type: values.Food_Type,
-  //   Price: parseFloat(values.Price),
-  //   Discount: parseFloat(values.Discount || "0"),
-  //   Description: values.Description || "",
-  //   image: url
-  // };
 
-  const urlPath = initialValues ? `/api/menu?id=${initialValues?._id}` : "/api/menu";
-  const method = initialValues ? updateData : postData;
+    const urlPath = initialValues
+      ? `/api/menu?id=${initialValues?._id}`
+      : "/api/menu";
+    const method = initialValues ? updateData : postData;
 
-  try {
-    const response = await method(urlPath, body);
-    if (response.success !== false) {
-      message.success(initialValues ? "Menu item updated successfully!" : "Menu item added successfully!");
-      fetchMenuItems();
-      form.resetFields();
-      setIsreset(true);
-      onCancel();
-    } else {
-      throw new Error(response.err || "Failed to save menu item");
+    try {
+      const response = await method(urlPath, body);
+      if (response.success !== false) {
+        message.success(
+          initialValues
+            ? "Menu item updated successfully!"
+            : "Menu item added successfully!"
+        );
+        fetchMenuItems();
+        form.resetFields();
+        setIsreset(true);
+        onCancel();
+      } else {
+        throw new Error(response.err || "Failed to save menu item");
+      }
+    } catch (error) {
+      message.error(error.message || "Something went wrong");
     }
-  } catch (error) {
-    message.error(error.message || "Something went wrong");
-  }
-};
-
+  };
 
   return (
     <Modal
@@ -167,11 +168,7 @@ const originalPrice = parseFloat(values.Price);
         {initialValues ? "Edit Menu Item" : "Add Menu Item"}
       </h2>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleFinish}
-      >
+      <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={20}>
           <Col span={12}>
             <Form.Item
@@ -210,13 +207,17 @@ const originalPrice = parseFloat(values.Price);
                 showSearch
                 placeholder="Search for a station"
                 optionFilterProp="children"
-                filterOption={(input, option) =>
-                  option?.children.toLowerCase().includes(input.toLowerCase())
-                }
+                onSearch={(value) => {
+                  setStationSearch(value);
+                  fetchStations(value, 1);
+                }}
                 onChange={(value) => {
-                  const selectedStation = stations.find(station => station._id === value);
+                  const selectedStation = stations.find(
+                    (station) => station._id === value
+                  );
                   setSelectedStationName(selectedStation?.name || "");
                 }}
+                filterOption={false}
               >
                 {stations.map((station) => (
                   <Option key={station._id} value={station._id}>
@@ -228,78 +229,78 @@ const originalPrice = parseFloat(values.Price);
           </Col>
           <Col span={12}>
             <Form.Item
-  label="Select Vendor"
-  name="Vendor"
-  rules={[{ required: true, message: "Vendor is required" }]}
->
-  <Select
-    showSearch
-    placeholder="Search for a vendor"
-    optionFilterProp="children"
-    filterOption={(input, option) =>
-      option?.children.toLowerCase().includes(input.toLowerCase())
-    }
-  >
-    {vendors.map((vendor) => (
-      <Option key={vendor._id} value={vendor._id}>
-        {vendor.Vendor_Name}
-      </Option>
-    ))}
-  </Select>
-</Form.Item>
-
+              label="Select Vendor"
+              name="Vendor"
+              rules={[{ required: true, message: "Vendor is required" }]}
+            >
+              <Select
+                showSearch
+                placeholder="Search for a vendor"
+                optionFilterProp="children"
+                onSearch={(value) => {
+                  setVendorSearch(value);
+                  fetchVendors(selectedStationName, value, 1);
+                }}
+                filterOption={false}
+              >
+                {vendors.map((vendor) => (
+                  <Option key={vendor._id} value={vendor._id}>
+                    {vendor.Vendor_Name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           </Col>
         </Row>
 
         <Row gutter={20}>
-        <Col span={12}>
-    <Form.Item
-      label="Price"
-      name="Price"
-      rules={[
-        { required: true, message: "Price is required" },
-        { type: "number", min: 0.01, message: "Price must be positive and at least 0.01" },
-      ]}
-    >
-      <InputNumber
-        style={{ width: "100%" }}
-        min={0.01}
-      />
-    </Form.Item>
-  </Col>
-           <Col span={12}>
-    <Form.Item
-      label="Discount (%)"
-      name="Discount"
-      rules={[
-        { type: "number", min: 0, max: 100, message: "Discount must be between 0 and 100" },
-      ]}
-    >
-      <InputNumber
-        style={{ width: "100%" }}
-        min={0}
-        max={100}
-      />
-    </Form.Item>
-  </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Price"
+              name="Price"
+              rules={[
+                { required: true, message: "Price is required" },
+                {
+                  type: "number",
+                  min: 0.01,
+                  message: "Price must be positive and at least 0.01",
+                },
+              ]}
+            >
+              <InputNumber style={{ width: "100%" }} min={0.01} />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              label="Discount (%)"
+              name="Discount"
+              rules={[
+                {
+                  type: "number",
+                  min: 0,
+                  max: 100,
+                  message: "Discount must be between 0 and 100",
+                },
+              ]}
+            >
+              <InputNumber style={{ width: "100%" }} min={0} max={100} />
+            </Form.Item>
+          </Col>
         </Row>
 
         <Row gutter={20}>
-<Col span={12}>
-  <Form.Item
-    label="Food Type"
-    name="Food_Type"
-    rules={[{ required: true, message: "Please select food type" }]}
-  >
-    <Select placeholder="Select food type" allowClear>
-      <Option value="Vegetarian">Vegetarian</Option>
-      <Option value="Non-Vegetarian">Non-Vegetarian</Option>
-
-    </Select>
-  </Form.Item>
-</Col>
-
-
+          <Col span={12}>
+            <Form.Item
+              label="Food Type"
+              name="Food_Type"
+              rules={[{ required: true, message: "Please select food type" }]}
+            >
+              <Select placeholder="Select food type" allowClear>
+                <Option value="Vegetarian">Vegetarian</Option>
+                <Option value="Non-Vegetarian">Non-Vegetarian</Option>
+              </Select>
+            </Form.Item>
+          </Col>
           <Col span={12}>
             <Form.Item label="Image">
               <FileUploadComponent
@@ -308,18 +309,13 @@ const originalPrice = parseFloat(values.Price);
                 isreset={isreset}
                 setImageError={setImageError}
               />
-              {imageError && (
-                <p className="text-red-500">{imageError}</p>
-              )}
+              {imageError && <p className="text-red-500">{imageError}</p>}
             </Form.Item>
           </Col>
         </Row>
 
         <Col>
-          <Form.Item
-            label="Description"
-            name="Description"
-          >
+          <Form.Item label="Description" name="Description">
             <Input.TextArea rows={3} />
           </Form.Item>
         </Col>

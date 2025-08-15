@@ -7,6 +7,8 @@ import {
   message,
   Switch,
   Popconfirm,
+  Avatar ,
+  Space,
   Spin,
   Tag ,
 } from "antd";
@@ -170,122 +172,107 @@ const VendorsManagement = () => {
     }));
   };
 
-  const vendorColumns = [
-    {
-      title: "Vendor Id",
-      dataIndex: "vendorId",
-      key: "vendorId",
-    },
-    {
-      title: "Image",
-      dataIndex: "image",
-      key: "image",
-      render: (image) => (
-        <img
-          src={image}
-          alt="thumbnail"
-          style={{ width: "70px", height: "50px", borderRadius: "8px" }}
-        />
-      ),
-    },
-    {
-      title: "Vendor Name",
-      dataIndex: "Vendor_Name",
-      key: "vendor_name",
-    },
-    {
-      title: "Contact No",
-      dataIndex: "Contact_No",
-      key: "contact_no",
-    },
-    {
-      title: "Alternate Contact No",
-      dataIndex: "Alternate_Contact_No",
-      key: "alternate_contact_no",
-      render: (val) => val || "N/A",
-    },
-    {
-      title: "Station",
-      dataIndex: "Station_Name",
-      key: "station",
-      render: (val) => val || "N/A",
-    },
-{
-  title: "Food Type",
-  dataIndex: "Food_Type",
-  key: "food_type",
-  render: (Food_Type) => {
-    if (!Array.isArray(Food_Type) || Food_Type.length === 0) {
-      return <span>N/A</span>;
-    }
-
-    return (
+const vendorColumns = [
+  {
+    title: "Vendor Id",
+    dataIndex: "vendorId",
+    key: "vendorId",
+  },
+  {
+    title: "Image",
+    dataIndex: "image",
+    key: "image",
+    render: (image) => (
+      <Avatar src={image} size={50} alt="vendor-image" />
+    ),
+  },
+  {
+    title: "Vendor Name",
+    dataIndex: "Vendor_Name",
+    key: "vendor_name",
+  },
+  {
+    title: "Contact Info",
+    key: "contact_info",
+    render: (record) => (
       <>
-        {Food_Type.map((type, index) => {
-          let color = type === "Vegetarian" ? "green" : "red";
-          return (
-            <Tag key={index} color={color}>
+        <div>{record.Contact_No}</div>
+        <div>{record.Alternate_Contact_No || "N/A"}</div>
+      </>
+    ),
+  },
+  {
+    title: "Station",
+    dataIndex: "Station_Name",
+    key: "station",
+    render: (val) => val ? <Tag color="blue">{val}</Tag> : <Tag>N/A</Tag>,
+  },
+  {
+    title: "Food Type",
+    dataIndex: "Food_Type",
+    key: "food_type",
+    render: (Food_Type) => {
+      if (!Array.isArray(Food_Type) || Food_Type.length === 0) return "N/A";
+      return (
+        <>
+          {Food_Type.map((type) => (
+            <Tag color={type === "Vegetarian" ? "green" : "red"} key={type}>
               {type}
             </Tag>
-          );
-        })}
-      </>
-    );
+          ))}
+        </>
+      );
+    },
   },
-},
+  {
+    title: "Weekly Off",
+    dataIndex: "Weekly_Off",
+    key: "weekly_off",
+    render: (val) => {
+      if (!val) return "N/A";
+      const formatted = val
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+      return <Tag color="orange">{formatted}</Tag>;
+    },
+  },
 {
-  title: "Weekly Off",
-  dataIndex: "Weekly_Off",
-  key: "weekly_off",
-  render: (val) => {
-    if (!val) return "N/A";
-    return val
-      .split("_")
-      .map(
-        (word) =>
-          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-      )
-      .join(" ");
+  title: "Working Time",
+  dataIndex: "Working_Time",
+  key: "working_time",
+  render: (val) => val ? <Tag color="cyan">{val}</Tag> : <Tag>N/A</Tag>,
+},
+  {
+    title: "Status",
+    dataIndex: "Status",
+    key: "status",
+    render: (Status, record) => (
+      <Switch
+        checked={Status === "Active"}
+        onChange={(checked) => handleStatusChange(checked, record._id)}
+      />
+    ),
   },
-}
-,
-    {
-      title: "Working Time",
-      dataIndex: "Working_Time",
-      key: "working_time",
-      render: (val) => val || "N/A",
-    },
-    {
-      title: "Status",
-      dataIndex: "Status",
-      key: "status",
-      render: (Status, record) => (
-        <Switch
-          checked={Status === "Active"}
-          onChange={(checked) => handleStatusChange(checked, record._id)}
+  {
+    title: "Actions",
+    key: "actions",
+    render: (_, record) => (
+      <Space>
+        <Button
+          icon={<EditFilled />}
+          onClick={() => handleEditVendor(record)}
+          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A", color: "#fff" }}
         />
-      ),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record) => (
-        <div className="space-x-2">
-          <Button
-            icon={<EditFilled />}
-            onClick={() => handleEditVendor(record)}
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-          />
-          <Popconfirm
-            title="Are you sure you want to delete this vendor?"
-            onConfirm={() => handleDeleteVendor(record._id)}
-          >
-            <Button icon={<DeleteFilled />} danger />
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
+        <Button
+          icon={<DeleteFilled />}
+          onClick={() => handleDeleteVendor(record._id)}
+          danger
+        />
+      </Space>
+    ),
+  },
+];
 
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 

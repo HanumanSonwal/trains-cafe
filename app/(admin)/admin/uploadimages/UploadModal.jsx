@@ -1,7 +1,7 @@
 "use client";
 
 import { Modal, Button, Select, Input, message, Col } from "antd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import MultiImageUploader from "./MultiImageUploader";
 import axios from "axios";
 
@@ -22,7 +22,7 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
     }
   }, [open]);
 
-  const getFolders = async () => {
+  const getFolders = useCallback(async () => {
     try {
       const { data } = await axios.get("/api/fileUpload/folders");
       if (data.success) {
@@ -32,9 +32,9 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
       console.error(err);
       message.error("Failed to fetch folders");
     }
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     const finalFolder = createNew ? newFolder.trim() : selectedFolder;
 
     if (!finalFolder) {
@@ -66,10 +66,7 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
 
         const res = await fetch(
           `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
+          { method: "POST", body: formData }
         );
 
         const result = await res.json();
@@ -89,9 +86,39 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
       onCancel();
     } catch (err) {
       console.error(err);
-      message.error({ content: `Upload failed: ${err.message}`, key: "uploading" });
+      message.error({
+        content: `Upload failed: ${err.message}`,
+        key: "uploading",
+      });
     }
-  };
+  }, [
+    createNew,
+    newFolder,
+    selectedFolder,
+    files,
+    fetchImages,
+    fetchFolders,
+    onCancel,
+  ]);
+
+  const folderOptions = useMemo(
+    () => folders.map((f) => ({ label: f, value: f })),
+    [folders]
+  );
+
+  const handleFolderChange = useCallback((val) => {
+    setSelectedFolder(val);
+  }, []);
+
+  const enableCreateNew = useCallback(() => {
+    setCreateNew(true);
+    setSelectedFolder("");
+  }, []);
+
+  const disableCreateNew = useCallback(() => {
+    setCreateNew(false);
+    setNewFolder("");
+  }, []);
 
   return (
     <Modal
@@ -111,8 +138,6 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
       ]}
     >
       <Col span={24} className="mb-4">
-
-        {/* ✅ Existing Folder Selector */}
         {!createNew && (
           <>
             <label className="block mb-1">Select Existing Folder</label>
@@ -120,24 +145,15 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
               value={selectedFolder}
               style={{ width: "100%", marginBottom: 8 }}
               placeholder="Select folder"
-              options={folders.map((f) => ({ label: f, value: f }))}
-              onChange={(val) => {
-                setSelectedFolder(val);
-              }}
+              options={folderOptions}
+              onChange={handleFolderChange}
             />
-            <Button
-              type="link"
-              onClick={() => {
-                setCreateNew(true);
-                setSelectedFolder("");
-              }}
-            >
+            <Button color="pink" variant="dashed" onClick={enableCreateNew}>
               + Create New Folder
             </Button>
           </>
         )}
 
-        {/* ✅ New Folder Input */}
         {createNew && (
           <>
             <label className="block mb-1">Create New Folder</label>
@@ -147,13 +163,7 @@ const UploadModal = ({ open, onCancel, fetchImages, fetchFolders }) => {
               onChange={(e) => setNewFolder(e.target.value)}
               style={{ marginBottom: 8 }}
             />
-            <Button
-              type="link"
-              onClick={() => {
-                setCreateNew(false);
-                setNewFolder("");
-              }}
-            >
+            <Button color="pink" variant="dashed" onClick={disableCreateNew}>
               ← Back to Select Existing
             </Button>
           </>

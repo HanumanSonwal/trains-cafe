@@ -2,23 +2,38 @@
 
 import { Upload } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
+import { useCallback, useMemo } from "react";
 
 const { Dragger } = Upload;
 
 const MultiImageUploader = ({ onFilesSelected }) => {
-  const props = {
-    multiple: true,
-    beforeUpload: (file, fileList) => {
-      onFilesSelected([...fileList]); 
-      return false; 
+  const handleBeforeUpload = useCallback(
+    (file, fileList) => {
+      onFilesSelected(fileList);
+      return false;
     },
-    onDrop(e) {
-      onFilesSelected(Array.from(e.dataTransfer.files)); 
+    [onFilesSelected]
+  );
+
+  const handleDrop = useCallback(
+    (e) => {
+      onFilesSelected(Array.from(e.dataTransfer.files));
     },
-  };
+    [onFilesSelected]
+  );
+
+  const uploadProps = useMemo(
+    () => ({
+      multiple: true,
+      beforeUpload: handleBeforeUpload,
+      onDrop: handleDrop,
+      accept: "image/*",
+    }),
+    [handleBeforeUpload, handleDrop]
+  );
 
   return (
-    <Dragger {...props} accept="image/*">
+    <Dragger {...uploadProps}>
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>
