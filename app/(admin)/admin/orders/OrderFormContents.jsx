@@ -23,10 +23,36 @@ export default function OrderFormContents({
   advanced,
   setAdvance,
   remainingAmount,
+  couponAmount = 0,
   handleFinish,
 }) {
-  console.log(adminDiscountPercent, "admin-Discount-Percent");
   const { Text } = Typography;
+
+  const hasAdminDiscount = discountAmount > 0;
+  const hasCouponDiscount = couponAmount > 0;
+
+  let totalDiscount = 0;
+  if (hasAdminDiscount && hasCouponDiscount) {
+    totalDiscount = discountAmount + couponAmount;
+  } else if (hasAdminDiscount) {
+    totalDiscount = discountAmount;
+  } else if (hasCouponDiscount) {
+    totalDiscount = couponAmount;
+  }
+
+  const discountedSubtotal = subTotal - totalDiscount;
+  const calculatedTax = discountedSubtotal * 0.05;
+  const calculatedTotal = discountedSubtotal + calculatedTax;
+  const calculatedRemaining = calculatedTotal - advanced;
+
+  let discountLabel = "";
+  if (hasAdminDiscount && hasCouponDiscount) {
+    discountLabel = "Admin + Coupon Discount";
+  } else if (hasAdminDiscount) {
+    discountLabel = "Admin Discount";
+  } else if (hasCouponDiscount) {
+    discountLabel = "Coupon Discount";
+  }
 
   return (
     <div
@@ -137,11 +163,7 @@ export default function OrderFormContents({
 
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item
-              label="Admin Discount %"
-              name="adminDiscountPercent"
-              rules={[{ required: true, message: "Please enter discount" }]}
-            >
+            <Form.Item label="Admin Discount %" name="adminDiscountPercent">
               <Input
                 min={0}
                 max={100}
@@ -192,22 +214,31 @@ export default function OrderFormContents({
                   </Text>
                 </Col>
               </Row>
-
-              <Row justify="space-between" style={{ marginBottom: 8 }}>
-                <Col>
-                  <Text>Discount ({adminDiscountPercent}%):</Text>
-                </Col>
-                <Col>
-                  <Text type="danger">- ₹{discountAmount.toFixed(2)}</Text>
-                </Col>
-              </Row>
+              {totalDiscount > 0 && (
+                <Row justify="space-between" style={{ marginBottom: 8 }}>
+                  <Col>
+                    <Text>
+                      Discount{" "}
+                      <span style={{ fontSize: 12, color: "#888" }}>
+                        ({discountLabel})
+                      </span>
+                      :
+                    </Text>
+                  </Col>
+                  <Col>
+                    <Text type="danger">- ₹{totalDiscount.toFixed(2)}</Text>
+                  </Col>
+                </Row>
+              )}
 
               <Row justify="space-between" style={{ marginBottom: 8 }}>
                 <Col>
                   <Text>Tax (5%):</Text>
                 </Col>
                 <Col>
-                  <Text style={{ color: "green" }}>₹{tax.toFixed(2)}</Text>
+                  <Text style={{ color: "green" }}>
+                    ₹{calculatedTax.toFixed(2)}
+                  </Text>
                 </Col>
               </Row>
 
@@ -219,7 +250,7 @@ export default function OrderFormContents({
                 </Col>
                 <Col>
                   <Text strong style={{ color: "#1677ff" }}>
-                    ₹{total.toFixed(2)}
+                    ₹{calculatedTotal.toFixed(2)}
                   </Text>
                 </Col>
               </Row>
@@ -241,7 +272,7 @@ export default function OrderFormContents({
                 </Col>
                 <Col>
                   <Text strong style={{ color: "green" }}>
-                    ₹{remainingAmount.toFixed(2)}
+                    ₹{calculatedRemaining.toFixed(2)}
                   </Text>
                 </Col>
               </Row>

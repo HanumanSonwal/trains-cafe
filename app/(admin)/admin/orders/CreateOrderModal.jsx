@@ -19,6 +19,8 @@ export default function CreateOrderModal({
   const [submitting, setSubmitting] = useState(false);
   const [adminDiscountPercent, setDiscountPercentage] = useState(0);
   const [advanced, setAdvance] = useState(0);
+  const [couponAmount, setCouponAmount] = useState(0);
+
   const [loadingOrder, setLoadingOrder] = useState(false);
 
   const [subTotal, setSubTotal] = useState(0);
@@ -94,6 +96,7 @@ export default function CreateOrderModal({
         setTotal(order?.total || 0);
         setAdvance(order?.payment?.advanced || 0);
         setRemainingAmount(order?.remainingAmount || 0);
+        setCouponAmount(order?.couponAmount || 0);
 
         const categoryMap = {};
         const itemMap = {};
@@ -159,12 +162,18 @@ export default function CreateOrderModal({
     (sum, i) => sum + (i.price || 0) * (i.quantity || 0),
     0
   );
-  const calculatedDiscountAmount =
+
+  const calculatedAdminDiscount =
     (calculatedSubTotal * adminDiscountPercent) / 100;
+
+  const calculatedDiscountAmount = calculatedAdminDiscount;
+
   const calculatedDiscountedSubtotal =
     calculatedSubTotal - calculatedDiscountAmount;
+
   const calculatedTax = calculatedDiscountedSubtotal * 0.05;
   const calculatedTotal = calculatedDiscountedSubtotal + calculatedTax;
+
   const calculatedRemainingAmount = calculatedTotal - advanced;
 
   const handleFinish = async (values) => {
@@ -210,6 +219,7 @@ export default function CreateOrderModal({
       couponCode: "",
       discount: calculatedDiscountAmount,
       adminDiscountPercent: adminDiscountPercent,
+      couponAmount: couponAmount,
       subTotal: calculatedSubTotal,
       total: calculatedTotal,
       remainingAmount: calculatedRemainingAmount,
@@ -287,6 +297,10 @@ export default function CreateOrderModal({
           setCategories={setCategories}
           subTotal={calculatedSubTotal}
           discountAmount={calculatedDiscountAmount}
+          adminDiscountAmount={
+            (calculatedSubTotal * adminDiscountPercent) / 100
+          }
+          couponAmount={couponAmount}
           tax={calculatedTax}
           total={calculatedTotal}
           advanced={advanced}
