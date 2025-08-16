@@ -17,6 +17,8 @@ const OrderConfirmation = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  console.log(orderData, "order-Data");
+
   useEffect(() => {
     const data = localStorage.getItem("orderData");
     if (data) setOrderData(JSON.parse(data));
@@ -58,8 +60,8 @@ const OrderConfirmation = () => {
     ? ((orderData.payment.tax / orderData.subTotal) * 100).toFixed(2)
     : 5;
 
-  const statusColors = {
-    placed: "blue",
+  const paymentMethodColors = {
+    RAZORPAY: "blue",
     delivered: "green",
     pending: "orange",
   };
@@ -140,8 +142,8 @@ const OrderConfirmation = () => {
               </div>
             </div>
             <div>
-              <Text type="secondary">Payment Method</Text>
-              <div>{orderData.payment?.method || "N/A"}</div>
+              <Text type="secondary">Status</Text>
+              <div>{orderData?.status || "N/A"}</div>
             </div>
           </div>
         </Card>
@@ -179,10 +181,6 @@ const OrderConfirmation = () => {
                 <div>
                   {orderData.station?.name} ({orderData.station?.code})
                 </div>
-              </div>
-              <div className="sm:col-span-2">
-                <Text type="secondary">Address</Text>
-                <div>{orderData.station?.address}</div>
               </div>
             </div>
           </div>
@@ -232,7 +230,7 @@ const OrderConfirmation = () => {
 
           <div className="bg-gray-50 rounded-lg p-3 mt-3 text-sm">
             <div className="flex justify-between mb-1">
-              <Text>Subtotal ({orderData.items.length} items)</Text>
+              <Text>Subtotal </Text>
               <Text>₹{orderData.subTotal.toFixed(2)}</Text>
             </div>
             {orderData.couponAmount > 0 && (
@@ -244,7 +242,7 @@ const OrderConfirmation = () => {
               </div>
             )}
             <div className="flex justify-between mb-1">
-              <Text>Tax ({taxPercent}%)</Text>
+              <Text>Taxes</Text>
               <Text>₹{taxValue.toFixed(2)}</Text>
             </div>
             <hr className="my-2" />
@@ -253,9 +251,14 @@ const OrderConfirmation = () => {
               <Text>₹{orderData.total.toFixed(2)}</Text>
             </div>
             <div className="flex justify-between items-center mt-2">
-              <Text>Status</Text>
-              <Tag color={statusColors[orderData.status] || "orange"}>
-                {orderData.status?.toUpperCase()}
+              <Text>Payment Method</Text>
+              <Tag
+                style={{ marginRight: "0px" }}
+                color={
+                  paymentMethodColors[orderData?.payment?.method] || "orange"
+                }
+              >
+                {orderData?.payment?.method?.toUpperCase()}
               </Tag>
             </div>
           </div>
