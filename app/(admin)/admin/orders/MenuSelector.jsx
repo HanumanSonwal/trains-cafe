@@ -9,6 +9,7 @@ import {
   fetchCategoriesByVendor,
   clearVendors,
   clearCategories,
+  resetMenuData,
 } from "@/app/redux/menuSlice";
 
 const { Option } = Select;
@@ -39,6 +40,15 @@ export default function MenuSelector({
 
   const initializedRef = useRef(false);
   const lastUpdateRef = useRef(null);
+
+  const getFinalPrice = (item) => {
+    const basePrice = item?.price || item?.Price || 0;
+    const discount = item?.discount || 0;
+    if (discount > 0) {
+      return basePrice - (basePrice * discount) / 100;
+    }
+    return basePrice;
+  };
 
   const handleUpdate = useCallback(() => {
     const currentState = {
@@ -168,12 +178,14 @@ export default function MenuSelector({
 
   const handleItemChange = (index, id) => {
     const item = menuItems.find((i) => (i._id || i.Item_Id) === id);
+    const finalPrice = getFinalPrice(item);
+
     setCart((prev) => {
       const newCart = [...prev];
       newCart[index] = {
         ...newCart[index],
         itemId: id,
-        price: item?.price || item?.Price || 0,
+        price: finalPrice,
         name: item?.name || item?.Item_Name || "",
       };
       return newCart;
@@ -207,7 +219,6 @@ export default function MenuSelector({
   useEffect(() => {
     const isEditMode =
       !!initialStation && !!initialVendor && !!initialCart?.length;
-
     if (!isEditMode) {
       setSelectedStation(null);
       setSelectedVendor(null);
@@ -222,7 +233,9 @@ export default function MenuSelector({
     setCategoriesInitialized(false);
     setCategoriesManuallySelected(false);
     initializedRef.current = false;
-  }, [resetKey]);
+    dispatch(resetMenuData());
+    dispatch(fetchStations());
+  }, [resetKey, dispatch]);
 
   return (
     <>
@@ -336,13 +349,13 @@ export default function MenuSelector({
               {menuItems.map((item) => {
                 const itemId = item._id || item.Item_Id;
                 const itemName = item.name || item.Item_Name || "";
-                const itemPrice = item.price || item.Price || 0;
+                const finalPrice = getFinalPrice(item);
 
                 return (
                   <Option
                     key={itemId}
                     value={itemId}
-                    label={`${itemName} (₹${itemPrice.toFixed(2)})`}
+                    label={`${itemName} (₹${finalPrice.toFixed(2)})`}
                   >
                     <div
                       style={{
@@ -352,7 +365,7 @@ export default function MenuSelector({
                     >
                       <span>{itemName}</span>
                       <span style={{ color: "#16ADA8", fontWeight: "bold" }}>
-                        ₹{itemPrice.toFixed(2)}
+                        ₹{finalPrice.toFixed(2)}
                       </span>
                     </div>
                   </Option>
@@ -368,7 +381,7 @@ export default function MenuSelector({
             <Input
               min={1}
               value={row.quantity}
-              onChange={(val) => handleQtyChange(index, val)}
+              onChange={(e) => handleQtyChange(index, Number(e.target.value))}
               style={{ width: 50, margin: "0 8px", textAlign: "center" }}
             />
             <Button size="small" onClick={() => incrementQty(index)}>

@@ -51,7 +51,8 @@ export async function GET(req) {
             Item_Id: oi.Item_Id._id,
             Item_Name: oi.Item_Id.Item_Name,
             image: oi.Item_Id.image,
-            Price: oi.Item_Id.Price,
+            mainPrice: oi.Item_Id.Price,
+            Price: oi.Price,
             Food_Type: oi.Item_Id.Food_Type,
             Description: oi.Item_Id.Description,
             Category: oi.Item_Id.Category_Id
@@ -110,6 +111,8 @@ export async function GET(req) {
         Station_Details: stationDetails,
         Items: items,
         remainingAmount,
+        deliveryDateTime: order.deliveryDateTime,
+        source: order.source,  
         vendor: undefined,
         station: undefined,
       },

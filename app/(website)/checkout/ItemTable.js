@@ -24,11 +24,11 @@ export default function ItemTable({ items }) {
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "finalPrice",
+      key: "finalPrice",
       align: "right",
-      render: (price) => (
-        <span className="whitespace-nowrap">{`₹ ${price}`}</span>
+      render: (finalPrice) => (
+        <span className="whitespace-nowrap">{`₹ ${finalPrice}`}</span>
       ),
       width: 100,
     },
@@ -38,7 +38,7 @@ export default function ItemTable({ items }) {
       align: "right",
       render: (_, record) => (
         <span className="whitespace-nowrap">{`₹ ${
-          record.price * record.quantity
+          record.finalPrice * record.quantity
         }`}</span>
       ),
       width: 120,

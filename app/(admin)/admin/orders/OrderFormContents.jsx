@@ -1,7 +1,19 @@
 "use client";
 import React from "react";
-import { Form, Input, Radio, Row, Col, Divider, Card, Typography } from "antd";
+import {
+  Form,
+  Input,
+  Radio,
+  Row,
+  Col,
+  Divider,
+  Card,
+  Typography,
+  DatePicker,
+  Select,
+} from "antd";
 import MenuSelector from "./MenuSelector";
+import dayjs from "dayjs";
 
 export default function OrderFormContents({
   form,
@@ -126,7 +138,7 @@ export default function OrderFormContents({
 
         <Divider orientation="left">Passenger Details</Divider>
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item
               name="name"
               label="Passenger Name"
@@ -135,7 +147,7 @@ export default function OrderFormContents({
               <Input placeholder="Full Name" />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item
               name="email"
               label="Email"
@@ -144,7 +156,7 @@ export default function OrderFormContents({
               <Input placeholder="Email" />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item
               name="mobile"
               label="Mobile"
@@ -156,6 +168,35 @@ export default function OrderFormContents({
           <Col span={12}>
             <Form.Item name="alternateMobile" label="Alternate Mobile">
               <Input placeholder="Alternate Mobile Number" />
+            </Form.Item>
+          </Col>
+
+          <Col span={12}>
+            <Form.Item name="deliveryDateTime" label="Delivery Date & Time">
+              <DatePicker
+                showTime={{ format: "hh:mm A" }}
+                style={{ width: "100%" }}
+                format="DD - MMM - YYYY hh:mm A"
+                disabledDate={(current) => {
+                  return current && current < dayjs().startOf("day");
+                }}
+                disabledTime={(current) => {
+                  if (current && current.isSame(dayjs(), "day")) {
+                    const nowHour = dayjs().hour();
+                    const nowMinute = dayjs().minute();
+
+                    return {
+                      disabledHours: () =>
+                        [...Array(24).keys()].filter((h) => h < nowHour),
+                      disabledMinutes: (selectedHour) =>
+                        selectedHour === nowHour
+                          ? [...Array(60).keys()].filter((m) => m < nowMinute)
+                          : [],
+                    };
+                  }
+                  return {};
+                }}
+              />
             </Form.Item>
           </Col>
         </Row>

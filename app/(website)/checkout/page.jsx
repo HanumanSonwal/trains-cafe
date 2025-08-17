@@ -19,18 +19,21 @@ const CheckoutPage = () => {
   const mobile = Form.useWatch("mobile", form);
 
   const [paymentMethod, setPaymentMethod] = useState(null);
-
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
 
+  console.log(discount ,'discount-value')
+
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log(items, "checkout items");
+
   const totalAmount = items.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + item.finalPrice * item.quantity,
     0
   );
   const discountedAmount = totalAmount - discount;
@@ -48,7 +51,11 @@ const CheckoutPage = () => {
       method: paymentMethod === "RAZORPAY" ? "RAZORPAY" : "COD",
       advanced: values.advancedPayment || 0,
     },
-    cart: items.map(({ _id, quantity, price }) => ({ _id, quantity, price })),
+    cart: items.map(({ _id, quantity, finalPrice }) => ({
+      _id,
+      quantity,
+      price: finalPrice,
+    })),
     user_details: { ...values },
     couponCode: couponCode || "",
     adminDiscountPercent: 0,
@@ -127,10 +134,8 @@ const CheckoutPage = () => {
         payload.user_details,
         payload.couponCode
       );
-
+console.log(payload ,"payload")
       if (response?.success) {
-        // message.success(response?.message || "Order placed successfully!");
-
         const order = response?.data;
         if (!order?._id) {
           message.error("Invalid order response.");

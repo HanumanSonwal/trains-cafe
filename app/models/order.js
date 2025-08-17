@@ -105,6 +105,17 @@ const OrderSchema = new mongoose.Schema(
       enum: ["placed", "confirm", "cancel", "dispatch", "delivered"],
       default: "placed",
     },
+
+     deliveryDateTime: {
+      type: Date,
+      default: null,
+    },
+
+    orderSource: {
+      type: String,
+      enum: ["admin", "website"],
+      default: "website",
+    },
   },
   {
     timestamps: true,

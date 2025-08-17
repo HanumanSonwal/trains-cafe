@@ -16,7 +16,7 @@ const ItemsModal = ({ items }) => {
       ),
       dataIndex: ["MenuItem", "Category", "Title"],
       key: "category",
-      width: 120,
+      width: 200,
       render: (text) => (
         <Tag 
           color="#8e44ad" 
@@ -210,7 +210,7 @@ const ItemsModal = ({ items }) => {
             </div>
           </div>
         }
-        width={800}
+        width={1000}
         centered
         bodyStyle={{ 
           padding: '16px 0',

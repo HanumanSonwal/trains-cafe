@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import "@/app/models/vendor";
 import "@/app/models/station";
 import "@/app/models/category";
+import dayjs from "dayjs";
 
 export async function GET(req) {
   try {
@@ -37,12 +38,14 @@ export async function GET(req) {
 
     if (fromDate || toDate) {
       searchOptions.createdAt = {};
-      if (fromDate) searchOptions.createdAt.$gte = new Date(fromDate);
-      if (toDate) {
-        const to = new Date(toDate);
-        to.setHours(23, 59, 59, 999);
-        searchOptions.createdAt.$lte = to;
-      }
+      if (fromDate)
+        searchOptions.createdAt.$gte = dayjs(fromDate, "YYYY-MM-DD")
+          .startOf("day")
+          .toDate();
+      if (toDate)
+        searchOptions.createdAt.$lte = dayjs(toDate, "YYYY-MM-DD")
+          .endOf("day")
+          .toDate();
     }
 
     const orders = await Order.paginate(searchOptions, options);
@@ -77,11 +80,11 @@ export async function GET(req) {
           itemMap.set(key, {
             Quantity: oi.Quantity,
             Price: oi.Price,
+            mainprice: oi.Item_Id.Price,
             MenuItem: {
               Item_Id: oi.Item_Id._id,
               Item_Name: oi.Item_Id.Item_Name,
               image: oi.Item_Id.image,
-              Price: oi.Item_Id.Price,
               Food_Type: oi.Item_Id.Food_Type,
               Description: oi.Item_Id.Description,
               Category: oi.Item_Id.Category_Id
@@ -98,6 +101,8 @@ export async function GET(req) {
         const items = Array.from(itemMap.values());
 
         const total = order.total ?? 0;
+
+        console.log(total ,"total")
         const advancedAmount = order.payment?.advanced ?? 0;
         const remainingAmount = Number((total - advancedAmount).toFixed(2));
 

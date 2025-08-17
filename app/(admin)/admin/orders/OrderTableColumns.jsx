@@ -1,5 +1,16 @@
-import React from "react";
-import { Select, Tag, Space, Button, Tooltip, Typography, Badge } from "antd";
+import React, { useState } from "react";
+import {
+  Select,
+  Table,
+  Tag,
+  Space,
+  Modal,
+  Button,
+  Tooltip,
+  Typography,
+  Badge,
+} from "antd";
+
 import {
   DownloadOutlined,
   EditOutlined,
@@ -7,6 +18,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import ItemsColumn from "./ItemsColumn";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -33,9 +45,9 @@ const OrderTableColumns = ({
     {
       title: "Order ID",
       key: "orderDetails",
-      width: 120,
+      width: 150,
       render: (_, record) => (
-        <div style={{ lineHeight: 1.2 }}>
+        <div style={{ lineHeight: 1.3 }}>
           <Text strong style={{ fontSize: "15px", color: "#2c3e50" }}>
             #{record.order_id}
           </Text>
@@ -60,77 +72,72 @@ const OrderTableColumns = ({
           >
             {record.status?.toUpperCase()}
           </Tag>
+          &nbsp;
+          <Tag
+            color={record.orderSource === "admin" ? "#2980b9" : "#16a085"}
+            style={{ fontSize: "12px", padding: "1px 6px", marginTop: "2px" }}
+          >
+            {record.orderSource?.toUpperCase()}
+          </Tag>
         </div>
       ),
     },
     {
       title: "Customer",
       key: "customerInfo",
-      width: 220,
+      width: 250,
       render: (_, record) => {
         const user = record.userDetails || {};
         const trainDetails = record.trainDetails || {};
 
         return (
-          <div style={{ fontSize: "13px", lineHeight: 1.3 }}>
+          <div style={{ fontSize: "13px", lineHeight: 1.4, maxWidth: 250 }}>
             <div
-              style={{
-                fontWeight: "bold",
-                color: "#2c3e50",
-                marginBottom: "2px",
-              }}
+              style={{ fontWeight: "bold", color: "#2c3e50", marginBottom: 2 }}
             >
               {user.name || "N/A"}
             </div>
 
-            <div style={{ color: "#7f8c8d", marginBottom: "1px" }}>
+            <div style={{ color: "#7f8c8d", marginBottom: 2 }}>
               <PhoneOutlined style={{ marginRight: 4 }} />{" "}
               {user.mobile || "N/A"}
             </div>
-
             {user.email && (
-              <div
-                style={{
-                  color: "#7f8c8d",
-                  fontSize: "12px",
-                  marginBottom: "1px",
-                }}
-              >
+              <div style={{ color: "#7f8c8d", marginBottom: 2 }}>
                 <MailOutlined style={{ marginRight: 4 }} /> {user.email}
               </div>
             )}
 
-            <div
-              style={{
-                fontSize: "12px",
-                color: "#95a5a6",
-                marginBottom: "4px",
-              }}
-            >
-              {user.coach && `Coach: ${user.coach}`}
-              {user.seatNo && ` • Seat: ${user.seatNo}`}
-            </div>
+            {(user.coach || user.seatNo) && (
+              <div style={{ color: "#95a5a6", marginBottom: 2 }}>
+                {user.coach && `Coach: ${user.coach}`}{" "}
+                {user.seatNo && `• Seat: ${user.seatNo}`}
+              </div>
+            )}
 
             <div
-              style={{
-                fontWeight: "bold",
-                color: "#2c3e50",
-                marginBottom: "2px",
-              }}
+              style={{ fontWeight: "bold", color: "#2c3e50", marginBottom: 2 }}
             >
-              Delivery Details:
+              Delivery Info:
             </div>
-
-            <div style={{ fontSize: "12px", color: "#95a5a6" }}>
-              {record.station && `Station: ${record.station}`}
+            <div style={{ color: "#95a5a6", marginBottom: 2 }}>
+              {record.station && `Station: ${record.station}`}{" "}
               {trainDetails.train_number &&
-                ` • Train No: ${trainDetails.train_number}`}
-              {trainDetails.train_pnr && ` • PNR: ${trainDetails.train_pnr}`}
+                `• Train No: ${trainDetails.train_number}`}{" "}
+              {trainDetails.train_pnr && `• PNR: ${trainDetails.train_pnr}`}
             </div>
+
+            {record.deliveryDateTime && (
+              <div style={{ color: "#7f8c8d" }}>
+                <strong>Delivery:</strong>{" "}
+                {dayjs(record.deliveryDateTime).format("DD MMM YYYY, hh:mm A")}
+              </div>
+            )}
           </div>
         );
       },
     },
+
     {
       title: "Vendor",
       key: "vendor",
@@ -165,7 +172,7 @@ const OrderTableColumns = ({
       width: 200,
       render: (_, record) => {
         const items = record.Items || [];
-        const maxItemsToShow = 5;
+        const maxItemsToShow = 3;
 
         if (items.length <= maxItemsToShow) {
           return (
@@ -230,19 +237,19 @@ const OrderTableColumns = ({
       render: (_, record) => {
         const {
           subTotal = 0,
-          tax = 0,
           couponAmount = 0,
           adminDiscountValue = 0,
           remainingAmount = 0,
           advancedAmount = 0,
-          total = 0,
           payment = {},
         } = record;
 
-        console.log(record, "all data");
-
         const paymentStatus =
           payment.payment_status || record.paymentStatus || "pending";
+
+        const discountedAmount = subTotal - couponAmount - adminDiscountValue;
+        const tax = discountedAmount * 0.05;
+        const total = discountedAmount + tax;
 
         return (
           <div style={{ fontSize: "13px", lineHeight: 1.3 }}>
@@ -259,6 +266,36 @@ const OrderTableColumns = ({
               </span>
             </div>
 
+            {couponAmount > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "2px",
+                }}
+              >
+                <span style={{ color: "#e74c3c" }}>Coupon Discount:</span>
+                <span style={{ color: "#e74c3c" }}>
+                  -₹{couponAmount.toFixed(2)}
+                </span>
+              </div>
+            )}
+
+            {adminDiscountValue > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "2px",
+                }}
+              >
+                <span style={{ color: "#e74c3c" }}>Admin Discount:</span>
+                <span style={{ color: "#e74c3c" }}>
+                  -₹{adminDiscountValue.toFixed(2)}
+                </span>
+              </div>
+            )}
+
             <div
               style={{
                 display: "flex",
@@ -266,35 +303,9 @@ const OrderTableColumns = ({
                 marginBottom: "2px",
               }}
             >
-              <span style={{ color: "#34495e" }}>Tax:</span>
+              <span style={{ color: "#34495e" }}>Tax (5%):</span>
               <span style={{ color: "#9b59b6" }}>₹{tax.toFixed(2)}</span>
             </div>
-
-           {couponAmount > 0 && (
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: "2px",
-    }}
-  >
-    <span style={{ color: "#e74c3c" }}>Coupon Discount:</span>
-    <span style={{ color: "#e74c3c" }}>-₹{couponAmount.toFixed(2)}</span>
-  </div>
-)}
-
-{adminDiscountValue > 0 && (
-  <div
-    style={{
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: "2px",
-    }}
-  >
-    <span style={{ color: "#e74c3c" }}>Admin Discount:</span>
-    <span style={{ color: "#e74c3c" }}>-₹{adminDiscountValue.toFixed(2)}</span>
-  </div>
-)}
 
             {advancedAmount > 0 && (
               <div
@@ -454,7 +465,6 @@ const OrderTableColumns = ({
       width: 90,
       render: (_, record) => (
         <Space size="small">
-          {/* Edit Order */}
           <Tooltip title="Edit Order">
             <Button
               type="primary"

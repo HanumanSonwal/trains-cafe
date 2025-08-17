@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, message, Form, Spin } from "antd";
 import OrderFormContents from "./OrderFormContents";
 import { LoadingOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
 
 export default function CreateOrderModal({
   open,
@@ -44,6 +45,22 @@ export default function CreateOrderModal({
     setTax(0);
     setTotal(0);
     setRemainingAmount(0);
+    setCouponAmount(0);
+    form.setFieldsValue({
+      orderSource: "website",
+      text: "",
+      name: "",
+      email: "",
+      mobile: "",
+      alternateMobile: "",
+      pnr: "",
+      coach: "",
+      seatNo: "",
+      instructions: "",
+      paymentMethod: "",
+      trainNo: "",
+      trainName: "",
+    });
   };
 
   useEffect(() => {
@@ -64,6 +81,8 @@ export default function CreateOrderModal({
         const res = await fetch(`/api/orders/get?id=${initialData.orderID}`);
         const { success, order } = await res.json();
         if (!success || !order) return message.error("Failed to load order");
+
+console.log(order ,"order-details")
 
         const vendorObj = {
           Vendor_Name: order.Vendor_Name,
@@ -87,6 +106,10 @@ export default function CreateOrderModal({
           couponAmount: order?.couponAmount || 0,
           advanced: order?.payment?.advanced || "",
           remainingAmount: order?.remainingAmount || "",
+          deliveryDateTime: order.deliveryDateTime
+            ? dayjs(order.deliveryDateTime)
+            : null,
+          orderSource: order.orderSource || "website",
         });
 
         setSubTotal(order.subTotal || 0);
@@ -216,6 +239,10 @@ export default function CreateOrderModal({
         coach: values.coach,
         seatNo: values.seatNo,
       },
+      deliveryDateTime: values.deliveryDateTime
+        ? dayjs(values.deliveryDateTime).toISOString()
+        : null,
+      orderSource: values.orderSource || "admin",
       couponCode: "",
       discount: calculatedDiscountAmount,
       adminDiscountPercent: adminDiscountPercent,

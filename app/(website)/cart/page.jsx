@@ -5,8 +5,8 @@ import { Button, Modal } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import RecentOrders from "@/app/componants/RecentOrders";
+import Image from "next/image";
 
 const CartPage = () => {
   const router = useRouter();
@@ -49,17 +49,14 @@ const CartPage = () => {
     setModalOpen(false);
     setItemToRemove(null);
   };
- 
 
-
-  const totalPrice = cartItems.reduce((total, item) => {
-    
-    return total + parseInt(item.price, 10) * parseInt(item.quantity, 10);
-  }, 0);
+  const totalPrice = cartItems.reduce(
+    (total, item) => total + item.finalPrice * item.quantity,
+    0
+  );
 
   return (
-    <div className="mx-auto max-w-3xl p-4 pb-28 bg-[#f9f9f9] min-h-screen">
-      {/* Banner */}
+    <div className="mx-auto max-w-2xl p-4 pb-28 bg-[#f9f9f9] min-h-screen">
       <div className="relative h-40 md:h-56 mb-6 rounded-xl overflow-hidden shadow">
         <Image
           src="/images/Trainscafe-Banner.webp"
@@ -74,92 +71,78 @@ const CartPage = () => {
         </div>
       </div>
 
-      {/* Cart Items */}
       {cartItems.length > 0 ? (
         <>
           {cartItems.map((item) => (
-      <div
-  key={item._id}
-  className="bg-white shadow hover:shadow-lg transition rounded-xl flex justify-between items-center gap-4 mb-4 p-4 max-[320px]:flex-col max-[320px]:items-start"
->
-  {/* Left: Image & Details */}
-  <div className="flex items-center gap-4 flex-1 max-[320px]:w-full">
-    <div className="w-24 h-24 relative flex-shrink-0 rounded-lg overflow-hidden">
-      <Image
-        src={item.image}
-        alt={item.name}
-        fill
-        className="object-cover"
-      />
-    </div>
+            <div
+              key={item._id}
+              className="bg-white rounded-lg shadow p-3 flex justify-between items-center mb-3"
+            >
+              <div className="flex-1 pr-4">
+                <h3 className="font-semibold text-[#704D25]">{item.name}</h3>
+                <p className="text-xs text-gray-500">
+                  {item.vendor || "Vendor N/A"}
+                </p>
+                <p className="text-xs text-gray-500">{item.foodType}</p>
+                {item.discount > 0 ? (
+                  <p className="text-sm mt-1">
+                    <span className="line-through text-gray-400 mr-1">
+                      ₹ {item.price.toFixed(2)}
+                    </span>
+                    <span className="text-[#D6872A] font-semibold">
+                      ₹ {item.finalPrice.toFixed(2)}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-sm mt-1 font-semibold">
+                    ₹ {item.finalPrice.toFixed(2)}
+                  </p>
+                )}
+              </div>
 
-    <div className="flex-1">
-      <h3 className="text-lg font-bold text-[#704D25]">{item.name}</h3>
-      <p className="text-xs text-gray-500 mb-1">{item.description}</p>
-      <p className="text-xs text-gray-500 mb-1">
-        Vendor:{" "}
-        <span className="font-medium text-[#D6872A]">
-          {item.vendor || "N/A"}
-        </span>
-      </p>
-      <span className="inline-block bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
-        {item.foodType}
-      </span>
-      <p className="mt-2 font-bold text-lg text-gray-800">
-        ₹ {(item.price * item.quantity).toFixed(2)}
-      </p>
-    </div>
-  </div>
-
-  {/* Right: Quantity Controls */}
- <div className="flex items-center max-[320px]:mt-2 max-[320px]:self-end border border-[#D6872A] rounded-full overflow-hidden">
-  <Button
-    size="small"
-    icon={<MinusOutlined />}
-    onClick={() => handleDecreaseQuantity(item)}
-    className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
-  />
-  <div className="px-3 text-[#D6872A] font-bold">{item.quantity}</div>
-  <Button
-    size="small"
-    icon={<PlusOutlined />}
-    onClick={() => handleIncreaseQuantity(item)}
-    className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
-  />
-</div>
-
-</div>
-
-
+              <div className="flex items-center border border-[#D6872A] rounded-full overflow-hidden">
+                <Button
+                  size="small"
+                  icon={<MinusOutlined />}
+                  onClick={() => handleDecreaseQuantity(item)}
+                  className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
+                />
+                <div className="px-3 text-[#D6872A] font-bold">
+                  {item.quantity}
+                </div>
+                <Button
+                  size="small"
+                  icon={<PlusOutlined />}
+                  onClick={() => handleIncreaseQuantity(item)}
+                  className="!border-0 !bg-[#D6872A] !text-white rounded-none hover:!bg-[#704D25] transition"
+                />
+              </div>
+            </div>
           ))}
 
-          <div className="bg-white shadow rounded-xl p-4 flex justify-between items-center my-6">
-            <span className="text-lg font-semibold text-gray-600">Total:</span>
-            <span className="text-2xl font-bold text-[#704D25]">
+          <div className="bg-white rounded-lg shadow p-3 flex justify-between items-center mt-4">
+            <span className="font-semibold text-gray-600">Total:</span>
+            <span className="font-bold text-[#704D25] text-lg">
               ₹ {totalPrice.toFixed(2)}
             </span>
           </div>
 
-          {/* Sticky Checkout Button */}
-           <div className="flex justify-center">
-             <Button
-             type="primary"
-             style={{
-               backgroundColor: "#D6872A",
-               borderColor: "#D6872A",
-             }}
-             className="w-full sm:w-1/2 lg:w-1/3 text-white py-3 text-lg font-semibold rounded-md mx-auto"
-             onClick={handleProceedToCheckout}
-           >
-            Proceed to Checkout
-           </Button>
-           </div>
+          <div className="mt-4 flex justify-center">
+            <Button
+              type="primary"
+              style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+              className="w-full sm:w-1/2 text-white py-2 text-lg font-semibold rounded-md"
+              onClick={handleProceedToCheckout}
+            >
+              Proceed to Checkout
+            </Button>
+          </div>
         </>
       ) : (
         <p className="text-center text-gray-500 mt-6">Your cart is empty.</p>
       )}
 
-      <div className="mt-10">
+      <div className="mt-8">
         <RecentOrders />
       </div>
 
