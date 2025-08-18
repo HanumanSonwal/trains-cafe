@@ -1,34 +1,35 @@
-import dbConnect from '../../lib/dbConnect';
-import ContactRequestModel from '../../models/contactRequest';
+import dbConnect from "../../lib/dbConnect";
+import ContactRequestModel from "../../models/contactRequest";
 export async function POST(req) {
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); // Updated to handle query params
-    console.log('POST request received. URL:', req.url);
-    console.log('Extracted slug:', slug);
+    const slug = url.searchParams.get("slug") || url.pathname.split("/").pop();
 
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
+    const validSlugs = ["Hotel", "Coolie", "BulkOrder", "ContactUs"];
     if (!validSlugs.includes(slug)) {
-      console.error('Invalid slug:', slug);
+      console.error("Invalid slug:", slug);
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug' }),
+        JSON.stringify({ success: false, message: "Invalid slug" }),
         { status: 400 }
       );
     }
 
     const { Name, ContactNumber, Email, Message } = await req.json();
-    console.log('Request payload:', { Name, ContactNumber, Email, Message });
 
     if (!Name || !ContactNumber || !Email || !Message) {
-      console.error('Missing required fields:', { Name, ContactNumber, Email, Message });
+      console.error("Missing required fields:", {
+        Name,
+        ContactNumber,
+        Email,
+        Message,
+      });
       return new Response(
-        JSON.stringify({ success: false, message: 'All fields are required' }),
+        JSON.stringify({ success: false, message: "All fields are required" }),
         { status: 400 }
       );
     }
 
     await dbConnect();
-    console.log('Connected to database');
 
     const newContactRequest = new ContactRequestModel({
       slug,
@@ -37,23 +38,24 @@ export async function POST(req) {
       Email,
       Message,
     });
-    console.log('New contact request:', newContactRequest);
 
     await newContactRequest.save();
-    console.log('Contact request saved successfully');
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Contact request submitted successfully',
+        message: "Contact request submitted successfully",
         data: newContactRequest,
       }),
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error in POST:', error);
+    console.error("Error in POST:", error);
     return new Response(
-      JSON.stringify({ success: false, message: 'Error submitting contact request' }),
+      JSON.stringify({
+        success: false,
+        message: "Error submitting contact request",
+      }),
       { status: 500 }
     );
   }
@@ -62,13 +64,13 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const url = new URL(req.url);
-    let slug = url.searchParams.get('slug')?.trim(); 
+    let slug = url.searchParams.get("slug")?.trim();
 
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder', 'ContactUs'];
+    const validSlugs = ["Hotel", "Coolie", "BulkOrder", "ContactUs"];
 
     if (slug && !validSlugs.includes(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug' }),
+        JSON.stringify({ success: false, message: "Invalid slug" }),
         { status: 400 }
       );
     }
@@ -77,8 +79,9 @@ export async function GET(req) {
 
     const query = slug ? { slug } : {};
 
-    const contactRequests = await ContactRequestModel.find(query)
-      .sort({ createdAt: -1 });
+    const contactRequests = await ContactRequestModel.find(query).sort({
+      createdAt: -1,
+    });
 
     return new Response(
       JSON.stringify({
@@ -89,7 +92,10 @@ export async function GET(req) {
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ success: false, message: 'Error fetching contact requests' }),
+      JSON.stringify({
+        success: false,
+        message: "Error fetching contact requests",
+      }),
       { status: 500 }
     );
   }
@@ -98,12 +104,12 @@ export async function GET(req) {
 export async function PUT(req) {
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
-    const requestId = url.searchParams.get('id');
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder','ContactUs'];
+    const slug = url.searchParams.get("slug") || url.pathname.split("/").pop();
+    const requestId = url.searchParams.get("id");
+    const validSlugs = ["Hotel", "Coolie", "BulkOrder", "ContactUs"];
     if (!validSlugs.includes(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug' }),
+        JSON.stringify({ success: false, message: "Invalid slug" }),
         { status: 400 }
       );
     }
@@ -111,7 +117,7 @@ export async function PUT(req) {
     const { Name, ContactNumber, Email, Message } = await req.json();
     if (!Name || !ContactNumber || !Email || !Message) {
       return new Response(
-        JSON.stringify({ success: false, message: 'All fields are required' }),
+        JSON.stringify({ success: false, message: "All fields are required" }),
         { status: 400 }
       );
     }
@@ -126,7 +132,10 @@ export async function PUT(req) {
 
     if (!updatedRequest) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Contact request not found' }),
+        JSON.stringify({
+          success: false,
+          message: "Contact request not found",
+        }),
         { status: 404 }
       );
     }
@@ -134,14 +143,17 @@ export async function PUT(req) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Contact request updated successfully',
+        message: "Contact request updated successfully",
         data: updatedRequest,
       }),
       { status: 200 }
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ success: false, message: 'Error updating contact request' }),
+      JSON.stringify({
+        success: false,
+        message: "Error updating contact request",
+      }),
       { status: 500 }
     );
   }
@@ -150,23 +162,28 @@ export async function PUT(req) {
 export async function DELETE(req) {
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get('slug') || url.pathname.split('/').pop(); 
-    const requestId = url.searchParams.get('id');
-    const validSlugs = ['Hotel', 'Coolie', 'BulkOrder' ,'ContactUs'];
+    const slug = url.searchParams.get("slug") || url.pathname.split("/").pop();
+    const requestId = url.searchParams.get("id");
+    const validSlugs = ["Hotel", "Coolie", "BulkOrder", "ContactUs"];
     if (!validSlugs.includes(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug' }),
+        JSON.stringify({ success: false, message: "Invalid slug" }),
         { status: 400 }
       );
     }
 
     await dbConnect();
 
-    const deletedRequest = await ContactRequestModel.findByIdAndDelete(requestId);
+    const deletedRequest = await ContactRequestModel.findByIdAndDelete(
+      requestId
+    );
 
     if (!deletedRequest) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Contact request not found' }),
+        JSON.stringify({
+          success: false,
+          message: "Contact request not found",
+        }),
         { status: 404 }
       );
     }
@@ -174,13 +191,16 @@ export async function DELETE(req) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Contact request deleted successfully',
+        message: "Contact request deleted successfully",
       }),
       { status: 200 }
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ success: false, message: 'Error deleting contact request' }),
+      JSON.stringify({
+        success: false,
+        message: "Error deleting contact request",
+      }),
       { status: 500 }
     );
   }

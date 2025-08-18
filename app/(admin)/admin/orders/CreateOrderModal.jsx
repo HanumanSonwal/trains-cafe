@@ -82,7 +82,6 @@ export default function CreateOrderModal({
         const { success, order } = await res.json();
         if (!success || !order) return message.error("Failed to load order");
 
-console.log(order ,"order-details")
 
         const vendorObj = {
           Vendor_Name: order.Vendor_Name,

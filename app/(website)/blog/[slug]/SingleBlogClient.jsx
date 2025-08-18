@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Card, Spin } from "antd";
 import dayjs from "dayjs";
 import PromoBanner from "@/app/componants/PromoBanner";
@@ -10,40 +10,76 @@ import Link from "next/link";
 
 const { Meta } = Card;
 
-export default function SingleBlogClient({ params }) {
-  const { slug } = params;
-  const [blogPost, setBlogPost] = useState(null);
+export default function SingleBlogClient({ blog }) {
   const [relatedPosts, setRelatedPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const slug = blog?.slug;
+  const category = blog?.category;
+
+  const fetchRelatedPosts = useCallback(async () => {
+    if (!category) return;
+    try {
+      const res = await fetch(`/api/blog?category=${category}&status=publish`);
+      const data = await res.json();
+      const filtered = data.docs.filter((p) => p.slug !== slug);
+      setRelatedPosts(filtered);
+    } catch (err) {
+      console.error("Error fetching related posts:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [category, slug]);
 
   useEffect(() => {
-    if (!slug) return;
+    if (category && slug) fetchRelatedPosts();
+  }, [fetchRelatedPosts, category, slug]);
 
-    const fetchBlogPost = async () => {
-      try {
-        const response = await fetch(`/api/blog?slug=${slug}`);
-        const data = await response.json();
-        const post = data.docs[0];
-        setBlogPost(post);
+  const formattedDate = useMemo(
+    () => (blog ? dayjs(blog.updatedAt).format("DD MMM YYYY") : ""),
+    [blog?.updatedAt]
+  );
+  const relatedPostsList = useMemo(
+    () =>
+      relatedPosts.map((post) => (
+        <Card
+          key={post._id}
+          hoverable
+          className="shadow-md rounded-lg"
+          cover={
+            <div className="relative">
+              <img
+                alt={post.title}
+                src={post.image}
+                className="w-full h-40 object-cover"
+              />
+              <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-xs px-2 py-1">
+                {post.category}
+              </div>
+            </div>
+          }
+        >
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-xs text-gray-400">
+              {dayjs(post.updatedAt).format("DD MMM YYYY")}
+            </p>
+            <p className="text-xs text-gray-400">By Admin</p>
+          </div>
+          <Meta title={post.title} description={post.excerpt} />
+          <div className="flex justify-start mt-4">
+            <Link
+              href={`/blog/${post.slug}`}
+              className="text-blue-600 hover:underline text-sm"
+            >
+              Read more →
+            </Link>
+          </div>
+        </Card>
+      )),
+    [relatedPosts]
+  );
 
-        // Related blogs fetch karo, same category ke aur blogs le lo
-        if (post && post.category) {
-          const relatedRes = await fetch(
-            `/api/blog?category=${post.category}&status=publish`
-          );
-          const relatedData = await relatedRes.json();
-          // Current blog ko related se hata do
-          const filtered = relatedData.docs.filter((p) => p.slug !== slug);
-          setRelatedPosts(filtered);
-        }
-      } catch (error) {
-        console.error("Error fetching blog post:", error);
-      }
-    };
-
-    fetchBlogPost();
-  }, [slug]);
-
-  if (!blogPost) {
+  if (!blog) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Spin size="large" tip="Loading blog..." />
@@ -53,89 +89,46 @@ export default function SingleBlogClient({ params }) {
 
   return (
     <div>
-      {/* Hero Banner */}
       <div className="relative h-40 md:h-60 mb-8">
         <img
-          src={blogPost.image}
-          alt={blogPost.title}
+          src={blog.image}
+          alt={blog.title}
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center px-4">
           <h1 className="text-white text-3xl md:text-5xl font-bold mb-2">
-            {blogPost.title}
+            {blog.title}
           </h1>
-          <p className="text-gray-200">
-            Published on {dayjs(blogPost.updatedAt).format("DD MMM YYYY")}
-          </p>
+          <p className="text-gray-200">Published on {formattedDate}</p>
         </div>
       </div>
 
-      {/* Blog Content */}
       <div className="max-w-4xl mx-auto px-4 mb-8">
         <div
           className="text-gray-700 leading-relaxed ck-content"
-          dangerouslySetInnerHTML={{ __html: blogPost.content }}
+          dangerouslySetInnerHTML={{ __html: blog.content }}
         />
       </div>
 
-      {/* Related Blogs */}
-      {relatedPosts.length > 0 && (
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <Spin size="large" tip="Loading related blogs..." />
+        </div>
+      ) : relatedPosts.length > 0 ? (
         <div className="max-w-6xl mx-auto px-4 mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
-            Related Blogs in {blogPost.category}
+            Related Blogs in {blog.category}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedPosts.map((post) => (
-              <div
-                key={post.id}
-                className="w-full shadow-lg rounded-lg relative"
-              >
-                <Card
-                  hoverable
-                  cover={
-                    <div className="relative">
-                      <img
-                        alt={post.title}
-                        src={post.image}
-                        className="w-full h-40 object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-xs px-2 py-1">
-                        {post.category}
-                      </div>
-                    </div>
-                  }
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-xs text-gray-400">
-                      {dayjs(post.updatedAt).format("DD MMM YYYY")}
-                    </p>
-                    <p className="text-xs text-gray-400">By Admin</p>
-                  </div>
-                  <Meta
-                    title={post.title}
-                    description={post.excerpt}
-                    className="text-[#3A3A3A]"
-                  />
-                  <div className="flex justify-start mt-4">
-                    <Link href={`/blog/${post.slug}`} legacyBehavior>
-                      <a className="text-blue-600 hover:underline text-sm">
-                        Read more →
-                      </a>
-                    </Link>
-                  </div>
-                </Card>
-              </div>
-            ))}
+            {relatedPostsList}
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Engagement Sections */}
       <PromoBanner />
       <RecentOrders />
       <CustomerReviews />
 
-      {/* Rich content styling */}
       <style jsx global>{`
         .ck-content {
           font-size: 1rem;

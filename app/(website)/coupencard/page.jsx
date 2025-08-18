@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Pagination, Input } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 const { Meta } = Card;
 
@@ -24,9 +24,8 @@ const CouponPage = () => {
         `/api/coupon?page=${currentPage}&limit=${couponsPerPage}${searchQuery}`
       );
       const data = await response.json();
-      console.log(data.docs, "data");
-      setCoupons(data.docs); 
-      setTotalCoupons(data.totalDocs); 
+      setCoupons(data.docs);
+      setTotalCoupons(data.totalDocs);
     } catch (error) {
       console.error("Error fetching coupons:", error);
     }
@@ -66,7 +65,10 @@ const CouponPage = () => {
       <div className="grid grid-cols-2 gap-6 mt-8 px-4">
         {coupons.length > 0 ? (
           coupons.map((coupon) => (
-            <div key={coupon.id} className="w-full shadow-lg rounded-lg relative">
+            <div
+              key={coupon.id}
+              className="w-full shadow-lg rounded-lg relative"
+            >
               <Card
                 hoverable
                 cover={
@@ -81,7 +83,7 @@ const CouponPage = () => {
               >
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-sm text-gray-400">
-                    {dayjs(coupon.validity).format('DD MMM YYYY')}
+                    {dayjs(coupon.validity).format("DD MMM YYYY")}
                   </p>
                   <div className="flex items-center text-sm text-gray-400">
                     <img

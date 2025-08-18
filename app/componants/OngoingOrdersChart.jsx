@@ -1,4 +1,3 @@
-// components/OngoingOrdersChart.js
 "use client";
 import React from 'react';
 import { Card, Table } from 'antd';
@@ -34,7 +33,6 @@ const data = [
     orderDate: '2024-08-01',
     deliveryDate: '2024-08-05',
   },
-  // Add more data here
 ];
 
 const OngoingOrdersChart = () => (

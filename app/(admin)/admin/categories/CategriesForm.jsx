@@ -6,13 +6,17 @@ import { z } from "zod";
 import FileUploadComponent from "@/app/componants/ImageUpload";
 import { postData, updateData } from "@/app/lib/ApiFuntions";
 
-
 const vendorSchema = z.object({
   title: z.string().nonempty("Category Title is required"),
 });
 
-const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategories}) => {
-  console.log(initialValues,"CATAGRU initialValues")
+const CategoriesForm = ({
+  open,
+  onCancel,
+  onSubmit,
+  initialValues,
+  fetchCategories,
+}) => {
   const {
     control,
     handleSubmit,
@@ -27,10 +31,9 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
     },
   });
 
-  const [url, setUrl] = useState(""); 
+  const [url, setUrl] = useState("");
   const [isreset, setIsreset] = useState(false);
 
-  
   useEffect(() => {
     if (initialValues) {
       setUrl(initialValues.image || "");
@@ -43,25 +46,27 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
     }
   }, [initialValues, reset]);
 
-  useEffect(()=>{
-    setIsreset(false)
-  },[])
-
-
+  useEffect(() => {
+    setIsreset(false);
+  }, []);
 
   const postCategory = async (formData, id, onSubmit = () => {}) => {
-    const url = initialValues ? `/api/categories?id=${initialValues?._id}` : "/api/categories"; 
-    const method = initialValues ? updateData : postData; 
-  
+    const url = initialValues
+      ? `/api/categories?id=${initialValues?._id}`
+      : "/api/categories";
+    const method = initialValues ? updateData : postData;
+
     try {
-      const response = await method(url, formData); 
-  
-      if (response.success !== false) { 
-        message.success(id ? "Category updated successfully!" : "Category added successfully!");
-        onSubmit(response); 
+      const response = await method(url, formData);
+
+      if (response.success !== false) {
+        message.success(
+          id ? "Category updated successfully!" : "Category added successfully!"
+        );
+        onSubmit(response);
         fetchCategories();
-    setIsreset(true);
-        
+        setIsreset(true);
+
         onCancel();
       } else {
         throw new Error(response.err || "Failed to save category");
@@ -71,7 +76,6 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
     }
   };
 
-  
   const handleFormSubmit = (data) => {
     if (!url) {
       message.error("Please upload an image.");
@@ -80,16 +84,16 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
 
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("image", url); 
+    formData.append("image", url);
 
-    const id = initialValues ? initialValues.id : null; 
-    postCategory(formData, id); 
+    const id = initialValues ? initialValues.id : null;
+    postCategory(formData, id);
 
     reset({
       title: "",
       image: "",
     });
-    setUrl(""); 
+    setUrl("");
     setIsreset(true);
   };
   const handleCancel = () => {
@@ -108,7 +112,7 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
         <Button
           key="submit"
           type="primary"
-          onClick={handleSubmit(handleFormSubmit)} 
+          onClick={handleSubmit(handleFormSubmit)}
           style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
         >
           {initialValues ? "Save" : "Submit"}
@@ -120,12 +124,13 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
           <Controller
             name="title"
             control={control}
-            
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block mb-1">Category Title</label>
                 <Input {...field} />
-                {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+                {errors.title && (
+                  <p className="text-red-500">{errors.title.message}</p>
+                )}
               </div>
             )}
           />
@@ -138,7 +143,12 @@ const CategoriesForm = ({ open, onCancel, onSubmit, initialValues ,fetchCategori
             render={({ field }) => (
               <div className="mb-4">
                 <label className="block mb-1">Thumbnail Image</label>
-                <FileUploadComponent {...field} url={url} isreset={isreset}  setUrl={setUrl} />
+                <FileUploadComponent
+                  {...field}
+                  url={url}
+                  isreset={isreset}
+                  setUrl={setUrl}
+                />
               </div>
             )}
           />

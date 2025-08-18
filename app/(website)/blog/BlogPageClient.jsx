@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, Tabs, Input } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import RecentOrders from "@/app/componants/RecentOrders";
 import PromoBanner from "@/app/componants/PromoBanner";
 import CustomerReviews from "@/app/componants/CustomerReviewSlider";
@@ -16,33 +16,35 @@ const BlogPageClient = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const fetchBlogPosts = async () => {
-    const categoryQuery = selectedCategory !== "All" ? `&category=${selectedCategory}` : "";
+  const fetchBlogPosts = useCallback(async () => {
+    const categoryQuery =
+      selectedCategory !== "All" ? `&category=${selectedCategory}` : "";
     const searchQuery = searchTerm ? `&search=${searchTerm}` : "";
 
+    setLoading(true);
     try {
       const response = await fetch(
-        `/api/blog?status=publish${categoryQuery}${searchQuery}`
+        `/api/blog?status=publish${categoryQuery}${searchQuery}`,
+        {
+          cache: "no-store",
+        }
       );
       const data = await response.json();
-      setBlogPosts(data.docs);
+      setBlogPosts(data.docs || []);
     } catch (error) {
       console.error("Error fetching blog posts:", error);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [selectedCategory, searchTerm]);
 
   useEffect(() => {
     fetchBlogPosts();
-  }, [selectedCategory, searchTerm]);
+  }, [fetchBlogPosts]);
 
-  const handleCategoryChange = (key) => {
-    setSelectedCategory(key);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  const filteredPosts = useMemo(() => blogPosts, [blogPosts]);
 
   return (
     <div>
@@ -53,21 +55,20 @@ const BlogPageClient = () => {
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white font-bold">Blogs</h1>
+          <h1 className="text-white font-bold text-2xl md:text-4xl">Blogs</h1>
         </div>
       </div>
-      
 
       <div className="flex flex-col items-center mt-8">
         <Input.Search
           placeholder="Search blogs"
-          onChange={handleSearchChange}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-4 w-1/2"
           allowClear
         />
         <Tabs
           defaultActiveKey="All"
-          onChange={handleCategoryChange}
+          onChange={setSelectedCategory}
           centered
           className="custom-tabs"
           size="small"
@@ -78,24 +79,34 @@ const BlogPageClient = () => {
           <TabPane tab="Health" key="Health" />
         </Tabs>
       </div>
-        <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-    <h2 className="text-2xl md:text-3xl font-bold mb-4">
-      Discover Delicious Food & Travel Stories
-    </h2>
-    <p className="text-gray-600 mb-2">
-      Welcome to our blog section where we share tasty food experiences,
-      travel tips and health guides specially curated for your train journeys.
-    </p>
-    <p className="text-gray-600">
-      Stay updated with latest food trends, top station meals and safety tips for a 
-      comfortable journey. Read, share and make your next train trip delicious!
-    </p>
-  </div>
 
-      <div className="grid grid-cols-2 gap-6 mt-8 px-4 mb-4">
-        {blogPosts.length > 0 ? (
-          blogPosts.map((post) => (
-            <div key={post.id} className="w-full shadow-lg rounded-lg relative">
+      <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          Discover Delicious Food & Travel Stories
+        </h2>
+        <p className="text-gray-600 mb-2">
+          Welcome to our blog section where we share tasty food experiences,
+          travel tips and health guides specially curated for your train
+          journeys.
+        </p>
+        <p className="text-gray-600">
+          Stay updated with latest food trends, top station meals and safety
+          tips for a comfortable journey. Read, share and make your next train
+          trip delicious!
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 px-4 mb-4">
+        {loading ? (
+          <div className="col-span-2 text-center text-gray-400">
+            Loading blogs...
+          </div>
+        ) : filteredPosts.length > 0 ? (
+          filteredPosts.map((post) => (
+            <div
+              key={post._id}
+              className="w-full shadow-lg rounded-lg relative"
+            >
               <Card
                 hoverable
                 cover={
@@ -113,7 +124,7 @@ const BlogPageClient = () => {
               >
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-sm text-gray-400 blog-date">
-                    {dayjs(post.updatedAt).format('DD MMM YYYY')}
+                    {dayjs(post.updatedAt).format("DD MMM YYYY")}
                   </p>
                   <div className="flex items-center text-sm text-gray-400">
                     <img
@@ -127,7 +138,7 @@ const BlogPageClient = () => {
                 <Meta
                   className="text-[#3A3A3A]"
                   title={post.title}
-                  description={post.excerpt}
+                  description={post.description}
                 />
                 <div className="flex justify-between items-center mt-4">
                   <Link href={`/blog/${post.slug}`} legacyBehavior>
@@ -145,11 +156,10 @@ const BlogPageClient = () => {
           </div>
         )}
       </div>
+
       <PromoBanner />
       <RecentOrders />
-
       <CustomerReviews />
-
     </div>
   );
 };

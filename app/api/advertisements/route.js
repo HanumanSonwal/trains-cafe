@@ -1,36 +1,34 @@
-import dbConnect from '../../lib/dbConnect';
-import AdvertisementsModel from '../../models/add';
+import dbConnect from "../../lib/dbConnect";
+import AdvertisementsModel from "../../models/add";
 
-const isValidSlug = (slug) => ['advertisements', 'Banner'].includes(slug);
+const isValidSlug = (slug) => ["advertisements", "Banner"].includes(slug);
 
 export async function GET(req) {
   try {
     const url = new URL(req.url);
-    const slug = url.searchParams.get('slug'); 
-    const search = url.searchParams.get('search') || ''; 
+    const slug = url.searchParams.get("slug");
+    const search = url.searchParams.get("search") || "";
 
     if (slug && !isValidSlug(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug' }),
+        JSON.stringify({ success: false, message: "Invalid slug" }),
         { status: 400 }
       );
     }
 
     await dbConnect();
-    console.log("Database connected successfully");
 
     const searchCriteria = search
       ? {
-          slug: slug || { $in: ['advertisements', 'Banner'] },
+          slug: slug || { $in: ["advertisements", "Banner"] },
           $or: [
-            { title: { $regex: search, $options: 'i' } }, 
-            { description: { $regex: search, $options: 'i' } }, 
+            { title: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
           ],
         }
-      : { slug: slug || { $in: ['advertisements', 'Banner'] } };
+      : { slug: slug || { $in: ["advertisements", "Banner"] } };
 
     const advertisements = await AdvertisementsModel.find(searchCriteria);
-    console.log("Advertisements fetched successfully");
 
     return new Response(
       JSON.stringify({
@@ -42,7 +40,11 @@ export async function GET(req) {
   } catch (error) {
     console.error("Error fetching advertisements:", error.message);
     return new Response(
-      JSON.stringify({ success: false, message: 'Error fetching advertisements', error: error.message }),
+      JSON.stringify({
+        success: false,
+        message: "Error fetching advertisements",
+        error: error.message,
+      }),
       { status: 500 }
     );
   }
@@ -52,28 +54,31 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    
     if (!isValidSlug(body.slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug. Allowed values are "advertisements" or "Banner".' }),
+        JSON.stringify({
+          success: false,
+          message:
+            'Invalid slug. Allowed values are "advertisements" or "Banner".',
+        }),
         { status: 400 }
       );
     }
 
     if (!body.slug || !body.title || !body.image || !body.description) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Slug, title, image, and description are required' }),
+        JSON.stringify({
+          success: false,
+          message: "Slug, title, image, and description are required",
+        }),
         { status: 400 }
       );
     }
 
     await dbConnect();
-    console.log("Database connected for creating advertisement");
 
     const newAdvertisement = new AdvertisementsModel(body);
     await newAdvertisement.save();
-
-    console.log("Advertisement created successfully");
 
     return new Response(
       JSON.stringify({ success: true, data: newAdvertisement }),
@@ -82,7 +87,11 @@ export async function POST(req) {
   } catch (error) {
     console.error("Error creating advertisement:", error.message);
     return new Response(
-      JSON.stringify({ success: false, message: 'Error creating advertisement', error: error.message }),
+      JSON.stringify({
+        success: false,
+        message: "Error creating advertisement",
+        error: error.message,
+      }),
       { status: 500 }
     );
   }
@@ -91,27 +100,32 @@ export async function POST(req) {
 export async function PUT(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const slug = searchParams.get('slug');
-    const id = searchParams.get('id');
+    const slug = searchParams.get("slug");
+    const id = searchParams.get("id");
     const body = await req.json();
 
-    
     if (!isValidSlug(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug. Allowed values are "advertisements" or "Banner".' }),
+        JSON.stringify({
+          success: false,
+          message:
+            'Invalid slug. Allowed values are "advertisements" or "Banner".',
+        }),
         { status: 400 }
       );
     }
 
     if (!slug || !id) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Slug and advertisement ID are required' }),
+        JSON.stringify({
+          success: false,
+          message: "Slug and advertisement ID are required",
+        }),
         { status: 400 }
       );
     }
 
     await dbConnect();
-    console.log("Database connected for updating advertisement");
 
     const updatedAdvertisement = await AdvertisementsModel.findOneAndUpdate(
       { _id: id, slug },
@@ -121,12 +135,10 @@ export async function PUT(req) {
 
     if (!updatedAdvertisement) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Advertisement not found' }),
+        JSON.stringify({ success: false, message: "Advertisement not found" }),
         { status: 404 }
       );
     }
-
-    console.log("Advertisement updated successfully");
 
     return new Response(
       JSON.stringify({ success: true, data: updatedAdvertisement }),
@@ -135,7 +147,11 @@ export async function PUT(req) {
   } catch (error) {
     console.error("Error updating advertisement:", error.message);
     return new Response(
-      JSON.stringify({ success: false, message: 'Error updating advertisement', error: error.message }),
+      JSON.stringify({
+        success: false,
+        message: "Error updating advertisement",
+        error: error.message,
+      }),
       { status: 500 }
     );
   }
@@ -145,43 +161,56 @@ export async function DELETE(req) {
   try {
     const { slug, id } = await req.json();
 
-    
     if (!isValidSlug(slug)) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Invalid slug. Allowed values are "advertisements" or "Banner".' }),
+        JSON.stringify({
+          success: false,
+          message:
+            'Invalid slug. Allowed values are "advertisements" or "Banner".',
+        }),
         { status: 400 }
       );
     }
 
     if (!slug || !id) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Slug and advertisement ID are required' }),
+        JSON.stringify({
+          success: false,
+          message: "Slug and advertisement ID are required",
+        }),
         { status: 400 }
       );
     }
 
     await dbConnect();
-    console.log("Database connected for deleting advertisement");
 
-    const deletedAdvertisement = await AdvertisementsModel.findOneAndDelete({ _id: id, slug });
+    const deletedAdvertisement = await AdvertisementsModel.findOneAndDelete({
+      _id: id,
+      slug,
+    });
 
     if (!deletedAdvertisement) {
       return new Response(
-        JSON.stringify({ success: false, message: 'Advertisement not found' }),
+        JSON.stringify({ success: false, message: "Advertisement not found" }),
         { status: 404 }
       );
     }
 
-    console.log("Advertisement deleted successfully");
-
     return new Response(
-      JSON.stringify({ success: true, message: 'Advertisement deleted successfully' }),
+      JSON.stringify({
+        success: true,
+        message: "Advertisement deleted successfully",
+      }),
       { status: 200 }
     );
   } catch (error) {
     console.error("Error deleting advertisement:", error.message);
     return new Response(
-      JSON.stringify({ success: false, message: 'Error deleting advertisement', error: error.message }),
+      JSON.stringify({
+        success: false,
+        message: "Error deleting advertisement",
+        error: error.message,
+      }),
       { status: 500 }
     );
   }

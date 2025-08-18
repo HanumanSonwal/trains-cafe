@@ -16,15 +16,12 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
 
   const categories = useMemo(() => ["Food", "Health", "Travel"], []);
 
-  console.log(isReset ,"is-reset in form")
-
-
   const resetAll = useCallback(() => {
     form.resetFields();
     setUrl("");
     setIsReset(true);
     setEditorKey(Date.now());
-  setTimeout(() => setIsReset(false), 100);
+    setTimeout(() => setIsReset(false), 100);
   }, [form]);
 
   useEffect(() => {
@@ -126,7 +123,9 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
             <Form.Item
               label="Blog Title"
               name="title"
-              rules={[{ required: true, message: "Please enter the blog title" }]}
+              rules={[
+                { required: true, message: "Please enter the blog title" },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -163,7 +162,11 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
 
           <Col span={12}>
             <Form.Item label="Thumbnail Image" name="image">
-              <FileUploadComponent url={url} isReset={isReset} setUrl={setUrl} />
+              <FileUploadComponent
+                url={url}
+                isReset={isReset}
+                setUrl={setUrl}
+              />
             </Form.Item>
           </Col>
 
@@ -171,7 +174,9 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
             <Form.Item
               label="Description"
               name="description"
-              rules={[{ required: true, message: "Please enter the description" }]}
+              rules={[
+                { required: true, message: "Please enter the description" },
+              ]}
             >
               <Input.TextArea />
             </Form.Item>
@@ -181,7 +186,9 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
             <Form.Item
               label="Meta Keywords"
               name="metakeyword"
-              rules={[{ required: true, message: "Please enter meta keywords" }]}
+              rules={[
+                { required: true, message: "Please enter meta keywords" },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -206,7 +213,9 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
               <TextEditor
                 key={editorKey}
                 previousValue={form.getFieldValue("content")}
-                updatedValue={(value) => form.setFieldsValue({ content: value })}
+                updatedValue={(value) =>
+                  form.setFieldsValue({ content: value })
+                }
                 height={200}
               />
             </Form.Item>
@@ -216,7 +225,9 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
             <Form.Item
               label="Meta Description"
               name="metadescription"
-              rules={[{ required: true, message: "Please enter meta description" }]}
+              rules={[
+                { required: true, message: "Please enter meta description" },
+              ]}
             >
               <Input.TextArea rows={3} />
             </Form.Item>

@@ -1,6 +1,7 @@
 "use client";
+
 import { Input, Button, Tabs, Select, message } from "antd";
-import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import { createTrainSlug, createStationSlug } from "@/utils/slugify";
@@ -8,18 +9,18 @@ import { createTrainSlug, createStationSlug } from "@/utils/slugify";
 const stationsCache = new Map();
 const rapidCache = new Map();
 
-const useDebounce = (fn, delay = 500) => {
-  const tRef = useRef(null);
+const useDebounce = (fn, delay = 200) => {
+  const timerRef = useRef(null);
   return useCallback(
     (...args) => {
-      if (tRef.current) clearTimeout(tRef.current);
-      tRef.current = setTimeout(() => fn(...args), delay);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => fn(...args), delay);
     },
     [fn, delay]
   );
 };
 
-const timeoutFetch = async (url, opts = {}, ms = 8000) => {
+const timeoutFetch = async (url, opts = {}, ms = 5000) => {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), ms);
   try {
@@ -33,24 +34,24 @@ const timeoutFetch = async (url, opts = {}, ms = 8000) => {
 };
 
 export default function OrderFood() {
+  const router = useRouter();
   const [activeKey, setActiveKey] = useState("2");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
   const [station, setStation] = useState(undefined);
   const [stationOptions, setStationOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const fetchStations = useCallback(async (search = "") => {
     const q = (search || "").trim();
     const cacheKey = q === "" ? "__default__" : q.toLowerCase();
+    if (stationsCache.has(cacheKey)) {
+      setStationOptions(stationsCache.get(cacheKey));
+      return;
+    }
     try {
-      if (stationsCache.has(cacheKey)) {
-        setStationOptions(stationsCache.get(cacheKey));
-        return;
-      }
       const query = q ? `?search=${encodeURIComponent(q)}` : "?limit=10";
-      const res = await timeoutFetch(`/api/station${query}`, {}, 7000);
+      const res = await timeoutFetch(`/api/station${query}`, {}, 5000);
       const result = await res.json();
       if (!res.ok)
         throw new Error(result?.message || "Failed to fetch stations.");
@@ -63,107 +64,110 @@ export default function OrderFood() {
       stationsCache.set(cacheKey, options);
       setStationOptions(options);
     } catch (err) {
-      if (err.name !== "AbortError") {
+      if (err.name !== "AbortError")
         message.error(err?.message || "Error fetching stations.");
-      }
     }
   }, []);
 
-  const debouncedFetchStations = useDebounce(fetchStations, 450);
+  const debouncedFetchStations = useDebounce(fetchStations, 150);
 
   useEffect(() => {
-    fetchStations(""); 
+    fetchStations("");
   }, [fetchStations]);
 
-  async function handleSearch(type) {
-    try {
+  const searchTrainOrPNR = useCallback(
+    async (apiUrl, resetValueCallback) => {
       setLoading(true);
+      try {
+        const res = await timeoutFetch(apiUrl, {}, 5000);
+        const result = await res.json();
+        if (!res.ok) throw new Error(result?.message || "Lookup failed.");
 
+        rapidCache.set(apiUrl, result.data);
+        const slug = createTrainSlug(
+          result.data.train_name || result.data.train_number,
+          result.data.train_number
+        );
+        router.push(`/trains/${slug}`);
+      } catch (err) {
+        message.error(err?.message || "Error fetching train data.");
+      } finally {
+        setLoading(false);
+        resetValueCallback();
+      }
+    },
+    [router]
+  );
+
+  const handleSearch = useCallback(
+    async (type) => {
       if (type === "pnr") {
-        if (!pnr.trim()) {
-          setLoading(false);
-          return message.error("Please enter a valid PNR number.");
-        }
-        await searchTrainOrPNR(`/api/rapid/pnr?query=${pnr}`, pnr);
-
+        if (!/^\d{10}$/.test(pnr))
+          return message.error("PNR must be 10 digits.");
+        await searchTrainOrPNR(`/api/rapid/pnr?query=${pnr}`, () => setPnr(""));
       } else if (type === "train") {
-        if (!trainNumber.trim()) {
-          setLoading(false);
-          return message.error("Please enter a valid train number.");
-        }
+        if (!/^\d{1,5}$/.test(trainNumber))
+          return message.error("Train Number must be up to 5 digits.");
         const date = dayjs().format("YYYY-MM-DD");
         await searchTrainOrPNR(
           `/api/rapid/live?trainNo=${trainNumber}&date=${date}`,
-          trainNumber
+          () => setTrainNumber("")
         );
-
       } else if (type === "station") {
-        if (!station) {
-          setLoading(false);
-          return message.error("Please select a station.");
-        }
+        if (!station) return message.error("Please select a station.");
+        setLoading(true);
         const selected = stationOptions.find((s) => s.value === station);
-        if (!selected) {
-          setLoading(false);
-          return message.error("Selected station not found.");
-        }
-
-        const slug = selected.slug || createStationSlug(selected.name, selected.value);
+        const slug =
+          selected?.slug || createStationSlug(selected?.name || "", station);
         router.push(`/stations/${slug}`);
-
-        setTimeout(() => {
-          setLoading(false);
-        }, 300);
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-      message.error(err?.message || "Something went wrong.");
-      setLoading(false);
-    }
-  }
+    },
+    [pnr, trainNumber, station, stationOptions, searchTrainOrPNR, router]
+  );
 
-  async function searchTrainOrPNR(apiUrl, fallbackValue) {
-    const cacheKey = apiUrl;
-    if (rapidCache.has(cacheKey)) {
-      const cached = rapidCache.get(cacheKey);
-      return router.push(
-        `/trains/${createTrainSlug(
-          cached.train_name || cached.train_number,
-          cached.train_number
-        )}`
-      );
-    }
-    let didOptimistic = false;
-    const optimisticTimer = setTimeout(() => {
-      didOptimistic = true;
-      router.push(`/trains/${createTrainSlug(fallbackValue, fallbackValue)}`);
-    }, 700);
-
-    const res = await timeoutFetch(apiUrl, {}, 8000);
-    clearTimeout(optimisticTimer);
-    const result = await res.json();
-    if (!res.ok) throw new Error(result?.message || "Lookup failed.");
-    rapidCache.set(cacheKey, result.data);
-
-    const slug = createTrainSlug(
-      result.data.train_name || result.data.train_number,
-      result.data.train_number
-    );
-    if (!didOptimistic) router.push(`/trains/${slug}`);
-    else message.success("Details found! Redirecting...");
-  }
+  const renderInputTab = useCallback(
+    (value, setValue, onSearch, maxLength) => (
+      <div className="flex items-center space-x-2 p-6">
+        <Input
+          value={value}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "");
+            setValue(val.slice(0, maxLength));
+          }}
+          placeholder="Enter value"
+          className="flex-grow"
+          disabled={loading}
+        />
+        <Button
+          onClick={onSearch}
+          disabled={!value || loading}
+          loading={loading}
+          className="order-btn rounded-full px-4 py-2 text-xs font-[600]"
+        >
+          Order Now
+        </Button>
+      </div>
+    ),
+    [loading]
+  );
 
   const tabItems = useMemo(
     () => [
       {
         key: "1",
         label: "10 Digit PNR",
-        children: renderInputTab(pnr, setPnr, () => handleSearch("pnr"), loading),
+        children: renderInputTab(pnr, setPnr, () => handleSearch("pnr"), 10),
       },
       {
         key: "2",
         label: "Train No.",
-        children: renderInputTab(trainNumber, setTrainNumber, () => handleSearch("train"), loading),
+        children: renderInputTab(
+          trainNumber,
+          setTrainNumber,
+          () => handleSearch("train"),
+          5
+        ),
       },
       {
         key: "3",
@@ -185,7 +189,23 @@ export default function OrderFood() {
               disabled={loading}
             />
             <Button
-              onClick={() => handleSearch("station")}
+              onClick={async () => {
+                if (!station) return message.error("Please select a station.");
+
+                setLoading(true);
+
+                const selected = stationOptions.find(
+                  (s) => s.value === station
+                );
+                const slug =
+                  selected?.slug ||
+                  createStationSlug(selected?.name || "", station);
+
+                await new Promise((resolve) => setTimeout(resolve, 100));
+
+                router.push(`/stations/${slug}`);
+                setLoading(false);
+              }}
               disabled={!station || loading}
               loading={loading}
               className="order-btn rounded-full px-4 py-2 text-xs font-[600]"
@@ -196,7 +216,17 @@ export default function OrderFood() {
         ),
       },
     ],
-    [pnr, trainNumber, station, stationOptions, loading, debouncedFetchStations, fetchStations]
+    [
+      pnr,
+      trainNumber,
+      station,
+      stationOptions,
+      loading,
+      debouncedFetchStations,
+      fetchStations,
+      handleSearch,
+      renderInputTab,
+    ]
   );
 
   return (
@@ -204,7 +234,7 @@ export default function OrderFood() {
       <div className="relative text-center mb-4">
         <img
           src="/images/Order.png"
-          alt="Order Food Title Background"
+          alt="Order Food Title"
           className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2/3"
         />
         <h2 className="text-[#704D25] text-2xl font-bold relative z-10">
@@ -219,28 +249,6 @@ export default function OrderFood() {
         centered
         items={tabItems}
       />
-    </div>
-  );
-}
-
-function renderInputTab(value, setValue, onSearch, loading) {
-  return (
-    <div className="flex items-center space-x-2 p-6">
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Enter value"
-        className="flex-grow"
-        disabled={loading}
-      />
-      <Button
-        onClick={onSearch}
-        disabled={!value || loading}
-        loading={loading}
-        className="order-btn rounded-full px-4 py-2 text-xs font-[600]"
-      >
-        Order Now
-      </Button>
     </div>
   );
 }

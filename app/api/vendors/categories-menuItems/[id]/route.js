@@ -67,6 +67,7 @@ export async function GET(req, context) {
                 _id: "$_id",
                 name: "$Item_Name",
                 price: "$Price",
+                Final_Price: "$Final_Price",
                 description: "$Description",
                 vendor: "$vendor.Vendor_Name",
                 discount: "$Discount",

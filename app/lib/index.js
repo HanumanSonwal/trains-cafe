@@ -10,8 +10,12 @@ export const cartCalculation = (cart, coupon = null, extraDiscount = null) => {
     let tax = 0;
     let total = 0;
 
-    cart.forEach((item) => {
-      subTotal += parseFloat(item.price) * parseInt(item.quantity, 10);
+    cart.forEach((item, index) => {
+      const itemPrice = item.Final_Price ?? item.price;
+
+      if (itemPrice && item.quantity) {
+        subTotal += parseFloat(itemPrice) * parseInt(item.quantity, 10);
+      }
     });
 
     if (coupon) {

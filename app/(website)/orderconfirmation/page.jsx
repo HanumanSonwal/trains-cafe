@@ -17,8 +17,6 @@ const OrderConfirmation = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  console.log(orderData, "order-Data");
-
   useEffect(() => {
     const data = localStorage.getItem("orderData");
     if (data) setOrderData(JSON.parse(data));

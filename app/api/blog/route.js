@@ -43,7 +43,6 @@ export async function POST(req) {
       status,
       category,
     });
-    console.log("New blog request:", blog);
 
     const result = await blog.save();
 

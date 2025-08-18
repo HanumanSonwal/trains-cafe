@@ -10,17 +10,7 @@ export default function Articles() {
 
   return (
     <div className="py-8 px-2 mx-auto max-w-[575px] bg-gray-100 rounded-md mb-3">
-      {/* <div className="relative text-center mb-8">
-        <img
-          src="/images/Articles.png"
-          alt="Blog Title Background"
-          className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2/3"
-          // style={{top:'24px'}}
-        />
-        <h2 className="text-2xl font-bold relative z-10 text-[#704D25]">
-          Latest Articles
-        </h2>
-      </div> */}
+  
 
       <div className="text-center">
         <h1 className="font-bold text-[#704D25] text-xl mb-3">

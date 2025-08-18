@@ -29,7 +29,7 @@ const useNotification = () => {
     success,
     error,
     warning,
-    contextHolder, // This needs to be rendered in the parent component
+    contextHolder, 
   };
 };
 

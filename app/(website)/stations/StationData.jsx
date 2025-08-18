@@ -11,7 +11,6 @@ const StationData = ({ selectedStation }) => {
   const [expanded, setExpanded] = useState(false);
   const { name: stationName, value: stationCode } = selectedStation || {};
 
-  console.log(JSON.stringify(selectedStation), "stationvendor");
   const toggleReadMore = () => setExpanded(!expanded);
 
   return (
@@ -42,9 +41,7 @@ const StationData = ({ selectedStation }) => {
           ))}
         </Swiper>
       </div>
-      <div
-        className="px-2 py-4"
-      >
+      <div className="px-2 py-4">
         <h1
           style={{
             color: "#704d25",
@@ -57,16 +54,21 @@ const StationData = ({ selectedStation }) => {
           Get Your Delicious Meal Online at {stationName} {stationCode}
         </h1>
 
-        
         <div class="restaurant-heading">
-        <div class="railway-img">
-        <Image alt="railway" loading="lazy" decoding="async"   width={100}
-              height={100} 
-         src="/images/Train-icon.png"
-       />
-
+          <div class="railway-img">
+            <Image
+              alt="railway"
+              loading="lazy"
+              decoding="async"
+              width={100}
+              height={100}
+              src="/images/Train-icon.png"
+            />
+          </div>
+          <div class="station-detail mt-2">
+            <h3 class="station-heading">Restaurants at {stationName}</h3>
+          </div>
         </div>
-        <div class="station-detail mt-2"><h3 class="station-heading">Restaurants at  {stationName}</h3></div></div>
 
         <VendorCardWithoutTrain selectedStation={selectedStation} />
 

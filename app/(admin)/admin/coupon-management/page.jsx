@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Table,
   Button,
@@ -8,7 +8,7 @@ import {
   Switch,
   Popconfirm,
   Spin,
-} from 'antd';
+} from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -16,16 +16,16 @@ import {
   EditFilled,
   CloseCircleOutlined,
   LoadingOutlined,
-} from '@ant-design/icons';
-import CouponsForm from './CouponsForm';
-import axios from 'axios';
+} from "@ant-design/icons";
+import CouponsForm from "./CouponsForm";
+import axios from "axios";
 
 const CouponManagement = () => {
   const [coupons, setCoupons] = useState([]);
   const [filteredCoupons, setFilteredCoupons] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -40,26 +40,24 @@ const CouponManagement = () => {
   const fetchCoupons = async () => {
     setLoading(true);
     try {
-        const response = await axios.get(
-            `/api/coupon?page=${pagination.current}&limit=${pagination.pageSize}&search=${searchText}`
-        );
+      const response = await axios.get(
+        `/api/coupon?page=${pagination.current}&limit=${pagination.pageSize}&search=${searchText}`
+      );
 
-        console.log(response.data.docs, "response");
-        const { docs, totalDocs } = response.data; 
-        setCoupons(docs);
-        setFilteredCoupons(docs);
-        setPagination((prev) => ({
-            ...prev,
-            total: totalDocs, 
-        }));
+      const { docs, totalDocs } = response.data;
+      setCoupons(docs);
+      setFilteredCoupons(docs);
+      setPagination((prev) => ({
+        ...prev,
+        total: totalDocs,
+      }));
     } catch (error) {
-        console.error('Failed to fetch coupons:', error);
-        message.error('Failed to fetch coupons');
+      console.error("Failed to fetch coupons:", error);
+      message.error("Failed to fetch coupons");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
-
+  };
 
   const handleAdd = () => {
     setEditingCoupon(null);
@@ -74,11 +72,11 @@ const CouponManagement = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/api/coupon/delete/${id}`);
-      message.success('Coupon deleted successfully');
+      message.success("Coupon deleted successfully");
       fetchCoupons();
     } catch (error) {
-      console.error('Failed to delete coupon:', error);
-      message.error('Failed to delete coupon');
+      console.error("Failed to delete coupon:", error);
+      message.error("Failed to delete coupon");
     }
   };
 
@@ -86,84 +84,82 @@ const CouponManagement = () => {
     setSearchText(e.target.value);
     setPagination((p) => ({ ...p, current: 1 }));
   };
-  
-  
 
   const columns = [
     {
-        title: 'Title',
-        dataIndex: 'title',
-        key: 'title',
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
     },
     {
-        title: 'Code',
-        dataIndex: 'code',
-        key: 'code',
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
     },
     {
-        title: 'Start Date',
-        dataIndex: 'startDate',
-        key: 'startDate',
-        render: (date) => new Date(date).toLocaleDateString(), 
+      title: "Start Date",
+      dataIndex: "startDate",
+      key: "startDate",
+      render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-        title: 'End Date',
-        dataIndex: 'endDate',
-        key: 'endDate',
-        render: (date) => new Date(date).toLocaleDateString(), 
+      title: "End Date",
+      dataIndex: "endDate",
+      key: "endDate",
+      render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-        title: 'Discount',
-        dataIndex: 'discount', 
-        key: 'discount',
-        render: (discount) => `${discount.value}%`, 
+      title: "Discount",
+      dataIndex: "discount",
+      key: "discount",
+      render: (discount) => `${discount.value}%`,
     },
     {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-        render: (text, record) => (
-            <Switch
-                checked={record.status === 'published'}
-                onChange={async (checked) => {
-                    try {
-                        await axios.put(`/api/coupon/update/${record._id}`, {
-                            status: checked ? 'published' : 'draft',
-                        });
-                        message.success(`Coupon ${checked ? 'published' : 'drafted'}`);
-                        fetchCoupons();
-                    } catch (error) {
-                        console.error('Failed to update status:', error);
-                        message.error('Failed to update status');
-                    }
-                }}
-            />
-        ),
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (text, record) => (
+        <Switch
+          checked={record.status === "published"}
+          onChange={async (checked) => {
+            try {
+              await axios.put(`/api/coupon/update/${record._id}`, {
+                status: checked ? "published" : "draft",
+              });
+              message.success(`Coupon ${checked ? "published" : "drafted"}`);
+              fetchCoupons();
+            } catch (error) {
+              console.error("Failed to update status:", error);
+              message.error("Failed to update status");
+            }
+          }}
+        />
+      ),
     },
     {
-        title: 'Action',
-        key: 'action',
-        render: (text, record) => (
-            <div className="flex space-x-2">
-                <Button
-                    type="primary"
-                    icon={<EditFilled />}
-                    onClick={() => handleEdit(record)}
-                    style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
-                />
-                <Popconfirm
-                    title="Are you sure to delete this coupon?"
-                    onConfirm={() => handleDelete(record._id)}
-                    okText="Yes"
-                    cancelText="No"
-                >
-                    <Button danger icon={<DeleteFilled />} />
-                </Popconfirm>
-            </div>
-        ),
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <div className="flex space-x-2">
+          <Button
+            type="primary"
+            icon={<EditFilled />}
+            onClick={() => handleEdit(record)}
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+          />
+          <Popconfirm
+            title="Are you sure to delete this coupon?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger icon={<DeleteFilled />} />
+          </Popconfirm>
+        </div>
+      ),
     },
-];
-const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
+  ];
+  const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
     <>
@@ -175,14 +171,12 @@ const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
-
-<h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+        <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
           Coupen Management
         </h2>
         <div className="flex items-center my-5 justify-between">
           <div style={{ display: "flex", alignItems: "center" }}>
-        
-          <AntdInput
+            <AntdInput
               placeholder="Search"
               style={{ width: 300, borderColor: "#D6872A" }}
               prefix={<SearchOutlined />}
@@ -190,36 +184,35 @@ const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
               value={searchText}
               onChange={handleSearch}
             />
-         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAdd}
-          style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}
-        >
-          Add Coupon
-        </Button>
-
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+          >
+            Add Coupon
+          </Button>
         </div>
         <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
-        <Table
-          columns={columns}
-          dataSource={filteredCoupons}
-          rowKey="_id"
-          pagination={pagination}
-          onChange={(pagination) =>
-            setPagination({ ...pagination, current: pagination.current })
-          }
-        />
-      </Spin>
+          <Table
+            columns={columns}
+            dataSource={filteredCoupons}
+            rowKey="_id"
+            pagination={pagination}
+            onChange={(pagination) =>
+              setPagination({ ...pagination, current: pagination.current })
+            }
+          />
+        </Spin>
 
-      <CouponsForm
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        initialValues={editingCoupon}
-        fetchCoupons={fetchCoupons}
-      />
-            </div>
+        <CouponsForm
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}
+          initialValues={editingCoupon}
+          fetchCoupons={fetchCoupons}
+        />
+      </div>
     </>
   );
 };

@@ -102,7 +102,6 @@ export async function GET(req) {
 
         const total = order.total ?? 0;
 
-        console.log(total ,"total")
         const advancedAmount = order.payment?.advanced ?? 0;
         const remainingAmount = Number((total - advancedAmount).toFixed(2));
 

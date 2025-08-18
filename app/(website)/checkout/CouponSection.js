@@ -40,8 +40,6 @@ export default function CouponSection({
 
       const result = await response.json();
 
-      console.log(result ,"coupen-result")
-
       if (response.ok && result.success) {
         onDiscountChange(result.discount);
         setIsCouponApplied(true);

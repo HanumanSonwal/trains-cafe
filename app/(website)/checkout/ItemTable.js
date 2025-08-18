@@ -22,27 +22,31 @@ export default function ItemTable({ items }) {
       width: 70,
       render: (qty) => <span className="whitespace-nowrap">{qty}</span>,
     },
-    {
-      title: "Price",
-      dataIndex: "finalPrice",
-      key: "finalPrice",
-      align: "right",
-      render: (finalPrice) => (
-        <span className="whitespace-nowrap">{`₹ ${finalPrice}`}</span>
-      ),
-      width: 100,
-    },
-    {
-      title: "Amount",
-      key: "amount",
-      align: "right",
-      render: (_, record) => (
-        <span className="whitespace-nowrap">{`₹ ${
-          record.finalPrice * record.quantity
-        }`}</span>
-      ),
-      width: 120,
-    },
+   {
+  title: "Price",
+  dataIndex: "Final_Price",
+  key: "Final_Price",
+  align: "right",
+  render: (_, record) => (
+    <span className="whitespace-nowrap">
+      ₹ {record.Final_Price ?? record.price}
+    </span>
+  ),
+  width: 100,
+},
+{
+  title: "Amount",
+  key: "amount",
+  align: "right",
+  render: (_, record) => {
+    const itemPrice = record.Final_Price ?? record.price;
+    return (
+      <span className="whitespace-nowrap">₹ {itemPrice * record.quantity}</span>
+    );
+  },
+  width: 120,
+},
+
   ];
 
   return (

@@ -14,7 +14,7 @@ const data = [
   { name: 'Jul', revenue: 3490 },
 ];
 
-const COLORS = '#D6872A'; // Same color as the pie chart for consistency
+const COLORS = '#D6872A'; 
 
 const SalesAnalyticsChart = () => (
   <Card

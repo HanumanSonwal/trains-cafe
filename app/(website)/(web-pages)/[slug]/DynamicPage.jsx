@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "antd";
 import Spinner from "@/app/componants/spinner/Spinner";
@@ -11,7 +11,10 @@ import dynamic from "next/dynamic";
 
 const CustomerReviews = dynamic(
   () => import("@/app/componants/CustomerReviewSlider"),
-  { ssr: false, loading: () => <Spinner /> }
+  {
+    ssr: false,
+    loading: () => <Spinner />,
+  }
 );
 const PromoBanner = dynamic(() => import("@/app/componants/PromoBanner"), {
   ssr: false,
@@ -22,22 +25,23 @@ const RecentOrders = dynamic(() => import("@/app/componants/RecentOrders"), {
   loading: () => <Spinner />,
 });
 
-export default function DynamicPage({
-  page,
-  slug,
-  previewHtml,
-  shouldTruncate,
-}) {
+function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
   const [showFullContent, setShowFullContent] = useState(false);
 
   if (!page) return <Custom404 />;
 
   const isExceptionSlug = slug === "stations" || slug === "trains";
 
-  const rawHtml = page.pageData || "<p>No content available.</p>";
+  const contentToRender = useMemo(() => {
+    const rawHtml = page.pageData || "<p>No content available.</p>";
+    return showFullContent || isExceptionSlug
+      ? rawHtml
+      : previewHtml || rawHtml;
+  }, [page.pageData, showFullContent, isExceptionSlug, previewHtml]);
 
-  const contentToRender =
-    showFullContent || isExceptionSlug ? rawHtml : previewHtml || rawHtml;
+  const toggleContent = useCallback(() => {
+    setShowFullContent((prev) => !prev);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -58,7 +62,7 @@ export default function DynamicPage({
           <div className="text-center mb-4">
             <Button
               className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white"
-              onClick={() => setShowFullContent((s) => !s)}
+              onClick={toggleContent}
             >
               {showFullContent ? "Show Less" : "View More"}
             </Button>
@@ -136,3 +140,5 @@ export default function DynamicPage({
     </div>
   );
 }
+
+export default React.memo(DynamicPage);

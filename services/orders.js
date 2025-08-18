@@ -28,9 +28,6 @@ export const placeOrder = async (
 
     const result = await response.json();
 
-    console.log("API response:", response);
-    console.log("Parsed result:", result);
-
     if (response.ok && result.success) {
       return result;
     } else {

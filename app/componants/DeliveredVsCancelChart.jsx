@@ -1,4 +1,3 @@
-// components/DeliveredVsCancelChart.js
 "use client";
 import React from 'react';
 import { Card } from 'antd';
@@ -9,7 +8,7 @@ const data = [
   { name: 'Cancelled', value: 200 },
 ];
 
-const COLORS = ['#D6872A', '#6F4D27']; // Same colors as the pie chart
+const COLORS = ['#D6872A', '#6F4D27']; 
 
 const DeliveredVsCancelChart = () => (
   <Card className='bg-[#FAF3CC] border-2 border-b-4' title={<div style={{ borderBottom: '4px solid #D6872A', paddingBottom: '4px' }}>Delivered vs Cancel</div>}>

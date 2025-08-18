@@ -25,17 +25,14 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
 
-  console.log(discount ,'discount-value')
-
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log(items, "checkout items");
-
   const totalAmount = items.reduce(
-    (acc, item) => acc + item.finalPrice * item.quantity,
+    (acc, item) => acc + (item.Final_Price ?? item.price) * item.quantity,
     0
   );
+
   const discountedAmount = totalAmount - discount;
   const gstAmount = discountedAmount * 0.05;
   const payableAmount = discountedAmount + gstAmount;
@@ -51,11 +48,12 @@ const CheckoutPage = () => {
       method: paymentMethod === "RAZORPAY" ? "RAZORPAY" : "COD",
       advanced: values.advancedPayment || 0,
     },
-    cart: items.map(({ _id, quantity, finalPrice }) => ({
+    cart: items.map(({ _id, quantity, Final_Price, price }) => ({
       _id,
       quantity,
-      price: finalPrice,
+      price: Final_Price ?? price,
     })),
+
     user_details: { ...values },
     couponCode: couponCode || "",
     adminDiscountPercent: 0,
@@ -134,7 +132,6 @@ const CheckoutPage = () => {
         payload.user_details,
         payload.couponCode
       );
-console.log(payload ,"payload")
       if (response?.success) {
         const order = response?.data;
         if (!order?._id) {

@@ -9,7 +9,6 @@ async function bufferRequestBody(req) {
 }
 
 export async function parseForm(req) {
-  console.log("parse");
   
   return new Promise(async (resolve, reject) => {
     const form = formidable({

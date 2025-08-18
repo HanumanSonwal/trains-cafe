@@ -22,8 +22,6 @@ function VendorCard({ station, train }) {
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
 
-  console.log(station ,"station")
-
   useEffect(() => {
     const fetchVendors = async () => {
       setLoading(true);
@@ -96,81 +94,84 @@ function VendorCard({ station, train }) {
   }
   return (
     <div>
-{vendors.map((vendor, index) => (
-  <Card
-    className="shadow-md mb-4 p-4"
-    key={index}
-    style={{ margin: "10px 0" }}
-  >
-    <div className="flex flex-col md:flex-row items-start">
-      <Image
-        width={120}
-        height={120}
-        src="/images/special-veg-thali.jpg"
-        alt="Food"
-        className="w-24 h-24 object-cover mb-4 md:mb-0 md:mr-4 rounded-lg"
-      />
+      {vendors.map((vendor, index) => (
+        <Card
+          className="shadow-md mb-4 p-4"
+          key={index}
+          style={{ margin: "10px 0" }}
+        >
+          <div className="flex flex-col md:flex-row items-start">
+            <Image
+              width={120}
+              height={120}
+              src="/images/special-veg-thali.jpg"
+              alt="Food"
+              className="w-24 h-24 object-cover mb-4 md:mb-0 md:mr-4 rounded-lg"
+            />
 
-      <div className="flex-1">
-        <h2 className="text-lg font-semibold">{`Outlet_${index + 1}`}</h2>
-        <div className="flex items-center mt-1">
-          <Rate
-            allowHalf
-            defaultValue={4.5}
-            style={{ fontSize: 16, color: "#FFB400" }}
-          />
-          <span className="text-xs text-gray-500 ml-2">(790 Reviews)</span>
-        </div>
-        <p className="text-sm mt-1">
-          Serving From{" "}
-          <span className="font-semibold text-green-600">
-            {vendor.Working_Time}
-          </span>
-        </p>
-        <div className="flex flex-wrap items-center mt-1">
-          {vendor.Food_Type === "Veg" && (
-            <span className="bg-green-500 text-white text-xs px-1 py-0.5 rounded mr-2">
-              V
-            </span>
-          )}
-          {vendor.Food_Type === "Non-Veg" && (
-            <span className="bg-red-500 text-white text-xs px-1 py-0.5 rounded mr-2">
-              N
-            </span>
-          )}
-          {vendor.Food_Type === "Veg & Non-Veg" && (
-            <>
-              <span className="bg-green-500 text-white text-xs px-1 py-0.5 rounded mr-2">
-                V
-              </span>
-              <span className="bg-red-500 text-white text-xs px-1 py-0.5 rounded mr-2">
-                N
-              </span>
-            </>
-          )}
-          <span className="text-sm">Min Order ₹ {vendor.Min_Order_Value}</span>
-          <ClockCircleOutlined className="ml-2 mr-1" />
-          <span className="text-sm text-red-500">
-            {vendor.Min_Order_Time} MIN
-          </span>
-        </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold">{`Outlet_${index + 1}`}</h2>
+              <div className="flex items-center mt-1">
+                <Rate
+                  allowHalf
+                  defaultValue={4.5}
+                  style={{ fontSize: 16, color: "#FFB400" }}
+                />
+                <span className="text-xs text-gray-500 ml-2">
+                  (790 Reviews)
+                </span>
+              </div>
+              <p className="text-sm mt-1">
+                Serving From{" "}
+                <span className="font-semibold text-green-600">
+                  {vendor.Working_Time}
+                </span>
+              </p>
+              <div className="flex flex-wrap items-center mt-1">
+                {vendor.Food_Type === "Veg" && (
+                  <span className="bg-green-500 text-white text-xs px-1 py-0.5 rounded mr-2">
+                    V
+                  </span>
+                )}
+                {vendor.Food_Type === "Non-Veg" && (
+                  <span className="bg-red-500 text-white text-xs px-1 py-0.5 rounded mr-2">
+                    N
+                  </span>
+                )}
+                {vendor.Food_Type === "Veg & Non-Veg" && (
+                  <>
+                    <span className="bg-green-500 text-white text-xs px-1 py-0.5 rounded mr-2">
+                      V
+                    </span>
+                    <span className="bg-red-500 text-white text-xs px-1 py-0.5 rounded mr-2">
+                      N
+                    </span>
+                  </>
+                )}
+                <span className="text-sm">
+                  Min Order ₹ {vendor.Min_Order_Value}
+                </span>
+                <ClockCircleOutlined className="ml-2 mr-1" />
+                <span className="text-sm text-red-500">
+                  {vendor.Min_Order_Time} MIN
+                </span>
+              </div>
 
-        <div className="mt-2 flex flex-wrap items-center">
-          <span className="text-xs font-semibold px-2 py-1 border border-red-400 rounded-full text-red-500 mr-2 mb-2 md:mb-0">
-            Flat 5% Off on all online orders
-          </span>
-          <button
-            className="ml-auto px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
-            onClick={() => handleRedirect(vendor)}
-          >
-            Order Now
-          </button>
-        </div>
-      </div>
-    </div>
-  </Card>
-))}
-
+              <div className="mt-2 flex flex-wrap items-center">
+                <span className="text-xs font-semibold px-2 py-1 border border-red-400 rounded-full text-red-500 mr-2 mb-2 md:mb-0">
+                  Flat 5% Off on all online orders
+                </span>
+                <button
+                  className="ml-auto px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
+                  onClick={() => handleRedirect(vendor)}
+                >
+                  Order Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </Card>
+      ))}
     </div>
   );
 }

@@ -8,8 +8,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
 async function getPageData(slug) {
   try {
     const res = await fetch(`${BASE_URL}/api/web-pages?slug=${slug}`, {
-      next: { revalidate: revalidate ?? 60 },
+      cache: "force-cache",
+      next: { revalidate },
     });
+
     if (!res.ok) return { page: null };
 
     const data = await res.json();
@@ -25,21 +27,21 @@ async function getPageData(slug) {
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim();
+
     const previewLength = 300;
     const shouldTruncate =
       plainText.length > previewLength &&
       !["stations", "trains"].includes(slug);
+
     const truncatedText = shouldTruncate
       ? plainText.slice(0, previewLength) + "..."
       : plainText;
-
-    const previewHtml = `<p>${truncatedText}</p>`;
 
     return {
       page,
       baseUrl: BASE_URL,
       canonicalUrl: `${BASE_URL}/${slug}`,
-      previewHtml,
+      previewHtml: `<p>${truncatedText}</p>`,
       shouldTruncate,
     };
   } catch (err) {
@@ -77,21 +79,13 @@ export async function generateMetadata({ params }) {
       description: page.description,
       url: canonicalUrl,
       type: "website",
-      images: [
-        ogImage.startsWith("http")
-          ? ogImage
-          : `${BASE_URL}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
-      ],
+      images: [ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}`],
     },
     twitter: {
       card: "summary_large_image",
       title: page.title,
       description: page.description,
-      images: [
-        ogImage.startsWith("http")
-          ? ogImage
-          : `${BASE_URL}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`,
-      ],
+      images: [ogImage.startsWith("http") ? ogImage : `${BASE_URL}${ogImage}`],
     },
   };
 }
@@ -99,10 +93,13 @@ export async function generateMetadata({ params }) {
 export async function generateStaticParams() {
   try {
     const res = await fetch(`${BASE_URL}/api/web-pages`, {
-      cache: "no-store",
+      cache: "force-cache",
+      next: { revalidate: 300 },
     });
+
     if (!res.ok) return [];
     const data = await res.json();
+
     return (data.docs || [])
       .filter((p) => p.status === "published")
       .map((p) => ({ slug: p.slug }));
@@ -141,10 +138,7 @@ export default async function Page({ params }) {
       "@type": "Organization",
       name: "Trains Cafe",
       url: baseUrl,
-      logo: {
-        "@type": "ImageObject",
-        url: `${baseUrl}/images/meta_image.png`,
-      },
+      logo: { "@type": "ImageObject", url: `${baseUrl}/images/meta_image.png` },
     },
   };
 

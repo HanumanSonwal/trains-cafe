@@ -108,13 +108,6 @@ export async function POST(req) {
       couponDiscount,
     } = cartCalculation(cart, coupon, adminDiscountPercent);
 
-    console.log(subTotal, "subTotal---");
-    console.log(tax, "tax---");
-    console.log(discount, "discount---");
-    console.log(adminDiscountAmount, "adminDiscountAmount---");
-    console.log(couponDiscount, "couponDiscount---");
-    console.log(total, "total---");
-
     if (coupon && coupon.minimumAmount > subTotal) {
       return NextResponse.json({
         success: false,
@@ -206,7 +199,6 @@ export async function POST(req) {
         : new Date(),
       orderSource: orderSource || "website",
     });
-    console.log("Order before save:", JSON.stringify(order, null, 2));
     await order.save();
 
     const orderItems = cart.map((item) => ({

@@ -16,11 +16,11 @@ import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 
 const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
-  const [uploadFileList, setUploadFileList] = useState([]); 
-  const [excelData, setExcelData] = useState([]); 
+  const [uploadFileList, setUploadFileList] = useState([]);
+  const [excelData, setExcelData] = useState([]);
 
   const handleFileChange = (info) => {
-    const latestFileList = [...info.fileList].slice(-1); 
+    const latestFileList = [...info.fileList].slice(-1);
     setUploadFileList(latestFileList);
 
     const file = latestFileList[0];
@@ -39,7 +39,6 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
       setExcelData(jsonData);
 
       if (jsonData.length) {
-        console.log("✅ Excel Data:", jsonData);
       } else {
         message.warning("No data found in Excel file.");
       }
@@ -55,7 +54,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
     }
 
     if (onSubmit) onSubmit(excelData);
-    handleClose(); 
+    handleClose();
   };
 
   const handleDownloadSampleCSV = () => {
@@ -74,7 +73,18 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
         "DESCRIPTION",
         "GROUP_ID",
       ],
-      ["1", "1", "1", "Sample Item", "https://", "0", "100", "10", "Desc", generatedId],
+      [
+        "1",
+        "1",
+        "1",
+        "Sample Item",
+        "https://",
+        "0",
+        "100",
+        "10",
+        "Desc",
+        generatedId,
+      ],
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
@@ -174,7 +184,7 @@ const BulkImportMenu = ({ open, onCancel, onSubmit }) => {
                 columns={columns}
                 dataSource={excelData}
                 pagination={false}
-                scroll={{ y: 300 }} 
+                scroll={{ y: 300 }}
                 rowKey={(row, index) => index}
                 size="small"
               />

@@ -7,17 +7,12 @@ const initialState = {
   train: {},
 };
 
-const calculateDiscountedPrice = (price, discount) => {
-  return discount && discount > 0 ? price - (price * discount) / 100 : price;
-};
-
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     addItemToCart: (state, action) => {
       const item = action.payload;
-      const finalPrice = calculateDiscountedPrice(item.price, item.discount);
 
       const existingItem = state.items.find(
         (cartItem) => cartItem._id === item._id
@@ -25,9 +20,9 @@ const cartSlice = createSlice({
 
       if (existingItem) {
         existingItem.quantity += 1;
-        existingItem.finalPrice = finalPrice;
+        existingItem.final_price = item.final_price;
       } else {
-        state.items.push({ ...item, quantity: 1, finalPrice });
+        state.items.push({ ...item, quantity: 1 });
       }
     },
 
@@ -38,12 +33,8 @@ const cartSlice = createSlice({
       );
 
       if (itemIndex !== -1) {
-        const item = state.items[itemIndex];
-        const finalPrice = calculateDiscountedPrice(item.price, item.discount);
-
         if (quantity > 0) {
           state.items[itemIndex].quantity = quantity;
-          state.items[itemIndex].finalPrice = finalPrice;
         } else {
           state.items.splice(itemIndex, 1);
         }

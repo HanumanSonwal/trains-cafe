@@ -3,8 +3,6 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Upload, message, Image, Button } from "antd";
 
 const FileUploadComponent = ({ url, setUrl, isReset }) => {
-
-  console.log(isReset ,"is-reset in compoanant")
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -16,7 +14,6 @@ const FileUploadComponent = ({ url, setUrl, isReset }) => {
       setUrl("");
     }
   }, [isReset]);
-
 
   useEffect(() => {
     if (url) {
@@ -61,7 +58,7 @@ const FileUploadComponent = ({ url, setUrl, isReset }) => {
     if (newFileList.length > 0 && newFileList[0].originFileObj) {
       handleFileUpload(newFileList[0].originFileObj);
     } else {
-      setUrl(""); 
+      setUrl("");
     }
   };
 
@@ -80,7 +77,7 @@ const FileUploadComponent = ({ url, setUrl, isReset }) => {
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
-        beforeUpload={() => false} 
+        beforeUpload={() => false}
       >
         {fileList.length >= 1 ? null : (
           <Button icon={<PlusOutlined />}>Upload</Button>
@@ -102,7 +99,6 @@ const FileUploadComponent = ({ url, setUrl, isReset }) => {
   );
 };
 
-
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -112,5 +108,3 @@ const getBase64 = (file) =>
   });
 
 export default FileUploadComponent;
-
-

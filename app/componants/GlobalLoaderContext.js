@@ -1,4 +1,3 @@
-// context/GlobalLoaderContext.js
 "use client";
 import { createContext, useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,12 +10,10 @@ export default function GlobalLoaderProvider({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Jab route change start hota hai
     setLoading(true);
   }, [pathname]);
 
   useEffect(() => {
-    // Thoda delay deke loader band kare taaki flash na ho
     const timeout = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timeout);
   }, [pathname]);

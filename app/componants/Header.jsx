@@ -1,20 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   PhoneOutlined,
   WhatsAppOutlined,
   ShoppingCartOutlined,
   DownloadOutlined,
   DeleteFilled,
-} from '@ant-design/icons';
-import { Badge, Modal, Button } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import Link from 'next/link';
-import {
-  addItemToCart,
-  updateItemQuantity,
-} from '@/app/redux/cartSlice';
+} from "@ant-design/icons";
+import { Badge, Modal, Button } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
+import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -35,13 +32,15 @@ export default function Header() {
 
   const handleDecreaseQuantity = (item) => {
     if (item.quantity > 1) {
-      dispatch(updateItemQuantity({ id: item._id, quantity: item.quantity - 1 }));
+      dispatch(
+        updateItemQuantity({ id: item._id, quantity: item.quantity - 1 })
+      );
     } else {
       Modal.confirm({
-        title: 'Remove Item',
-        content: 'Do you want to remove this item from the cart?',
-        okText: 'Yes',
-        cancelText: 'No',
+        title: "Remove Item",
+        content: "Do you want to remove this item from the cart?",
+        okText: "Yes",
+        cancelText: "No",
         onOk: () => {
           dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
         },
@@ -51,10 +50,10 @@ export default function Header() {
 
   const handleDeleteItem = (item) => {
     Modal.confirm({
-      title: 'Delete Item',
-      content: 'Are you sure you want to delete this item?',
-      okText: 'Yes',
-      cancelText: 'No',
+      title: "Delete Item",
+      content: "Are you sure you want to delete this item?",
+      okText: "Yes",
+      cancelText: "No",
       onOk: () => {
         dispatch(updateItemQuantity({ id: item._id, quantity: 0 }));
       },
@@ -65,7 +64,6 @@ export default function Header() {
     return total + item.price * item.quantity;
   }, 0);
 
-  // ✅ Setup for Install App button
   useEffect(() => {
     const handler = (e) => {
       e.preventDefault();
@@ -73,9 +71,9 @@ export default function Header() {
       setShowInstall(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener("beforeinstallprompt", handler);
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   const handleInstallClick = async () => {
@@ -83,12 +81,6 @@ export default function Header() {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
-    } else {
-      console.log('User dismissed the install prompt');
-    }
 
     setDeferredPrompt(null);
     setShowInstall(false);
@@ -102,20 +94,19 @@ export default function Header() {
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
           <div className="flex items-center gap-4">
-            {/* ✅ Install App Button */}
             {showInstall && (
               <button
                 onClick={handleInstallClick}
                 className="install-button text-[#6F4D27]"
                 title="Install App"
               >
-                <DownloadOutlined style={{ fontSize: '24px' }} />
+                <DownloadOutlined style={{ fontSize: "24px" }} />
               </button>
             )}
 
             <button className="cart-button" onClick={toggleCart}>
               <Badge count={totalUniqueItems} showZero>
-                <ShoppingCartOutlined style={{ fontSize: '24px' }} />
+                <ShoppingCartOutlined style={{ fontSize: "24px" }} />
               </Badge>
             </button>
           </div>
@@ -145,13 +136,11 @@ export default function Header() {
                   <div className="flex flex-col">
                     <span
                       className="font-semibold"
-                      style={{ color: '#6F4D27' }}
+                      style={{ color: "#6F4D27" }}
                     >
                       {item.name}
                     </span>
-                    <span className="text-sm text-gray-500">
-                      ₹{item.price}
-                    </span>
+                    <span className="text-sm text-gray-500">₹{item.price}</span>
                     <span className="text-sm text-gray-500 font-bold">
                       Total: ₹{(item.price * item.quantity).toFixed(2)}
                     </span>
@@ -160,9 +149,9 @@ export default function Header() {
                 <div className="flex items-center space-x-2">
                   <Button
                     style={{
-                      backgroundColor: '#FAF3CC',
-                      borderColor: '#D6872A',
-                      color: '#6F4D27',
+                      backgroundColor: "#FAF3CC",
+                      borderColor: "#D6872A",
+                      color: "#6F4D27",
                     }}
                     onClick={() => handleDecreaseQuantity(item)}
                     className="rounded-full w-8 h-8 flex justify-center items-center transition-all duration-300 transform hover:scale-110"
@@ -173,9 +162,9 @@ export default function Header() {
                   <span className="mx-2 font-semibold">{item.quantity}</span>
                   <Button
                     style={{
-                      backgroundColor: '#FAF3CC',
-                      borderColor: '#D6872A',
-                      color: '#6F4D27',
+                      backgroundColor: "#FAF3CC",
+                      borderColor: "#D6872A",
+                      color: "#6F4D27",
                     }}
                     onClick={() => handleIncreaseQuantity(item)}
                     className="rounded-full w-8 h-8 flex justify-center items-center transition-all duration-300 transform hover:scale-110"
@@ -208,9 +197,9 @@ export default function Header() {
                   className="w-full mr-2"
                   onClick={handleClose}
                   style={{
-                    backgroundColor: '#FAF3CC',
-                    borderColor: '#D6872A',
-                    color: '#6F4D27',
+                    backgroundColor: "#FAF3CC",
+                    borderColor: "#D6872A",
+                    color: "#6F4D27",
                   }}
                 >
                   Go to Cart
@@ -222,9 +211,9 @@ export default function Header() {
                   className="w-full"
                   onClick={handleClose}
                   style={{
-                    backgroundColor: '#FAF3CC',
-                    borderColor: '#D6872A',
-                    color: '#6F4D27',
+                    backgroundColor: "#FAF3CC",
+                    borderColor: "#D6872A",
+                    color: "#6F4D27",
                   }}
                 >
                   Checkout

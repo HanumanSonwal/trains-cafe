@@ -16,7 +16,6 @@ export async function POST(req) {
         });
     }
 
-    console.log(otpRecord.otp === otp, "bool");
     if(otpRecord.otp == otp){
         await OtpModel.deleteOne({email});
 

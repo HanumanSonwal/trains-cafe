@@ -1,4 +1,3 @@
-// components/CustomerInsightsChart.js
 "use client"
 import React from 'react';
 import { Card } from 'antd';
@@ -15,8 +14,8 @@ const data = [
 ];
 
 const COLORS = {
-  behavior: '#D6872A', // Matches previous color
-  orderPattern: '#6F4D27' // Matches previous color
+  behavior: '#D6872A',
+  orderPattern: '#6F4D27' 
 };
 
 const CustomerInsightsChart = () => (

@@ -5,7 +5,6 @@ export async function PUT(req) {
   try {
     await dbConnect();
 
-    // Get vendors that don't have vendorId
     const vendorsToUpdate = await VendorModel.find({
       vendorId: { $exists: false },
     });
@@ -17,7 +16,6 @@ export async function PUT(req) {
       );
     }
 
-    // Get the current max vendorId
     const lastVendorWithId = await VendorModel.findOne({
       vendorId: { $exists: true },
     }).sort({ vendorId: -1 });
@@ -32,10 +30,6 @@ export async function PUT(req) {
       nextVendorId = lastVendorWithId.vendorId + 1;
     }
     for (const vendor of vendorsToUpdate) {
-      console.log(
-        `Updating vendor ${vendor._id} with vendorId ${nextVendorId}`
-      );
-
       await VendorModel.findByIdAndUpdate(vendor._id, {
         $set: { vendorId: nextVendorId++ },
       });

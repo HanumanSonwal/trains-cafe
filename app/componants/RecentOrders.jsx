@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, Card } from "antd";
 import { PhoneOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import "./RecentOrders.css"; 
+import "./RecentOrders.css";
 
 export default function RecentOrders() {
   const [orders, setOrders] = useState([]);
@@ -13,11 +13,12 @@ export default function RecentOrders() {
       .then((res) => res.json())
       .then(setOrders);
   }, []);
+    const phone = process.env.NEXT_PUBLIC_PHONE;
+
 
   return (
     <div className="py-8 px-4 mx-auto">
       <div className="flex flex-col md:flex-row md:justify-between items-start space-y-6 md:space-y-0 md:space-x-4">
-        {/* Left - Recent Orders */}
         <div className="w-full md:w-2/3 py-6">
           <div className="relative mb-4 text-center">
             <img
@@ -48,8 +49,6 @@ export default function RecentOrders() {
             </div>
           </div>
         </div>
-
-        {/* Right - Call Order Box */}
         <div
           className="w-full md:w-1/2 rounded-lg p-4 flex flex-col items-center justify-between bg-[#8B4513] text-white bg-cover bg-center"
           style={{
@@ -66,7 +65,7 @@ export default function RecentOrders() {
             alt="Person Ordering Food"
             className="my-4"
           />
-          <Link href="tel:918696963496">
+          <Link href={`tel:${phone}`}>
             <Button
               type="default"
               icon={<PhoneOutlined />}

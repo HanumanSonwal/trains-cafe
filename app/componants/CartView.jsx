@@ -48,8 +48,6 @@ export default function CartView() {
 
   const decimalBalance = (num) => Math.round(num * 10) / 10;
 
-  // Getting the count of items
-  console.log(cartData, "cccccc");
   const getItemsCount = () => {
     const p = cartData.items.reduce(
       (accumulator, item) => accumulator + item.qty,
@@ -57,7 +55,6 @@ export default function CartView() {
     );
     return decimalBalance(p);
   };
-  // Getting the total price with vat and tax of all items
   const getTotalPrice = () => {
     const p = cartData.items.reduce((accumulator, item) => {
       const totalPrice = item.qty * item.price;
@@ -79,7 +76,6 @@ export default function CartView() {
     router.events.on("routeChangeStart", () => {
       setShowCart(false);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const handleClickOutside = () => {
     setShowCart(false);
@@ -90,7 +86,6 @@ export default function CartView() {
       <div className="d-flex flex-column align-items-center">
         <div className={c.icon_div}>
           <Cart width={18} height={18} />
-          {/* <span className={c.counter}>{getItemsCount()}</span> */}
           <span className={c.counter}>{cartData.items.length}</span>
         </div>
         <p className="text-uppercase m-0 mt-2 small ">{t("cart")}</p>
