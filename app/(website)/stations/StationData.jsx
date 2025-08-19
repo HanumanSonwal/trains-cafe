@@ -10,7 +10,8 @@ import BlogSection from "@/app/componants/BlogSection";
 const StationData = ({ selectedStation }) => {
   const [expanded, setExpanded] = useState(false);
   const { name: stationName, value: stationCode } = selectedStation || {};
-
+const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+  const pageUrl = `${BASE_URL}/stations/${stationCode}`;
   const toggleReadMore = () => setExpanded(!expanded);
 
   return (
@@ -76,7 +77,7 @@ const StationData = ({ selectedStation }) => {
           Order{" "}
           <Link
             className="font-bold text-blue-600 hover:text-blue-800 underline"
-            href="https://www.trainscafe.in/online-food-on-train"
+            href={`${BASE_URL}/online-food-on-train`}
           >
             {" "}
             food on train{" "}
@@ -127,7 +128,7 @@ const StationData = ({ selectedStation }) => {
           Trainscafe offers{" "}
           <Link
             className="font-bold text-blue-600 hover:text-blue-800 underline"
-            href="https://www.trainscafe.in/group-food-order-in-train"
+            href={`${BASE_URL}/group-food-order-in-train`}
           >
             bulk food ordering in train
           </Link>{" "}
@@ -147,7 +148,7 @@ const StationData = ({ selectedStation }) => {
           How to{" "}
           <Link
             className="font-bold text-blue-600 hover:text-blue-800 underline"
-            href="https://www.trainscafe.in/order-food-in-train"
+            href={`${BASE_URL}/order-food-in-train`}
           >
             {" "}
             Order Food in Train{" "}
@@ -164,7 +165,8 @@ const StationData = ({ selectedStation }) => {
             Visit{" "}
             <Link
               className="font-bold text-blue-600 hover:text-blue-800 underline"
-              href="https://www.trainscafe.in"
+              href="/"
+              
             >
               Trainscafe Website
             </Link>{" "}
@@ -240,7 +242,7 @@ const StationData = ({ selectedStation }) => {
               <strong>Ans.</strong> Visit Trainscafe's official{" "}
               <Link
                 className="font-bold text-blue-600 hover:text-blue-800 underline"
-                href="https://www.trainscafe.in"
+                href={`${BASE_URL}/`}
               >
                 website
               </Link>{" "}
@@ -271,7 +273,7 @@ const StationData = ({ selectedStation }) => {
               <strong>Ans.</strong> Click on{" "}
               <Link
                 className="font-bold text-blue-600 hover:text-blue-800 underline"
-                href="https://www.trainscafe.in/group-food-order-in-train"
+                href={`${BASE_URL}/group-food-order-in-train`}
               >
                 “Group Order”
               </Link>{" "}
@@ -306,7 +308,7 @@ const StationData = ({ selectedStation }) => {
               <strong>Ans.</strong> Visit the{" "}
               <Link
                 className="font-bold text-blue-600 hover:text-blue-800 underline"
-                href="https://www.trainscafe.in/vendor-registration"
+                href={`${BASE_URL}/vendor-registration`}
               >
                 Restaurant Signup
               </Link>{" "}

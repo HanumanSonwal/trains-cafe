@@ -17,7 +17,7 @@ export default function Articles() {
           Order{" "}
           <Link
             className="text-blue-600 font-bold underline hover:text-blue-800"
-            href="https://www.trainscafe.in/online-food-on-train"
+            href={`${BASE_URL}/online-food-on-train`}
           >
             Fresh & Tasty Food on Train
           </Link>{" "}
@@ -43,7 +43,7 @@ export default function Articles() {
               Trainscafe provides fresh meals and the{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://trainscafe.com/pure-veg-food-delivery-in-train"
+                href={`${BASE_URL}/pure-veg-food-delivery-in-train`}
               >
                 best food delivery in trains
               </Link>{" "}
@@ -92,7 +92,7 @@ export default function Articles() {
                 <b>Jain Food in Train:</b> We delivers fresh and hygienic{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/jain-food-in-train"
+                  href={`${BASE_URL}/jain-food-in-train`}
                 >
                   {" "}
                   Jain food in train{" "}
@@ -115,7 +115,7 @@ export default function Articles() {
                 to select your preferred{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/non-veg-food-in-train"
+                  href={`${BASE_URL}/non-veg-food-in-train`}
                 >
                   {" "}
                   non-vegetarian thali in train
@@ -156,7 +156,7 @@ export default function Articles() {
                 family? Trainscafe makes{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/group-food-order-in-train"
+                  href={`${BASE_URL}/group-food-order-in-train`}
                 >
                   {" "}
                   group food order in train{" "}
@@ -256,7 +256,7 @@ export default function Articles() {
                 <b>Instant Access via Browser - </b>Simply open{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://trainscafe.com"
+                  href={`${BASE_URL}`}
                 >
                   {" "}
                   Trainscafe.com
@@ -301,7 +301,8 @@ export default function Articles() {
               Enjoy Delicious{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.com/train-food-delivery"
+                href={`${BASE_URL}/train-food-delivery`}
+               
               >
                 {" "}
                 Train Food Delivery{" "}
@@ -419,7 +420,7 @@ export default function Articles() {
               breakfast, lunch, or dinner -{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/order-favourite-dishes-in-train"
+                href={`${BASE_URL}/order-favourite-dishes-in-train`}
               >
                 {" "}
                 order your favorite dishes in train{" "}
@@ -441,7 +442,7 @@ export default function Articles() {
                 <b>🔍 Check PNR Status :</b> Instantly you can{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/check-pnr-updates"
+                  href={`${BASE_URL}/check-pnr-updates`}
                 >
                   {" "}
                   check PNR updates{" "}
@@ -452,7 +453,7 @@ export default function Articles() {
                 <b>🚆 Live Train Running Status :</b> Track your{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/check-live-train-running-status"
+                  href={`${BASE_URL}/check-live-train-running-status`}
                 >
                   {" "}
                   train running live status{" "}
@@ -466,7 +467,7 @@ export default function Articles() {
                 our accurate{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/check-train-time-table"
+                  href={`${BASE_URL}/check-train-time-table`}
                 >
                   {" "}
                   IRCTC train time table schedule.
@@ -479,7 +480,7 @@ export default function Articles() {
                 confusion by checking the exact{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/check-train-coach-position"
+                  href={`${BASE_URL}/check-train-coach-position`}
                 >
                   check coach position
                 </Link>{" "}
@@ -491,7 +492,7 @@ export default function Articles() {
                 luggage! With just a few clicks,{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/online-coolie-in-train"
+                  href={`${BASE_URL}/online-coolie-in-train`}
                 >
                   book a coolie in train{" "}
                 </Link>{" "}
@@ -503,7 +504,7 @@ export default function Articles() {
                 Planning to take a break?{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/book-hotels-in-train-near-by-station"
+                  href={`${BASE_URL}/book-hotels-in-train-near-by-station`}
                 >
                   {" "}
                   Find & Book hotels near major railway stations{" "}
@@ -516,7 +517,7 @@ export default function Articles() {
                 Are you a restaurant owner looking to serve train passengers?{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href="https://www.trainscafe.in/vendor-registration"
+                  href={`${BASE_URL}/vendor-registration`}
                 >
                   {" "}
                   Vendor registration with Trainscafe{" "}
@@ -587,21 +588,21 @@ export default function Articles() {
               Hygienic food delivery in trains |{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/online-train-food-delivery"
+                href={`${BASE_URL}/online-train-food-delivery`}
               >
                 Train food delivery online{" "}
               </Link>
               | Fast train food ordering |{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/order-food-in-train"
+                href={`${BASE_URL}/order-food-in-train`}
               >
                 Order food in train{" "}
               </Link>{" "}
               | IRCTC food delivery |{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/order-meals-in-train"
+                href={`${BASE_URL}/order-meals-in-train`}
               >
                 {" "}
                 Fresh meals in train{" "}
@@ -609,7 +610,7 @@ export default function Articles() {
               | Regional food in trains |
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/railway-meal-food-in-train"
+                href={`${BASE_URL}/railway-meal-food-in-train`}
               >
                 {" "}
                 Railway meal delivery service{" "}
@@ -618,7 +619,7 @@ export default function Articles() {
               |{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/ecatering-train-services"
+                href={`${BASE_URL}/ecatering-train-services`}
               >
                 {" "}
                 E-catering train services{" "}
@@ -626,7 +627,7 @@ export default function Articles() {
               | Quick meal delivery in trains |{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/train-food-booking-online"
+                href={`${BASE_URL}/train-food-booking-online`}
               >
                 {" "}
                 Train food booking online{" "}
@@ -642,7 +643,7 @@ export default function Articles() {
               | Book meals for train journey |{" "}
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
-                href="https://www.trainscafe.in/online-food-for-train-passengers"
+                href={`${BASE_URL}/online-food-for-train-passengers`}
               >
                 {" "}
                 Online food for train passengers{" "}
