@@ -52,8 +52,8 @@ const Menubar = () => {
     {
       key: '2',
       icon: <ShopOutlined />,
-      label: <Link href="/admin/stations">Stations</Link>,
-      path: '/admin/stations',
+      label: <Link href="/admin/stations-managment">Stations</Link>,
+      path: '/admin/stations-managment',
     },
     {
       key: '3',
