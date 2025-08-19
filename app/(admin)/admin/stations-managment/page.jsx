@@ -21,7 +21,7 @@ import axios from "axios";
 import Spinner from "@/app/componants/spinner/Spinner";
 import StationsForm from "./StationsForm";
 
-const StationManagement = () => {
+const page = () => {
   const [stations, setStations] = useState([]);
   const [filteredStations, setFilteredStations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -258,4 +258,4 @@ const StationManagement = () => {
   );
 };
 
-export default StationManagement;
+export default page;
