@@ -10,7 +10,7 @@ import BlogSection from "@/app/componants/BlogSection";
 const StationData = ({ selectedStation }) => {
   const [expanded, setExpanded] = useState(false);
   const { name: stationName, value: stationCode } = selectedStation || {};
-const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
+ const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
   const pageUrl = `${BASE_URL}/stations/${stationCode}`;
   const toggleReadMore = () => setExpanded(!expanded);
 

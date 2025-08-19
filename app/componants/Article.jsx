@@ -7,6 +7,8 @@ const { Panel } = Collapse;
 export default function Articles() {
   const [showFullContent, setShowFullContent] = useState(false);
   const previewText = ``;
+  const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
+
 
   return (
     <div className="py-8 px-2 mx-auto max-w-[575px] bg-gray-100 rounded-md mb-3">

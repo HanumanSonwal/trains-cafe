@@ -16,6 +16,7 @@ const { TextArea } = Input;
 const OnlineCoolieBooking = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -221,7 +222,7 @@ const OnlineCoolieBooking = () => {
             Visit{" "}
             <Link
               className="font-bold text-blue-600 hover:text-blue-800 underline"
-              href="https://www.trainscafe.in"
+              href={`${BASE_URL}`}
             >
               www.trainscafe.com
             </Link>

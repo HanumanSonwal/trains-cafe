@@ -16,6 +16,8 @@ const { TextArea } = Input;
 const BulkOrderForm = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
+  
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -333,7 +335,7 @@ const BulkOrderForm = () => {
                 <li>
                   <b>Visit Website -</b> Go to our website{" "}
                   <Link
-                    href="www.traincafe.com"
+                    href={`${BASE_URL}`}
                     className="font-bold text-blue-600 hover:text-blue-800 underline"
                   >
                     www.traincafe.com
@@ -432,7 +434,7 @@ const BulkOrderForm = () => {
                   or you can visit our{" "}
                   <Link
                     className="font-bold text-blue-600 hover:text-blue-800 underline"
-                    href="https://www.trainscafe.in"
+                    href={`${BASE_URL}`}
                   >
                     website.
                   </Link>{" "}

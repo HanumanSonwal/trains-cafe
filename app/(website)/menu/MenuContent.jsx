@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 
 export default function MenuContent({ categories }) {
+  const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
   return (
     <div>
       <h2
@@ -16,7 +17,7 @@ export default function MenuContent({ categories }) {
         Order{" "}
         <Link
           className="font-bold text-blue-600 hover:text-blue-800 underline"
-          href="https://www.trainscafe.in/"
+          href={`${BASE_URL}`}          
         >
           {" "}
           food in train{" "}
@@ -68,7 +69,7 @@ export default function MenuContent({ categories }) {
         Why Choose Trainscafe for{" "}
         <Link
           className="font-bold text-blue-600 hover:text-blue-800 underline"
-          href="https://www.trainscafe.in/online-train-food-delivery"
+          href={`${BASE_URL}/online-train-food-delivery`}
         >
           {" "}
           Online Train Food Delivery?{" "}
@@ -135,7 +136,7 @@ export default function MenuContent({ categories }) {
           How to{" "}
           <Link
             className="font-bold text-blue-600 hover:text-blue-800 underline"
-            href="https://www.trainscafe.in/order-food-in-train"
+            href={`${BASE_URL}/order-food-in-train`}
           >
             {" "}
             Order Food Online in Train{" "}
