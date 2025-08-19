@@ -17,9 +17,9 @@ import {
   CloseCircleOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import StationsForm from "./StationsForm";
 import axios from "axios";
 import Spinner from "@/app/componants/spinner/Spinner";
+import StationsForm from "./StationsForm";
 
 const StationManagement = () => {
   const [stations, setStations] = useState([]);
