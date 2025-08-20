@@ -18,7 +18,7 @@ const CheckoutPage = () => {
   const email = Form.useWatch("email", form);
   const mobile = Form.useWatch("mobile", form);
 
-  const [paymentMethod, setPaymentMethod] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -200,7 +200,7 @@ const CheckoutPage = () => {
               onDiscountChange={setDiscount}
             />
 
-            <div className="bg-white shadow rounded-lg p-4 mt-4">
+            {/* <div className="bg-white shadow rounded-lg p-4 mt-4">
               <h2 className="text-xl font-bold mb-4">Payment Options</h2>
               <Radio.Group
                 value={paymentMethod}
@@ -234,7 +234,7 @@ const CheckoutPage = () => {
                   </Radio.Button>
                 ))}
               </Radio.Group>
-            </div>
+            </div> */}
 
             <Button
               type="primary"
