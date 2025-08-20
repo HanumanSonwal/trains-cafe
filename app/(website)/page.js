@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <div>
       
-      {/* <HeroSection /> */}
+      <HeroSection />
       <OrderFood />
       <StepsSection />
       <PromoBanner />
