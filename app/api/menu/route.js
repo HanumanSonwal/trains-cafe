@@ -12,6 +12,8 @@ export async function GET(req) {
     const categoryName = url.searchParams.get("categoryName");
     const vendorname = url.searchParams.get("vendorname");
     const page = parseInt(url.searchParams.get("page"), 10) || 1;
+
+
     const limit = parseInt(url.searchParams.get("limit"), 10) || 10;
 
     await dbConnect();
@@ -73,22 +75,39 @@ export async function GET(req) {
       .limit(limit)
       .sort({ createdAt: -1 })
       .populate("Category_Id", "title")
-      // .populate("Vendor", "Vendor_Name")
       .populate({
-    path: "Vendor",
-    select: "Vendor_Name Status",
-    match: { Status: "Active" }, // 👈 Only include active vendors
-  })
+        path: "Vendor",
+        select: "Vendor_Name Status",
+
+      })
       .populate("Station", "name");
 
-    if (menu.length === 0) {
+
+    const menus = await MenuModel.find(query)
+      .sort({ createdAt: -1 })
+      .populate("Category_Id", "title")
+      .populate("Station", "name")
+      .populate({
+        path: "Vendor",
+        select: "Vendor_Name Status",
+      });
+
+
+    const activeMenu = menus.filter(item => item.Vendor && item.Vendor.Status === "Active");
+
+    if (activeMenu.length === 0) {
       return new Response(
         JSON.stringify({ success: false, message: "No items found." }),
         { status: 404 }
       );
     }
 
-    const formatted = menu.map((item) => ({
+
+    const total = activeMenu.length;
+    const skips = Math.max((page - 1) * limit, 0);
+    const paginatedMenu = activeMenu.slice(skips, skips + limit);
+
+    const formatted = paginatedMenu.map((item) => ({
       ...item.toObject(),
       Category_Id: item.Category_Id?._id || "Unknown",
       Category_Name: item.Category_Id?.title || "Unknown",
@@ -97,8 +116,6 @@ export async function GET(req) {
       Station: item.Station?._id || "Unknown",
       Station_Name: item.Station?.name || "Unknown",
     }));
-
-    const total = await MenuModel.countDocuments(query);
 
     return new Response(
       JSON.stringify({
@@ -110,6 +127,7 @@ export async function GET(req) {
       }),
       { status: 200 }
     );
+
   } catch (error) {
     console.error("GET Menu error:", error);
     return new Response(
