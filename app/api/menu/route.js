@@ -73,7 +73,12 @@ export async function GET(req) {
       .limit(limit)
       .sort({ createdAt: -1 })
       .populate("Category_Id", "title")
-      .populate("Vendor", "Vendor_Name")
+      // .populate("Vendor", "Vendor_Name")
+      .populate({
+    path: "Vendor",
+    select: "Vendor_Name Status",
+    match: { Status: "Active" }, // 👈 Only include active vendors
+  })
       .populate("Station", "name");
 
     if (menu.length === 0) {
