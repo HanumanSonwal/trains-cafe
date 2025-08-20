@@ -252,6 +252,7 @@ const CheckoutPage = () => {
         </div>
       </div>
 
+
       {paymentProcessing && (
         <div className="fixed inset-0 bg-white/70 z-[9999] flex justify-center items-center">
           <div className="loader"></div>

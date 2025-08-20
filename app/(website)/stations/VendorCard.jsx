@@ -47,7 +47,7 @@ function VendorCardWithoutTrain({ selectedStation }) {
         setLoading(true);
         setError(false);
         const res = await fetch(
-          `/api/vendors?stationcode=${selectedStation.code}`,
+          `/api/vendors?stationcode=${selectedStation.code}&status=Active`,
           {
             cache: "no-store",
             signal: controller.signal,
