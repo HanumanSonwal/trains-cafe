@@ -264,7 +264,9 @@ const TablePage = () => {
               {value}% OFF
             </Tag>
           ) : (
-            <span style={{ color: "#999" }}>No Discount</span>
+            <Tag color="default" style={{ fontWeight: "bold", color: "#555" }}>
+              No Discount
+            </Tag>
           );
         },
       },

@@ -1,99 +1,86 @@
-import React from 'react';
-import { Modal, Button, Input } from 'antd';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import axios from 'axios';
-
-const stationSchema = z.object({
-  name: z.string().nonempty('Please enter the station name'),
-  code: z.string().nonempty('Please enter the station code'),
-  location: z.string().nonempty('Please enter the location'),
-  address: z.string().nonempty('Please enter the address'),
-});
+import React, { useEffect } from "react";
+import { Modal, Button, Form, Input, message } from "antd";
+import axios from "axios";
 
 const StationsForm = ({ open, onCancel, initialValues, fetchStations }) => {
-  const { control, handleSubmit, reset, formState: { errors } } = useForm({
-    resolver: zodResolver(stationSchema),
-    defaultValues: initialValues || { name: '', code: '', location: '', address: '' },
-  });
+  const [form] = Form.useForm();
 
-  React.useEffect(() => {
-    reset(initialValues);
-  }, [initialValues, reset]);
+  useEffect(() => {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    } else {
+      form.resetFields();
+    }
+  }, [initialValues, form]);
 
-  const handleFormSubmit = async (data) => {
+  const handleFormSubmit = async (values) => {
     try {
+      let response;
       if (initialValues && initialValues._id) {
-        await axios.put(`/api/station?id=${initialValues._id}`, data);
+        response = await axios.put(`/api/station?id=${initialValues._id}`, values);
       } else {
-        await axios.post('/api/station', data);
+        response = await axios.post("/api/station", values);
       }
+      message.success(response.data?.message || "Saved successfully");
       fetchStations();
-      reset({ name: '', code: '', location: '', address: '' });
       onCancel();
     } catch (error) {
-      console.error("Failed to submit the form:", error);
+      const errMsg = error.response?.data?.message || "Failed to save station";
+      message.error(errMsg);
     }
   };
 
   return (
     <Modal
-      title={initialValues ? 'Edit Station' : 'Add Station'}
+      title={initialValues ? "Edit Station" : "Add Station"}
       open={open}
       onCancel={onCancel}
       footer={[
-        <Button key="submit" type="primary" onClick={handleSubmit(handleFormSubmit)} style={{ backgroundColor: '#D6872A', borderColor: '#D6872A' }}>
-          {initialValues ? 'Save' : 'Submit'}
-        </Button>
+        <Button
+          key="submit"
+          type="primary"
+          onClick={() => form.submit()}
+          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+        >
+          {initialValues ? "Save" : "Submit"}
+        </Button>,
       ]}
     >
-      <form>
-        <Controller
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFormSubmit}
+        initialValues={initialValues || {}}
+      >
+        <Form.Item
+          label="Station Name"
           name="name"
-          control={control}
-          render={({ field }) => (
-            <div className="mb-4">
-              <label className="block mb-1">Station Name</label>
-              <Input {...field} />
-              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-            </div>
-          )}
-        />
-        <Controller
+          rules={[{ required: true, message: "Please enter station name" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Station Code"
           name="code"
-          control={control}
-          render={({ field }) => (
-            <div className="mb-4">
-              <label className="block mb-1">Station Code</label>
-              <Input {...field} />
-              {errors.code && <p className="text-red-500">{errors.code.message}</p>}
-            </div>
-          )}
-        />
-        <Controller
+          rules={[{ required: true, message: "Please enter station code" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Location"
           name="location"
-          control={control}
-          render={({ field }) => (
-            <div className="mb-4">
-              <label className="block mb-1">Location</label>
-              <Input {...field} />
-              {errors.location && <p className="text-red-500">{errors.location.message}</p>}
-            </div>
-          )}
-        />
-        <Controller
+          rules={[{ required: true, message: "Please enter location" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Address"
           name="address"
-          control={control}
-          render={({ field }) => (
-            <div className="mb-4">
-              <label className="block mb-1">Address</label>
-              <Input {...field} />
-              {errors.address && <p className="text-red-500">{errors.address.message}</p>}
-            </div>
-          )}
-        />
-      </form>
+          rules={[{ required: true, message: "Please enter address" }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };
