@@ -11,6 +11,7 @@ export async function GET(req) {
     const stationname = url.searchParams.get("stationname");
     const stationcode = url.searchParams.get("stationcode");
     const vendorname = url.searchParams.get("vendorname");
+    const status = url.searchParams.get("status");
     const page = parseInt(url.searchParams.get("page"), 10) || 1;
     const limit = parseInt(url.searchParams.get("limit"), 10) || 10;
 
@@ -71,7 +72,10 @@ export async function GET(req) {
         Vendor_Name: { $regex: vendorname, $options: "i" },
       });
     }
-
+    if (status) {
+      andConditions.push({ Status: status }); // 👈 applies Active / Inactive dynamically
+    }
+//  andConditions.push({ Status: { $ne: "Inactive" } }); // 👈 Added
     const searchCriteria =
       andConditions.length > 0 ? { $and: andConditions } : {};
 
