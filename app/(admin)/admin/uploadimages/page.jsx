@@ -299,6 +299,7 @@ const { Option } = Select;
 
 const ImageManager = () => {
   const [folders, setFolders] = useState([]);
+  const [loadingFolders, setLoadingFolders] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState("");
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -311,67 +312,88 @@ const ImageManager = () => {
     total: 0,
   });
 
-  // 👇 folders fetch with no-cache
-  const fetchFolders = useCallback(async () => {
+  /** ✅ Fetch Folders */
+const fetchFolders = useCallback(async () => {
+  try {
+    setLoadingFolders(true);
+
+    // ⛔ cache busting (add timestamp)
+    const { data } = await axios.get(`/api/fileUpload/folders?t=${Date.now()}`, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    });
+
+    if (data.success) {
+      setFolders(data.folders || []);
+    }
+  } catch (err) {
+    console.error(err);
+    message.error("Failed to fetch folders");
+  } finally {
+    setLoadingFolders(false);
+  }
+}, []);
+
+
+  /** ✅ Fetch Images */
+const fetchImages = useCallback(
+  async (page = 1) => {
+    setLoading(true);
     try {
-      const { data } = await axios.get("/api/fileUpload/folders", {
-        headers: { "Cache-Control": "no-store" },
+      const query = new URLSearchParams({
+        page,
+        limit: pagination.pageSize,
+        t: Date.now().toString(), // ⛔ cache busting
       });
+
+      if (selectedFolder) query.append("folder", selectedFolder);
+      if (searchText) query.append("search", searchText);
+
+      const { data } = await axios.get(
+        `/api/fileUpload/list?${query.toString()}`,
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        }
+      );
+
       if (data.success) {
-        setFolders(data.folders);
+        setImages(data.images || []);
+        setPagination((prev) => ({
+          ...prev,
+          current: page,
+          total: data.total || 0,
+        }));
       }
     } catch (err) {
       console.error(err);
-      message.error("Failed to fetch folders");
+      message.error("Failed to fetch images");
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  // 👇 images fetch with no-cache
-  const fetchImages = useCallback(
-    async (page = 1) => {
-      setLoading(true);
+  },
+  [selectedFolder, searchText, pagination.pageSize]
+);
+  /** ✅ Delete Image */
+  const handleDelete = useCallback(
+    async (public_id) => {
       try {
-        const query = new URLSearchParams();
-        if (selectedFolder) query.append("folder", selectedFolder);
-        if (searchText) query.append("search", searchText);
-        query.append("page", page);
-        query.append("limit", pagination.pageSize);
-
-        const { data } = await axios.get(
-          `/api/fileUpload/list?${query.toString()}`,
+        const { data } = await axios.delete(
+          `/api/fileUpload/delete?public_id=${public_id}`,
           { headers: { "Cache-Control": "no-store" } }
         );
 
         if (data.success) {
-          setImages(data.images);
-          setPagination((prev) => ({
-            ...prev,
-            current: page,
-            total: data.total,
-          }));
-        }
-      } catch (err) {
-        console.error(err);
-        message.error("Failed to fetch images");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [selectedFolder, searchText, pagination.pageSize]
-  );
-
-  const handleDelete = useCallback(
-    async (public_id) => {
-      try {
-        const res = await axios.delete(
-          `/api/fileUpload/delete?public_id=${public_id}`,
-          { headers: { "Cache-Control": "no-store" } }
-        );
-        if (res.data.success) {
           message.success("Deleted successfully");
           fetchImages(pagination.current);
         } else {
-          throw new Error(res.data.message);
+          throw new Error(data.message);
         }
       } catch (err) {
         console.error(err);
@@ -381,12 +403,14 @@ const ImageManager = () => {
     [fetchImages, pagination.current]
   );
 
+  /** ✅ Copy URL */
   const handleCopy = useCallback((url) => {
     navigator.clipboard.writeText(url).then(() => {
       message.success("URL copied");
     });
   }, []);
 
+  /** ✅ Table Columns Memoized */
   const columns = useMemo(
     () => [
       {
@@ -414,12 +438,7 @@ const ImageManager = () => {
         dataIndex: "url",
         render: (url) => (
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            <AntdInput
-              value={url}
-              readOnly
-              size="small"
-              style={{ width: "80%" }}
-            />
+            <AntdInput value={url} readOnly size="small" style={{ width: "80%" }} />
             <Button
               icon={<CopyOutlined />}
               onClick={() => handleCopy(url)}
@@ -431,20 +450,19 @@ const ImageManager = () => {
       {
         title: "Actions",
         render: (_, record) => (
-          <div style={{ display: "flex", gap: "6px" }}>
-            <Popconfirm
-              title="Delete image?"
-              onConfirm={() => handleDelete(record.public_id)}
-            >
-              <Button icon={<DeleteFilled />} danger size="small" />
-            </Popconfirm>
-          </div>
+          <Popconfirm
+            title="Delete image?"
+            onConfirm={() => handleDelete(record.public_id)}
+          >
+            <Button icon={<DeleteFilled />} danger size="small" />
+          </Popconfirm>
         ),
       },
     ],
     [handleCopy, handleDelete]
   );
 
+  /** ✅ Initial Load */
   useEffect(() => {
     fetchFolders();
   }, [fetchFolders]);
@@ -456,24 +474,12 @@ const ImageManager = () => {
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
-    <div
-      style={{
-        background: "#FAF3CC",
-        borderRadius: 8,
-        padding: "16px",
-      }}
-    >
-      <h2
-        style={{
-          color: "#6F4D27",
-          fontSize: "1.25rem",
-          fontWeight: "600",
-          marginBottom: "12px",
-        }}
-      >
+    <div style={{ background: "#FAF3CC", borderRadius: 8, padding: "16px" }}>
+      <h2 style={{ color: "#6F4D27", fontSize: "1.25rem", fontWeight: "600", marginBottom: "12px" }}>
         Image Manager
       </h2>
 
+      {/* ✅ Controls */}
       <div
         style={{
           display: "flex",
@@ -494,6 +500,7 @@ const ImageManager = () => {
             }}
             allowClear
             showSearch
+            loading={loadingFolders}
             optionFilterProp="children"
           >
             {folders.map((folder) => (
@@ -526,6 +533,7 @@ const ImageManager = () => {
         </Button>
       </div>
 
+      {/* ✅ Table */}
       <Spin spinning={loading} indicator={antIcon}>
         <Table
           columns={columns}
@@ -540,6 +548,7 @@ const ImageManager = () => {
         />
       </Spin>
 
+      {/* ✅ Upload Modal */}
       <UploadModal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -553,3 +562,4 @@ const ImageManager = () => {
 };
 
 export default ImageManager;
+
