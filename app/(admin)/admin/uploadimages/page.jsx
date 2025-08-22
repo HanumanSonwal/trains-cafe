@@ -211,6 +211,8 @@ const ImageManager = () => {
               setPagination((prev) => ({ ...prev, current: 1 }));
             }}
             allowClear
+            showSearch
+            optionFilterProp="children"
           >
             {folders.map((folder) => (
               <Option key={folder} value={folder}>
