@@ -187,7 +187,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import MultiImageUploader from "./MultiImageUploader";
 import axios from "axios";
 
-const UploadModal = ({ open, onCancel, fetchImages }) => {
+const UploadModal = ({ open, onCancel, fetchImages , fetchFolders }) => {
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState("");
   const [createNew, setCreateNew] = useState(false);
@@ -276,6 +276,9 @@ const UploadModal = ({ open, onCancel, fetchImages }) => {
 
       // refresh images
       fetchImages();
+      if (typeof fetchFolders === "function") {
+    fetchFolders(); // ⬅️ ye add karna hoga
+  }
 
       // 🔹 Upload ke baad folders refresh
       await getFolders();
