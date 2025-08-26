@@ -402,3 +402,7 @@ color: #704D25 !important;
   0% { transform: rotate(0deg);}
   100% { transform: rotate(360deg);}
 }
+
+.ant-tabs-nav{
+  margin: 0px !important;
+}
