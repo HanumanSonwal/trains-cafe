@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
   DashboardOutlined,
@@ -129,11 +130,11 @@ const Menubar = () => {
             label: <Link href="/admin/station-pages">Station Pages</Link>,
             path: '/admin/station-pages',
           },
-          {
-            key: 'ps-3',
-            label: <Link href="/admin/train-pages">Train Pages</Link>,
-            path: '/admin/train-pages',
-          },
+          // {
+          //   key: 'ps-3',
+          //   label: <Link href="/admin/train-pages">Train Pages</Link>,
+          //   path: '/admin/train-pages',
+          // },
           {
             key: 'ps-4',
             label: <Link href="/admin/blog">Blog </Link>,
