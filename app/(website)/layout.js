@@ -6,7 +6,7 @@ import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000/";
+const siteUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 
 export const metadata = {
   title: {
