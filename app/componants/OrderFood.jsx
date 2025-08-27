@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Input, Button, Tabs, Select, message } from "antd";
@@ -35,7 +36,7 @@ const timeoutFetch = async (url, opts = {}, ms = 5000) => {
 
 export default function OrderFood() {
   const router = useRouter();
-  const [activeKey, setActiveKey] = useState("2");
+  const [activeKey, setActiveKey] = useState("3");
   const [pnr, setPnr] = useState("");
   const [trainNumber, setTrainNumber] = useState("");
   const [station, setStation] = useState(undefined);
@@ -154,21 +155,21 @@ export default function OrderFood() {
 
   const tabItems = useMemo(
     () => [
-      {
-        key: "1",
-        label: "10 Digit PNR",
-        children: renderInputTab(pnr, setPnr, () => handleSearch("pnr"), 10),
-      },
-      {
-        key: "2",
-        label: "Train No.",
-        children: renderInputTab(
-          trainNumber,
-          setTrainNumber,
-          () => handleSearch("train"),
-          5
-        ),
-      },
+      // {
+      //   key: "1",
+      //   label: "10 Digit PNR",
+      //   children: renderInputTab(pnr, setPnr, () => handleSearch("pnr"), 10),
+      // },
+      // {
+      //   key: "2",
+      //   label: "Train No.",
+      //   children: renderInputTab(
+      //     trainNumber,
+      //     setTrainNumber,
+      //     () => handleSearch("train"),
+      //     5
+      //   ),
+      // },
       {
         key: "3",
         label: "Station Name",
@@ -216,6 +217,7 @@ export default function OrderFood() {
         ),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       pnr,
       trainNumber,
