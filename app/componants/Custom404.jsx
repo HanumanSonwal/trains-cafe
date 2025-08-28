@@ -5,7 +5,7 @@ export default function Custom404() {
   const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
   return (
    
-    <div className="flex md:py-8 py-6 flex-col md:flex-row items-center justify-center bg-[#fdf6ed] px-6 md:px-12">
+    <div className="min-h-screen flex md:py-8 py-6 flex-col md:flex-row items-center justify-center bg-[#fdf6ed] px-6 md:px-12 pb-20 md:pb-8">
   
       <div className="col-1 text-center max-w-[450px]">
         <h2  className="text-2xl md:text-5xl font-bold text-[#704d25] md:mb-4 mb-2">

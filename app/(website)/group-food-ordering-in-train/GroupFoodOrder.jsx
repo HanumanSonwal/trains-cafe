@@ -167,7 +167,7 @@ const BulkOrderForm = () => {
             </div>
             <h4 className="mb-2">
               Are you traveling with your family or friends? Don’t worry
-              Traincafe provides <b>group food ordering in train </b>
+              Trainscafe provides <b>group food ordering in train </b>
               hassle-free. Call us on{" "}
               <Link
                 href="tel:+918696963496"
@@ -185,15 +185,15 @@ const BulkOrderForm = () => {
               of group train travel is of a group of people interacting, sharing
               tales, laughing, and enjoying meals. <br></br> <br></br>
               Fortunately, with the advent of{" "}
-              <b>group food ordering in train</b> services by Traincafe, dining
+              <b>group food ordering in train</b> services by Trainscafe, dining
               on trains has become more convenient and enjoyable than ever
               before. Imagine when you arrive at the train stations of your
               choice, picture a dish of freshly prepared, hot meals, much like
               you would find at a restaurant. <br></br>
-              <br></br> You should <b>order food in train</b> using Traincafe
+              <br></br> You should <b>order food in train</b> using Trainscafe
               platform instead of train food if you detest boring, tasteless
               pantry food that is prepared in an unclean manner. It would be a
-              delightful pleasure. Traincafe provides fresh{" "}
+              delightful pleasure. Trainscafe provides fresh{" "}
               <b>order food in train</b> and the{" "}
               <b>best food delivery in train</b>. Get{" "}
               <b>group food ordering in train</b> with superb discounts. Visit
@@ -214,8 +214,8 @@ const BulkOrderForm = () => {
               coworkers to share a meal while taking in the view of the outdoors
               via the window. Organizing <b>train food</b> in bulk for a group,
               train ride has been simpler and easier for passengers after the
-              introduction of Traincafe. Get <b>food on train </b>without any
-              tension by Traincafe Here are some common types of groups that you
+              introduction of Trainscafe. Get <b>food on train </b>without any
+              tension by Trainscafe Here are some common types of groups that you
               may encounter on trains:
             </p>
             <br></br>
@@ -228,7 +228,7 @@ const BulkOrderForm = () => {
               <li>
                 <b> Tour Group -</b>Tour groups comprise individuals who have
                 come together to explore a particular destination or itinerary.
-                Traincafe provides group food orderings in train with best
+                Trainscafe provides group food orderings in train with best
                 discounts.
               </li>
               <li>
@@ -271,7 +271,7 @@ const BulkOrderForm = () => {
               <p className="text-gray-700">
                 Whether you enjoy pure veg food or Non-veg food and miss its
                 delicious flavor while traveling by rail in a group, simply give
-                your travel companion Traincafe a call, and they will transport{" "}
+                your travel companion Trainscafe a call, and they will transport{" "}
                 <b>pure veg/Non-veg food delivery in train</b> for your group
                 right to your seat at any station along the way. <br></br>
                 <br></br>
@@ -279,15 +279,15 @@ const BulkOrderForm = () => {
                 thali, north/south Indian food etc for a group. If you are Jain
                 and travelling in a group, don’t worry, we also have option of{" "}
                 <b>jain food delivery in train</b> for your family in bulk.
-                Traincafe provides fresh <b>online food in train</b> and the
+                Trainscafe provides fresh <b>online food in train</b> and the
                 best <b>food delivery in train</b> for travelers at all popular
-                stations. For non-veg lovers, Traincafe provides a variety of
+                stations. For non-veg lovers, Trainscafe provides a variety of
                 non-veg food such as Tandoori or grilled kebabs, Non-veg thali,
                 non-veg biryani, butter chicken and lots more. <br></br>
                 <br></br> Now get your favorite veg/non-veg pizza at your seat
                 by ordering from <b>Domino’s pizza delivery</b> or{" "}
-                <b>Pizza hut delivery</b> options available on traincafe.
-                Traincafe provides best non-veg food delivery in train.
+                <b>Pizza hut delivery</b> options available on Trainscafe.
+                Trainscafe provides best non-veg food delivery in train.
               </p>
               <br></br>
               <h3 className="font-bold text-[#704d25]">
@@ -319,7 +319,7 @@ const BulkOrderForm = () => {
                 >
                   +91-8696963496
                 </Link>{" "}
-                . Traincafe provides best <b>train food delivery</b> for all the
+                . Trainscafe provides best <b>train food delivery</b> for all the
                 groups.
               </p>
               <br></br>
@@ -338,7 +338,7 @@ const BulkOrderForm = () => {
                     href={`${BASE_URL}`}
                     className="font-bold text-blue-600 hover:text-blue-800 underline"
                   >
-                    www.traincafe.com
+                    www.trainscafe.in
                   </Link>{" "}
                   for online food order in train.
                 </li>
@@ -357,14 +357,14 @@ const BulkOrderForm = () => {
                 <li>
                   <b>Browse and select a Restaurant and Dish -</b>Browse through
                   the nearest restaurants and select your preferred{" "}
-                  <b>train food order</b> options. Traincafe provides various
+                  <b>train food order</b> options. Trainscafe provides various
                   options of restaurants that provide{" "}
                   <b>veg/Non veg food delivery in train</b>.
                 </li>
                 <li>
                   <b>Customize Your Order -</b>Please mention any special
                   requests or preferences you may have in the customized note.
-                  Traincafe provides best <b>food delivery in train</b> services
+                  Trainscafe provides best <b>food delivery in train</b> services
                   whether it is <b>Jain food delivery</b> or{" "}
                   <b>pizza delivery in train</b>. Call us on …….to place your
                   order.
@@ -390,7 +390,7 @@ const BulkOrderForm = () => {
                   >
                     +91-8696963496
                   </Link>{" "}
-                  . Traincafe provides fresh <b>online food in train</b> and the{" "}
+                  . Trainscafe provides fresh <b>online food in train</b> and the{" "}
                   <b>best food delivery in train</b> for travelers at all
                   popular stations.
                 </li>
@@ -448,7 +448,7 @@ const BulkOrderForm = () => {
                   <br />
                   <strong>Ans.</strong> Yes, call Yes, You can also do cash on
                   delivery for <b>group food ordering in train</b> through
-                  Traincafe.
+                  Trainscafe.
                 </li>
 
                 <li style={{ marginBottom: "14px", fontSize: "14px" }}>
@@ -459,7 +459,7 @@ const BulkOrderForm = () => {
                   <br />
                   <strong>Ans.</strong> Orders from different restaurants cannot
                   be placed in the same order, but you may place numerous orders
-                  from the same restaurant. Traincafe provides fresh online food
+                  from the same restaurant. Trainscafe provides fresh online food
                   in train and the best food delivery in train for travelers at
                   all popular stations.
                 </li>
@@ -472,14 +472,14 @@ const BulkOrderForm = () => {
                   <br />
                   <strong>Ans.</strong> Food orders that total INR 400 or more
                   are regarded as group orders.{" "}
-                  <b>Order online food in train</b> with Traincafe.
+                  <b>Order online food in train</b> with Trainscafe.
                 </li>
 
                 <li style={{ marginBottom: "14px", fontSize: "14px" }}>
                   <strong>Q5:</strong>{" "}
                   <strong> How to order bulk food in train on call?</strong>
                   <br />
-                  <strong>Ans.</strong> Order food on train with Traincafe,
+                  <strong>Ans.</strong> Order food on train with Trainscafe,
                   contact us at{" "}
                   <Link
                     href="tel:+918696963496"

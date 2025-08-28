@@ -48,7 +48,7 @@ const MobileFooter = () => {
 
   return (
     <>
-      <footer className="fixed bottom-0 left-0 z-50 right-0 bg-white shadow-md max-w-[575px] w-full mx-auto">
+      <div className="fixed bottom-0 left-0 z-50 right-0 bg-white shadow-md max-w-[575px] w-full mx-auto">
         <div>
           <Space className="w-full py-3 px-4 flex justify-between items-center">
             <FooterItem icon={<HomeOutlined />} text="Home" link="/" />
@@ -70,7 +70,7 @@ const MobileFooter = () => {
             </button>
           </Space>
         </div>
-      </footer>
+      </div>
       {isMenuOpen && (
         <div
           ref={menuRef}

@@ -91,7 +91,7 @@ export default function Header() {
       <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
         <div className="flex justify-between items-center w-full">
           <Link href="/">
-            <img src="/images/logo.svg" alt="Logo" className="h-10" />
+            <img src="/images/logo.svg" alt="Logo" className="h-10 img-fluid" />
           </Link>
           <div className="flex items-center gap-4">
             {showInstall && (
@@ -131,7 +131,7 @@ export default function Header() {
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="h-16 w-16 object-cover rounded-md"
+                    className="h-16 w-16 object-cover rounded-md img-fluid"
                   />
                   <div className="flex flex-col">
                     <span

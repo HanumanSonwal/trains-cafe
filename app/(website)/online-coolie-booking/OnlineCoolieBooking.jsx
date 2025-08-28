@@ -224,7 +224,7 @@ const OnlineCoolieBooking = () => {
               className="font-bold text-blue-600 hover:text-blue-800 underline"
               href={`${BASE_URL}`}
             >
-              www.trainscafe.com
+              www.trainscafe.in
             </Link>
           </li>
           <li>

@@ -79,7 +79,7 @@ const VendorRegistration = () => {
         <div>
           <img
             src="/images/Trainscafe-Banner.webp"
-            alt="food in train by traincafe"
+            alt="food in train by trainscafe"
             className="absolute inset-0 object-cover w-full h-full"
           />
         </div>
@@ -543,7 +543,7 @@ const VendorRegistration = () => {
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} Trainscafe.com. All rights reserved.
+            &copy; {new Date().getFullYear()} trainscafe.in All rights reserved.
           </p>
         </div>
       </footer>

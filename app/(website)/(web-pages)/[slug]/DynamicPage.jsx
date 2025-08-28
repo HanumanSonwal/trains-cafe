@@ -93,7 +93,7 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} Trainscafe.com
+            &copy; {new Date().getFullYear()} trainscafe.in
           </p>
         </div>
         <div className="mt-3">

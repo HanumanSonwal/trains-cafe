@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const Footer = () => {
   const [showTopNavigation, setShowTopNavigation] = useState(false);
+    const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,12 +54,13 @@ const Footer = () => {
   return (
     <>
       <footer
-        className="py-8"
+        className="pb-20 pt-10"
         style={{
-          marginBottom: "45px",
+          // marginBottom: "45px",
           height: "auto",
           backgroundImage: 'url("/images/footer-background.jpeg")',
           backgroundSize: "cover",
+          objectFit: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
@@ -284,7 +286,7 @@ const Footer = () => {
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-2 border-t border-gray-200">
             <div className="text-gray-600 text-center  mb-4 md:mb-0">
               <p style={{ fontSize: "12px" }}>
-                Copyright 2025 @Trainscafe.com
+                Copyright 2025<Link href={`${BASE_URL}`} className="text-gray-600 hover:text-gray-800">@trainscafe.in</Link>
               </p>
             </div>
 
