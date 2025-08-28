@@ -13,7 +13,6 @@ import {
 import {
   PlusOutlined,
   DeleteFilled,
-  EditFilled,
   CopyOutlined,
   SearchOutlined,
   LoadingOutlined,
@@ -25,6 +24,7 @@ const { Option } = Select;
 
 const ImageManager = () => {
   const [folders, setFolders] = useState([]);
+  const [loadingFolders, setLoadingFolders] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState("");
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -39,13 +39,27 @@ const ImageManager = () => {
 
   const fetchFolders = useCallback(async () => {
     try {
-      const { data } = await axios.get("/api/fileUpload/folders");
+      setLoadingFolders(true);
+      const { data } = await axios.get(
+        `/api/fileUpload/folders?t=${Date.now()}`,
+        {
+          headers: {
+            "Cache-Control":
+              "no-store, no-cache, must-revalidate, proxy-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        }
+      );
+
       if (data.success) {
-        setFolders(data.folders);
+        setFolders(data.folders || []);
       }
     } catch (err) {
       console.error(err);
       message.error("Failed to fetch folders");
+    } finally {
+      setLoadingFolders(false);
     }
   }, []);
 
@@ -53,22 +67,33 @@ const ImageManager = () => {
     async (page = 1) => {
       setLoading(true);
       try {
-        const query = new URLSearchParams();
+        const query = new URLSearchParams({
+          page,
+          limit: pagination.pageSize,
+          t: Date.now().toString(),
+        });
+
         if (selectedFolder) query.append("folder", selectedFolder);
         if (searchText) query.append("search", searchText);
-        query.append("page", page);
-        query.append("limit", pagination.pageSize);
 
         const { data } = await axios.get(
-          `/api/fileUpload/list?${query.toString()}`
+          `/api/fileUpload/list?${query.toString()}`,
+          {
+            headers: {
+              "Cache-Control":
+                "no-store, no-cache, must-revalidate, proxy-revalidate",
+              Pragma: "no-cache",
+              Expires: "0",
+            },
+          }
         );
 
         if (data.success) {
-          setImages(data.images);
+          setImages(data.images || []);
           setPagination((prev) => ({
             ...prev,
             current: page,
-            total: data.total,
+            total: data.total || 0,
           }));
         }
       } catch (err) {
@@ -84,14 +109,16 @@ const ImageManager = () => {
   const handleDelete = useCallback(
     async (public_id) => {
       try {
-        const res = await axios.delete(
-          `/api/fileUpload/delete?public_id=${public_id}`
+        const { data } = await axios.delete(
+          `/api/fileUpload/delete?public_id=${public_id}`,
+          { headers: { "Cache-Control": "no-store" } }
         );
-        if (res.data.success) {
+
+        if (data.success) {
           message.success("Deleted successfully");
           fetchImages(pagination.current);
         } else {
-          throw new Error(res.data.message);
+          throw new Error(data.message);
         }
       } catch (err) {
         console.error(err);
@@ -125,10 +152,7 @@ const ImageManager = () => {
           />
         ),
       },
-      {
-        title: "Folder",
-        dataIndex: "folder",
-      },
+      { title: "Folder", dataIndex: "folder" },
       {
         title: "URL",
         dataIndex: "url",
@@ -151,14 +175,12 @@ const ImageManager = () => {
       {
         title: "Actions",
         render: (_, record) => (
-          <div style={{ display: "flex", gap: "6px" }}>
-            <Popconfirm
-              title="Delete image?"
-              onConfirm={() => handleDelete(record.public_id)}
-            >
-              <Button icon={<DeleteFilled />} danger size="small" />
-            </Popconfirm>
-          </div>
+          <Popconfirm
+            title="Delete image?"
+            onConfirm={() => handleDelete(record.public_id)}
+          >
+            <Button icon={<DeleteFilled />} danger size="small" />
+          </Popconfirm>
         ),
       },
     ],
@@ -172,15 +194,11 @@ const ImageManager = () => {
   useEffect(() => {
     fetchImages(1);
   }, [selectedFolder, searchText, fetchImages]);
+
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
+
   return (
-    <div
-      style={{
-        background: "#FAF3CC",
-        borderRadius: 8,
-        padding: "16px",
-      }}
-    >
+    <div style={{ background: "#FAF3CC", borderRadius: 8, padding: "16px" }}>
       <h2
         style={{
           color: "#6F4D27",
@@ -211,6 +229,9 @@ const ImageManager = () => {
               setPagination((prev) => ({ ...prev, current: 1 }));
             }}
             allowClear
+            showSearch
+            loading={loadingFolders}
+            optionFilterProp="children"
           >
             {folders.map((folder) => (
               <Option key={folder} value={folder}>
@@ -261,8 +282,9 @@ const ImageManager = () => {
         onCancel={() => setIsModalOpen(false)}
         folderName={selectedFolder}
         fetchImages={() => fetchImages(pagination.current)}
-        editingImage={editingImage}
         fetchFolders={fetchFolders}
+        folders={folders}
+        loadingFolders={loadingFolders}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 // /** @type {import('next-sitemap').IConfig} */
 // module.exports = {
-//   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000", // ✅ ENV use karo future-proofing ke liye
+//   siteUrl: process.env.NEXT_PUBLIC_URL || "http://localhost:3000", // ✅ ENV use karo future-proofing ke liye
 //   generateRobotsTxt: true,
 //   exclude: ["/admin", "/dashboard"], // ❌ Make sure ye routes app folder me ho
 //   robotsTxtOptions: {
@@ -12,7 +12,7 @@
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000", // production mein domain use karna
+  siteUrl: process.env.NEXT_PUBLIC_URL || "http://localhost:3000", // production mein domain use karna
   generateRobotsTxt: true,
   exclude: ['/admin/*', '/api/*', '/admin-auth/*','/dashboard/*'],
   experimental: {

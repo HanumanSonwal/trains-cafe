@@ -15,5 +15,6 @@ export default pwa({
   dest: 'public',
   register: true,
   skipWaiting: true,
+    buildExcludes: [/sw\.js\.map$/], 
 })(nextConfig);
 

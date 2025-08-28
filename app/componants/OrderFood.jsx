@@ -1,13 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Input, Button, Tabs, Select, message } from "antd";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import dayjs from "dayjs";
 import { createTrainSlug, createStationSlug } from "@/utils/slugify";
 
 const stationsCache = new Map();
-const rapidCache = new Map();
 
 const useDebounce = (fn, delay = 200) => {
   const timerRef = useRef(null);
@@ -35,9 +34,7 @@ const timeoutFetch = async (url, opts = {}, ms = 5000) => {
 
 export default function OrderFood() {
   const router = useRouter();
-  const [activeKey, setActiveKey] = useState("2");
-  const [pnr, setPnr] = useState("");
-  const [trainNumber, setTrainNumber] = useState("");
+  const [activeKey, setActiveKey] = useState("3");
   const [station, setStation] = useState(undefined);
   const [stationOptions, setStationOptions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -75,57 +72,6 @@ export default function OrderFood() {
     fetchStations("");
   }, [fetchStations]);
 
-  const searchTrainOrPNR = useCallback(
-    async (apiUrl, resetValueCallback) => {
-      setLoading(true);
-      try {
-        const res = await timeoutFetch(apiUrl, {}, 5000);
-        const result = await res.json();
-        if (!res.ok) throw new Error(result?.message || "Lookup failed.");
-
-        rapidCache.set(apiUrl, result.data);
-        const slug = createTrainSlug(
-          result.data.train_name || result.data.train_number,
-          result.data.train_number
-        );
-        router.push(`/trains/${slug}`);
-      } catch (err) {
-        message.error(err?.message || "Error fetching train data.");
-      } finally {
-        setLoading(false);
-        resetValueCallback();
-      }
-    },
-    [router]
-  );
-
-  const handleSearch = useCallback(
-    async (type) => {
-      if (type === "pnr") {
-        if (!/^\d{10}$/.test(pnr))
-          return message.error("PNR must be 10 digits.");
-        await searchTrainOrPNR(`/api/rapid/pnr?query=${pnr}`, () => setPnr(""));
-      } else if (type === "train") {
-        if (!/^\d{1,5}$/.test(trainNumber))
-          return message.error("Train Number must be up to 5 digits.");
-        const date = dayjs().format("YYYY-MM-DD");
-        await searchTrainOrPNR(
-          `/api/rapid/live?trainNo=${trainNumber}&date=${date}`,
-          () => setTrainNumber("")
-        );
-      } else if (type === "station") {
-        if (!station) return message.error("Please select a station.");
-        setLoading(true);
-        const selected = stationOptions.find((s) => s.value === station);
-        const slug =
-          selected?.slug || createStationSlug(selected?.name || "", station);
-        router.push(`/stations/${slug}`);
-        setLoading(false);
-      }
-    },
-    [pnr, trainNumber, station, stationOptions, searchTrainOrPNR, router]
-  );
-
   const renderInputTab = useCallback(
     (value, setValue, onSearch, maxLength) => (
       <div className="flex items-center space-x-2 p-6">
@@ -154,21 +100,6 @@ export default function OrderFood() {
 
   const tabItems = useMemo(
     () => [
-      {
-        key: "1",
-        label: "10 Digit PNR",
-        children: renderInputTab(pnr, setPnr, () => handleSearch("pnr"), 10),
-      },
-      {
-        key: "2",
-        label: "Train No.",
-        children: renderInputTab(
-          trainNumber,
-          setTrainNumber,
-          () => handleSearch("train"),
-          5
-        ),
-      },
       {
         key: "3",
         label: "Station Name",
@@ -216,15 +147,14 @@ export default function OrderFood() {
         ),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      pnr,
-      trainNumber,
       station,
       stationOptions,
       loading,
       debouncedFetchStations,
       fetchStations,
-      handleSearch,
+    
       renderInputTab,
     ]
   );

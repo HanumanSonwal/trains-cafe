@@ -2,8 +2,6 @@ import dbConnect from "@/app/lib/dbConnect";
 import VendorModel from "@/app/models/vendor";
 import StationModel from "@/app/models/station";
 
-
-
 export async function GET(req) {
   try {
     const url = new URL(req.url);
@@ -11,6 +9,7 @@ export async function GET(req) {
     const stationname = url.searchParams.get("stationname");
     const stationcode = url.searchParams.get("stationcode");
     const vendorname = url.searchParams.get("vendorname");
+    const status = url.searchParams.get("status");
     const page = parseInt(url.searchParams.get("page"), 10) || 1;
     const limit = parseInt(url.searchParams.get("limit"), 10) || 10;
 
@@ -18,7 +17,6 @@ export async function GET(req) {
 
     let andConditions = [];
 
-    // 🔍 Search by keyword (station name/code or vendor)
     if (search) {
       const stations = await StationModel.find({
         $or: [
@@ -37,7 +35,6 @@ export async function GET(req) {
       });
     }
 
-    // ✅ Filter by stationname
     if (stationname) {
       const station = await StationModel.findOne({
         name: { $regex: `^${stationname}$`, $options: "i" },
@@ -51,7 +48,6 @@ export async function GET(req) {
       andConditions.push({ Station: station._id });
     }
 
-    // ✅ Filter by stationcode — FIXED: Exact match with ignore case
     if (stationcode) {
       const station = await StationModel.findOne({
         code: { $regex: `^${stationcode}$`, $options: "i" },
@@ -65,13 +61,14 @@ export async function GET(req) {
       andConditions.push({ Station: station._id });
     }
 
-    // ✅ Filter by Vendor Name
     if (vendorname) {
       andConditions.push({
         Vendor_Name: { $regex: vendorname, $options: "i" },
       });
     }
-
+    if (status) {
+      andConditions.push({ Status: status });
+    }
     const searchCriteria =
       andConditions.length > 0 ? { $and: andConditions } : {};
 
@@ -123,7 +120,6 @@ export async function GET(req) {
     );
   }
 }
-
 
 export async function POST(req) {
   try {
@@ -203,7 +199,10 @@ export async function PUT(req) {
     }
 
     if (updateData.Food_Type) {
-      if (!Array.isArray(updateData.Food_Type) || updateData.Food_Type.length === 0) {
+      if (
+        !Array.isArray(updateData.Food_Type) ||
+        updateData.Food_Type.length === 0
+      ) {
         return new Response(
           JSON.stringify({
             success: false,

@@ -22,6 +22,9 @@ function VendorCard({ station, train }) {
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
 
+  const phone = process.env.NEXT_PUBLIC_PHONE;
+  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP;
+
   useEffect(() => {
     const fetchVendors = async () => {
       setLoading(true);
@@ -75,12 +78,13 @@ function VendorCard({ station, train }) {
           Please order food by calling or via WhatsApp.
         </p>
         <div className="flex items-center space-x-4">
-          <a href="tel:+1234567890" className="flex items-center space-x-1">
+          <a href={`tel:${phone}`} className="flex items-center space-x-1">
             <PhoneOutlined className="text-blue-500 text-2xl" />
             <span className="text-blue-500">Call Us</span>
           </a>
+
           <a
-            href="https://wa.me/1234567890"
+            href={`https://wa.me/${whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-1"
