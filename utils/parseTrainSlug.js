@@ -1,5 +1,3 @@
-// ✅ Helper to parse train slug to trainName & trainNo
-
 export function parseTrainSlug(slug) {
   if (!slug) return { trainNo: "", trainName: "" };
 

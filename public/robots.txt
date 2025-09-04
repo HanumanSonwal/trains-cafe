@@ -1,9 +1,21 @@
-# *
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /admin-auth/
+Disallow: /api/
 
-# Host
-Host: http://localhost:3000
+# Allow AI crawlers
+User-agent: GPTBot
+Allow: /
 
-# Sitemaps
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
 Sitemap: http://localhost:3000/sitemap.xml
