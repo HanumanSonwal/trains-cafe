@@ -284,7 +284,7 @@ const Footer = () => {
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-2 border-t border-gray-200">
             <div className="text-gray-600 text-center  mb-4 md:mb-0">
               <p style={{ fontSize: "12px" }}>
-                Copyright 2025 @Trainscafe.com
+                Copyright 2025 @trainscafe.in
               </p>
             </div>
 

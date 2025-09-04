@@ -543,7 +543,7 @@ const VendorRegistration = () => {
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} Trainscafe.com. All rights reserved.
+            &copy; {new Date().getFullYear()} trainscafe.in. All rights reserved.
           </p>
         </div>
       </footer>

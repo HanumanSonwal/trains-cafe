@@ -261,7 +261,7 @@ export default function Articles() {
                   href={`${BASE_URL}`}
                 >
                   {" "}
-                  Trainscafe.com
+                  trainscafe.in
                 </Link>{" "}
                 and tap “Add to Home Screen” for easy reordering.
               </li>
@@ -708,7 +708,7 @@ export default function Articles() {
                 key="1"
               >
                 <p>
-                  Go to Trainscafe.com and enter the required details to get the
+                  Go to trainscafe.in and enter the required details to get the
                   availability of the station through the PNR Number. Choose
                   your favourite items from the list of restaurants available.
                   Call and WhatsApp at 8696963496 for customer care assistance.
@@ -802,7 +802,7 @@ export default function Articles() {
                 key="9"
               >
                 <p>
-                  Visit Trainscafe.com or open the PWA app. <br></br>
+                  Visit trainscafe.in or open the PWA app. <br></br>
                   Enter your 10-digit PNR.<br></br>
                   Choose your station and restaurant.<br></br>
                   Select dishes and Select payment Mode.
@@ -917,7 +917,7 @@ export default function Articles() {
                 key="20"
               >
                 <p>
-                  Simply go to Trainscafe.com, and there will be an option of
+                  Simply go to trainscafe.in, and there will be an option of
                   group booking. Fill in the details, and after some time the
                   Trainscafe customer care executive will call you to get your
                   preference.
