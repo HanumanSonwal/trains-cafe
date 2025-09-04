@@ -94,7 +94,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/contactus"
+                      href="/contact-us"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Contact Us
@@ -150,7 +150,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Order
@@ -182,7 +182,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Help & Support
@@ -190,7 +190,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Request Call Back
@@ -237,7 +237,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Train Coach Position
@@ -245,7 +245,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       IRCTC Train Schedule
@@ -253,7 +253,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Platform Locator
@@ -261,7 +261,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Check PNR Status on Whatsapp
@@ -269,7 +269,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Live Train Running Status

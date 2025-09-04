@@ -164,7 +164,7 @@ export default function OrderFood() {
       <div className="relative text-center mb-4">
         <img
           src="/images/Order.png"
-          alt="Order Food Title"
+          alt="Food Delivery in Train"
           className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2/3"
         />
         <h2 className="text-[#704D25] text-2xl font-bold relative z-10">

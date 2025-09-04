@@ -15,7 +15,7 @@ const ComingSoonPage = () => {
           We are working hard to bring you something amazing. Stay tuned for updates!
         </Paragraph>
          <div className="text-center">
-              <Link href="/contactus" passHref>
+              <Link href="/contact-us" passHref>
                  <Button
                     type="btn"
                     className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-[#ffffff]"

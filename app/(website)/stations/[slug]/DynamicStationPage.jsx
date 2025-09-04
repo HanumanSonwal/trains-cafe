@@ -92,7 +92,7 @@ export default function DynamicStationPage({ slug, serverData }) {
           ) : (
             <p>No content available for this page</p>
           )}
-          <Link href="/contactus" passHref>
+          <Link href="/contact-us" passHref>
             <Button type="default" className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white">
               Contact Us
             </Button>

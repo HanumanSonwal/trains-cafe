@@ -10,7 +10,7 @@ export const metadata = {
     title: "Contact Us - Trains Cafe",
     description:
       "Contact Trains Cafe for food delivery in trains. Call, email or visit us for quick support & partnership queries.",
-    url: `${process.env.NEXT_PUBLIC_URL}/contactus`,
+    url: `${process.env.NEXT_PUBLIC_URL}/contact-us`,
   },
 };
 

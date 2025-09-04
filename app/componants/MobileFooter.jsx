@@ -99,7 +99,7 @@ const MobileFooter = () => {
                 Group Food Ordering in Train
               </Link>
               <Link
-                href="/contactus"
+                href="/contact-us"
                 className="block text-sm font-bold"
                 onClick={closeMenu}
               >

@@ -97,7 +97,7 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           </p>
         </div>
         <div className="mt-3">
-          <Link href="/contactus">
+          <Link href="/contact-us">
             <Button className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white">
               Contact Us
             </Button>

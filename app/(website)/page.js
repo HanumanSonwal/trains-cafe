@@ -11,9 +11,9 @@ const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 const pageUrl = `${baseUrl}/`;
 
 export const metadata = {
-  title: "Trains Cafe | Order Food in Train | Fresh Meals Delivered to Your Seat",
+  title: "Best Food Delivery in Train | Fresh & Hygienic Meals – Trainscafe",
   description:
-    "Order fresh, hygienic food in train with Trains Cafe. Get meals delivered to your seat at any railway station in India.",
+    "Order fresh meals online with Trainscafe. Enjoy hygienic Food Delivery in Train at 450+ stations with FSSAI-approved restaurants, easy PNR search & COD options.",
   keywords:
     "Train food delivery, order food in train, IRCTC food order, e-catering, Trains Cafe",
   robots: "index, follow",

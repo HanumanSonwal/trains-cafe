@@ -67,7 +67,7 @@ const CheckoutPage = () => {
     setCouponCode("");
     setDiscount(0);
     setLoading(false);
-    router.push("/orderconfirmation");
+    router.push("/order-confirmation");
   };
 
   const handleRazorpayFlow = (order, values) => {
@@ -93,7 +93,7 @@ const CheckoutPage = () => {
           if (verifyData.success) {
             localStorage.setItem("orderData", JSON.stringify(order));
             dispatch(resetCart());
-            router.push("/orderconfirmation");
+            router.push("/order-confirmation");
           } else message.error("Payment verification failed.");
         } catch {
           message.error("Payment verification failed.");
