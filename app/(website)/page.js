@@ -20,29 +20,7 @@ export const metadata = {
   alternates: {
     canonical: pageUrl,
   },
-  openGraph: {
-    title: "Trains Cafe - Fresh Meals Delivered in Train",
-    description:
-      "Order food in train with Trains Cafe and enjoy fresh hygienic meals at your seat.",
-    url: pageUrl,
-    siteName: "Trains Cafe",
-    images: [
-      {
-        url: `${baseUrl}/meta_image.jpg`,
-        width: 1200,
-        height: 630,
-        alt: "Trains Cafe OG Image",
-      },
-    ],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Trains Cafe - Order Food in Train",
-    description:
-      "Fresh meals delivered at your train seat. Hassle-free IRCTC food ordering.",
-    images: [`${baseUrl}/og-image.jpg`],
-  },
+
 };
 
 export default function Home() {

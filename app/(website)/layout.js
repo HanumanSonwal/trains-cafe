@@ -6,7 +6,7 @@ import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const siteUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
+const siteUrl = process.env.NEXT_PUBLIC_URL || "https://www.trainscafe.com";
 
 export const metadata = {
   title: {
@@ -26,7 +26,6 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#D28927" />
 
-        {/* Favicon and Icons */}
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon-57x57.png" />
@@ -52,33 +51,39 @@ export default function RootLayout({ children }) {
         {/* Robots */}
         <meta name="robots" content="index, follow" />
 
-        {/* ✅ Open Graph Meta Tags */}
         <meta property="og:site_name" content="Trains Cafe" />
         <meta property="og:type" content="website" />
         <meta
           property="og:title"
-          content="Trainscafe – Fresh & Hygienic Food Delivery in Train"
+          content="Order Food in Train | Hygienic & Tasty Meals at Your Seat – Trainscafe"
         />
         <meta
           property="og:description"
-          content="Order food online in train with Trainscafe. Get fresh, hygienic meals delivered right at your seat."
+          content="Order hygienic food in train with Trainscafe. Fresh meals from FSSAI-approved restaurants delivered to your train seat at 450+ stations. Simple booking with Train no. or PNR."
         />
         <meta property="og:url" content={siteUrl} />
-        <meta property="og:image" content="/images/meta_image.png" />
+        <meta
+          property="og:image"
+          content={`${siteUrl}/images/meta_image.png`}
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Trains Cafe OG Image" />
 
-        {/* ✅ Twitter Card Meta Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
-          content="Trainscafe – Food Delivery in Train"
+          content="Best Food Delivery in Train | Order Fresh & Hygienic Meals – Trainscafe"
         />
         <meta
           name="twitter:description"
-          content="Order fresh food in train online. Hygienic meals delivered at your train seat."
+          content="Trainscafe offers fresh & hygienic food delivery in train at 450+ stations. Order meals online using PNR and enjoy tasty dishes from FSSAI-approved restaurants with COD option."
         />
-        <meta name="twitter:image" content="/images/meta_image.png" />
+        <meta
+          name="twitter:image"
+          content={`${siteUrl}/images/meta_image.png`}
+        />
 
-        {/* ✅ LocalBusiness Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -86,7 +91,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": "Trainscafe - Best Food Delivery in Train",
-              "image": "${siteUrl}/og-meta.png",
+              "image": "${siteUrl}/images/meta_image.png",
               "url": "${siteUrl}/",
               "telephone": "+91 8696963496",
               "address": {
@@ -119,7 +124,6 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* ✅ WebSite Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -136,7 +140,6 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* ✅ Aggregate Rating Schema (Static for all pages) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -154,7 +157,6 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* ✅ Organization Schema (extra details: logo + contactPoint) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -175,7 +177,6 @@ export default function RootLayout({ children }) {
           }}
         />
 
-        {/* ✅ FAQPage Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
