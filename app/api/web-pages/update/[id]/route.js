@@ -15,7 +15,8 @@ export async function PUT(req, context) {
 
         const { name, title, description, keywords, pageData, status } = await req.json();
 
-        const slug = slugify(title, { lower: true, strict: true });
+const slug = slugify(name, { lower: true, strict: true });
+
 
         const webPage = await WebPage.findById(id);
         if (!webPage) {

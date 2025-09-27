@@ -31,3 +31,14 @@
   height: 26px !important;
   padding: 0 4px !important;
 }
+
+.sun-editor-editable p,
+.sun-editor-editable h1,
+.sun-editor-editable h2,
+.sun-editor-editable h3,
+.sun-editor-editable h4,
+.sun-editor-editable h5,
+.sun-editor-editable h6 {
+  margin: 8px 0;
+  line-height: 1.5;
+}
