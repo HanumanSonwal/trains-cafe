@@ -81,12 +81,12 @@ const Menubar = () => {
       path: '/admin/coupon-management',
     },
 
-    {
-      key: '11',
-      icon: <SolutionOutlined />,
-      label: <Link href="/admin/contact-info">Contact Info</Link>,
-      path: '/admin/contact-info',
-    },
+    // {
+    //   key: '11',
+    //   icon: <SolutionOutlined />,
+    //   label: <Link href="/admin/contact-info">Contact Info</Link>,
+    //   path: '/admin/contact-info',
+    // },
     {
       key: '12',
       icon: <ProfileOutlined />,

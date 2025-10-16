@@ -39,6 +39,7 @@ export default function SingleBlogClient({ blog }) {
     () => (blog ? dayjs(blog.updatedAt).format("DD MMM YYYY") : ""),
     [blog?.updatedAt]
   );
+
   const relatedPostsList = useMemo(
     () =>
       relatedPosts.map((post) => (
@@ -89,6 +90,7 @@ export default function SingleBlogClient({ blog }) {
 
   return (
     <div>
+      {/* ---------- HERO SECTION ---------- */}
       <div className="relative h-40 md:h-60 mb-8">
         <img
           src={blog.image}
@@ -103,13 +105,15 @@ export default function SingleBlogClient({ blog }) {
         </div>
       </div>
 
+      {/* ---------- BLOG CONTENT ---------- */}
       <div className="max-w-4xl mx-auto px-4 mb-8">
         <div
-          className="text-gray-700 leading-relaxed ck-content"
+          className="jodit-content text-gray-800 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
       </div>
 
+      {/* ---------- RELATED BLOGS ---------- */}
       {loading ? (
         <div className="flex justify-center py-8">
           <Spin size="large" tip="Loading related blogs..." />
@@ -125,51 +129,73 @@ export default function SingleBlogClient({ blog }) {
         </div>
       ) : null}
 
+      {/* ---------- OTHER COMPONENTS ---------- */}
       <PromoBanner />
       <RecentOrders />
       <CustomerReviews />
 
+      {/* ---------- INLINE STYLES ---------- */}
       <style jsx global>{`
-        .ck-content {
+        /* ✅ Jodit Editor style matching */
+        .jodit-content {
           font-size: 1rem;
+          line-height: 1.7;
+          word-break: break-word;
         }
-        .ck-content h1,
-        .ck-content h2,
-        .ck-content h3 {
-          margin: 1rem 0 0.5rem;
-          font-weight: bold;
+
+        .jodit-content img {
+          display: block;
+          max-width: 100%;
+          height: auto !important;
+          margin: 1rem auto;
+          border-radius: 6px;
         }
-        .ck-content p {
+
+        .jodit-content p {
           margin-bottom: 1rem;
         }
-        .ck-content table {
+
+        .jodit-content h1,
+        .jodit-content h2,
+        .jodit-content h3,
+        .jodit-content h4 {
+          font-weight: bold;
+          margin-top: 1.5rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .jodit-content ul,
+        .jodit-content ol {
+          margin-left: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .jodit-content table {
           width: 100%;
           border-collapse: collapse;
           margin: 1rem 0;
         }
-        .ck-content th,
-        .ck-content td {
+
+        .jodit-content th,
+        .jodit-content td {
           border: 1px solid #ddd;
           padding: 0.75rem;
           text-align: left;
         }
-        .ck-content th {
-          background-color: #f5f5f5;
+
+        .jodit-content th {
+          background-color: #f9f9f9;
           font-weight: bold;
         }
-        .ck-content tr:nth-child(even) {
-          background-color: #fafafa;
+
+        .jodit-content iframe {
+          max-width: 100%;
+          border-radius: 8px;
         }
-        .ck-content tr:hover {
-          background-color: #f0f0f0;
-        }
+
         @media (max-width: 768px) {
-          .ck-content {
+          .jodit-content {
             font-size: 0.95rem;
-          }
-          .ck-content th,
-          .ck-content td {
-            font-size: 0.875rem;
           }
         }
       `}</style>

@@ -152,10 +152,9 @@ const WebsitePageModal = ({
           ]}
         >
           <TextEditor
-            previousValue={editorContent}
-            updatedValue={setEditorContent}
-            height={150}
-            label="Page Data"
+            value={editorContent}
+            onChange={setEditorContent}
+            height={250}
           />
         </Form.Item>
       </Form>
