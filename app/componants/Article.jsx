@@ -9,11 +9,8 @@ export default function Articles() {
   const previewText = ``;
   const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000/";
 
-
   return (
     <div className="py-8 px-2 mx-auto max-w-[575px] bg-gray-100 rounded-md mb-3">
-  
-
       <div className="text-center">
         <h1 className="font-bold text-[#704D25] text-xl mb-3">
           Order{" "}
@@ -35,12 +32,17 @@ export default function Articles() {
           you're on a pantry or non-pantry train, Trainscafe ensures timely
           delivery of hot, hygienic food directly to your seat.{" "}
         </p>
-        {!showFullContent ? (
-          <p className="text-sm mb-5">{previewText}</p>
-        ) : (
+
+        <div
+          className={`overflow-hidden transition-all duration-300 ${
+            showFullContent ? "max-h-none" : "max-h-[300px]"
+          }`}
+        >
           <div className="text-left text-sm mb-5 space-y-4">
-            <h2 className="text-xl font-bold relative z-10 mt-3 text-[#704D25]">Why choose Trainscafe for online food orders on the train?</h2>
-           
+            <h2 className="text-xl font-bold relative z-10 mt-3 text-[#704D25]">
+              Why choose Trainscafe for online food orders on the train?
+            </h2>
+
             <p>
               Trainscafe provides fresh meals and the{" "}
               <Link
@@ -283,7 +285,9 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h2 className="t -skew-x-12 text-xl font-bold text-[#704D25]">About Trainscafe -</h2>
+            <h2 className="t -skew-x-12 text-xl font-bold text-[#704D25]">
+              About Trainscafe -
+            </h2>
             <p>
               Trainscafe is a well-known e-catering platform that provides fresh
               and hygienic online food delivery on trains. Trainscafe ranked
@@ -304,7 +308,6 @@ export default function Articles() {
               <Link
                 className="text-blue-600 font-bold underline hover:text-blue-800"
                 href={`${BASE_URL}/train-food-delivery`}
-               
               >
                 {" "}
                 Train Food Delivery{" "}
@@ -348,7 +351,12 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h4 style={{fontSize:"20px"}} className="font-bold text-[#704D25]">FSSAI-Certified Partner Restaurants</h4>
+            <h4
+              style={{ fontSize: "20px" }}
+              className="font-bold text-[#704D25]"
+            >
+              FSSAI-Certified Partner Restaurants
+            </h4>
             <p>
               {" "}
               Hygienically prepared meals from verified kitchens to ensure food
@@ -585,7 +593,9 @@ export default function Articles() {
               </li>
             </ul>
 
-            <h2 className="font-bold text-xl text-[#704D25]">Our Related Search Queries on Browser</h2>
+            <h2 className="font-bold text-xl text-[#704D25]">
+              Our Related Search Queries on Browser
+            </h2>
             <p className="mb-3">
               Hygienic food delivery in trains |{" "}
               <Link
@@ -655,7 +665,9 @@ export default function Articles() {
               train food ordering
             </p>
 
-            <h2 className="font-bold text-xl text-[#704D25]">Top-Rated Trains</h2>
+            <h2 className="font-bold text-xl text-[#704D25]">
+              Top-Rated Trains
+            </h2>
             <p>
               Order Food in Vande Bharat Express - 22436 | Order Food in Tejas
               Express - 22671 | Order Food in Rajdhani Express - 12951 | Order
@@ -680,7 +692,9 @@ export default function Articles() {
               | Order Food in Howrah Yeshvantpur Express - 12863 | Order Food in
               Lokmanya Tilak AC Express - 22123
             </p>
-            <h2 className="font-bold text-xl text-[#704D25]">Top Railway Stations</h2>
+            <h2 className="font-bold text-xl text-[#704D25]">
+              Top Railway Stations
+            </h2>
             <p className="mb-3">
               Order Food in train at New Delhi Railway Station - NDLS | Order
               Food in train at Mumbai CST Railway Station - CSMT | Order Food in
@@ -925,13 +939,10 @@ export default function Articles() {
               </Panel>
             </Collapse>
           </div>
-        )}
-        <Button
-          type="default"
-          onClick={() => setShowFullContent(!showFullContent)}
-          className="border-none rounded-full px-4 py-2 text-xs font-bold hover:bg-[#D49929] hover:text-white"
-        >
-          {showFullContent ? "Show Less" : "View More"}
+        </div>
+
+        <Button onClick={() => setShowFullContent(!showFullContent)}>
+          {showFullContent ? "Show Less" : "Show More"}
         </Button>
       </div>
     </div>

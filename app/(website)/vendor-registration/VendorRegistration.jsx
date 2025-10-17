@@ -9,7 +9,9 @@ import {
 } from "@ant-design/icons";
 import { postData, fetchData } from "@/app/lib/ApiFuntions";
 import Link from "next/link";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchStations } from "@/app/redux/menuSlice";
+import { debounce } from "lodash";
 const { TextArea } = Input;
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -45,20 +47,18 @@ const steps1 = [
 ];
 const VendorRegistration = () => {
   const [form] = Form.useForm();
+
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [stations, setStations] = useState([]);
+
+    const { stations, loading: stationsLoading } = useSelector((state) => state.menu);
 
   useEffect(() => {
-    const fetchStations = async () => {
-      const data = await fetchData("/api/station?search=&page=0");
-      if (data.data) {
-        setStations(data.data);
-      } else {
-        message.error("Failed to load station list. Please try again.");
-      }
-    };
-    fetchStations();
-  }, []);
+    dispatch(fetchStations());
+  }, [dispatch]);
+const handleStationSearch = debounce((searchTerm) => {
+  dispatch(fetchStations(searchTerm));
+}, 500);
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -160,24 +160,24 @@ const VendorRegistration = () => {
                 name="Station"
                 rules={[{ required: true, message: "Please select a station" }]}
               >
-                <Select
-                  showSearch
-                  placeholder="Select Station"
-                  size="large"
-                  className="rounded-lg border-coffee-500 focus:ring-2 focus:ring-coffee-600"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option.children.toLowerCase().includes(input.toLowerCase())
-                  }
-                >
-                  {stations.length > 0 ? (
+           <Select
+  showSearch
+  placeholder={loading ? "Loading stations..." : "Select Station"}
+  size="large"
+  loading={loading}
+  onSearch={handleStationSearch}   // 👈 important
+  filterOption={false}             // 👈 use backend filtering
+  notFoundContent={loading ? "Loading..." : "No stations found"}
+>
+
+                  {stations && stations.length > 0 ? (
                     stations.map((station) => (
                       <Option key={station._id} value={station._id}>
                         {station.name}
                       </Option>
                     ))
                   ) : (
-                    <Option value="">Loading stations...</Option>
+                    <Option disabled>No stations found</Option>
                   )}
                 </Select>
               </Form.Item>
@@ -300,20 +300,20 @@ const VendorRegistration = () => {
                     <img
                       src={step1.image}
                       alt={step1.title}
-                       className="img-fluid"                      
+                      className="img-fluid"
                     />
                   </div>
                 ))}
               </div>
             </div>
-             <div className="py-4">
+            <div className="py-4">
               <h3
                 className="text-xl sm:text-2xl font-semibold mb-4"
                 style={{ color: "#704d25" }}
               >
-               HOW IT WORKS?
+                HOW IT WORKS?
               </h3>
-            
+
               <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {steps.map((step, index) => (
                   <div
@@ -323,7 +323,7 @@ const VendorRegistration = () => {
                     <img
                       src={step.image}
                       alt={step.title}
-                     className="img-fluid"
+                      className="img-fluid"
                     />
                   </div>
                 ))}
@@ -543,7 +543,8 @@ const VendorRegistration = () => {
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} trainscafe.in. All rights reserved.
+            &copy; {new Date().getFullYear()} trainscafe.in. All rights
+            reserved.
           </p>
         </div>
       </footer>

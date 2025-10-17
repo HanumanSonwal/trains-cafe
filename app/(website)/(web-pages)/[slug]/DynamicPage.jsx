@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "antd";
 import Spinner from "@/app/componants/spinner/Spinner";
@@ -34,9 +34,9 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
   const contentToRender = useMemo(() => {
     const rawHtml = page.pageData || "<p>No content available.</p>";
 
-    if (showFullContent || isExceptionSlug) return rawHtml;
+    if (isExceptionSlug) return rawHtml;
 
-    if (shouldTruncate) {
+    if (shouldTruncate && !showFullContent) {
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = rawHtml;
 
@@ -46,7 +46,7 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           ? textContent.slice(0, 300) + "..."
           : textContent;
 
-      return `<div>${truncatedText}</div>`;
+      return `<div>${truncatedText}</div><div style="display:none;">${rawHtml}</div>`;
     }
 
     return rawHtml;
@@ -54,6 +54,13 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
 
   const toggleContent = useCallback(() => {
     setShowFullContent((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    // Ensure Googlebot always sees full content
+    if (typeof window !== "undefined" && navigator.userAgent.includes("Googlebot")) {
+      setShowFullContent(true);
+    }
   }, []);
 
   return (
@@ -71,7 +78,7 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           dangerouslySetInnerHTML={{ __html: contentToRender }}
         />
 
-        {shouldTruncate && (
+        {shouldTruncate && !isExceptionSlug && (
           <div className="text-center mb-4">
             <Button
               className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white"
@@ -120,7 +127,6 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
       </footer>
 
       <style jsx global>{`
-        /* ✅ Jodit editor ke output ko exactly preserve karne ke liye */
         .jodit-content-view {
           font-family: inherit;
           font-size: 1rem;
@@ -137,19 +143,6 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           object-fit: contain;
         }
 
-        /* Agar Jodit ne inline width diya hai to wo apply rahe */
-        .jodit-content-view img[width],
-        .jodit-content-view img[style*="width"] {
-          height: auto !important;
-        }
-
-        /* Center-aligned images */
-        .jodit-content-view p img {
-          display: block;
-          margin: 0 auto;
-        }
-
-        /* Tables same styling */
         .jodit-content-view table {
           width: 100%;
           border-collapse: collapse;
@@ -163,12 +156,6 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           text-align: left;
         }
 
-        .jodit-content-view th {
-          background-color: #f5f5f5;
-          font-weight: bold;
-        }
-
-        /* Video & iframe responsiveness */
         .jodit-content-view iframe,
         .jodit-content-view video {
           max-width: 100%;
