@@ -109,10 +109,23 @@ const TablePage = () => {
         message.success("Bulk import processed successfully");
         setIsBulkImportModalOpen(false);
         fetchMenuItems(1, 10);
-      } catch {
-        message.error("Failed to process bulk import");
-      }
-    },
+       } catch (error) {
+      // Log full error for debugging
+      console.error("Bulk import error:", error);
+
+      // Try to read API message
+      const apiMessage =
+        error?.response?.data?.message || // if backend sends { message: "..."}
+        error?.response?.data ||          // if backend sends plain string
+        "Failed to process bulk import";  // fallback
+
+      message.error(apiMessage);
+    }
+  },
+    //   } catch {
+    //     message.error("Failed to process bulk import");
+    //   }
+    // },
     [fetchMenuItems]
   );
 
