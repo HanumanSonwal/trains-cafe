@@ -16,7 +16,9 @@ import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstall, setShowInstall] = useState(false);
+  const [showInstall, setShowInstall] = useState(true);
+
+  console.log(showInstall , "showInstall");
 
   const dispatch = useDispatch();
   const cartItemsRaw = useSelector((state) => state.cart.items);
