@@ -1,7 +1,12 @@
 'use client';
 import React from 'react';
 import { Col, Row } from 'antd';
-import { DollarOutlined, UserOutlined, HeartOutlined, LockOutlined } from '@ant-design/icons';
+import {
+  DollarCircleOutlined,
+  TeamOutlined,
+  CoffeeOutlined,
+  ShoppingCartOutlined,
+} from '@ant-design/icons';
 import DashboardCardItem from './DashboardCardItem';
 
 const DashboardCard = () => (
@@ -9,36 +14,35 @@ const DashboardCard = () => (
     <Col xs={24} sm={12} md={12} lg={6}>
       <DashboardCardItem
         title="Today's Sales"
-        value="$53,000"
-        icon={<DollarOutlined />}
-        change={30}
+        value="₹53,000"
+        icon={<DollarCircleOutlined />}
         isIncrease={true}
       />
     </Col>
+
     <Col xs={24} sm={12} md={12} lg={6}>
       <DashboardCardItem
-        title="Today's Users"
-        value="3,200"
-        icon={<UserOutlined />}
-        change={20}
+        title="Total Vendors"
+        value="3"
+        icon={<TeamOutlined />}
         isIncrease={true}
       />
     </Col>
+
     <Col xs={24} sm={12} md={12} lg={6}>
       <DashboardCardItem
-        title="New Clients"
-        value="+1,200"
-        icon={<HeartOutlined />}
-        change={-20}
-        isIncrease={false}
+        title="Total Menu Items"
+        value="6"
+        icon={<CoffeeOutlined />}
+        isIncrease={true}
       />
     </Col>
+
     <Col xs={24} sm={12} md={12} lg={6}>
       <DashboardCardItem
-        title="New Orders"
-        value="$13,200"
-        icon={<LockOutlined />}
-        change={10}
+        title="Total Orders"
+        value="₹13,200"
+        icon={<ShoppingCartOutlined />}
         isIncrease={true}
       />
     </Col>

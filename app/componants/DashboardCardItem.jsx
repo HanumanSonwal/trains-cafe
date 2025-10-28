@@ -24,7 +24,7 @@ const DashboardCardItem = ({ title, value, icon, change, isIncrease }) => {
         <div>
           <div style={{ fontSize: '16px', color: '#888',color:"#6F4D27" }}>{title}</div>
           <div style={{ fontSize: '24px', fontWeight: 'bold',color:"#6F4D27"  }}>{value}</div>
-          <div style={{ color: changeColor }}>{isIncrease ? '+' : ''}{change}%</div>
+          {/* <div style={{ color: changeColor }}>{isIncrease ? '+' : ''}{change}%</div> */}
         </div>
         <div style={iconStyle}>{icon}</div>
       </div>

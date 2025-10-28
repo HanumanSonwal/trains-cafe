@@ -89,17 +89,11 @@ const Dashboard = () => {
       <div className="mt-4">
         <OngoingOrdersChart />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* <div className="col-span-1 mt-4"> */}
+  
+      <div className="mt-4">
+        {/* <VendorPerformanceChart /> */}
           <SalesAnalyticsChart />
-        {/* </div> */}
-        {/* <div className="col-span-1 mt-4">
-          <CustomerInsightsChart />
-        </div> */}
       </div>
-      {/* <div className="mt-4">
-        <VendorPerformanceChart />
-      </div> */}
     </div>
   );
 };

@@ -12,7 +12,13 @@ const data = [
   { name: 'May', revenue: 1890 },
   { name: 'Jun', revenue: 2390 },
   { name: 'Jul', revenue: 3490 },
+  { name: 'Aug', revenue: 4100 },
+  { name: 'Sep', revenue: 3200 },
+  { name: 'Oct', revenue: 4500 },
+  { name: 'Nov', revenue: 3800 },
+  { name: 'Dec', revenue: 5000 },
 ];
+
 
 const COLORS = '#D6872A'; 
 
