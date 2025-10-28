@@ -2,34 +2,46 @@
 
 import { Upload } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 
 const { Dragger } = Upload;
 
-const MultiImageUploader = ({ onFilesSelected }) => {
+const MultiImageUploader = ({ onFilesSelected, resetTrigger }) => {
+  const [fileList, setFileList] = useState([]);
+
+  useEffect(() => {
+    if (resetTrigger) {
+      setFileList([]);
+    }
+  }, [resetTrigger]);
+
   const handleBeforeUpload = useCallback(
     (file, fileList) => {
+      setFileList(fileList);
       onFilesSelected(fileList);
       return false;
     },
     [onFilesSelected]
   );
 
-  const handleDrop = useCallback(
-    (e) => {
-      onFilesSelected(Array.from(e.dataTransfer.files));
+  const handleRemove = useCallback(
+    (file) => {
+      const newList = fileList.filter((f) => f.uid !== file.uid);
+      setFileList(newList);
+      onFilesSelected(newList);
     },
-    [onFilesSelected]
+    [fileList, onFilesSelected]
   );
 
   const uploadProps = useMemo(
     () => ({
       multiple: true,
       beforeUpload: handleBeforeUpload,
-      onDrop: handleDrop,
+      onRemove: handleRemove,
+      fileList,
       accept: "image/*",
     }),
-    [handleBeforeUpload, handleDrop]
+    [handleBeforeUpload, handleRemove, fileList]
   );
 
   return (

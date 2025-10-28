@@ -9,7 +9,13 @@ export async function POST(req) {
 
         const { name, title, description, keywords, pageData } = await req.json();
 
-        const slug = slugify(title, { lower: true, strict: true });
+    const slug = slugify(name, { lower: true, strict: true });
+        if (!name || !title) {
+            return NextResponse.json({
+                message: 'Name and Title are required',
+            }, { status: 400 });
+        }
+        
         
         const webPage = new WebPage({
             name,

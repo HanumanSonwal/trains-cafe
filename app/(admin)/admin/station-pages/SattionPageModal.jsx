@@ -122,7 +122,7 @@ const SattionPageModal = ({
       bodyStyle={{
         maxHeight: "70vh",
         overflowY: "auto",
-        overflowX: "hidden", 
+        overflowX: "hidden",
       }}
       destroyOnClose
     >
@@ -196,9 +196,9 @@ const SattionPageModal = ({
 
         <Form.Item label="Page data" rules={[{ required: true }]}>
           <TextEditor
-            previousValue={editorContent}
-            updatedValue={setEditorContent}
-            height={200}
+            value={editorContent}
+            onChange={setEditorContent}
+            height={250}
           />
         </Form.Item>
       </Form>

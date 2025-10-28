@@ -1,6 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { ArrowUpOutlined } from "@ant-design/icons";
+import {
+  ArrowUpOutlined,
+  FacebookFilled,
+  InstagramFilled,
+  LinkedinFilled,
+  TwitterSquareFilled,
+  YoutubeFilled,
+} from "@ant-design/icons";
 import Link from "next/link";
 
 const Footer = () => {
@@ -94,7 +101,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/contactus"
+                      href="/contact-us"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Contact Us
@@ -150,7 +157,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Order
@@ -182,7 +189,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Help & Support
@@ -190,7 +197,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Request Call Back
@@ -237,7 +244,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Train Coach Position
@@ -245,7 +252,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       IRCTC Train Schedule
@@ -253,7 +260,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Platform Locator
@@ -261,7 +268,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Check PNR Status on Whatsapp
@@ -269,13 +276,31 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/comingsoon"
+                      href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Live Train Running Status
                     </Link>
                   </li>
                 </ul>
+
+                <div className="flex items-center space-x-4 text-[#3A3A3A] mt-3">
+                  <Link href="https://www.facebook.com" target="_blank">
+                    <FacebookFilled className="text-2xl hover:text-[#1877F2] transition duration-300" />
+                  </Link>
+                  <Link href="https://www.twitter.com" target="_blank">
+                    <TwitterSquareFilled className="text-2xl hover:text-[#1DA1F2] transition duration-300" />
+                  </Link>
+                  <Link href="https://www.linkedin.com" target="_blank">
+                    <LinkedinFilled className="text-2xl hover:text-[#0A66C2] transition duration-300" />
+                  </Link>
+                  <Link href="https://www.instagram.com" target="_blank">
+                    <InstagramFilled className="text-2xl hover:text-[#E1306C] transition duration-300" />
+                  </Link>
+                  <Link href="https://www.youtube.com" target="_blank">
+                    <YoutubeFilled className="text-2xl hover:text-[#FF0000] transition duration-300" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -283,9 +308,7 @@ const Footer = () => {
           {/* Footer Bottom */}
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-2 border-t border-gray-200">
             <div className="text-gray-600 text-center  mb-4 md:mb-0">
-              <p style={{ fontSize: "12px" }}>
-                Copyright 2025 @Trainscafe.com
-              </p>
+              <p style={{ fontSize: "12px" }}>Copyright 2025 @trainscafe.in</p>
             </div>
 
             <div className="flex justify-center md:justify-end items-center space-x-4">

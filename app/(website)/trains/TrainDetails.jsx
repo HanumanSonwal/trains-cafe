@@ -14,6 +14,8 @@ const { Panel } = Collapse;
 export default function TrainDetails({ params }) {
   const router = useRouter();
   const { slug } = params;
+    const phone = process.env.NEXT_PUBLIC_PHONE;
+  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP;
 
   const { trainNo, trainName } = parseTrainSlug(slug);
 
@@ -66,16 +68,22 @@ export default function TrainDetails({ params }) {
         <div className="flex flex-col items-center text-center p-4">
           <p className="text-lg font-semibold text-red-600 mb-2">{newMessage}</p>
           <p className="text-md text-gray-700 mb-4">Please order food by calling or WhatsApp.</p>
-          <div className="flex items-center space-x-4">
-            <a href="tel:+1234567890" className="flex items-center space-x-1">
-              <PhoneOutlined className="text-blue-500 text-2xl" />
-              <span className="text-blue-500">Call Us</span>
-            </a>
-            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-1">
-              <WhatsAppOutlined className="text-green-500 text-2xl" />
-              <span className="text-green-500">WhatsApp Us</span>
-            </a>
-          </div>
+      <div className="flex items-center space-x-4">
+      <a href={`tel:${phone}`} className="flex items-center space-x-1">
+        <PhoneOutlined className="text-blue-500 text-2xl" />
+        <span className="text-blue-500">Call Us</span>
+      </a>
+
+      <a
+        href={`https://wa.me/${whatsapp}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center space-x-1"
+      >
+        <WhatsAppOutlined className="text-green-500 text-2xl" />
+        <span className="text-green-500">WhatsApp Us</span>
+      </a>
+    </div>
         </div>
       )}
 

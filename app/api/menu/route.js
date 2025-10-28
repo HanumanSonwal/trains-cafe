@@ -13,7 +13,6 @@ export async function GET(req) {
     const vendorname = url.searchParams.get("vendorname");
     const page = parseInt(url.searchParams.get("page"), 10) || 1;
 
-
     const limit = parseInt(url.searchParams.get("limit"), 10) || 10;
 
     await dbConnect();
@@ -78,10 +77,8 @@ export async function GET(req) {
       .populate({
         path: "Vendor",
         select: "Vendor_Name Status",
-
       })
       .populate("Station", "name");
-
 
     const menus = await MenuModel.find(query)
       .sort({ createdAt: -1 })
@@ -92,8 +89,9 @@ export async function GET(req) {
         select: "Vendor_Name Status",
       });
 
-
-    const activeMenu = menus.filter(item => item.Vendor && item.Vendor.Status === "Active");
+    const activeMenu = menus.filter(
+      (item) => item.Vendor && item.Vendor.Status === "Active"
+    );
 
     if (activeMenu.length === 0) {
       return new Response(
@@ -101,7 +99,6 @@ export async function GET(req) {
         { status: 404 }
       );
     }
-
 
     const total = activeMenu.length;
     const skips = Math.max((page - 1) * limit, 0);
@@ -127,7 +124,6 @@ export async function GET(req) {
       }),
       { status: 200 }
     );
-
   } catch (error) {
     console.error("GET Menu error:", error);
     return new Response(

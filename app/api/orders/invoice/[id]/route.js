@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import handlebars from "handlebars";
 import Order from "@/app/models/order";
 import OrderItems from "@/app/models/orderItems";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 
 export async function GET(req, { params }) {
   const { id } = params;
@@ -28,8 +30,8 @@ export async function GET(req, { params }) {
       const menu = item.Item_Id || {};
       const key = menu._id?.toString() || item._id.toString();
       if (!itemsMap.has(key)) {
-        const price = item.Price !== undefined ? item.Price : menu.Price || 0;
-        const quantity = item.Quantity || 0;
+        const price = item.Price ?? menu.Price ?? 0;
+        const quantity = item.Quantity ?? 0;
         itemsMap.set(key, {
           serial: itemsMap.size + 1,
           name: menu.Item_Name || "N/A",
@@ -39,7 +41,6 @@ export async function GET(req, { params }) {
         });
       }
     });
-
     const items = Array.from(itemsMap.values());
 
     const htmlPath = path.join(
@@ -53,7 +54,6 @@ export async function GET(req, { params }) {
     const coupon = order.couponAmount || 0;
     const adminDiscount = order.adminDiscountValue || 0;
     const deliveryCharge = order.vendor?.Delivery_Charges || 0;
-
     const discountedAmount = (order.subTotal || 0) - coupon - adminDiscount;
     const tax = discountedAmount * 0.05;
     const totalAmount = discountedAmount + tax + deliveryCharge;
@@ -82,16 +82,29 @@ export async function GET(req, { params }) {
       total: totalAmount.toFixed(2),
     });
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-    const page = await browser.newPage();
+    const isLocal = os.platform() === "win32" || os.platform() === "darwin";
 
+    const browser = await puppeteer.launch(
+      isLocal
+        ? {
+            headless: true,
+            executablePath:
+              os.platform() === "win32"
+                ? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+                : "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+          }
+        : {
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+          }
+    );
+
+    const page = await browser.newPage();
     await page.setContent(
-      `<style>
-      body { font-family: Arial, sans-serif; }
-      </style>` + html,
+      `<style>body { font-family: Arial, sans-serif; }</style>` + html,
       { waitUntil: "networkidle0" }
     );
 

@@ -18,7 +18,7 @@ const CheckoutPage = () => {
   const email = Form.useWatch("email", form);
   const mobile = Form.useWatch("mobile", form);
 
-  const [paymentMethod, setPaymentMethod] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -67,7 +67,7 @@ const CheckoutPage = () => {
     setCouponCode("");
     setDiscount(0);
     setLoading(false);
-    router.push("/orderconfirmation");
+    router.push("/order-confirmation");
   };
 
   const handleRazorpayFlow = (order, values) => {
@@ -93,7 +93,7 @@ const CheckoutPage = () => {
           if (verifyData.success) {
             localStorage.setItem("orderData", JSON.stringify(order));
             dispatch(resetCart());
-            router.push("/orderconfirmation");
+            router.push("/order-confirmation");
           } else message.error("Payment verification failed.");
         } catch {
           message.error("Payment verification failed.");
@@ -200,7 +200,7 @@ const CheckoutPage = () => {
               onDiscountChange={setDiscount}
             />
 
-            <div className="bg-white shadow rounded-lg p-4 mt-4">
+            {/* <div className="bg-white shadow rounded-lg p-4 mt-4">
               <h2 className="text-xl font-bold mb-4">Payment Options</h2>
               <Radio.Group
                 value={paymentMethod}
@@ -234,7 +234,7 @@ const CheckoutPage = () => {
                   </Radio.Button>
                 ))}
               </Radio.Group>
-            </div>
+            </div> */}
 
             <Button
               type="primary"
@@ -251,6 +251,7 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+
 
       {paymentProcessing && (
         <div className="fixed inset-0 bg-white/70 z-[9999] flex justify-center items-center">

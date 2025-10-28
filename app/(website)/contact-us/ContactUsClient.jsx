@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Form, Input, Button, Typography, Divider, App } from "antd";
+import { Form, Input, Button, Typography, Divider, message } from "antd";
 import InfoSection from "@/app/componants/InfoSection";
 import Link from "next/link";
 
@@ -9,22 +9,24 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 const ContactUsClient = () => {
-  const { message } = App.useApp();
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
     try {
-      const response = await fetch("/api/contact?slug=ContactUs", {
+      const res = await fetch("/api/contact?slug=ContactUs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...values, slug: "ContactUs" }),
       });
 
-      if (!response.ok) throw new Error("Network response was not ok");
-      await response.json();
-      message.success("Your message has been sent successfully!");
+      const data = await res.json();
+
+      if (!res.ok || !data.success) throw new Error();
+
+      message.success(data.message || "Message sent successfully!");
       form.resetFields();
     } catch (error) {
+      console.error(error);
       message.error("Failed to send your message. Please try again later.");
     }
   };
@@ -38,76 +40,75 @@ const ContactUsClient = () => {
           className="absolute inset-0 object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white  font-bold">Contact Us</h1>
+          <h1 className="text-white text-2xl font-bold">Contact Us</h1>
         </div>
       </div>
 
-      <div className="flex flex-col items-center py-4">
-        <div className="p-5 ">
+      <div className="flex flex-col items-center py-4 px-3">
+        <div className="p-5 text-center max-w-2xl">
           <h2
             style={{ color: "#704D25", fontWeight: "bold" }}
-            className="text-xl mb-4 text-center"
+            className="text-xl mb-4"
           >
             Contact Us - We’re Here to Help
           </h2>
           <p>
             At <b>Trainscafe</b>, your satisfaction is our priority. Whether you
             have questions about your order, want to know more about our
-            services, or need help with group bookings - we’re just a call,
-            message, or email away. Our support team is available 24*7 days a
-            week, ready to assist you with real-time solutions for a smooth and
-            enjoyable train food delivery experience.
+            services, or need help with group bookings — we’re just a call,
+            message, or email away. Our support team is available 24×7 to help
+            you enjoy a smooth train food delivery experience.
           </p>
         </div>
+
         <h3
           style={{ color: "#704D25", fontWeight: "bold" }}
-          className="text-xl mb-4"
+          className="text-xl mb-2"
         >
           📞 Customer Support
         </h3>
-        <div className="text-center mb-4 p-5">
-          <p className="text-sm">
+        <div className="text-center mb-4 p-4">
+          <p>
             <strong>Call Us:</strong>{" "}
             <Link
               href="tel:+918696963496"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              +91-8696963496(Available from 7 AM to 10 PM)
+              +91-8696963496
             </Link>{" "}
+            (Available from 7 AM to 10 PM)
           </p>
-          <p className="text-sm">
+          <p>
             <strong>Email:</strong>{" "}
             <Link
-              href="support@trainscafe.in"
+              href="mailto:support@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
               support@trainscafe.in
             </Link>
           </p>
-
-          <p className="text-sm">
+          <p>
             <strong>Address:</strong>{" "}
             <Link
-              className="font-bold text-blue-600 hover:text-blue-800 underline"
               href="https://maps.app.goo.gl/hY9eo2kAij9PPqzi6"
+              className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              8, Paschim vihar, D, Bhakrota, Jaipur, Rajasthan 302026
+              8, Paschim Vihar, D, Bhakrota, Jaipur, Rajasthan 302026
             </Link>
           </p>
         </div>
-        <div className="text-center p-5">
-          {" "}
+
+        <div className="text-center p-4">
           <h3
             style={{ color: "#704D25", fontWeight: "bold" }}
-            className="text-xl mb-4"
+            className="text-xl mb-2"
           >
-            Business/Partner Inquiries
+            Business / Partner Inquiries
           </h3>
-          <p className="text-center">
-            Interested in partnering with us or becoming a food vendor on
-            trains? Write to us at:{" "}
+          <p>
+            Want to partner or become a vendor on trains? Write to us at:{" "}
             <Link
-              href="info@trainscafe.in"
+              href="mailto:info@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
               info@trainscafe.in
@@ -116,8 +117,8 @@ const ContactUsClient = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-center py-4 px-2 shadow-lg">
-        <div className="max-w-md w-full bg-white p-4 rounded-lg ">
+      <div className="flex items-center justify-center py-6 px-3 shadow-lg bg-gray-50">
+        <div className="max-w-md w-full bg-white p-6 rounded-lg shadow">
           <Title
             style={{ color: "#704D25" }}
             level={2}
@@ -125,23 +126,20 @@ const ContactUsClient = () => {
           >
             Get in Touch
           </Title>
+
           <Form
             form={form}
             layout="vertical"
             onFinish={onFinish}
             validateMessages={{
               required: "${label} is required!",
-              types: {
-                email: "${label} is not a valid email!",
-              },
+              types: { email: "${label} is not a valid email!" },
             }}
           >
             <Form.Item
               label="Name"
               name="Name"
-              rules={[
-                { required: true, min: 2, message: "Please input your name!" },
-              ]}
+              rules={[{ required: true, message: "Please input your name!" }]}
             >
               <Input placeholder="Your Name" />
             </Form.Item>
@@ -150,10 +148,7 @@ const ContactUsClient = () => {
               label="Contact Number"
               name="ContactNumber"
               rules={[
-                {
-                  required: true,
-                  message: "Please input your contact number!",
-                },
+                { required: true, message: "Please input your contact number!" },
               ]}
             >
               <Input placeholder="Your Contact Number" />
@@ -167,22 +162,20 @@ const ContactUsClient = () => {
                 { type: "email", message: "Please enter a valid email!" },
               ]}
             >
-              <Input placeholder="Your Email" type="email" />
+              <Input placeholder="Your Email" />
             </Form.Item>
 
             <Form.Item
               label="Message"
               name="Message"
-              rules={[
-                { required: true, message: "Please input your message!" },
-              ]}
+              rules={[{ required: true, message: "Please input your message!" }]}
             >
               <TextArea placeholder="Your Message" rows={4} />
             </Form.Item>
 
             <Form.Item>
               <div className="text-center">
-                <Button type="primary" className="order-btn" htmlType="submit">
+                <Button type="primary" htmlType="submit" className="order-btn">
                   Send Message
                 </Button>
               </div>
@@ -193,7 +186,7 @@ const ContactUsClient = () => {
 
       <InfoSection />
       <Divider className="m-0" />
-      <div className="flex items-center justify-center ">
+      <div className="flex items-center justify-center">
         <div className="w-full max-w-4xl p-2">
           <Title
             level={3}

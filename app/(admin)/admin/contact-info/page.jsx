@@ -67,8 +67,8 @@ const ContactInfo = () => {
         </Form.Item>
         <Form.Item label="Address">
           <TextEditor
-            previousValue=""
-            updatedValue={(content) => setValue("address", content)}
+            value=""
+            onChange={(content) => setValue("address", content)}
             height={200}
           />
           {errors.address && (

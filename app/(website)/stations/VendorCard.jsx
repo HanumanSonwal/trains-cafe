@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { addStationDetails, addVendorDetails } from "@/app/redux/cartSlice";
 import { useDispatch } from "react-redux";
+import Link from "next/link";
 
 function VendorCardWithoutTrain({ selectedStation }) {
   const router = useRouter();
@@ -20,6 +21,9 @@ function VendorCardWithoutTrain({ selectedStation }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [redirectingId, setRedirectingId] = useState(null);
+
+    const phone = process.env.NEXT_PUBLIC_PHONE;
+  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP;
 
   const handleRedirect = useCallback(
     (vendor) => {
@@ -43,7 +47,7 @@ function VendorCardWithoutTrain({ selectedStation }) {
         setLoading(true);
         setError(false);
         const res = await fetch(
-          `/api/vendors?stationcode=${selectedStation.code}`,
+          `/api/vendors?stationcode=${selectedStation.code}&status=Active`,
           {
             cache: "no-store",
             signal: controller.signal,
@@ -173,29 +177,32 @@ function VendorCardWithoutTrain({ selectedStation }) {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center text-center p-4">
-        <p className="text-lg font-semibold text-red-600 mb-2">
-          No vendors found for this station.
-        </p>
-        <p className="text-md text-gray-700 mb-4">
-          Please order food by calling or via WhatsApp.
-        </p>
-        <div className="flex items-center space-x-4">
-          <a href="tel:+1234567890" className="flex items-center space-x-1">
-            <PhoneTwoTone className="text-blue-500 text-2xl" />
-            <span className="text-blue-500">Call Us</span>
-          </a>
-          <a
-            href="https://wa.me/1234567890"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center space-x-1"
-          >
-            <WhatsAppOutlined className="text-green-500 text-2xl" />
-            <span className="text-green-500">WhatsApp Us</span>
-          </a>
-        </div>
+       <div className="flex flex-col items-center text-center p-4">
+      <p className="text-lg font-semibold text-red-600 mb-2">
+        No vendors found for this station.
+      </p>
+      <p className="text-md text-gray-700 mb-4">
+        Please order food by calling or via WhatsApp.
+      </p>
+      <div className="flex items-center space-x-4">
+        {/* Call Link */}
+        <Link href={`tel:${phone}`} className="flex items-center space-x-1">
+          <PhoneTwoTone className="text-blue-500 text-2xl" />
+          <span className="text-blue-500">Call Us</span>
+        </Link>
+
+        {/* WhatsApp Link */}
+        <Link
+          href={`https://wa.me/${whatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center space-x-1"
+        >
+          <WhatsAppOutlined className="text-green-500 text-2xl" />
+          <span className="text-green-500">WhatsApp Us</span>
+        </Link>
       </div>
+    </div>
     );
   }
 

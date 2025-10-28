@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Table,
   Button,
@@ -18,12 +18,10 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import Spinner from "@/app/componants/spinner/Spinner";
 import StationsForm from "./StationsForm";
 
-const page = () => {
+const Page = () => {
   const [stations, setStations] = useState([]);
-  const [filteredStations, setFilteredStations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStation, setEditingStation] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -34,228 +32,215 @@ const page = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchStations();
-  }, [pagination.current, pagination.pageSize, searchText]);
-
-  const fetchStations = async () => {
+  const fetchStations = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(
         `/api/station?search=${searchText}&page=${pagination.current}&limit=${pagination.pageSize}`
       );
-      const { data, total } = response.data;
+      const { data, total, message: apiMsg } = response.data;
 
       setStations(data);
-      setFilteredStations(data);
       setPagination((prev) => ({
         ...prev,
         total,
       }));
+
+      if (apiMsg) message.success(apiMsg);
     } catch (error) {
-      console.error("Failed to fetch stations:", error);
-      message.error("Failed to fetch stations");
+      const errMsg = error.response?.data?.message || "Failed to fetch stations";
+      message.error(errMsg);
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.current, pagination.pageSize, searchText]);
 
-  const handleAdd = () => {
+  useEffect(() => {
+    fetchStations();
+  }, [fetchStations]);
+
+  const handleAdd = useCallback(() => {
     setEditingStation(null);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleEdit = (record) => {
+  const handleEdit = useCallback((record) => {
     setEditingStation(record);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleDelete = async (key) => {
+  const handleDelete = useCallback(async (key) => {
     try {
-      await axios.delete(`/api/station/${key}`);
-      message.success("Station deleted successfully");
+      const response = await axios.delete(`/api/station/${key}`);
+      message.success(response.data?.message || "Station deleted successfully");
       fetchStations();
     } catch (error) {
-      console.error("Failed to delete station:", error);
-      message.error("Failed to delete station");
+      const errMsg = error.response?.data?.message || "Failed to delete station";
+      message.error(errMsg);
     }
-  };
+  }, [fetchStations]);
 
-  const handleFormSubmit = async (values) => {
-    try {
-      if (editingStation) {
-        await axios.put(`/api/station/${editingStation.key}`, values);
-        message.success("Station updated successfully");
-      } else {
-        await axios.post("/api/station", values);
-        message.success("Station added successfully");
+  const handleStatusChange = useCallback(
+    async (checked, key) => {
+      try {
+        const response = await axios.put(`/api/station?id=${key}`, {
+          status: checked,
+        });
+        message.success(
+          response.data?.message || "Station status updated successfully"
+        );
+        fetchStations();
+      } catch (error) {
+        const errMsg =
+          error.response?.data?.message || "Failed to update station status";
+        message.error(errMsg);
       }
-      setIsModalOpen(false);
-      fetchStations();
-    } catch (error) {
-      console.error("Failed to save station:", error);
-      message.error("Failed to save station");
-    }
-  };
+    },
+    [fetchStations]
+  );
 
-  const handleSearch = (e) => {
+  const handleSearch = useCallback((e) => {
     setSearchText(e.target.value);
-  };
+  }, []);
 
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     setSearchText("");
-  };
+  }, []);
 
-  const handleStatusChange = async (checked, key) => {
-    try {
-      await axios.put(`/api/station?id=${key}`, {
-        status: checked ? true : false,
-      });
-      message.success("Station status updated successfully");
-      fetchStations();
-    } catch (error) {
-      console.error("Failed to update station status:", error);
-      message.error("Failed to update station status");
-    }
-  };
-
-  const handleTableChange = (pagination) => {
+  const handleTableChange = useCallback((pagination) => {
     setPagination({
       ...pagination,
       current: pagination.current,
       pageSize: pagination.pageSize,
     });
-  };
+  }, []);
 
-  const columns = [
-    {
-      title: "Station Id",
-      dataIndex: "stationId",
-      key: "stationId",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Station Name",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Station Code",
-      dataIndex: "code",
-      key: "code",
-      sorter: (a, b) => a.code.localeCompare(b.code),
-    },
-    {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-      sorter: (a, b) => a.location.localeCompare(b.location),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status, record) => (
-        <Switch
-          checked={status === true}
-          onChange={(checked) => handleStatusChange(checked, record._id)}
-          className={status === "1" ? "ant-switch-checked" : "ant-switch"}
-        />
-      ),
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (text, record) => (
-        <div className="space-x-2">
-          <Button
-            icon={<EditFilled />}
-            onClick={() => handleEdit(record)}
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+  const columns = useMemo(
+    () => [
+      {
+        title: "Station Id",
+        dataIndex: "stationId",
+        key: "stationId",
+      },
+      {
+        title: "Station Name",
+        dataIndex: "name",
+        key: "name",
+      },
+      {
+        title: "Station Code",
+        dataIndex: "code",
+        key: "code",
+      },
+      {
+        title: "Location",
+        dataIndex: "location",
+        key: "location",
+      },
+      {
+        title: "Address",
+        dataIndex: "address",
+        key: "address",
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        render: (status, record) => (
+          <Switch
+            checked={status === true}
+            onChange={(checked) => handleStatusChange(checked, record._id)}
           />
-          <Popconfirm
-            title="Are you sure to delete?"
-            onConfirm={() => handleDelete(record._id)}
-          >
-            <Button icon={<DeleteFilled />} danger />
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
+        ),
+      },
+      {
+        title: "Actions",
+        key: "actions",
+        render: (_, record) => (
+          <div className="space-x-2">
+            <Button
+              icon={<EditFilled />}
+              onClick={() => handleEdit(record)}
+              style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+            />
+            <Popconfirm
+              title="Are you sure to delete?"
+              onConfirm={() => handleDelete(record._id)}
+            >
+              <Button icon={<DeleteFilled />} danger />
+            </Popconfirm>
+          </div>
+        ),
+      },
+    ],
+    [handleDelete, handleEdit, handleStatusChange]
+  );
+
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
   return (
-    <>
-      <div
-        className="p-4"
-        style={{
-          backgroundColor: "#FAF3CC",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
-          Station Management
-        </h2>
-        <div className="flex items-center my-5 justify-between">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <AntdInput
-              placeholder="Search"
-              style={{ width: 300, borderColor: "#D6872A" }}
-              prefix={<SearchOutlined />}
-              suffix={
-                searchText && (
-                  <CloseCircleOutlined
-                    onClick={clearSearch}
-                    style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
-                  />
-                )
-              }
-              value={searchText}
-              onChange={handleSearch}
-            />
-          </div>
+    <div
+      className="p-4"
+      style={{
+        backgroundColor: "#FAF3CC",
+        borderRadius: "8px",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <h2 className="text-lg font-semibold mb-4" style={{ color: "#6F4D27" }}>
+        Station Management
+      </h2>
+      <div className="flex items-center my-5 justify-between">
+        <AntdInput
+          placeholder="Search"
+          style={{ width: 300, borderColor: "#D6872A" }}
+          prefix={<SearchOutlined />}
+          suffix={
+            searchText && (
+              <CloseCircleOutlined
+                onClick={clearSearch}
+                style={{ color: "rgba(0, 0, 0, 0.45)", cursor: "pointer" }}
+              />
+            )
+          }
+          value={searchText}
+          onChange={handleSearch}
+        />
 
-          <Button
-            type="primary"
-            style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
-            icon={<PlusOutlined />}
-            onClick={handleAdd}
-          >
-            Add Station
-          </Button>
-        </div>
+        <Button
+          type="primary"
+          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A" }}
+          icon={<PlusOutlined />}
+          onClick={handleAdd}
+        >
+          Add Station
+        </Button>
+      </div>
 
-        <Spin spinning={loading} color="#D6872A" indicator={antIcon}>
-          <Table
-            columns={columns}
-            dataSource={filteredStations}
-            pagination={{
-              ...pagination,
-              showSizeChanger: true,
-              position: ["bottomRight"],
-            }}
-            onChange={handleTableChange}
-          />
-        </Spin>
+      <Spin spinning={loading} indicator={antIcon}>
+        <Table
+          rowKey="_id"
+          columns={columns}
+          dataSource={stations}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            position: ["bottomRight"],
+          }}
+          onChange={handleTableChange}
+        />
+      </Spin>
 
+      {isModalOpen && (
         <StationsForm
           fetchStations={fetchStations}
           open={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
-          onSubmit={handleFormSubmit}
           initialValues={editingStation}
         />
-      </div>
-    </>
+      )}
+    </div>
   );
 };
 
-export default page;
+export default Page;

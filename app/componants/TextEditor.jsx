@@ -1,71 +1,91 @@
-import React, { useEffect, useState } from "react";
-import SunEditor from "suneditor-react";
-import "suneditor/dist/css/suneditor.min.css";
-import "./TextEditor.css";
+// "use client";
+// import React, { useState, useRef, useMemo, useEffect } from "react";
+// import dynamic from "next/dynamic";
+
+// const JoditEditor = dynamic(() => import("jodit-react"), {
+//   ssr: false,
+// });
+
+// const TextEditor = ({
+//   value = "",
+//   onChange,
+//   placeholder = "Start typing...",
+//   height = 300,
+// }) => {
+//   const editor = useRef(null);
+//   const [content, setContent] = useState(value);
+
+//   useEffect(() => {
+//     setContent(value);
+//   }, [value]);
+
+//   const config = useMemo(
+//     () => ({
+//       readonly: false,
+//       height,
+//       placeholder,
+//     }),
+//     [placeholder, height]
+//   );
+
+//   return (
+//     <div>
+//       <JoditEditor
+//         ref={editor}
+//         value={content}
+//         config={config}
+//         tabIndex={1}
+//         onBlur={(newContent) => {
+//           setContent(newContent);
+//           if (onChange) onChange(newContent);
+//         }}
+//         onChange={() => {}}
+//       />
+//     </div>
+//   );
+// };
+
+// export default TextEditor;
+
+
+"use client";
+import React, { useState, useRef, useMemo, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const TextEditor = ({
-  previousValue = "",
-  updatedValue,
-  height = 200,
-  label = "",
+  value = "",
+  onChange,
+  placeholder = "Start typing...",
+  height = 300,
 }) => {
-  const [isClient, setIsClient] = useState(false);
+  const editor = useRef(null);
+  const [content, setContent] = useState(value);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    setContent(value);
+  }, [value]);
 
-  const handleChange = (content) => {
-    updatedValue(content);
-  };
-
-  if (!isClient) return null;
+  const config = useMemo(
+    () => ({
+      readonly: false,
+      height,
+      placeholder,
+    }),
+    [placeholder, height]
+  );
 
   return (
-    <div className="text-editor-container">
-      {label && <label className="editor-label mb-2">{label}</label>}
-      <SunEditor
-        setContents={previousValue}
-        onChange={handleChange}
-        setOptions={{
-          height: height,
-          minHeight: 100,
-          buttonList: [
-            ["undo", "redo", "font", "fontSize", "formatBlock", "align"],
-            [
-              "bold",
-              "underline",
-              "italic",
-              "strike",
-              "subscript",
-              "superscript",
-              "removeFormat",
-            ],
-            [
-              "fontColor",
-              "hiliteColor",
-              "outdent",
-              "indent",
-              "align",
-              "horizontalRule",
-              "list",
-              "table",
-            ],
-            [
-              "link",
-              "image",
-              "video",
-              "fullScreen",
-              "showBlocks",
-              "codeView",
-              "preview",
-              "print",
-              "save",
-            ],
-          ],
-          buttonSize: "sm",
-          defaultStyle: "font-size:14px;",
-          charCounter: false,
+    <div>
+      <JoditEditor
+        ref={editor}
+        value={content}
+        config={config}
+        tabIndex={1}
+        onChange={(newContent) => {
+          setContent(newContent);
+          if (onChange) onChange(newContent);
         }}
       />
     </div>

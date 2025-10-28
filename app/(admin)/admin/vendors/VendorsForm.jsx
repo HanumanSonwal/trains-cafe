@@ -345,11 +345,9 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
           rules={[{ required: true, message: "Description is required" }]}
         >
           <TextEditor
-            previousValue={form.getFieldValue("Description")}
-            updatedValue={(content) =>
-              form.setFieldValue("Description", content)
-            }
-            height={200}
+            value={form.getFieldValue("Description")}
+            onChange={(content) => form.setFieldValue("Description", content)}
+            height={250}
           />
         </Form.Item>
 

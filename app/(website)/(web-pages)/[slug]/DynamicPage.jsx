@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "antd";
 import Spinner from "@/app/componants/spinner/Spinner";
@@ -11,15 +11,14 @@ import dynamic from "next/dynamic";
 
 const CustomerReviews = dynamic(
   () => import("@/app/componants/CustomerReviewSlider"),
-  {
-    ssr: false,
-    loading: () => <Spinner />,
-  }
+  { ssr: false, loading: () => <Spinner /> }
 );
+
 const PromoBanner = dynamic(() => import("@/app/componants/PromoBanner"), {
   ssr: false,
   loading: () => <Spinner />,
 });
+
 const RecentOrders = dynamic(() => import("@/app/componants/RecentOrders"), {
   ssr: false,
   loading: () => <Spinner />,
@@ -34,13 +33,34 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
 
   const contentToRender = useMemo(() => {
     const rawHtml = page.pageData || "<p>No content available.</p>";
-    return showFullContent || isExceptionSlug
-      ? rawHtml
-      : previewHtml || rawHtml;
-  }, [page.pageData, showFullContent, isExceptionSlug, previewHtml]);
+
+    if (isExceptionSlug) return rawHtml;
+
+    if (shouldTruncate && !showFullContent) {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = rawHtml;
+
+      const textContent = tempDiv.innerText || "";
+      const truncatedText =
+        textContent.length > 300
+          ? textContent.slice(0, 300) + "..."
+          : textContent;
+
+      return `<div>${truncatedText}</div><div style="display:none;">${rawHtml}</div>`;
+    }
+
+    return rawHtml;
+  }, [page.pageData, showFullContent, isExceptionSlug, shouldTruncate]);
 
   const toggleContent = useCallback(() => {
     setShowFullContent((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    // Ensure Googlebot always sees full content
+    if (typeof window !== "undefined" && navigator.userAgent.includes("Googlebot")) {
+      setShowFullContent(true);
+    }
   }, []);
 
   return (
@@ -54,11 +74,11 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
         </h1>
 
         <div
-          className="text-gray-700 text-base md:text-lg leading-relaxed ck-content mb-6"
+          className="jodit-content-view"
           dangerouslySetInnerHTML={{ __html: contentToRender }}
         />
 
-        {shouldTruncate && (
+        {shouldTruncate && !isExceptionSlug && (
           <div className="text-center mb-4">
             <Button
               className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white"
@@ -93,11 +113,12 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
             </Link>
           </p>
           <p className="mt-2">
-            &copy; {new Date().getFullYear()} Trainscafe.com
+            &copy; {new Date().getFullYear()} trainscafe.in
           </p>
         </div>
+
         <div className="mt-3">
-          <Link href="/contactus">
+          <Link href="/contact-us">
             <Button className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white">
               Contact Us
             </Button>
@@ -106,34 +127,46 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
       </footer>
 
       <style jsx global>{`
-        .ck-content {
+        .jodit-content-view {
+          font-family: inherit;
           font-size: 1rem;
+          line-height: 1.6;
+          color: #333;
+          word-break: break-word;
+          overflow-wrap: break-word;
         }
-        .ck-content table {
+
+        .jodit-content-view img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 6px;
+          object-fit: contain;
+        }
+
+        .jodit-content-view table {
           width: 100%;
           border-collapse: collapse;
           margin: 1rem 0;
         }
-        .ck-content th,
-        .ck-content td {
+
+        .jodit-content-view th,
+        .jodit-content-view td {
           border: 1px solid #ddd;
           padding: 0.75rem;
           text-align: left;
         }
-        .ck-content th {
-          background-color: #f5f5f5;
-          font-weight: bold;
+
+        .jodit-content-view iframe,
+        .jodit-content-view video {
+          max-width: 100%;
+          border-radius: 8px;
+          display: block;
+          margin: 10px auto;
         }
-        .ck-content tr:nth-child(even) {
-          background-color: #fafafa;
-        }
-        .ck-content tr:hover {
-          background-color: #f0f0f0;
-        }
+
         @media (max-width: 768px) {
-          .ck-content th,
-          .ck-content td {
-            font-size: 0.875rem;
+          .jodit-content-view {
+            font-size: 0.9rem;
           }
         }
       `}</style>

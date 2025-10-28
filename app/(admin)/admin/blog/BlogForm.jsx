@@ -212,11 +212,9 @@ const BlogForm = ({ open, onCancel, initialValues = {}, fetchBlogs }) => {
             >
               <TextEditor
                 key={editorKey}
-                previousValue={form.getFieldValue("content")}
-                updatedValue={(value) =>
-                  form.setFieldsValue({ content: value })
-                }
-                height={200}
+                value={form.getFieldValue("content")}
+                onChange={(value) => form.setFieldsValue({ content: value })}
+                height={250}
               />
             </Form.Item>
           </Col>

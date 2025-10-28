@@ -9,7 +9,7 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const page = searchParams.get("page") || 1;
     const limit = searchParams.get("limit") || 10;
-    const slug = searchParams.get("slug"); // ✅ add this
+    const slug = searchParams.get("slug");
 
     const query = {};
 

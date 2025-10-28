@@ -1,0 +1,31 @@
+import { fetchAllPages } from "@/app/lib/sitemapUtils";
+import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+
+  const allBlogs = await fetchAllPages(baseUrl, "/api/blog?status=publish&limit=50");
+
+  const urls = allBlogs.map((item) => `
+    <url>
+      <loc>${baseUrl}/blog/${item.slug}</loc>
+      <lastmod>${item.updatedAt || new Date().toISOString()}</lastmod>
+      <changefreq>daily</changefreq>
+      <priority>0.9</priority>
+    </url>
+  `).join("");
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      ${urls}
+    </urlset>
+  `;
+
+  return new NextResponse(sitemap, {
+    headers: {
+      "Content-Type": "application/xml",
+    },
+  });
+}

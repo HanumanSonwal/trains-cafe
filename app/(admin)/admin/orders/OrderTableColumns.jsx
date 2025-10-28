@@ -16,6 +16,7 @@ import {
   EditOutlined,
   PhoneOutlined,
   MailOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import ItemsColumn from "./ItemsColumn";
 import dayjs from "dayjs";
@@ -462,9 +463,10 @@ const OrderTableColumns = ({
     {
       title: "Actions",
       key: "actions",
-      width: 90,
+      width: 120,
       render: (_, record) => (
         <Space size="small">
+          {/* 🟠 Edit Order */}
           <Tooltip title="Edit Order">
             <Button
               type="primary"
@@ -497,6 +499,48 @@ const OrderTableColumns = ({
               style={{
                 backgroundColor: "#6F4D27",
                 borderColor: "#6F4D27",
+                width: 32,
+                height: 28,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            />
+          </Tooltip>
+
+          {/* 📋 Copy Order Details */}
+          <Tooltip title="Copy Order Details">
+            <Button
+              type="primary"
+              icon={<CopyOutlined />}
+              size="small"
+              onClick={() => {
+                const orderText = `
+------------------------------------------------------------
+                     ORDER SUMMARY
+------------------------------------------------------------
+
+ Order ID         : ${record.order_id}
+ Customer Name    : ${record.userDetails?.name || "N/A"}
+ Mobile Number    : ${record.userDetails?.mobile || "N/A"}
+ Station          : ${record.station || "N/A"}
+ Train Number     : ${record.trainDetails?.train_number || "N/A"}
+ Total Amount     : ₹${record.total}
+ Payment Method   : ${record.paymentMethod || "N/A"}
+ Order Date       : ${record.date}
+ Current Status   : ${record.status}
+
+------------------------------------------------------------
+Thank you for choosing *TrainsCafe*!  
+We appreciate your business.
+------------------------------------------------------------
+`;
+                navigator.clipboard.writeText(orderText);
+              }}
+              style={{
+                backgroundColor: "#4A90E2",
+                borderColor: "#4A90E2",
+                color: "#fff",
                 width: 32,
                 height: 28,
                 display: "flex",
