@@ -52,11 +52,11 @@ const MobileFooter = () => {
         <div>
           <Space className="w-full py-3 px-4 flex justify-between items-center">
             <FooterItem icon={<HomeOutlined />} text="Home" link="/" />
-            <FooterItem icon={<ToolOutlined />} text="Services" link="/" />
+            <FooterItem icon={<ToolOutlined />} text="Services" link="/all-services" />
             <FooterItem
               icon={<FileTextOutlined />}
-              text="Orders"
-              link="/orders"
+              text="Blogs"
+              link="/blog"
             />
             <FooterItem icon={<GiftOutlined />} text="Offers" link="/offers" />
             <button

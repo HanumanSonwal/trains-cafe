@@ -6,6 +6,7 @@ import {
   InstagramFilled,
   LinkedinFilled,
   TwitterSquareFilled,
+  XOutlined,
   YoutubeFilled,
 } from "@ant-design/icons";
 import Link from "next/link";
@@ -289,7 +290,7 @@ const Footer = () => {
                     <FacebookFilled className="text-2xl hover:text-[#1877F2] transition duration-300" />
                   </Link>
                   <Link href="https://www.twitter.com" target="_blank">
-                    <TwitterSquareFilled className="text-2xl hover:text-[#1DA1F2] transition duration-300" />
+                    <XOutlined className="text-2xl hover:text-black transition duration-300" />
                   </Link>
                   <Link href="https://www.linkedin.com" target="_blank">
                     <LinkedinFilled className="text-2xl hover:text-[#0A66C2] transition duration-300" />

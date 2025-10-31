@@ -507,35 +507,82 @@ const OrderTableColumns = ({
               }}
             />
           </Tooltip>
-
-          {/* 📋 Copy Order Details */}
           <Tooltip title="Copy Order Details">
             <Button
               type="primary"
               icon={<CopyOutlined />}
               size="small"
               onClick={() => {
-                const orderText = `
-------------------------------------------------------------
-                     ORDER SUMMARY
-------------------------------------------------------------
+                const data = record;
 
- Order ID         : ${record.order_id}
- Customer Name    : ${record.userDetails?.name || "N/A"}
- Mobile Number    : ${record.userDetails?.mobile || "N/A"}
- Station          : ${record.station || "N/A"}
- Train Number     : ${record.trainDetails?.train_number || "N/A"}
- Total Amount     : ₹${record.total}
- Payment Method   : ${record.paymentMethod || "N/A"}
- Order Date       : ${record.date}
- Current Status   : ${record.status}
+                const total = parseFloat(data.total || 0).toFixed(2);
+                const advance = parseFloat(data.advancedAmount || 0).toFixed(2);
+                const pending = parseFloat(data.remainingAmount || 0).toFixed(
+                  2
+                );
+                const discount =
+                  data.adminDiscountValue && data.adminDiscountValue > 0
+                    ? parseFloat(data.adminDiscountValue).toFixed(2)
+                    : null;
 
-------------------------------------------------------------
-Thank you for choosing *TrainsCafe*!  
-We appreciate your business.
-------------------------------------------------------------
+                const itemsText =
+                  data.Items && data.Items.length > 0
+                    ? data.Items.map(
+                        (item) =>
+                          `${item.MenuItem?.Item_Name || "Item"} X ${
+                            item.Quantity
+                          }`
+                      ).join("\n")
+                    : "No Items";
+
+                // ✅ Payment text condition
+                let paymentText = "";
+                if (parseFloat(data.advancedAmount || 0) > 0) {
+                  paymentText = `TOTAL: ₹${total}Advance Amount: ₹${advance} (${
+                    data.payment?.payment_method?.toUpperCase() || "ONLINE"
+                  } PAID) Pending Amount: ₹${pending} (${data.paymentMethod?.toUpperCase() || "COD"})`;
+                } else {
+                  paymentText = `TOTAL: ₹${total} Payment: FULL PAID (${
+                    data.payment?.payment_method?.toUpperCase() || "ONLINE"
+                  })`;
+                }
+
+                const discountText = discount ? `Discount: ₹${discount}\n` : "";
+
+                const deliveryTime = data.deliveryDateTime
+                  ? new Date(data.deliveryDateTime).toLocaleString("en-IN", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "N/A";
+
+                const orderText = `${data.order_id || "N/A"}
+                Passenger Name: ${data.userDetails?.name || "N/A"}
+                Mobile Number: ${data.userDetails?.mobile || "N/A"}
+
+                Train Number: ${data.trainDetails?.train_number || "N/A"} / PNR Number: ${
+                  data.trainDetails?.train_pnr || "NA"
+                } / Coach Num: ${data.userDetails?.coach || "N/A"} / SeatNum: ${
+                  data.userDetails?.seatNo || "N/A"
+                }
+
+                ${itemsText}
+
+                ${discountText}${paymentText} Delivery Time ${deliveryTime}
+
+${data.station?.toUpperCase() || "N/A"}   JUNCTION
+
+Note: Please be on your seat at the delivery time.
+
+Thank you for contacting Trainscafe, enjoy your meal.
+For any further query contact 8696963496
 `;
-                navigator.clipboard.writeText(orderText);
+
+                navigator.clipboard.writeText(orderText.trim());
+                console.log("Copied formatted order details:", orderText);
               }}
               style={{
                 backgroundColor: "#4A90E2",

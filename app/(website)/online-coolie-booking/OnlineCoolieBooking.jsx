@@ -270,53 +270,60 @@ const OnlineCoolieBooking = () => {
         <h2 className="font-bold text-[#704D25] mb-2">
           Frequently Asked Questions (FAQs)
         </h2>
-        <Collapse accordion>
-          <Panel
-            header="Q1. How early should I book my coolie service in train?"
-            key="1"
-          >
-            <p>
-              You can book your coolie before 45 minutes of reaching the
-              station. Booking before reaching the station gives a seamless
-              experience and a smoother journey.
-            </p>
-          </Panel>
-          <Panel
-            header="Q2. Can I book a coolie for both boarding and deboarding? "
-            key="2"
-          >
-            <p>
-              Yes, you can book coolie service for both boarding and return
-              journeys.
-            </p>
-          </Panel>
-          <Panel header="Q3. Is my online payment secure?" key="3">
-            <p>
-              Absolutely, the payment is secure and accurate. Incase if you find
-              out any issue you can contact to our customer support team which
-              is available for 24*7 to resolve any issue under 10-15 minutes.
-            </p>
-          </Panel>
+         <Collapse accordion>
+      <Panel
+        header={<h3>Q1. How early should I book my coolie service in train?</h3>}
+        key="1"
+      >
+        <p>
+          You can book your coolie before 45 minutes of reaching the
+          station. Booking before reaching the station gives a seamless
+          experience and a smoother journey.
+        </p>
+      </Panel>
 
-          <Panel
-            header="Q4. How will I identify my coolie at the station?"
-            key="4"
-          >
-            <p>
-              After booking, you can check the details of the assigned coolie,
-              his name, mobile number, and location. He will call you once the
-              booking has been done so you can directly coordinate with the
-              coolie on call.
-            </p>
-          </Panel>
+      <Panel
+        header={<h3>Q2. Can I book a coolie for both boarding and deboarding?</h3>}
+        key="2"
+      >
+        <p>
+          Yes, you can book coolie service for both boarding and return
+          journeys.
+        </p>
+      </Panel>
 
-          <Panel header="Q5. Can I cancel my booking? " key="5">
-            <p>
-              Yes, you can cancel your booking, but cancellation policies may
-              apply. Please refer to our terms and conditions for more details.
-            </p>
-          </Panel>
-        </Collapse>
+      <Panel
+        header={<h3>Q3. Is my online payment secure?</h3>}
+        key="3"
+      >
+        <p>
+          Absolutely, the payment is secure and accurate. In case you find
+          any issue, you can contact our customer support team — available
+          24×7 to resolve issues within 10–15 minutes.
+        </p>
+      </Panel>
+
+      <Panel
+        header={<h3>Q4. How will I identify my coolie at the station?</h3>}
+        key="4"
+      >
+        <p>
+          After booking, you can check the details of the assigned coolie:
+          name, mobile number, and location. He will call you once the
+          booking is confirmed so you can directly coordinate on call.
+        </p>
+      </Panel>
+
+      <Panel
+        header={<h3>Q5. Can I cancel my booking?</h3>}
+        key="5"
+      >
+        <p>
+          Yes, you can cancel your booking, but cancellation policies may
+          apply. Please refer to our terms and conditions for more details.
+        </p>
+      </Panel>
+    </Collapse>
       </div>
 
       <div className="py-4 px-4">

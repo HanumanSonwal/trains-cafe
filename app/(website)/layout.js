@@ -6,7 +6,7 @@ import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const siteUrl = process.env.NEXT_PUBLIC_URL || "https://www.trainscafe.com";
+const siteUrl = process.env.NEXT_PUBLIC_URL || "https://www.trainscafe.in";
 
 export const metadata = {
   title: {

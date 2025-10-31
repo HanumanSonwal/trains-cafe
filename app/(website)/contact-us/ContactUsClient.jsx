@@ -55,7 +55,7 @@ const ContactUsClient = () => {
           <p>
             At <b>Trainscafe</b>, your satisfaction is our priority. Whether you
             have questions about your order, want to know more about our
-            services, or need help with group bookings — we’re just a call,
+            services, or need help with group bookings - we’re just a call,
             message, or email away. Our support team is available 24×7 to help
             you enjoy a smooth train food delivery experience.
           </p>

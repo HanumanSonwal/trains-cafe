@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "antd";
 import Spinner from "@/app/componants/spinner/Spinner";
@@ -26,42 +26,23 @@ const RecentOrders = dynamic(() => import("@/app/componants/RecentOrders"), {
 
 function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
   const [showFullContent, setShowFullContent] = useState(false);
+  const [isGooglebot, setIsGooglebot] = useState(false);
 
   if (!page) return <Custom404 />;
 
   const isExceptionSlug = slug === "stations" || slug === "trains";
 
-  const contentToRender = useMemo(() => {
-    const rawHtml = page.pageData || "<p>No content available.</p>";
-
-    if (isExceptionSlug) return rawHtml;
-
-    if (shouldTruncate && !showFullContent) {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = rawHtml;
-
-      const textContent = tempDiv.innerText || "";
-      const truncatedText =
-        textContent.length > 300
-          ? textContent.slice(0, 300) + "..."
-          : textContent;
-
-      return `<div>${truncatedText}</div><div style="display:none;">${rawHtml}</div>`;
-    }
-
-    return rawHtml;
-  }, [page.pageData, showFullContent, isExceptionSlug, shouldTruncate]);
-
-  const toggleContent = useCallback(() => {
-    setShowFullContent((prev) => !prev);
-  }, []);
-
   useEffect(() => {
-    // Ensure Googlebot always sees full content
-    if (typeof window !== "undefined" && navigator.userAgent.includes("Googlebot")) {
+    if (
+      typeof window !== "undefined" &&
+      navigator.userAgent.includes("Googlebot")
+    ) {
+      setIsGooglebot(true);
       setShowFullContent(true);
     }
   }, []);
+
+  const toggleContent = () => setShowFullContent((prev) => !prev);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,16 +51,25 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
 
       <main className="max-w-4xl mx-auto p-6 sm:p-10 bg-white shadow-lg rounded-lg">
         <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 text-[#704d25]">
-          {page.title || "No Title Provided"}
+          {page.name || "No Title Provided"}
         </h1>
 
         <div
-          className="jodit-content-view"
-          dangerouslySetInnerHTML={{ __html: contentToRender }}
+          className={`jodit-content-view transition-all duration-500 ${
+            shouldTruncate &&
+            !isExceptionSlug &&
+            !showFullContent &&
+            !isGooglebot
+              ? "max-h-[400px] overflow-hidden relative fade-bottom"
+              : "max-h-none overflow-visible"
+          }`}
+          dangerouslySetInnerHTML={{
+            __html: page.pageData || "<p>No content available.</p>",
+          }}
         />
 
-        {shouldTruncate && !isExceptionSlug && (
-          <div className="text-center mb-4">
+        {shouldTruncate && !isExceptionSlug && !isGooglebot && (
+          <div className="text-center mt-4">
             <Button
               className="order-btn border-none rounded-full px-4 py-2 text-xs font-[600] hover:bg-[#D49929] hover:text-white"
               onClick={toggleContent}
@@ -134,6 +124,24 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           color: #333;
           word-break: break-word;
           overflow-wrap: break-word;
+          position: relative;
+        }
+
+        /* Fade effect for truncated content */
+        .fade-bottom::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 80px;
+          background: linear-gradient(to bottom, transparent, white);
+        }
+
+        .jodit-content-view a {
+          color: #2563eb;
+          text-decoration: underline;
+          font-weight: 500;
         }
 
         .jodit-content-view img {
@@ -154,6 +162,20 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
           border: 1px solid #ddd;
           padding: 0.75rem;
           text-align: left;
+        }
+
+        .jodit-content-view p {
+          margin-bottom: 1em;
+        }
+
+        .jodit-content-view ul,
+        .jodit-content-view ol {
+          padding-left: 1.5rem;
+          margin-bottom: 1em;
+        }
+
+        .jodit-content-view li {
+          margin-bottom: 0.5em;
         }
 
         .jodit-content-view iframe,

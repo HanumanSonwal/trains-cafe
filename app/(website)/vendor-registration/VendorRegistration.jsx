@@ -461,66 +461,77 @@ const handleStationSearch = debounce((searchTerm) => {
             </div>
           </div>
         </div>
-        <div className="py-4 px-4">
+        <div className="py-4 px-2">
           {" "}
           <h2 className="font-bold text-[#704D25] mb-2">
             Frequently Asked Questions (FAQs)
           </h2>
-          <Collapse accordion>
-            <Panel
-              header="Q1. How you can tie-up as vendor with restaurants on train?"
-              key="1"
-            >
-              <p>
-                For vendor tie-up with resturants on train,there is always be
-                the submission of some important documents such as valid FSSAI
-                certificate,GST registered shop etc.{" "}
-                <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
-                <b>food on train through Trainscafe</b>.
-              </p>
-            </Panel>
-            <Panel header="Q2. Is local vendors allowed in tran?" key="2">
-              <p>
-                As trespassers or encroachers of railway land, any unauthorized
-                vendors or hawkers on train and station property must be removed
-                in accordance with applicable laws (Sections 144 & 147) of the
-                Railways Act, 1989.
-              </p>
-            </Panel>
-            <Panel
-              header="Q3. What is the method of getting vendor licence in train?"
-              key="3"
-            >
-              <p>
-                To get vendor license in train,you must have certain documents
-                to be verified by Indian railways. Trainscafe provides the
-                opportunity to get registered with them as a new vendor.
-              </p>
-            </Panel>
+              <Collapse accordion>
+      <Panel
+        header={
+          <h3>
+            Q1. How you can tie-up as vendor with restaurants on train?
+          </h3>
+        }
+        key="1"
+      >
+        <p>
+          For vendor tie-up with restaurants on train, there is always the
+          submission of some important documents such as a valid FSSAI
+          certificate and GST-registered shop.{" "}
+          <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
+          <b>food on train through Trainscafe</b>.
+        </p>
+      </Panel>
 
-            <Panel header="Q4. How can I become vendor for railways?" key="4">
-              <p>
-                To become a vendor for railways you need to research first for
-                the company you want to run and then it should be necessary that
-                your business should be registered first with all important
-                documents to be submitted.
-              </p>
-            </Panel>
+      <Panel
+        header={<h3>Q2. Is local vendors allowed in train?</h3>}
+        key="2"
+      >
+        <p>
+          As trespassers or encroachers of railway land, any unauthorized
+          vendors or hawkers on trains and station property must be removed
+          in accordance with applicable laws (Sections 144 & 147) of the
+          Railways Act, 1989.
+        </p>
+      </Panel>
 
-            <Panel
-              header="Q5. How can I become authorised IRCTC partner?"
-              key="5"
-            >
-              <p>
-                In order to become authorised IRCTC partner,you must fill the
-                registration form for IRCTC agent and upload important
-                documents. After verification you will get ID and password to
-                login into the portal. Get{" "}
-                <b>vendor tie-ups with restaurants</b> and start delivering{" "}
-                <b>food on train through Trainscafe.</b>
-              </p>
-            </Panel>
-          </Collapse>
+      <Panel
+        header={<h3>Q3. What is the method of getting vendor licence in train?</h3>}
+        key="3"
+      >
+        <p>
+          To get a vendor license in train, you must have certain documents
+          verified by Indian Railways. Trainscafe provides the opportunity
+          to get registered with them as a new vendor.
+        </p>
+      </Panel>
+
+      <Panel
+        header={<h3>Q4. How can I become vendor for railways?</h3>}
+        key="4"
+      >
+        <p>
+          To become a vendor for railways, you need to research first the
+          company you want to run and ensure your business is registered with
+          all required documents submitted.
+        </p>
+      </Panel>
+
+      <Panel
+        header={<h3>Q5. How can I become authorised IRCTC partner?</h3>}
+        key="5"
+      >
+        <p>
+          In order to become an authorised IRCTC partner, you must fill out
+          the registration form for IRCTC agents and upload the required
+          documents. After verification, you will receive an ID and password
+          to log in to the portal.{" "}
+          <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
+          <b>food on train through Trainscafe.</b>
+        </p>
+      </Panel>
+    </Collapse>
         </div>
       </div>
 
