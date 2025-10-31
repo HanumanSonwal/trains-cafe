@@ -39,7 +39,7 @@ const ItemsModal = ({ items }) => {
         </Space>
       ),
       key: "itemWithQty",
-      // width: 220,
+      width: 300,
       render: (_, record) => {
         const itemName = record.MenuItem?.Item_Name || "Unnamed Item";
         const qty = record.Quantity || 0;
