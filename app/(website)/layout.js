@@ -11,7 +11,7 @@ const siteUrl = process.env.NEXT_PUBLIC_URL || "https://www.trainscafe.in";
 export const metadata = {
   title: {
     default: "Trains Cafe",
-    template: "%s | Trains Cafe",
+    template: "%s",
   },
   description: "Order fresh, hygienic food in trains across India.",
   robots: "index, follow",

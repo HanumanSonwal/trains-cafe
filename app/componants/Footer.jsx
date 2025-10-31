@@ -245,7 +245,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/train-coach-position"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Train Coach Position
@@ -253,7 +253,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/irctc-train-schedule"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       IRCTC Train Schedule
@@ -261,7 +261,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/platform-locator"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Platform Locator
@@ -269,7 +269,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/order-food-in-train-from-whatsapp"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Check PNR Status on Whatsapp
@@ -277,7 +277,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/train-running-status"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Live Train Running Status
