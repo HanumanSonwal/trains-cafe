@@ -294,64 +294,75 @@ export default function Header() {
     return total + item.price * item.quantity;
   }, 0);
 
-  // ✅ Handle PWA install prompt visibility and logic
-  useEffect(() => {
-    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(
-      navigator.userAgent
-    );
+useEffect(() => {
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    if (!isMobileDevice) {
-      setShowInstall(false);
-      return;
-    }
-
-    const handler = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstall(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler);
-
-    // Check if PWA is already installed
-    const checkIfInstalled = () => {
-      const isInStandaloneMode =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone === true;
-
-      if (isInStandaloneMode) {
-        setShowInstall(false);
-      }
-    };
-
-    checkIfInstalled();
-
-    // Hide button after install
-    window.addEventListener("appinstalled", () => {
-      console.log("PWA installed");
-      setShowInstall(false);
-    });
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
-      console.log("User accepted the install prompt");
-    } else {
-      console.log("User dismissed the install prompt");
-    }
-
-    setDeferredPrompt(null);
+  // Hide on desktop
+  if (!isMobileDevice) {
     setShowInstall(false);
+    return;
+  }
+
+  let promptEvent;
+
+  const beforeInstallHandler = (e) => {
+    e.preventDefault();
+    promptEvent = e;
+    setDeferredPrompt(e);
+    setShowInstall(true); // ✅ show button when eligible
   };
+
+  window.addEventListener("beforeinstallprompt", beforeInstallHandler);
+
+  // ✅ Check if PWA is already installed
+  const checkIfInstalled = () => {
+    const isInStandaloneMode =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    if (isInStandaloneMode) {
+      setShowInstall(false);
+    }
+  };
+
+  checkIfInstalled();
+
+  // ✅ Hide after app gets installed
+  window.addEventListener("appinstalled", () => {
+    console.log("PWA was installed");
+    setShowInstall(false);
+  });
+
+  // ✅ (optional) Debug: log when eligible
+  window.addEventListener("beforeinstallprompt", () => {
+    console.log("beforeinstallprompt fired");
+  });
+
+  return () => {
+    window.removeEventListener("beforeinstallprompt", beforeInstallHandler);
+  };
+}, []);
+
+
+const handleInstallClick = async () => {
+  if (!deferredPrompt) {
+    alert("App not ready for install yet. Please try again in a moment.");
+    return;
+  }
+
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+
+  if (outcome === "accepted") {
+    console.log("User accepted the install prompt");
+  } else {
+    console.log("User dismissed the install prompt");
+  }
+
+  setDeferredPrompt(null);
+  setShowInstall(false);
+};
+
 
   return (
     <div className="sticky top-0 z-50 mx-auto">
