@@ -3,6 +3,7 @@ import "../globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import ProviderWrapper from "../componants/ProviderWrapper";
 import Script from "next/script";
+import RegisterServiceWorker from "../componants/registerServiceWorker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -269,7 +270,7 @@ export default function RootLayout({ children }) {
         }}
       >
         <AntdRegistry>
-          <ProviderWrapper>{children}</ProviderWrapper>
+          <ProviderWrapper>{children}  <RegisterServiceWorker /></ProviderWrapper>
         </AntdRegistry>
 
         <Script
