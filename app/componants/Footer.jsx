@@ -190,7 +190,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/help-and-support"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Help & Support
@@ -272,7 +272,7 @@ const Footer = () => {
                       href="/order-food-in-train-from-whatsapp"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
-                      Check PNR Status on Whatsapp
+                      Order Food in Train on WhatsApp
                     </Link>
                   </li>
                   <li>
@@ -286,19 +286,19 @@ const Footer = () => {
                 </ul>
 
                 <div className="flex items-center space-x-4 text-[#3A3A3A] mt-3">
-                  <Link href="https://www.facebook.com" target="_blank">
+                  <Link href="https://www.facebook.com/trainscafe" target="_blank">
                     <FacebookFilled className="text-2xl hover:text-[#1877F2] transition duration-300" />
                   </Link>
-                  <Link href="https://www.twitter.com" target="_blank">
+                  <Link href="https://x.com/trainscafe" target="_blank">
                     <XOutlined className="text-2xl hover:text-black transition duration-300" />
                   </Link>
-                  <Link href="https://www.linkedin.com" target="_blank">
+                  <Link href="https://www.linkedin.com/company/trainscafe" target="_blank">
                     <LinkedinFilled className="text-2xl hover:text-[#0A66C2] transition duration-300" />
                   </Link>
-                  <Link href="https://www.instagram.com" target="_blank">
+                  <Link href="https://www.instagram.com/trainscafe_/" target="_blank">
                     <InstagramFilled className="text-2xl hover:text-[#E1306C] transition duration-300" />
                   </Link>
-                  <Link href="https://www.youtube.com" target="_blank">
+                  <Link href="https://www.youtube.com/@trainscafe" target="_blank">
                     <YoutubeFilled className="text-2xl hover:text-[#FF0000] transition duration-300" />
                   </Link>
                 </div>
