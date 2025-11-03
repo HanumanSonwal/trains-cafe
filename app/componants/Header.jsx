@@ -357,9 +357,9 @@ export default function Header() {
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
 
-          {/* {showInstall &&  */}
+     
           <RegisterServiceWorker />
-          // }
+       
 
           <div className="flex items-center gap-4">
             <button className="cart-button" onClick={toggleCart}>
