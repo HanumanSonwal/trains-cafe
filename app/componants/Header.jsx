@@ -293,8 +293,6 @@ export default function Header() {
   const totalPrice = cartItems.reduce((total, item) => {
     return total + item.price * item.quantity;
   }, 0);
-
-  // ✅ Handle PWA install prompt visibility and logic
   useEffect(() => {
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(
       navigator.userAgent
@@ -313,7 +311,6 @@ export default function Header() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Check if PWA is already installed
     const checkIfInstalled = () => {
       const isInStandaloneMode =
         window.matchMedia("(display-mode: standalone)").matches ||
@@ -326,7 +323,6 @@ export default function Header() {
 
     checkIfInstalled();
 
-    // Hide button after install
     window.addEventListener("appinstalled", () => {
       console.log("PWA installed");
       setShowInstall(false);
@@ -361,7 +357,9 @@ export default function Header() {
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
 
-          {showInstall && <RegisterServiceWorker />}
+          {/* {showInstall &&  */}
+          <RegisterServiceWorker />
+          // }
 
           <div className="flex items-center gap-4">
             <button className="cart-button" onClick={toggleCart}>
@@ -373,7 +371,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* 🛒 CART MODAL */}
       <Modal
         title="Cart Items"
         open={isCartOpen}
