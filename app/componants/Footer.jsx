@@ -5,7 +5,6 @@ import {
   FacebookFilled,
   InstagramFilled,
   LinkedinFilled,
-  TwitterSquareFilled,
   XOutlined,
   YoutubeFilled,
 } from "@ant-design/icons";
@@ -285,20 +284,49 @@ const Footer = () => {
                   </li>
                 </ul>
 
-                <div className="flex items-center space-x-4 text-[#3A3A3A] mt-3">
-                  <Link href="https://www.facebook.com/trainscafe" target="_blank">
+                <div className="flex flex-row flex-wrap justify-center md:justify-start items-center gap-4 mt-4 text-[#3A3A3A]">
+                  <Link
+                    href="https://www.facebook.com/trainscafe"
+                    target="_blank"
+                    aria-label="Facebook"
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
                     <FacebookFilled className="text-2xl hover:text-[#1877F2] transition duration-300" />
                   </Link>
-                  <Link href="https://x.com/trainscafe" target="_blank">
+
+                  <Link
+                    href="https://x.com/trainscafe"
+                    target="_blank"
+                    aria-label="X (Twitter)"
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
                     <XOutlined className="text-2xl hover:text-black transition duration-300" />
                   </Link>
-                  <Link href="https://www.linkedin.com/company/trainscafe" target="_blank">
+
+                  <Link
+                    href="https://www.linkedin.com/company/trainscafe"
+                    target="_blank"
+                    aria-label="LinkedIn"
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
                     <LinkedinFilled className="text-2xl hover:text-[#0A66C2] transition duration-300" />
                   </Link>
-                  <Link href="https://www.instagram.com/trainscafe_/" target="_blank">
+
+                  <Link
+                    href="https://www.instagram.com/trainscafe_/"
+                    target="_blank"
+                    aria-label="Instagram"
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
                     <InstagramFilled className="text-2xl hover:text-[#E1306C] transition duration-300" />
                   </Link>
-                  <Link href="https://www.youtube.com/@trainscafe" target="_blank">
+
+                  <Link
+                    href="https://www.youtube.com/@trainscafe"
+                    target="_blank"
+                    aria-label="YouTube"
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
                     <YoutubeFilled className="text-2xl hover:text-[#FF0000] transition duration-300" />
                   </Link>
                 </div>
