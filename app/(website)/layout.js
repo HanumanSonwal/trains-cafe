@@ -270,7 +270,7 @@ export default function RootLayout({ children }) {
         }}
       >
         <AntdRegistry>
-          <ProviderWrapper>{children}  <RegisterServiceWorker /></ProviderWrapper>
+          <ProviderWrapper>{children}  </ProviderWrapper>
         </AntdRegistry>
 
         <Script

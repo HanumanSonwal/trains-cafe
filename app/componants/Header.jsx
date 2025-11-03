@@ -242,6 +242,7 @@ import { Badge, Modal, Button } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
+import RegisterServiceWorker from "./registerServiceWorker";
 
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -294,75 +295,64 @@ export default function Header() {
     return total + item.price * item.quantity;
   }, 0);
 
-useEffect(() => {
-  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // ✅ Handle PWA install prompt visibility and logic
+  useEffect(() => {
+    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(
+      navigator.userAgent
+    );
 
-  // Hide on desktop
-  if (!isMobileDevice) {
-    setShowInstall(false);
-    return;
-  }
-
-  let promptEvent;
-
-  const beforeInstallHandler = (e) => {
-    e.preventDefault();
-    promptEvent = e;
-    setDeferredPrompt(e);
-    setShowInstall(true); // ✅ show button when eligible
-  };
-
-  window.addEventListener("beforeinstallprompt", beforeInstallHandler);
-
-  // ✅ Check if PWA is already installed
-  const checkIfInstalled = () => {
-    const isInStandaloneMode =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      window.navigator.standalone === true;
-
-    if (isInStandaloneMode) {
+    if (!isMobileDevice) {
       setShowInstall(false);
+      return;
     }
-  };
 
-  checkIfInstalled();
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
 
-  // ✅ Hide after app gets installed
-  window.addEventListener("appinstalled", () => {
-    console.log("PWA was installed");
+    window.addEventListener("beforeinstallprompt", handler);
+
+    // Check if PWA is already installed
+    const checkIfInstalled = () => {
+      const isInStandaloneMode =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+
+      if (isInStandaloneMode) {
+        setShowInstall(false);
+      }
+    };
+
+    checkIfInstalled();
+
+    // Hide button after install
+    window.addEventListener("appinstalled", () => {
+      console.log("PWA installed");
+      setShowInstall(false);
+    });
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+
+    if (outcome === "accepted") {
+      console.log("User accepted the install prompt");
+    } else {
+      console.log("User dismissed the install prompt");
+    }
+
+    setDeferredPrompt(null);
     setShowInstall(false);
-  });
-
-  // ✅ (optional) Debug: log when eligible
-  window.addEventListener("beforeinstallprompt", () => {
-    console.log("beforeinstallprompt fired");
-  });
-
-  return () => {
-    window.removeEventListener("beforeinstallprompt", beforeInstallHandler);
   };
-}, []);
-
-
-const handleInstallClick = async () => {
-  if (!deferredPrompt) {
-    alert("App not ready for install yet. Please try again in a moment.");
-    return;
-  }
-
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-
-  if (outcome === "accepted") {
-    console.log("User accepted the install prompt");
-  } else {
-    console.log("User dismissed the install prompt");
-  }
-
-  setDeferredPrompt(null);
-  setShowInstall(false);
-};
-
 
   return (
     <div className="sticky top-0 z-50 mx-auto">
@@ -371,6 +361,19 @@ const handleInstallClick = async () => {
           <Link href="/">
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
+
+<RegisterServiceWorker/> 
+
+{showInstall && (
+  <button
+    onClick={handleInstallClick}
+    className="flex items-center gap-1 bg-[#D6872A] text-white px-3 py-1.5 rounded-md text-sm hover:bg-[#6F4D27] transition-all"
+  >
+    <DownloadOutlined />
+    Install App
+  </button>
+)}
+
 
           <div className="flex items-center gap-4">
             {showInstall && (
