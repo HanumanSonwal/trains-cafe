@@ -229,7 +229,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -362,30 +361,9 @@ export default function Header() {
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
 
-<RegisterServiceWorker/> 
-
-{showInstall && (
-  <button
-    onClick={handleInstallClick}
-    className="flex items-center gap-1 bg-[#D6872A] text-white px-3 py-1.5 rounded-md text-sm hover:bg-[#6F4D27] transition-all"
-  >
-    <DownloadOutlined />
-    Install App
-  </button>
-)}
-
+          {showInstall && <RegisterServiceWorker />}
 
           <div className="flex items-center gap-4">
-            {showInstall && (
-              <button
-                onClick={handleInstallClick}
-                className="install-button text-[#6F4D27] hover:text-[#D6872A] transition-all"
-                title="Install App"
-              >
-                <DownloadOutlined style={{ fontSize: "24px" }} />
-              </button>
-            )}
-
             <button className="cart-button" onClick={toggleCart}>
               <Badge count={totalUniqueItems} showZero>
                 <ShoppingCartOutlined style={{ fontSize: "24px" }} />
