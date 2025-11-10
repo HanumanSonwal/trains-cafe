@@ -1,4 +1,3 @@
-// components/SalesAnalyticsChart.js
 "use client";
 import React from 'react';
 import { Card } from 'antd';

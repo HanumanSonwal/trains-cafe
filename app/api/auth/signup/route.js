@@ -21,7 +21,7 @@ export async function POST(req) {
         name,
         email,
         password: hashedPassword,
-        role: role || 'user'  // Default to 'user' if no role is provided
+        role: role || 'user' 
       });
       await newUser.save();
   
