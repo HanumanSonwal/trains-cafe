@@ -17,13 +17,73 @@ const CheckoutPage = () => {
   const [form] = Form.useForm();
   const email = Form.useWatch("email", form);
   const mobile = Form.useWatch("mobile", form);
-
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+
+  const leadIdRef = React.useRef(null);
+
+  const createLead = async (mobile) => {
+    if (leadIdRef.current || !mobile || mobile.length !== 10) return;
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile }),
+      });
+
+      const data = await res.json();
+      leadIdRef.current = data?.leadId || data?.data?._id || null;
+
+      if (leadIdRef.current) console.log("✅ Lead Created:", leadIdRef.current);
+    } catch {}
+  };
+
+  const updateLead = async (values) => {
+    const leadId = leadIdRef.current;
+    if (!leadId) return;
+
+    const hasValue = Object.values(values).some(
+      (v) => v && v.toString().trim() !== ""
+    );
+    if (!hasValue) return;
+
+    const payload = {
+      name: values.name || "",
+      mobile: values.mobile || "",
+      email: values.email || "",
+      station: station?.name || "",
+      train_number: values.trainNo || train?.train_number || "",
+      pnr: values.pnr || "",
+      cartItems: items,
+    };
+
+    try {
+      await fetch(`/api/leads/${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("🔄 Lead Updated");
+    } catch {}
+  };
+
+  const deleteLead = async () => {
+    const leadId = leadIdRef.current;
+    if (!leadId) return;
+
+    try {
+      await fetch(`/api/leads/${leadId}`, { method: "DELETE" });
+      console.log("🗑 Lead Deleted");
+    } catch {}
+
+    leadIdRef.current = null;
+  };
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -122,7 +182,11 @@ const CheckoutPage = () => {
 
     try {
       setLoading(true);
+
+      await updateLead(values);
+
       const payload = createOrderPayload(values);
+
       const response = await placeOrder(
         payload.vendor,
         payload.station,
@@ -132,25 +196,34 @@ const CheckoutPage = () => {
         payload.user_details,
         payload.couponCode
       );
-      if (response?.success) {
-        const order = response?.data;
-        if (!order?._id) {
-          message.error("Invalid order response.");
-          setLoading(false);
-          return;
+
+      if (response?.success && response?.data?._id) {
+        const order = response.data;
+
+        await deleteLead();
+
+        if (paymentMethod === "RAZORPAY") {
+          handleRazorpayFlow(order, values);
+        } else {
+          handleCODFlow(order);
         }
 
-        paymentMethod === "RAZORPAY"
-          ? handleRazorpayFlow(order, values)
-          : handleCODFlow(order);
-      } else {
-        message.error(
-          response?.message || response?.error || "Something went wrong."
-        );
-        setLoading(false);
+        return;
       }
+
+      message.error(
+        response?.message ||
+          response?.error ||
+          "Something went wrong, order not completed."
+      );
+
+      await updateLead(values);
     } catch (error) {
-      message.error(error?.message || "Error placing order. Please try again.");
+      console.error("Order Error:", error);
+      message.error("Something went wrong. Please try again.");
+
+      await updateLead(values);
+    } finally {
       setLoading(false);
       setPaymentProcessing(false);
     }
@@ -175,7 +248,11 @@ const CheckoutPage = () => {
           </h1>
 
           <Form layout="vertical" form={form} onFinish={handlePlaceOrder}>
-            <OrderDetailsForm />
+            <OrderDetailsForm
+              form={form}
+              createLead={createLead}
+              updateLead={updateLead}
+            />
 
             <div className="bg-white shadow rounded-lg p-4 mt-4">
               <h2 className="text-xl font-bold mb-4">Order Details</h2>
@@ -251,7 +328,6 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
-
 
       {paymentProcessing && (
         <div className="fixed inset-0 bg-white/70 z-[9999] flex justify-center items-center">

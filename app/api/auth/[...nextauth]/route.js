@@ -1,50 +1,57 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import dbConnect from '../../../lib/dbConnect';
-import bcrypt from 'bcryptjs';
-import User from '@/app/models/user';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import dbConnect from "../../../lib/dbConnect";
+import bcrypt from "bcryptjs";
+import User from "@/app/models/user";
 
 export const authOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'email', required: true },
-        password: { label: 'Password', type: 'password', required: true },
+        email: { label: "Email", type: "email", required: true },
+        password: { label: "Password", type: "password", required: true },
       },
       async authorize(credentials) {
         await dbConnect();
 
         const user = await User.findOne({ email: credentials.email });
         if (!user) {
-          throw new Error('No user found with this email');
+          throw new Error("No user found with this email");
         }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
         if (!isPasswordValid) {
-          throw new Error('Invalid password');
+          throw new Error("Invalid password");
         }
 
-        // Include role in the returned user object
-        return { id: user._id, name: user.name, email: user.email, role: user.role };
+        return {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
   ],
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   callbacks: {
     async session({ session, token, user }) {
-      session.user.role = token.role;  // Pass role to the session
+      session.user.role = token.role;
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;  // Store role in the JWT token
+        token.role = user.role;
       }
       return token;
-    }
-  }
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

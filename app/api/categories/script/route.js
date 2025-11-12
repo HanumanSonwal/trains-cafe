@@ -5,7 +5,6 @@ export async function PUT(req) {
   try {
     await dbConnect();
 
-    // Get categories that don't have categoryid
     const categoriesToUpdate = await CategoryModel.find({
       categoryid: { $exists: false },
     });
@@ -17,7 +16,6 @@ export async function PUT(req) {
       );
     }
 
-    // Get the current max categoryid
     const lastCategoryWithId = await CategoryModel.findOne({
       categoryid: { $exists: true },
     }).sort({ categoryid: -1 });

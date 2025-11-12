@@ -1,6 +1,6 @@
 import { Input, Form, Row, Col, Divider } from "antd";
 
-const OrderDetailsForm = () => {
+const OrderDetailsForm = ({ createLead, updateLead, form }) => {
   return (
     <div className="bg-white shadow rounded-lg p-2 sm:p-4">
       <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
@@ -16,44 +16,35 @@ const OrderDetailsForm = () => {
             style={{ marginBottom: 12 }}
             rules={[
               { required: true, message: "Mobile number is required" },
-              {
-                pattern: /^\d{10}$/,
-                message: "Enter a valid 10-digit mobile number",
-              },
+              { pattern: /^\d{10}$/, message: "Enter 10 digit mobile number" },
             ]}
           >
-            <Input placeholder="Mobile Number" maxLength={10} />
+            <Input
+              placeholder="Mobile Number"
+              maxLength={10}
+              onBlur={() => {
+                const mobile = form.getFieldValue("mobile");
+                if (mobile?.length === 10) createLead(mobile);
+              }}
+            />
           </Form.Item>
         </Col>
 
         <Col xs={24} sm={12}>
-          <Form.Item
-            name="name"
-            label="Name"
-            style={{ marginBottom: 12 }}
-            rules={[
-              { required: true, message: "Name is required" },
-              {
-                pattern: /^[A-Za-z\s]+$/,
-                message: "Name should contain only letters",
-              },
-            ]}
-          >
-            <Input placeholder="Name" />
+          <Form.Item name="name" label="Name" style={{ marginBottom: 12 }}>
+            <Input
+              placeholder="Name"
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
 
         <Col xs={24} sm={12}>
-          <Form.Item
-            name="email"
-            label="Email"
-            style={{ marginBottom: 12 }}
-            rules={[
-              { required: true, message: "Email is required" },
-              { type: "email", message: "Enter a valid email address" },
-            ]}
-          >
-            <Input placeholder="Email" />
+          <Form.Item name="email" label="Email" style={{ marginBottom: 12 }}>
+            <Input
+              placeholder="Email"
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
 
@@ -62,14 +53,12 @@ const OrderDetailsForm = () => {
             name="alternateMobile"
             label="Alternate Mobile (Optional)"
             style={{ marginBottom: 12 }}
-            rules={[
-              {
-                pattern: /^\d{10}$/,
-                message: "Enter a valid 10-digit mobile number",
-              },
-            ]}
           >
-            <Input placeholder="Alternate Mobile" maxLength={10} />
+            <Input
+              placeholder="Alternate Mobile"
+              maxLength={10}
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -77,19 +66,12 @@ const OrderDetailsForm = () => {
       <Divider orientation="left">Train Details</Divider>
       <Row gutter={[8, 8]}>
         <Col xs={24} sm={12}>
-          <Form.Item
-            name="pnr"
-            label="PNR"
-            style={{ marginBottom: 12 }}
-            rules={[
-              { required: true, message: "PNR is required" },
-              {
-                pattern: /^\d{10}$/,
-                message: "PNR must be exactly 10 digits",
-              },
-            ]}
-          >
-            <Input placeholder="Enter 10 Digit PNR" maxLength={10} />
+          <Form.Item name="pnr" label="PNR" style={{ marginBottom: 12 }}>
+            <Input
+              placeholder="Enter 10 Digit PNR"
+              maxLength={10}
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
 
@@ -98,21 +80,21 @@ const OrderDetailsForm = () => {
             name="trainNo"
             label="Train Number"
             style={{ marginBottom: 12 }}
-            rules={[
-              { required: true, message: "Train number is required" },
-              {
-                pattern: /^\d{5}$/,
-                message: "Train number should be exactly 5 digits only",
-              },
-            ]}
           >
-            <Input placeholder="Train Number" maxLength={5} />
+            <Input
+              placeholder="Train Number"
+              maxLength={5}
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
 
         <Col xs={24} sm={12}>
           <Form.Item name="coach" label="Coach" style={{ marginBottom: 12 }}>
-            <Input placeholder="Coach" />
+            <Input
+              placeholder="Coach"
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
 
@@ -122,7 +104,10 @@ const OrderDetailsForm = () => {
             label="Seat No."
             style={{ marginBottom: 12 }}
           >
-            <Input placeholder="Seat No." />
+            <Input
+              placeholder="Seat No."
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
 
@@ -132,7 +117,11 @@ const OrderDetailsForm = () => {
             label="Optional Instructions"
             style={{ marginBottom: 0 }}
           >
-            <Input.TextArea placeholder="Optional Instructions" rows={3} />
+            <Input.TextArea
+              rows={3}
+              placeholder="Optional Instructions"
+              onBlur={() => updateLead(form.getFieldsValue())}
+            />
           </Form.Item>
         </Col>
       </Row>
