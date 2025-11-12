@@ -584,7 +584,7 @@ export async function GET() {
 
     // ✅ 5. Payment type stats
     const codData = await Order.aggregate([
-      { $match: { "payment.method": "COD" } },
+      { $match: { "payment.payment_method": "COD" } },
       {
         $group: {
           _id: null,
@@ -594,15 +594,20 @@ export async function GET() {
       },
     ]);
     const onlineData = await Order.aggregate([
-      { $match: { "payment.method": "Online" } },
-      {
-        $group: {
-          _id: null,
-          count: { $sum: 1 },
-          totalAmount: { $sum: "$payment.amount" },
-        },
-      },
-    ]);
+  {
+    $match: {
+      "payment.payment_method": { $in: ["UPI", "Card", "Netbanking", "RAZORPAY"] },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      count: { $sum: 1 },
+      totalAmount: { $sum: "$payment.amount" },
+    },
+  },
+]);
+
 
     const codCount = codData[0]?.count || 0;
     const onlineCount = onlineData[0]?.count || 0;
