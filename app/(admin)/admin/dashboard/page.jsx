@@ -78,11 +78,11 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-4">
-        <OngoingOrdersChart />
+        <OngoingOrdersChart  pendingOrders={dashboardData.pendingOrders}/>
       </div>
 
       <div className="mt-4">
-        <SalesAnalyticsChart />
+        <SalesAnalyticsChart monthlySales={dashboardData.monthlySales} />
       </div>
     </div>
   );

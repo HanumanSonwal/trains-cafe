@@ -15,7 +15,6 @@ export async function GET() {
     const startOfYesterdayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1, 0, 0, 0));
     const endOfYesterdayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1, 23, 59, 59));
 
-    // ✅ 1. Today’s sales
     const todayAgg = await Order.aggregate([
       {
         $match: {
@@ -34,7 +33,6 @@ export async function GET() {
     const todaySales = todayAgg[0]?.totalSales || 0;
     const todayOrders = todayAgg[0]?.orderCount || 0;
 
-    // ✅ 2. Yesterday’s sales
     const yesterdayAgg = await Order.aggregate([
       {
         $match: {
@@ -53,7 +51,6 @@ export async function GET() {
     const yesterdaySales = yesterdayAgg[0]?.totalSales || 0;
     const yesterdayOrders = yesterdayAgg[0]?.orderCount || 0;
 
-    // ✅ 3. Percentage change
     const percentageChange = yesterdaySales
       ? ((todaySales - yesterdaySales) / yesterdaySales) * 100
       : 0;
@@ -67,7 +64,6 @@ export async function GET() {
       Order.countDocuments(),
     ]);
 
-    // ✅ 5. Payment type stats
     const codData = await Order.aggregate([
       { $match: { "payment.method": "COD" } },
       {
@@ -97,14 +93,12 @@ export async function GET() {
     const codPercentage = totalPaymentCount ? ((codCount / totalPaymentCount) * 100).toFixed(1) : 0;
     const onlinePercentage = totalPaymentCount ? ((onlineCount / totalPaymentCount) * 100).toFixed(1) : 0;
 
-    // ✅ 6. Order status stats
     const deliveredCount = await Order.countDocuments({ status: "delivered" });
     const cancelCount = await Order.countDocuments({ status: "cancel" });
     const totalStatusCount = deliveredCount + cancelCount;
     const deliveredPercentage = totalStatusCount ? ((deliveredCount / totalStatusCount) * 100).toFixed(1) : 0;
     const cancelPercentage = totalStatusCount ? ((cancelCount / totalStatusCount) * 100).toFixed(1) : 0;
 
-    // ✅ 7. Monthly Sales (Jan–Dec)
     const startOfYear = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
     const endOfYear = new Date(Date.UTC(now.getUTCFullYear() + 1, 0, 1));
 
@@ -139,8 +133,7 @@ export async function GET() {
       };
     });
 
-    // ✅ 8. Fetch all Pending Orders with full details
-    const pendingOrders = await Order.find({ status: "pending" })
+    const pendingOrders = await Order.find({ status: "placed" })
       .populate("vendor")
       .populate("station")
       .populate("user_details")
@@ -175,7 +168,7 @@ export async function GET() {
         cancelPercentage,
       },
       monthlySales,
-      pendingOrders, // 👈 all pending orders with full details
+      pendingOrders, 
       dateRange: {
         today: { start: startOfTodayUTC, end: endOfTodayUTC },
         yesterday: { start: startOfYesterdayUTC, end: endOfYesterdayUTC },
