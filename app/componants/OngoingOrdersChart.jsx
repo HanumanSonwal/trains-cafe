@@ -57,11 +57,16 @@ const OngoingOrdersChart = ({ pendingOrders = [] }) => {
       render: (date) =>
         date ? dayjs(date).format("DD MMM YYYY, hh:mm A") : "—",
     },
-    {
-      title: "Amount (₹)",
-      dataIndex: "total",
-      key: "total",
-    },
+   {
+  title: "Amount (₹)",
+  dataIndex: "total",
+  key: "total",
+  render: (value) => {
+    const amount = parseFloat(value) || 0;
+    return amount.toFixed(2);
+  },
+},
+
   ];
 
   const dataSource = pendingOrders.map((order, index) => ({

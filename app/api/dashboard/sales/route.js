@@ -65,7 +65,7 @@ export async function GET() {
     ]);
 
     const codData = await Order.aggregate([
-      { $match: { "payment.method": "COD" } },
+    { $match: { "payment.payment_method": "COD" } },
       {
         $group: {
           _id: null,
@@ -75,7 +75,11 @@ export async function GET() {
       },
     ]);
     const onlineData = await Order.aggregate([
-      { $match: { "payment.method": "Online" } },
+  {
+    $match: {
+      "payment.payment_method": { $in: ["UPI", "Card", "Netbanking", "RAZORPAY"] },
+    },
+  },
       {
         $group: {
           _id: null,
