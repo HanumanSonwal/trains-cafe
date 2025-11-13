@@ -69,7 +69,11 @@ const Dashboard = () => {
   return (
     <div>
       <div className="mb-4">
-        <DashboardCard summary={dashboardData.summary} totals={dashboardData.totals} />
+      <DashboardCard
+  summaryCards={dashboardData.summaryCards}
+  totals={dashboardData.totals}
+/>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
