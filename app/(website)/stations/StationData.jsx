@@ -128,7 +128,7 @@ const StationData = ({ selectedStation }) => {
           Trainscafe offers{" "}
           <Link
             className="font-bold text-blue-600 hover:text-blue-800 underline"
-            href={`${BASE_URL}/group-food-order-in-train`}
+            href={`${BASE_URL}/group-food-ordering-in-train`}
           >
             bulk food ordering in train
           </Link>{" "}
@@ -270,13 +270,13 @@ const StationData = ({ selectedStation }) => {
               <strong>Q3:</strong>{" "}
               <strong>How to order food in bulk for a group?</strong>
               <br />
-              <strong>Ans.</strong> Click on{" "}
-              <Link
+              <strong>Ans.</strong> Click on Group Order{" "}
+              {/* <Link
                 className="font-bold text-blue-600 hover:text-blue-800 underline"
                 href={`${BASE_URL}/group-food-order-in-train`}
               >
                 “Group Order”
-              </Link>{" "}
+              </Link>{" "} */}
               on the Trainscafe site or call us with your journey details and
               group size.
             </li>

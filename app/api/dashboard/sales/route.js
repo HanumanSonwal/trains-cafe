@@ -3,7 +3,6 @@ import connectDB from "@/app/lib/dbConnect";
 import Order from "@/app/models/order";
 import Vendor from "@/app/models/vendor";
 import Menu from "@/app/models/menu";
-import Station from "@/app/models/station";
 
 export async function GET() {
   try {
@@ -31,6 +30,7 @@ export async function GET() {
         59
       )
     );
+
     const startOfYesterdayUTC = new Date(
       Date.UTC(
         now.getUTCFullYear(),
@@ -56,7 +56,7 @@ export async function GET() {
       {
         $match: {
           createdAt: { $gte: startOfTodayUTC, $lte: endOfTodayUTC },
-          status: "placed",
+          status: { $ne: "cancel" },
         },
       },
       {
@@ -75,7 +75,7 @@ export async function GET() {
       {
         $match: {
           createdAt: { $gte: startOfYesterdayUTC, $lte: endOfYesterdayUTC },
-          status: "placed",
+          status: { $ne: "cancel" },
         },
       },
       {
@@ -93,14 +93,9 @@ export async function GET() {
     const percentageChange = yesterdaySales
       ? ((todaySales - yesterdaySales) / yesterdaySales) * 100
       : 0;
-
-    const status =
-      percentageChange > 0 ? "up" : percentageChange < 0 ? "down" : "same";
-
     const ordersPercentage = yesterdayOrders
       ? (((todayOrders - yesterdayOrders) / yesterdayOrders) * 100).toFixed(2)
       : 0;
-
     const earningsPercentage = yesterdaySales
       ? (((todaySales - yesterdaySales) / yesterdaySales) * 100).toFixed(2)
       : 0;
@@ -109,23 +104,24 @@ export async function GET() {
       {
         $match: {
           createdAt: { $gte: startOfTodayUTC, $lte: endOfTodayUTC },
-          status: "placed",
-        },
-      },
-      { $group: { _id: "$user_details" } },
-    ]);
-
-    const yesterdayCustomersAgg = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: startOfYesterdayUTC, $lte: endOfYesterdayUTC },
-          status: "placed",
+          status: { $ne: "cancel" },
         },
       },
       { $group: { _id: "$user_details" } },
     ]);
 
     const todayCustomers = todayCustomersAgg.length;
+
+    const yesterdayCustomersAgg = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfYesterdayUTC, $lte: endOfYesterdayUTC },
+          status: { $ne: "cancel" },
+        },
+      },
+      { $group: { _id: "$user_details" } },
+    ]);
+
     const yesterdayCustomers = yesterdayCustomersAgg.length;
 
     const customerPercentage = yesterdayCustomers
@@ -149,11 +145,10 @@ export async function GET() {
       "November",
       "December",
     ];
-
     const currentMonth = now.getUTCMonth();
     const currentYear = now.getUTCFullYear();
-    const monthName = monthNames[currentMonth];
 
+    const monthName = monthNames[currentMonth];
     const startOfMonth = new Date(Date.UTC(currentYear, currentMonth, 1));
     const endOfMonth = new Date(Date.UTC(currentYear, currentMonth + 1, 1));
 
@@ -166,7 +161,7 @@ export async function GET() {
       {
         $match: {
           createdAt: { $gte: startOfMonth, $lt: endOfMonth },
-          status: "placed",
+          status: { $ne: "cancel" },
         },
       },
       { $group: { _id: null, totalSales: { $sum: "$payment.amount" } } },
@@ -176,7 +171,7 @@ export async function GET() {
       {
         $match: {
           createdAt: { $gte: startOfPrevMonth, $lt: endOfPrevMonth },
-          status: "placed",
+          status: { $ne: "cancel" },
         },
       },
       { $group: { _id: null, totalSales: { $sum: "$payment.amount" } } },
@@ -194,12 +189,6 @@ export async function GET() {
     const avgPercentage = prevAvg
       ? (((currentAvg - prevAvg) / prevAvg) * 100).toFixed(2)
       : 0;
-
-    const [totalVendors, totalMenus, totalOrders] = await Promise.all([
-      Vendor.countDocuments(),
-      Menu.countDocuments(),
-      Order.countDocuments(),
-    ]);
 
     const codData = await Order.aggregate([
       { $match: { "payment.payment_method": "COD" } },
@@ -235,11 +224,9 @@ export async function GET() {
     const onlineTotal = onlineData[0]?.totalAmount || 0;
 
     const totalPaymentCount = codCount + onlineCount;
-
     const codPercentage = totalPaymentCount
       ? ((codCount / totalPaymentCount) * 100).toFixed(1)
       : 0;
-
     const onlinePercentage = totalPaymentCount
       ? ((onlineCount / totalPaymentCount) * 100).toFixed(1)
       : 0;
@@ -248,11 +235,9 @@ export async function GET() {
     const cancelCount = await Order.countDocuments({ status: "cancel" });
 
     const totalStatusCount = deliveredCount + cancelCount;
-
     const deliveredPercentage = totalStatusCount
       ? ((deliveredCount / totalStatusCount) * 100).toFixed(1)
       : 0;
-
     const cancelPercentage = totalStatusCount
       ? ((cancelCount / totalStatusCount) * 100).toFixed(1)
       : 0;
@@ -264,7 +249,7 @@ export async function GET() {
       {
         $match: {
           createdAt: { $gte: startOfYear, $lt: endOfYear },
-          status: "placed",
+          status: { $ne: "cancel" },
         },
       },
       {
@@ -293,15 +278,6 @@ export async function GET() {
       .sort({ createdAt: -1 });
 
     return NextResponse.json({
-      summary: {
-        todaySales: parseFloat(todaySales.toFixed(2)),
-        yesterdaySales: parseFloat(yesterdaySales.toFixed(2)),
-        todayOrders,
-        yesterdayOrders,
-        percentageChange,
-        status,
-      },
-
       summaryCards: {
         todaysOrders: {
           count: todayOrders,
@@ -326,12 +302,6 @@ export async function GET() {
         },
       },
 
-      totals: {
-        vendors: totalVendors,
-        menus: totalMenus,
-        orders: totalOrders,
-      },
-
       paymentStats: {
         cod: codCount,
         online: onlineCount,
@@ -350,11 +320,6 @@ export async function GET() {
 
       monthlySales,
       pendingOrders,
-
-      dateRange: {
-        today: { start: startOfTodayUTC, end: endOfTodayUTC },
-        yesterday: { start: startOfYesterdayUTC, end: endOfYesterdayUTC },
-      },
     });
   } catch (error) {
     console.error("Dashboard API Error:", error);

@@ -1,46 +1,57 @@
 "use client";
-import { useEffect } from "react";
+
+import { useEffect, useRef } from "react";
 
 export default function RegisterServiceWorker() {
+  const deferredPromptRef = useRef(null);
+
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .then((registration) => {
-            console.log("✅ Service Worker registered:", registration.scope);
-          })
-          .catch((err) => {
-            console.error("❌ SW registration failed:", err);
-          });
-      });
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => console.log("SW Registered:", reg.scope))
+        .catch((err) => console.error("SW failed:", err));
     }
-    let deferredPrompt;
-    const installButton = document.getElementById("installAppBtn");
 
-    window.addEventListener("beforeinstallprompt", (e) => {
+    const installBtn = document.getElementById("installAppBtn");
+
+    const handleBeforeInstall = (e) => {
+      console.log("🔥 beforeinstallprompt fired");
+
       e.preventDefault();
-      deferredPrompt = e;
-      if (installButton) {
-        installButton.style.display = "block";
-      }
-    });
+      deferredPromptRef.current = e;
 
-    if (installButton) {
-      installButton.addEventListener("click", async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log("User response:", outcome);
-        deferredPrompt = null;
-        installButton.style.display = "none";
-      });
+      if (installBtn) {
+        installBtn.style.display = "block";
+      }
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+
+    const handleInstallClick = async () => {
+      const deferredPrompt = deferredPromptRef.current;
+      if (!deferredPrompt) return;
+
+      deferredPrompt.prompt();
+
+      const result = await deferredPrompt.userChoice;
+      console.log("User choice:", result.outcome);
+
+      deferredPromptRef.current = null;
+
+      if (installBtn) installBtn.style.display = "none";
+    };
+
+    if (installBtn) {
+      installBtn.addEventListener("click", handleInstallClick);
     }
 
-    window.addEventListener("appinstalled", () => {
-      console.log("✅ App installed successfully!");
-      if (installButton) installButton.style.display = "none";
-    });
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      if (installBtn) {
+        installBtn.removeEventListener("click", handleInstallClick);
+      }
+    };
   }, []);
 
   return (
