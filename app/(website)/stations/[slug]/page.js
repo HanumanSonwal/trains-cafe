@@ -10,7 +10,8 @@ export async function generateMetadata({ params }) {
   }
 
   const safeTitle = data.title || `Order Food in Train | Trains Cafe`;
-  const safeDesc = data.description || "Get fresh food delivered at your train seat.";
+  const safeDesc =
+    data.description || "Get fresh food delivered at your train seat.";
   const safeKeywords = Array.isArray(data.keywords)
     ? data.keywords.join(", ")
     : data.keywords || "order food in train, train food delivery, Trains Cafe";
@@ -49,7 +50,7 @@ async function getStationData(slug) {
 
   try {
     const res = await fetch(`${baseUrl}/api/web-station/${slug}`, {
-      cache: "no-store", 
+      cache: "no-store",
     });
     if (!res.ok) return { data: null, baseUrl, pageUrl };
 

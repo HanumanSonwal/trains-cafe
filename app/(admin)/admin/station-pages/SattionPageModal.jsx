@@ -3,9 +3,11 @@ import { Modal, Input, Form, message, Select, Col, Row, Button } from "antd";
 import dynamic from "next/dynamic";
 
 const { Option } = Select;
-const TextEditor = dynamic(() => import("../../../componants/TextEditor"), {
-  ssr: false,
-});
+const TextEditor = dynamic(
+  () => import("@/app/componants/TextEditor").then((mod) => mod.default),
+  { ssr: false, loading: () => <p>Loading editor...</p> }
+);
+
 
 const SattionPageModal = ({
   visible,
