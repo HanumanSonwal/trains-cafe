@@ -14,8 +14,6 @@ export const createStationSlug = (name, code) => {
   return `order-food-on-train-at-${toSlug(name)}-${code.toLowerCase()}`;
 };
 
-
-// ⭐ NEW FUNCTION (Reverse of createStationSlug)
 export const parseStationSlug = (slug) => {
   const prefix = "order-food-on-train-at-";
 
@@ -23,16 +21,13 @@ export const parseStationSlug = (slug) => {
     return { stationName: "", stationCode: "" };
   }
 
-  // Remove prefix
-  const remaining = slug.replace(prefix, "");  
-  // Example: "abutara-halt-abw"
+  const remaining = slug.replace(prefix, "");
 
   const parts = remaining.split("-");
-  const stationCode = parts.pop(); // last => "abw"
+  const stationCode = parts.pop();
 
-  const stationNameSlug = parts.join("-"); // "abutara-halt"
+  const stationNameSlug = parts.join("-");
 
-  // Convert "abutara-halt" → "Abutara Halt"
   const stationName = stationNameSlug
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))

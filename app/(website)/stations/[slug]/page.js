@@ -1,20 +1,28 @@
 export const dynamic = "force-dynamic";
 
+import { parseStationSlug } from "@/utils/slugify";
 import DynamicStationPage from "./DynamicStationPage";
 
 export async function generateMetadata({ params }) {
-  const { data, baseUrl, pageUrl } = await getStationData(params.slug);
+  const { data, baseUrl, pageUrl, stationName } = await getStationData(
+    params.slug
+  );
 
   if (!data) {
-    return defaultMeta(pageUrl, baseUrl);
+    return defaultMeta(pageUrl, baseUrl, stationName);
   }
 
-  const safeTitle = data.title || `Order Food in Train | Trains Cafe`;
+  const safeTitle =
+    data.title || `Food in Train at ${stationName} | Trainscafe Food Delivery`;
+
   const safeDesc =
-    data.description || "Get fresh food delivered at your train seat.";
+    data.description ||
+    `Order fresh & hygienic food in train at ${stationName}. Enjoy fast delivery at your seat.`;
+
   const safeKeywords = Array.isArray(data.keywords)
     ? data.keywords.join(", ")
     : data.keywords || "order food in train, train food delivery, Trains Cafe";
+
   const ogImage = data.ogImage || "/images/meta_image.png";
 
   return {
@@ -23,6 +31,7 @@ export async function generateMetadata({ params }) {
     keywords: safeKeywords,
     robots: "index, follow",
     alternates: { canonical: pageUrl },
+
     openGraph: {
       title: safeTitle,
       description: safeDesc,
@@ -30,6 +39,7 @@ export async function generateMetadata({ params }) {
       type: "website",
       images: [formatImageUrl(ogImage, baseUrl)],
     },
+
     twitter: {
       card: "summary_large_image",
       title: safeTitle,
@@ -48,38 +58,50 @@ async function getStationData(slug) {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
   const pageUrl = `${baseUrl}/stations/${slug}`;
 
+  const { stationName, stationCode } = parseStationSlug(slug);
+
+  const apiSlug = stationCode.toLowerCase();
+
+  const apiUrl = `${baseUrl}/api/web-station/${apiSlug}`;
+
   try {
-    const res = await fetch(`${baseUrl}/api/web-station/${slug}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return { data: null, baseUrl, pageUrl };
+    const res = await fetch(apiUrl, { cache: "no-store" });
+
+    if (!res.ok) return { data: null, baseUrl, pageUrl, stationName };
 
     const data = await res.json();
-    return { data, baseUrl, pageUrl };
-  } catch {
-    return { data: null, baseUrl, pageUrl };
+
+    return { data, baseUrl, pageUrl, stationName };
+  } catch (e) {
+    return { data: null, baseUrl, pageUrl, stationName };
   }
 }
 
-function defaultMeta(pageUrl, baseUrl) {
+function defaultMeta(pageUrl, baseUrl, stationName) {
+  const title = `Food in Train at ${stationName} | Trainscafe Food Delivery`;
+  const description = `Order fresh & hygienic food in train at ${stationName}. Enjoy fast delivery at your seat.`;
+  const image = `${baseUrl}/images/meta_image.png`;
+
   return {
-    title: `Order Food in Train | Trains Cafe`,
-    description: `Get fresh food delivered at your seat.`,
+    title,
+    description,
     keywords: "order food in train, train food delivery, Trains Cafe",
     robots: "noindex",
     alternates: { canonical: pageUrl },
+
     openGraph: {
-      title: `Order Food in Train | Trains Cafe`,
-      description: `Get fresh food delivered at your seat.`,
+      title,
+      description,
       url: pageUrl,
       type: "website",
-      images: [`${baseUrl}/images/meta_image.png`],
+      images: [image],
     },
+
     twitter: {
       card: "summary_large_image",
-      title: `Order Food in Train | Trains Cafe`,
-      description: `Get fresh food delivered at your seat.`,
-      images: [`${baseUrl}/images/meta_image.png`],
+      title,
+      description,
+      images: [image],
     },
   };
 }
