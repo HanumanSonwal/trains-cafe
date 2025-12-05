@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Input, Button, Tabs, Select, message } from "antd";
@@ -147,14 +146,13 @@ export default function OrderFood() {
         ),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       station,
       stationOptions,
       loading,
       debouncedFetchStations,
       fetchStations,
-    
+
       renderInputTab,
     ]
   );

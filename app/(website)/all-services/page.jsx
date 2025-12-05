@@ -118,7 +118,7 @@ const Page = () => {
               fontWeight: 600,
               height: 45,
             }}
-            onClick={() => (window.location.href = "tel:8696963496")}
+            onClick={() => (window.location.href = "tel:+918696963496")}
           >
             8696963496
           </Button>

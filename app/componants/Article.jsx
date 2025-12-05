@@ -160,7 +160,7 @@ export default function Articles() {
                 family? Trainscafe makes{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/group-food-order-in-train`}
+                  href={`${BASE_URL}/group-food-ordering-in-train`} 
                 >
                   {" "}
                   group food order in train{" "}
@@ -452,7 +452,7 @@ export default function Articles() {
                 <b>🔍 Check PNR Status :</b> Instantly you can{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/check-pnr-updates`}
+                  href={`${BASE_URL}/pnr-status`}
                 >
                   {" "}
                   check PNR updates{" "}
@@ -463,7 +463,7 @@ export default function Articles() {
                 <b>🚆 Live Train Running Status :</b> Track your{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/check-live-train-running-status`}
+                  href={`${BASE_URL}/train-running-status`}
                 >
                   {" "}
                   train running live status{" "}
@@ -477,7 +477,7 @@ export default function Articles() {
                 our accurate{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/check-train-time-table`}
+                  href={`${BASE_URL}/irctc-train-schedule`} 
                 >
                   {" "}
                   IRCTC train time table schedule.
@@ -490,7 +490,7 @@ export default function Articles() {
                 confusion by checking the exact{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/check-train-coach-position`}
+                  href={`${BASE_URL}/train-coach-position`}
                 >
                   check coach position
                 </Link>{" "}
@@ -502,7 +502,7 @@ export default function Articles() {
                 luggage! With just a few clicks,{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/online-coolie-in-train`}
+                  href={`${BASE_URL}/online-coolie-booking`}
                 >
                   book a coolie in train{" "}
                 </Link>{" "}
@@ -514,7 +514,7 @@ export default function Articles() {
                 Planning to take a break?{" "}
                 <Link
                   className="text-blue-600 font-bold underline hover:text-blue-800"
-                  href={`${BASE_URL}/book-hotels-in-train-near-by-station`}
+                  href={`${BASE_URL}/online-hotel-booking`}
                 >
                   {" "}
                   Find & Book hotels near major railway stations{" "}

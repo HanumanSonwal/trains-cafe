@@ -109,7 +109,7 @@ const Menubar = () => {
       key: '21',
       icon: <UserOutlined />,
       label: <Link href="/admin/leads-managment">Leads Managment</Link>,
-      path: '/admin/orders',
+      path: '/admin/leads-managment',
     },
     ...(session?.user?.role === 'sab-admin'
       ? [
