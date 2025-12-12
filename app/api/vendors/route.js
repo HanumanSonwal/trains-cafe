@@ -131,7 +131,8 @@ export async function POST(req) {
       !body.Contact_No ||
       !body.Station ||
       !body.Delivery_Charges ||
-      !body.Min_Order_Value
+      !body.Min_Order_Value||
+      body.trainscafeCommision === undefined
     ) {
       return new Response(
         JSON.stringify({

@@ -13,6 +13,7 @@ const VendorSchema = new mongoose.Schema(
       required: true,
       ref: "Station",
     },
+    trainscafeCommision: { type: Number, required: true },
     Delivery_Charges: { type: Number, required: true },
     Min_Order_Value: { type: Number, required: true },
     Min_Order_Time: { type: Number, required: true },
