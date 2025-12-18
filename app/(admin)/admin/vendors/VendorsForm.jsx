@@ -201,7 +201,7 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item
               name="Alternate_Contact_No"
               label="Alternate Contact No."
@@ -223,7 +223,42 @@ const VendorsForm = ({ open, onCancel, onSubmit, initialValues }) => {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
+     <Col span={8}>
+  <Form.Item
+    name="trainscafeCommision"
+    label="Trainscafe Commission (%)"
+    rules={[
+      {
+        required: true,
+        message: "Commission is required",
+      },
+      {
+        validator: (_, value) => {
+          if (value === undefined || value === "") {
+            return Promise.resolve();
+          }
+          if (value < 0 || value > 100) {
+            return Promise.reject(
+              new Error("Commission must be between 0 and 100")
+            );
+          }
+          return Promise.resolve();
+        },
+      },
+    ]}
+  >
+    <Input
+      type="number"
+      min={0}
+      max={100}
+      placeholder="Enter commission"
+      addonAfter="%"
+    />
+  </Form.Item>
+</Col>
+
+
+          <Col span={8}>
             <Form.Item
               name="Station"
               label="Station"

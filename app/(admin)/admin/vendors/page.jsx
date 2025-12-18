@@ -5,17 +5,19 @@ import {
   Button,
   Input as AntdInput,
   message,
+  Tooltip,
   Switch,
   Popconfirm,
-  Avatar ,
+  Avatar,
   Space,
   Spin,
-  Tag ,
+  Tag,
 } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
   DeleteFilled,
+  FileTextOutlined,
   EditFilled,
   CloseCircleOutlined,
   LoadingOutlined,
@@ -23,12 +25,14 @@ import {
 import VendorsForm from "./VendorsForm";
 import axios from "axios";
 import { updateData, deleteData } from "@/app/lib/ApiFuntions";
+import { useRouter } from "next/navigation";
 
 const VendorsManagement = () => {
   const [vendors, setVendors] = useState([]);
   const [isVendorModalOpen, setIsVendorModalOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
@@ -39,6 +43,12 @@ const VendorsManagement = () => {
     },
   });
   const [searchText, setSearchText] = useState("");
+
+  const actionBtnStyle = {
+    backgroundColor: "#D6872A",
+    borderColor: "#D6872A",
+    color: "#fff",
+  };
 
   const loadVendors = async (page = 1, pageSize = 10, search = "") => {
     setLoading(true);
@@ -77,7 +87,11 @@ const VendorsManagement = () => {
   useEffect(() => {
     const { current, pageSize } = tableParams.pagination;
     loadVendors(current, pageSize, searchText.trim());
-  }, [tableParams.pagination.current, tableParams.pagination.pageSize, searchText]);
+  }, [
+    tableParams.pagination.current,
+    tableParams.pagination.pageSize,
+    searchText,
+  ]);
 
   const handleAddVendor = () => {
     setEditingVendor(null);
@@ -172,107 +186,140 @@ const VendorsManagement = () => {
     }));
   };
 
-const vendorColumns = [
-  {
-    title: "Vendor Id",
-    dataIndex: "vendorId",
-    key: "vendorId",
-  },
-  {
-    title: "Image",
-    dataIndex: "image",
-    key: "image",
-    render: (image) => (
-      <Avatar src={image} size={50} alt="vendor-image" />
-    ),
-  },
-  {
-    title: "Vendor Name",
-    dataIndex: "Vendor_Name",
-    key: "vendor_name",
-  },
-  {
-    title: "Contact Info",
-    key: "contact_info",
-    render: (record) => (
-      <>
-        <div>{record.Contact_No}</div>
-        <div>{record.Alternate_Contact_No || "N/A"}</div>
-      </>
-    ),
-  },
-  {
-    title: "Station",
-    dataIndex: "Station_Name",
-    key: "station",
-    render: (val) => val ? <Tag color="blue">{val}</Tag> : <Tag>N/A</Tag>,
-  },
-  {
-    title: "Food Type",
-    dataIndex: "Food_Type",
-    key: "food_type",
-    render: (Food_Type) => {
-      if (!Array.isArray(Food_Type) || Food_Type.length === 0) return "N/A";
-      return (
+  const vendorColumns = [
+    {
+      title: "Vendor Id",
+      dataIndex: "vendorId",
+      key: "vendorId",
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => <Avatar src={image} size={50} alt="vendor-image" />,
+    },
+    {
+      title: "Vendor Name",
+      dataIndex: "Vendor_Name",
+      key: "vendor_name",
+    },
+    {
+      title: "Contact Info",
+      key: "contact_info",
+      render: (record) => (
         <>
-          {Food_Type.map((type) => (
-            <Tag color={type === "Vegetarian" ? "green" : "red"} key={type}>
-              {type}
-            </Tag>
-          ))}
+          <div>{record.Contact_No}</div>
+          <div>{record.Alternate_Contact_No || "N/A"}</div>
         </>
-      );
+      ),
     },
-  },
-  {
-    title: "Weekly Off",
-    dataIndex: "Weekly_Off",
-    key: "weekly_off",
-    render: (val) => {
-      if (!val) return "N/A";
-      const formatted = val
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(" ");
-      return <Tag color="orange">{formatted}</Tag>;
+    {
+      title: "Station",
+      dataIndex: "Station_Name",
+      key: "station",
+      render: (val) => (val ? <Tag color="blue">{val}</Tag> : <Tag>N/A</Tag>),
     },
-  },
-{
-  title: "Working Time",
-  dataIndex: "Working_Time",
-  key: "working_time",
-  render: (val) => val ? <Tag color="cyan">{val}</Tag> : <Tag>N/A</Tag>,
-},
-  {
-    title: "Status",
-    dataIndex: "Status",
-    key: "status",
-    render: (Status, record) => (
-      <Switch
-        checked={Status === "Active"}
-        onChange={(checked) => handleStatusChange(checked, record._id)}
-      />
-    ),
-  },
-  {
-    title: "Actions",
-    key: "actions",
-    render: (_, record) => (
-      <Space>
-        <Button
-          icon={<EditFilled />}
-          onClick={() => handleEditVendor(record)}
-          style={{ backgroundColor: "#D6872A", borderColor: "#D6872A", color: "#fff" }}
+    {
+      title: "Food Type",
+      dataIndex: "Food_Type",
+      key: "food_type",
+      render: (Food_Type) => {
+        if (!Array.isArray(Food_Type) || Food_Type.length === 0) return "N/A";
+        return (
+          <>
+            {Food_Type.map((type) => (
+              <Tag color={type === "Vegetarian" ? "green" : "red"} key={type}>
+                {type}
+              </Tag>
+            ))}
+          </>
+        );
+      },
+    },
+    {
+      title: "Weekly Off",
+      dataIndex: "Weekly_Off",
+      key: "weekly_off",
+      render: (val) => {
+        if (!val) return "N/A";
+        const formatted = val
+          .split("_")
+          .map(
+            (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          )
+          .join(" ");
+        return <Tag color="orange">{formatted}</Tag>;
+      },
+    },
+    {
+      title: "Working Time",
+      dataIndex: "Working_Time",
+      key: "working_time",
+      render: (val) => (val ? <Tag color="cyan">{val}</Tag> : <Tag>N/A</Tag>),
+    },
+    {
+      title: "Status",
+      dataIndex: "Status",
+      key: "status",
+      render: (Status, record) => (
+        <Switch
+          checked={Status === "Active"}
+          onChange={(checked) => handleStatusChange(checked, record._id)}
         />
-        <Button
-          icon={<DeleteFilled />}
-          onClick={() => handleDeleteVendor(record._id)}
-          danger
-        />
-      </Space>
-    ),
-  },
-];
+      ),
+    },
+    {
+      title: "Trainscafe Commission",
+      dataIndex: "trainscafeCommision",
+      key: "trainscafeCommision",
+      render: (trainscafeCommision) => (
+        <span>
+          {trainscafeCommision !== undefined && trainscafeCommision !== null
+            ? `${trainscafeCommision}%`
+            : "-"}
+        </span>
+      ),
+    },
+
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Space>
+          {/* Edit */}
+          <Tooltip title="Edit Vendor">
+            <Button
+              icon={<EditFilled />}
+              onClick={() => handleEditVendor(record)}
+              style={actionBtnStyle}
+            />
+          </Tooltip>
+
+          {/* Delete */}
+          <Tooltip title="Delete Vendor">
+            <Button
+              icon={<DeleteFilled />}
+              onClick={() => handleDeleteVendor(record._id)}
+              danger
+            />
+          </Tooltip>
+
+          {/* Settlement */}
+          <Tooltip title="View Settlement">
+            <Button
+              icon={<FileTextOutlined />}
+              onClick={() =>
+                router.push(
+                  `/admin/vendors-managment/settlement?vendorId=${record._id}`
+                )
+              }
+              style={actionBtnStyle}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
 
   const antIcon = <LoadingOutlined style={{ fontSize: 48 }} spin />;
 
