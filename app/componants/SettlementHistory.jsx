@@ -1,21 +1,22 @@
 "use client";
 
-import {
-  Table,
-  Tag,
-  Button,
-  Card,
-  Spin,
-  message,
-} from "antd";
+import { Table, Tag, Button, Card, Spin, message } from "antd";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
-const formatDate = (date) =>
-  date ? dayjs(date).format("DD-MMM-YYYY") : "-";
+const cardStyle = {
+  borderRadius: "14px",
+  backgroundColor: "#FFF9E6",
+  border: "1.5px solid #D6872A",
+  height: "100%",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+};
+
+const formatDate = (date) => (date ? dayjs(date).format("DD-MMM-YYYY") : "-");
 
 const formatAmount = (val) =>
-  val !== null && val !== undefined
+  val !== null && val !== undefined && !isNaN(val)
     ? Number(val).toFixed(2)
     : "0.00";
 
@@ -37,7 +38,6 @@ export default function SettlementHistory({ vendorId }) {
     if (!vendorId) return;
 
     setLoading(true);
-
     try {
       const res = await fetch(
         `/api/settlement/history?vendorid=${vendorId}&page=${pagination.current}&limit=${pagination.pageSize}`
@@ -50,15 +50,14 @@ export default function SettlementHistory({ vendorId }) {
       }
 
       setData(result.data || []);
-
       setTableParams({
         pagination: {
           ...pagination,
-          total: result.pagination.total,
+          total: result.pagination?.total || 0,
         },
       });
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       message.error("Failed to load settlement history");
     } finally {
       setLoading(false);
@@ -76,16 +75,17 @@ export default function SettlementHistory({ vendorId }) {
   const columns = [
     {
       title: "Settlement Period",
-      render: (_, r) =>
-        `${formatDate(r.startDate)} → ${formatDate(r.endDate)}`,
+      render: (_, r) => (
+        <b>
+          {formatDate(r.startDate)} → {formatDate(r.endDate)}
+        </b>
+      ),
     },
     {
       title: "Amount ₹",
       dataIndex: "settlementAmount",
       align: "right",
-      render: (v) => (
-        <b>₹{formatAmount(v)}</b>
-      ),
+      render: (v) => <b>₹{formatAmount(v)}</b>,
     },
     {
       title: "Settlement Status",
@@ -95,37 +95,72 @@ export default function SettlementHistory({ vendorId }) {
         if (v === "Cafe Should Pay") color = "orange";
         if (v === "Cafe Should Receive") color = "red";
 
-        return <Tag color={color}>{v}</Tag>;
+        return (
+          <Tag color={color} style={{ fontWeight: 500 }}>
+            {v}
+          </Tag>
+        );
       },
     },
     {
       title: "Payment",
       dataIndex: "isPaid",
       render: (v) =>
-        v ? (
-          <Tag color="green">PAID</Tag>
-        ) : (
-          <Tag color="red">UNPAID</Tag>
-        ),
+        v ? <Tag color="green">PAID</Tag> : <Tag color="red">UNPAID</Tag>,
     },
-    {
-      title: "Invoice",
-      render: (_, r) =>
-        r.invoiceUrl ? (
-          <Button
-            type="link"
-            onClick={() => window.open(r.invoiceUrl)}
-          >
-            Download
-          </Button>
-        ) : (
-          <span style={{ color: "#999" }}>—</span>
-        ),
-    },
+   {
+  title: "Invoice",
+  align: "center",
+  render: (_, r) => (
+    <Button
+  type="link"
+  style={{ color: "#D6872A", fontWeight: 500 }}
+  onClick={async () => {
+    try {
+      const res = await fetch("/api/settlement/invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorName: "Vendor", // fallback
+          startDate: formatDate(r.startDate),
+          endDate: formatDate(r.endDate),
+          settlementAmount: r.settlementAmount,
+          settlementStatus: r.settlementStatus,
+        }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "vendor_settlement_invoice.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch {
+      message.error("Failed to download invoice");
+    }
+  }}
+>
+  Download
+</Button>
+
+  ),
+}
+
   ];
 
   return (
-    <Card title="Settlement History">
+    <Card
+      title="Settlement History"
+      style={cardStyle}
+      headStyle={{ fontWeight: 600 }}
+    >
       <Spin spinning={loading}>
         <Table
           rowKey="_id"

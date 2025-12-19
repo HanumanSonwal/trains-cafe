@@ -20,6 +20,15 @@ import SettlementActions from "./SettlementActions";
 
 const { RangePicker } = DatePicker;
 
+const cardStyle = {
+  borderRadius: "14px",
+  backgroundColor: "#FFF9E6",
+  border: "1.5px solid #D6872A",
+  height: "100%",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+};
+
 const formatAmount = (value) => {
   if (value === null || value === undefined || isNaN(value)) return "0.00";
   return Number(value).toFixed(2);
@@ -76,10 +85,6 @@ export default function SettlementPreview({ vendorId }) {
     if (vendorId) fetchSettlement();
   }, [vendorId]);
 
-  const handleTableChange = (pagination) => {
-    setTableParams({ pagination });
-  };
-
   const columns = [
     {
       title: "Date",
@@ -108,16 +113,14 @@ export default function SettlementPreview({ vendorId }) {
     },
   ];
 
+  const hasDailySettlement =
+    Array.isArray(settlement?.dailySettlement) &&
+    settlement.dailySettlement.length > 0;
+
   return (
     <Spin spinning={loading}>
       {settlement?.vendor && (
-        <Card
-          bordered={false}
-          style={{
-            marginBottom: 20,
-            background: "linear-gradient(135deg,#fff7e6,#ffffff)",
-          }}
-        >
+        <Card style={{ ...cardStyle, marginBottom: 20 }} bordered={false}>
           <Row gutter={24} align="middle">
             <Col span={5}>
               <Statistic title="Vendor Name" value={settlement.vendor.name} />
@@ -154,7 +157,11 @@ export default function SettlementPreview({ vendorId }) {
                       : setDateRange([])
                   }
                 />
-                <Button type="primary" onClick={fetchSettlement}>
+                <Button
+                  type="primary"
+                  style={{ background: "#D6872A" }}
+                  onClick={fetchSettlement}
+                >
                   Apply
                 </Button>
               </Space>
@@ -164,18 +171,9 @@ export default function SettlementPreview({ vendorId }) {
       )}
 
       {overlapInfo && (
-        <Card
-          style={{
-            marginBottom: 16,
-            background: "#fff2f0",
-            border: "1px solid #ffccc7",
-          }}
-        >
-          <Tag color="red" style={{ fontSize: 14 }}>
-            ⚠ Selected date range overlaps with a PAID settlement
-          </Tag>
+        <Card style={{ ...cardStyle, marginBottom: 16 }}>
+          <Tag color="red">⚠ Date range overlaps with PAID settlement</Tag>
           <div style={{ marginTop: 6 }}>
-            Already paid period:{" "}
             <b>
               {formatDate(overlapInfo.startDate)} →{" "}
               {formatDate(overlapInfo.endDate)}
@@ -186,66 +184,44 @@ export default function SettlementPreview({ vendorId }) {
 
       {settlement?.summary && (
         <Row gutter={16} style={{ marginBottom: 20 }}>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Online Total"
-                prefix="₹"
-                value={formatAmount(settlement.summary.onlineAmount)}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="COD Total"
-                prefix="₹"
-                value={formatAmount(settlement.summary.codAmount)}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Vendor Share"
-                prefix="₹"
-                value={formatAmount(settlement.summary.vendorShare)}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card>
-              <Statistic
-                title="Cafe Net"
-                prefix="₹"
-                value={formatAmount(settlement.summary.cafeNet)}
-              />
-            </Card>
-          </Col>
+          {[
+            ["Online Total", settlement.summary.onlineAmount],
+            ["COD Total", settlement.summary.codAmount],
+            ["Vendor Share", settlement.summary.vendorShare],
+            ["Cafe Net", settlement.summary.cafeNet],
+          ].map(([title, value]) => (
+            <Col span={6} key={title}>
+              <Card style={cardStyle}>
+                <Statistic
+                  title={title}
+                  prefix="₹"
+                  value={formatAmount(value)}
+                />
+              </Card>
+            </Col>
+          ))}
         </Row>
       )}
 
-      {settlement?.dailySettlement && (
-        <Card title="Daily Settlement">
+      {hasDailySettlement && (
+        <Card
+          style={{ ...cardStyle, marginBottom: 20 }}
+          title="Daily Settlement"
+        >
           <Table
             columns={columns}
             dataSource={settlement.dailySettlement}
             pagination={tableParams.pagination}
-            onChange={handleTableChange}
             rowKey="date"
           />
         </Card>
       )}
 
-      {settlement?.summary && (
+      {settlement?.summary && hasDailySettlement && (
         <>
           <Divider />
-          <Card
-            style={{
-              background: "#fffbe6",
-              border: "1px solid #ffe58f",
-            }}
-          >
+
+          <Card style={cardStyle}>
             <Row justify="space-between" align="middle">
               <Col>
                 <Tag

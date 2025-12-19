@@ -1,6 +1,6 @@
 import PDFDocument from "pdfkit";
-import path from "path";
 import fs from "fs";
+import path from "path";
 
 export const runtime = "nodejs";
 
@@ -18,7 +18,7 @@ export async function POST(req) {
       );
     }
 
-    const fontPath = path.join(
+    const fontPath = path.resolve(
       process.cwd(),
       "public",
       "fonts",
@@ -26,16 +26,16 @@ export async function POST(req) {
     );
 
     if (!fs.existsSync(fontPath)) {
-      throw new Error("Font file not found at " + fontPath);
+      throw new Error(
+        "Font file not found. Please add Roboto-Regular.ttf in public/fonts"
+      );
     }
 
-    const doc = new PDFDocument({
-      size: "A4",
-      margin: 50,
-    });
-
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
     const buffers = [];
+
     doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", () => {});
 
     doc.font(fontPath);
 
@@ -49,35 +49,30 @@ export async function POST(req) {
     doc.fontSize(12);
 
     doc.text(`Vendor Name: ${data.vendorName}`);
-    doc.text(
-      `Settlement Period: ${data.startDate} → ${data.endDate}`
-    );
+    doc.text(`Settlement Period: ${data.startDate} → ${data.endDate}`);
 
     doc.moveDown();
-
-    doc.text(`Online Amount: ₹${data.onlineAmount ?? 0}`);
-    doc.text(`COD Amount: ₹${data.codAmount ?? 0}`);
-    doc.text(`Vendor Share: ₹${data.vendorShare ?? 0}`);
-    doc.text(`Cafe Share: ₹${data.cafeShare ?? 0}`);
-    doc.text(`Tax: ₹${data.tax ?? 0}`);
-
-    doc.moveDown();
-    doc.fontSize(13).text(
-      `Net Payable: ₹${data.settlementAmount ?? 0}`,
-      { underline: true }
-    );
+    doc.text(`Online Amount: ₹${data.onlineAmount || 0}`);
+    doc.text(`COD Amount: ₹${data.codAmount || 0}`);
+    doc.text(`Vendor Share: ₹${data.vendorShare || 0}`);
+    doc.text(`Cafe Share: ₹${data.cafeShare || 0}`);
+    doc.text(`Tax: ₹${data.tax || 0}`);
 
     doc.moveDown();
-    doc.fontSize(12).text(`Status: ${data.status ?? "-"}`);
+    doc
+      .fontSize(13)
+      .text(`Net Payable: ₹${data.settlementAmount || 0}`, { underline: true });
+
+    doc.moveDown();
+    doc.fontSize(12).text(`Status: ${data.settlementStatus || "-"}`);
 
     doc.moveDown(3);
     doc
       .fontSize(10)
       .fillColor("gray")
-      .text(
-        "This is a system generated invoice. No signature required.",
-        { align: "center" }
-      );
+      .text("This is a system generated invoice. No signature required.", {
+        align: "center",
+      });
 
     doc.end();
 
@@ -99,7 +94,7 @@ export async function POST(req) {
     return new Response(
       JSON.stringify({
         success: false,
-        message: error.message || "Invoice generation failed",
+        message: error.message,
       }),
       { status: 500 }
     );
