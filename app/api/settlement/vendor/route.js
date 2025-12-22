@@ -109,6 +109,7 @@ export async function GET(req) {
       vendor: {
         id: vendor._id,
         name: vendor.Vendor_Name,
+        trainscafeCommision: vendor.trainscafeCommision,
       },
       dateRange: { startDate, endDate },
       dailySettlement: Object.entries(daily).map(([date, val]) => ({

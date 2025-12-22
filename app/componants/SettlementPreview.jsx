@@ -85,33 +85,63 @@ export default function SettlementPreview({ vendorId }) {
     if (vendorId) fetchSettlement();
   }, [vendorId]);
 
-  const columns = [
-    {
-      title: "Date",
-      dataIndex: "date",
-      render: (v) => <b>{formatDate(v)}</b>,
+const columns = [
+  {
+    title: "Date",
+    dataIndex: "date",
+    render: (v) => <b>{formatDate(v)}</b>,
+  },
+  {
+    title: "Commission %",
+    align: "center",
+    render: () => (
+      <b>{settlement?.vendor?.trainscafeCommision ?? 0}%</b>
+    ),
+  },
+  {
+    title: "Online ₹",
+    dataIndex: "online",
+    align: "right",
+    render: (v) => `₹${formatAmount(v)}`,
+  },
+  {
+    title: "COD ₹",
+    dataIndex: "cod",
+    align: "right",
+    render: (v) => `₹${formatAmount(v)}`,
+  },
+  {
+    title: "Total ₹",
+    dataIndex: "total",
+    align: "right",
+    render: (v) => <b>₹{formatAmount(v)}</b>,
+  },
+  {
+    title: "Commission ₹",
+    align: "right",
+    render: (_, record) => {
+      const percent = settlement?.vendor?.trainscafeCommision ?? 0;
+      const commissionAmount = (record.total * percent) / 100;
+      return `₹${formatAmount(commissionAmount)}`;
     },
-    {
-      title: "Online ₹",
-      dataIndex: "online",
-      align: "right",
-      render: (v) => `₹${formatAmount(v)}`,
+  },
+  {
+    title: "Vendor Payable ₹",
+    align: "right",
+    render: (_, record) => {
+      const percent = settlement?.vendor?.trainscafeCommision ?? 0;
+      const commissionAmount = (record.total * percent) / 100;
+      const payable = record.total - commissionAmount;
+      return (
+        <span style={{ fontWeight: 600 }}>
+          ₹{formatAmount(payable)}
+        </span>
+      );
     },
-    {
-      title: "COD ₹",
-      dataIndex: "cod",
-      align: "right",
-      render: (v) => `₹${formatAmount(v)}`,
-    },
-    {
-      title: "Total ₹",
-      dataIndex: "total",
-      align: "right",
-      render: (v) => (
-        <span style={{ fontWeight: 600 }}>₹{formatAmount(v)}</span>
-      ),
-    },
-  ];
+  },
+];
+
+
 
   const hasDailySettlement =
     Array.isArray(settlement?.dailySettlement) &&
