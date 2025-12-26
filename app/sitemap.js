@@ -1,45 +1,71 @@
-import { NextResponse } from "next/server";
-
-export const dynamic = "force-dynamic";
-
-export async function GET() {
+export default function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
-  const staticPages = [
-    { slug: "/" },
-    { slug: "/blog" },
-    { slug: "/cart" },
-    { slug: "/checkout" },
-    { slug: "/contact-us" },
-    { slug: "/group-food-ordering-in-train" },
-    { slug: "/menu" },
-    { slug: "/online-coolie-booking" },
-    { slug: "/online-hotel-booking" },
-    { slug: "/order-confirmation" },
-    { slug: "/vendor-registration" },
-    { slug: "/stations" },
-    { slug: "/trains" },
-    
-  ];
-
-  const urls = staticPages.map((page) => `
-    <url>
-      <loc>${baseUrl}${page.slug}</loc>
-      <lastmod>${new Date().toISOString()}</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>
-  `).join("");
-
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-      ${urls}
-    </urlset>
-  `;
-
-  return new NextResponse(sitemap, {
-    headers: {
-      "Content-Type": "application/xml",
+  return [
+    {
+      url: `${baseUrl}/`,
+      lastModified: new Date(),
+      priority: 1.0,
     },
-  });
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/cart`,
+      lastModified: new Date(),
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/checkout`,
+      lastModified: new Date(),
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/contact-us`,
+      lastModified: new Date(),
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/group-food-ordering-in-train`,
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/menu`,
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/online-coolie-booking`,
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/online-hotel-booking`,
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/order-confirmation`,
+      lastModified: new Date(),
+      priority: 0.2,
+    },
+    {
+      url: `${baseUrl}/vendor-registration`,
+      lastModified: new Date(),
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/stations`,
+      lastModified: new Date(),
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/trains`,
+      lastModified: new Date(),
+      priority: 0.9,
+    },
+  ];
 }
