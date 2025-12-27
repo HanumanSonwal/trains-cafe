@@ -17,6 +17,11 @@ export const metadata = {
   description: "Order fresh, hygienic food in trains across India.",
   robots: "index, follow",
   themeColor: "#d28927",
+
+    verification: {
+    google: "Ho0GjeP3k95D1zlX1snGZvK10iUIQO4tBeG4eSD0fOE",
+  },
+
 };
 
 export default function RootLayout({ children }) {
