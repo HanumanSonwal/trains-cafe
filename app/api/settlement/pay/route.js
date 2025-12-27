@@ -1,5 +1,7 @@
+
 import dbConnect from "@/app/lib/dbConnect";
 import Settlement from "@/app/models/settlement";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
@@ -23,7 +25,7 @@ export async function POST(req) {
     } = body;
 
     if (!vendorId || !startDate || !endDate) {
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "vendorId, startDate and endDate required" },
         { status: 400 }
       );
@@ -32,18 +34,22 @@ export async function POST(req) {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(23, 59, 59, 999);
 
+    // Check overlapping settlements
     const exists = await Settlement.findOne({
       vendor: vendorId,
       isPaid: true,
-      startDate: { $lte: end },
-      endDate: { $gte: start },
+      $or: [
+        { startDate: { $lte: end, $gte: start } },
+        { endDate: { $gte: start, $lte: end } },
+        { startDate: { $lte: start }, endDate: { $gte: end } },
+      ],
     });
 
     if (exists) {
-      return Response.json(
+      return NextResponse.json(
         {
           success: false,
           message: "Settlement already exists for overlapping date range",
@@ -73,14 +79,14 @@ export async function POST(req) {
       paidAt: new Date(),
     });
 
-    return Response.json({
+    return NextResponse.json({
       success: true,
       message: "Settlement marked as paid successfully",
       data: settlement,
     });
   } catch (error) {
     console.error("Settlement Pay Error:", error);
-    return Response.json(
+    return NextResponse.json(
       { success: false, message: "Settlement payment failed" },
       { status: 500 }
     );

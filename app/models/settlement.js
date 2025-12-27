@@ -28,7 +28,14 @@ const settlementSchema = new mongoose.Schema(
     isPaid: { type: Boolean, default: false },
     paidAt: Date,
     invoiceUrl: String,
+    orderIds: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "order",
+      },
   },
+   
+     // <-- Add this field
+  
   { timestamps: true }
 );
 
