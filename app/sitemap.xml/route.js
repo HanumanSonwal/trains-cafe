@@ -25,7 +25,9 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  const baseUrl =
+  (process.env.NEXT_PUBLIC_URL || "http://localhost:3000").replace(/\/$/, "");
+
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
