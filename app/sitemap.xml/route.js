@@ -30,13 +30,13 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${baseUrl}/sitemap/stations.xml</loc>
+    <loc>${baseUrl}sitemap/stations.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>${baseUrl}/sitemap/trains.xml</loc>
+    <loc>${baseUrl}sitemap/trains.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>${baseUrl}/sitemap/blogs.xml</loc>
+    <loc>${baseUrl}sitemap/blogs.xml</loc>
   </sitemap>
 </sitemapindex>`;
 
