@@ -4,6 +4,8 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import ProviderWrapper from "../componants/ProviderWrapper";
 import Script from "next/script";
 import RegisterServiceWorker from "../componants/registerServiceWorker";
+import ClientProviders from "../componants/ClientProviders";
+import AppShell from "../componants/AppShell";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -280,7 +282,7 @@ export default function RootLayout({ children }) {
 />
 
       </head>
-      <body
+      {/* <body
         className={inter.className}
         style={{
           maxWidth: "575px",
@@ -305,7 +307,32 @@ export default function RootLayout({ children }) {
   </iframe>
 </noscript>
 
-      </body>
+      </body> */}
+
+<body className={inter.className} style={{ maxWidth: "575px", margin: "0 auto" }}>
+  <AntdRegistry>
+    <ClientProviders>
+      <AppShell >{children}</AppShell>
+    </ClientProviders>
+  </AntdRegistry>
+
+  <Script
+    src="https://checkout.razorpay.com/v1/checkout.js"
+    strategy="beforeInteractive"
+  />
+
+  <noscript>
+    <iframe
+      src="https://www.googletagmanager.com/ns.html?id=GTM-PQ7T4DP5"
+      height="0"
+      width="0"
+      style={{ display: "none", visibility: "hidden" }}
+    />
+  </noscript>
+</body>
+
+
+      
     </html>
   );
 }
