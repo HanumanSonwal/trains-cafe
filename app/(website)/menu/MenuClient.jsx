@@ -17,7 +17,7 @@ import MenuContent from "./MenuContent";
 
 const { Panel } = Collapse;
 
-export default function MenuPage() {
+export default function MenuClient() {
   const [isVegCategory, setIsVegCategory] = useState(true);
   const [allCategories, setAllCategories] = useState({ veg: [], nonVeg: [] });
   const [loading, setLoading] = useState(true);

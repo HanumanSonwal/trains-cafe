@@ -1,4 +1,5 @@
-import MenuPage from "./MenuPage";
+import { Suspense } from "react";
+import MenuClient from "./MenuClient";
 
 const baseUrl = process.env.NEXT_PUBLIC_URL || "https://trainscafe.in";
 const pageUrl = `${baseUrl}/menu`;
@@ -39,5 +40,9 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <MenuPage />;
+  return (
+    <Suspense fallback={null}>
+      <MenuClient />
+    </Suspense>
+  );
 }
