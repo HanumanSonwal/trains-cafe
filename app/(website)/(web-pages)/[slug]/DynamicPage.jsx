@@ -96,10 +96,10 @@ function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {
             </Link>{" "}
             |{" "}
             <Link
-              href="mailto:support@trainscafe.in"
+              href="mailto:info@trainscafe.in"
               className="font-bold text-blue-600 hover:underline"
             >
-              support@trainscafe.in
+              info@trainscafe.in
             </Link>
           </p>
           <p className="mt-2">

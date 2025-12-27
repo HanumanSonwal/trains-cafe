@@ -547,10 +547,10 @@ const handleStationSearch = debounce((searchTerm) => {
             </Link>{" "}
             |{" "}
             <Link
-              href="support@trainscafe.in"
+               href="mailto:info@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              support@trainscafe.in
+              info@trainscafe.in
             </Link>
           </p>
           <p className="mt-2">

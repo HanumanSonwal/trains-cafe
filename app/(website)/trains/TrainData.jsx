@@ -140,8 +140,8 @@ export default function TrainContent({ slug }) {
             <Link href="tel:+918696963496" className="font-bold text-blue-600 hover:text-blue-800 underline">
               +91-8696963496
             </Link> or mail{" "}
-            <Link href="mailto:support@trainscafe.in" className="font-bold text-blue-600 hover:text-blue-800 underline">
-              support@trainscafe.in
+            <Link  href="mailto:info@trainscafe.in" className="font-bold text-blue-600 hover:text-blue-800 underline">
+              info@trainscafe.in
             </Link>
           </p>
           <p className="mt-2">&copy; {new Date().getFullYear()} TrainsCafe. All rights reserved.</p>

@@ -81,10 +81,10 @@ const ContactUsClient = () => {
           <p>
             <strong>Email:</strong>{" "}
             <Link
-              href="mailto:support@trainscafe.in"
+              href="mailto:info@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
-              support@trainscafe.in
+              info@trainscafe.in
             </Link>
           </p>
           <p>

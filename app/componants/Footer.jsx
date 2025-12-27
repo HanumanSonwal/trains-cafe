@@ -197,7 +197,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link
-                      href="/coming-soon"
+                      href="/request-call-back"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Request Call Back
@@ -337,7 +337,7 @@ const Footer = () => {
           {/* Footer Bottom */}
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-2 border-t border-gray-200">
             <div className="text-gray-600 text-center  mb-4 md:mb-0">
-              <p style={{ fontSize: "12px" }}>Copyright 2025 @trainscafe.in</p>
+              <p style={{ fontSize: "12px" }}>Copyright 2026 @trainscafe.in</p>
             </div>
 
             <div className="flex justify-center md:justify-end items-center space-x-4">

@@ -176,9 +176,9 @@ const MobileFooter = () => {
                 <p className="text-sm">
                   <a
                     class="font-medium text-sm text-blue-600 hover:text-blue-800 underline"
-                    href="support@trainscafe.in"
+                     href="mailto:info@trainscafe.in"
                   >
-                    support@trainscafe.in
+                    info@trainscafe.in
                   </a>
                 </p>
               </div>
