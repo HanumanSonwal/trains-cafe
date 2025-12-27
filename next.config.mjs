@@ -2,6 +2,7 @@ import pwa from 'next-pwa'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+   trailingSlash: false,
   images: {
     domains: ['localhost', 'res.cloudinary.com', 'images.pexels.com' , 'upload.wikimedia.org',  'cdn-icons-png.flaticon.com' ],
   },
