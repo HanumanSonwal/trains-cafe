@@ -102,19 +102,25 @@ const TablePage = () => {
     setIsBulkImportModalOpen(true);
   }, []);
 
-  const handleBulkImportSubmit = useCallback(
-    async (data) => {
-      try {
-        await axios.post(`/api/menu/bulk-import`, { data });
-        message.success("Bulk import processed successfully");
-        setIsBulkImportModalOpen(false);
-        fetchMenuItems(1, 10);
-      } catch {
-        message.error("Failed to process bulk import");
-      }
-    },
-    [fetchMenuItems]
-  );
+const handleBulkImportSubmit = useCallback(
+  async (data) => {
+    try {
+      await axios.post(`/api/menu/bulk-import`, { data });
+      message.success("Bulk import processed successfully");
+      setIsBulkImportModalOpen(false);
+      fetchMenuItems(1, 10);
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to process bulk import";
+
+      message.error(errorMsg);
+    }
+  },
+  [fetchMenuItems]
+);
+
 
   const handleEditMenuItem = useCallback((record) => {
     setEditingItem(record);
