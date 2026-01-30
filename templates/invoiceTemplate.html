@@ -3,173 +3,196 @@
 <head>
   <meta charset="UTF-8" />
   <title>Invoice - {{orderID}}</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", Arial, sans-serif;
       margin: 30px;
       font-size: 14px;
       color: #333;
-      line-height: 1.4;
+      line-height: 1.5;
+      background: #fff3eb;
     }
-    
-    .logo-section {
-      text-align: left;
-      margin-bottom: 30px;
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #d6872a;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
     }
-    
+
     .company-logo {
-      max-height: 80px;
-      max-width: 200px;
+      max-height: 70px;
+      max-width: 220px;
       object-fit: contain;
     }
-    
+
+    .company-info {
+      text-align: right;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     .company-name {
-      text-align: left;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #d6872a;
     }
-    
-    .company-name h2 {
-      margin: 0;
-      font-size: 24px;
-      color: #8B4513;
-      font-weight: bold;
+
+    .company-sub {
+      color: #6f4d27;
+      font-weight: 600;
     }
-    
-    .company-name p {
-      margin: 2px 0 0 0;
-      font-size: 12px;
-      color: #666;
-    }
-    
+
     .customer-greeting {
       margin: 20px 0 5px 0;
-      font-weight: bold;
+      font-weight: 600;
     }
-    
+
     .thank-you-text {
       margin: 0 0 25px 0;
     }
-    
+
     .section-title {
-      font-weight: bold;
-      font-size: 14px;
-      margin: 20px 0 10px 0;
+      font-weight: 700;
+      font-size: 15px;
+      margin: 25px 0 10px 0;
+      color: #6f4d27;
     }
-    
-    .summary-table,
-    .items-table {
+
+    table {
       width: 100%;
       border-collapse: collapse;
       margin: 10px 0 20px 0;
+      background: #ffffff;
     }
-    
-    .summary-table th,
-    .summary-table td,
-    .items-table th,
-    .items-table td {
-      border: 1px solid #333;
-      padding: 8px 12px;
+
+    th, td {
+      border: 1px solid #f1c6ad;
+      padding: 9px 12px;
       text-align: left;
     }
-    
-    .summary-table th,
-    .items-table th {
-      background-color: #f8f8f8;
-      font-weight: bold;
+
+    th {
+      background: #fff3eb;
+      font-weight: 700;
+      color: #6f4d27;
     }
-    
-    /* Summary table specific styling */
+
     .summary-table th {
-      width: 200px;
+      width: 220px;
     }
-    
-    /* Items table specific styling */
+
+    /* Items table */
     .items-table .serial-col { width: 80px; text-align: center; }
-    .items-table .item-col { width: 200px; }
-    .items-table .qty-price-col { width: 150px; text-align: center; }
-    .items-table .amount-col { width: 100px; text-align: right; }
-    
-    .items-table .summary-row {
-      background-color: #f9f9f9;
+    .items-table .item-col { width: 240px; }
+    .items-table .qty-price-col { width: 160px; text-align: center; }
+    .items-table .amount-col { width: 120px; text-align: right; }
+
+    .summary-row {
+      background-color: #fff7f1;
     }
-    
-    .items-table .summary-row td {
-      font-weight: normal;
-    }
-    
-    .items-table .total-row {
-      background-color: #f0f0f0;
+
+    .total-row {
+      background-color: #d6872a;
+      color: #ffffff;
       font-weight: bold;
     }
-    
-    .footer {
-      margin-top: 30px;
+
+    .total-row td {
+      border-color: #d6872a;
     }
-    
-    .footer p {
-      margin: 5px 0;
-    }
-    
+
     .contact-info {
       margin: 30px 0 20px 0;
+      font-weight: 600;
     }
-    
+
     .signature-section {
       margin-top: 40px;
     }
   </style>
 </head>
+
 <body>
-  <div class="logo-section">
-    <img src="https://res.cloudinary.com/daemwtus7/image/upload/v1755094436/trains-cafe/Logo/rercqpljocitukrnzwoo.png" alt="Trainscafe Logo" class="company-logo" />
+
+  <!-- ===== COMPANY HEADER ===== -->
+  <div class="header">
+    <img
+      src="https://res.cloudinary.com/dsyk2x4cw/image/upload/v1769760261/trains-cafe/logo/crx6voyn8bavsmqkvayh.svg"
+      alt="Trainscafe Logo"
+      class="company-logo"
+    />
+
+    <div class="company-info">
+      <div class="company-name">TRAINSCAFE</div>
+      <div class="company-sub">Fresh Food on Your Seat</div>
+      GST No: 08BNJPJ7837H1ZK<br />
+      Jaipur (Raj)<br />
+      Contact: +91 8696963496<br />
+      Email : info@trainscafe.in
+    </div>
   </div>
-  
+
   <div class="customer-greeting">
     Dear {{customerName}},
   </div>
-  
-  <p class="thank-you-text">Thank you for place order from Trainscafe. Please be on your seat at delivery time.</p>
-  
-  <div class="section-title">Order Summary:</div>
-  
+
+  <p class="thank-you-text">
+    Thank you for placing your order with <strong>Trainscafe</strong>.
+    Please remain at your seat at the time of delivery.
+  </p>
+
+  <div class="section-title">Order Summary</div>
+
   <table class="summary-table">
     <tr>
-      <th>Order No:</th>
+      <th>Order No</th>
       <td>{{orderID}}</td>
     </tr>
     <tr>
-      <th>Customer Name:</th>
+      <th>Customer Name</th>
       <td>{{customerName}}</td>
     </tr>
     <tr>
-      <th>Train Information:</th>
-      <td>Train No: {{trainNumber}} / Coach No:{{coach}} / Seat No: {{seat}}/ PNR {{pnr}}</td>
+      <th>Train Details</th>
+      <td>
+        Train No: {{trainNumber}} /
+        Coach: {{coach}} /
+        Seat: {{seat}} /
+        PNR: {{pnr}}
+      </td>
     </tr>
     <tr>
-      <th>Contact No:</th>
+      <th>Contact No</th>
       <td>{{mobile}}</td>
     </tr>
     <tr>
-      <th>Date of Delivery & Time:</th>
+      <th>Delivery Date & Time</th>
       <td>{{deliveryDate}} {{deliveryTime}}</td>
     </tr>
     <tr>
-      <th>Delivery At:</th>
+      <th>Delivery Station</th>
       <td>{{station}}</td>
     </tr>
     <tr>
-      <th>Mode of Payment:</th>
+      <th>Payment Method</th>
       <td>{{paymentMethod}}</td>
     </tr>
   </table>
-  
-  <div class="section-title">Order Details:</div>
-  
+
+  <div class="section-title">Order Details</div>
+
   <table class="items-table">
     <thead>
       <tr>
-        <th class="serial-col">Serial No.</th>
-        <th class="item-col">Item Name</th>
-        <th class="qty-price-col">Quantity x Price</th>
+        <th class="serial-col">#</th>
+        <th class="item-col">Item</th>
+        <th class="qty-price-col">Qty × Price</th>
         <th class="amount-col">Amount</th>
       </tr>
     </thead>
@@ -178,49 +201,51 @@
       <tr>
         <td class="serial-col">{{serial}}</td>
         <td class="item-col">{{name}}</td>
-        <td class="qty-price-col">{{quantity}} x ₹ {{price}}</td>
+        <td class="qty-price-col">{{quantity}} × ₹{{price}}</td>
         <td class="amount-col">₹ {{total}}</td>
       </tr>
       {{/each}}
-      
+
       <tr class="summary-row">
-        <td colspan="3" style="text-align: right; font-weight: bold;">Sub Total</td>
+        <td colspan="3" style="text-align:right; font-weight:600;">Sub Total</td>
         <td class="amount-col">₹ {{subTotal}}</td>
       </tr>
-      
+
       <tr class="summary-row">
-        <td colspan="3" style="text-align: right; font-weight: bold;">Discount</td>
+        <td colspan="3" style="text-align:right; font-weight:600;">Discount</td>
         <td class="amount-col">₹ {{totalDiscount}}</td>
       </tr>
-         <tr class="summary-row">
-        <td colspan="3" style="text-align: right; font-weight: bold;">Taxes</td>
+
+      <tr class="summary-row">
+        <td colspan="3" style="text-align:right; font-weight:600;">GST</td>
         <td class="amount-col">₹ {{tax}}</td>
       </tr>
-      
+
       <tr class="summary-row">
-        <td colspan="3" style="text-align: right; font-weight: bold;">Delivery Charges</td>
+        <td colspan="3" style="text-align:right; font-weight:600;">Delivery Charges</td>
         <td class="amount-col">₹ {{deliveryCharge}}</td>
       </tr>
-      
+
       <tr class="summary-row">
-        <td colspan="3" style="text-align: right; font-weight: bold;">Advance Payment</td>
+        <td colspan="3" style="text-align:right; font-weight:600;">Advance Payment</td>
         <td class="amount-col">₹ {{advance}}</td>
       </tr>
-      
+
       <tr class="total-row">
-        <td colspan="3" style="text-align: right; font-weight: bold;">Total Amount</td>
-        <td class="amount-col" style="font-weight: bold;">₹ {{total}}</td>
+        <td colspan="3" style="text-align:right;">Total Amount</td>
+        <td class="amount-col">₹ {{total}}</td>
       </tr>
     </tbody>
   </table>
-  
+
   <div class="contact-info">
-    <p>For further Query Please contact on 8696963496</p>
+    For any queries, please contact <strong>+91 8696963496</strong>
   </div>
-  
+
   <div class="signature-section">
-    <p>Thanks and Regards,<br />
-    <strong>Trainscafe Team</strong></p>
+    Thanks & Regards,<br />
+    <strong>Trainscafe Team</strong>
   </div>
+
 </body>
 </html>

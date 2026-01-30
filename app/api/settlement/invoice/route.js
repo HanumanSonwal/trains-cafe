@@ -1,6 +1,4 @@
-import PDFDocument from "pdfkit";
-import fs from "fs";
-import path from "path";
+import PDFDocument from "pdfkit/js/pdfkit.standalone";
 
 export const runtime = "nodejs";
 
@@ -18,61 +16,129 @@ export async function POST(req) {
       );
     }
 
-    const fontPath = path.resolve(
-      process.cwd(),
-      "public",
-      "fonts",
-      "Roboto-Regular.ttf"
-    );
-
-    if (!fs.existsSync(fontPath)) {
-      throw new Error(
-        "Font file not found. Please add Roboto-Regular.ttf in public/fonts"
-      );
-    }
-
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     const buffers = [];
 
-    doc.on("data", buffers.push.bind(buffers));
-    doc.on("end", () => {});
+    doc.on("data", (chunk) => buffers.push(chunk));
 
-    doc.font(fontPath);
+    /* ===============================
+       HEADER – BRANDING
+    =============================== */
 
-    doc.fontSize(18).text("Trains Cafe", { align: "center" });
+    doc
+      .fillColor("#F36C21")
+      .fontSize(24)
+      .font("Helvetica-Bold")
+      .text("TRAINScafe", { align: "center", letterSpacing: 1 });
+
+    doc
+      .moveDown(0.3)
+      .fontSize(11)
+      .fillColor("#D35400")
+      .font("Helvetica")
+      .text("Fresh Food on Your Seat", { align: "center" });
+
     doc.moveDown(0.5);
-    doc.fontSize(14).text("Vendor Settlement Invoice", {
-      align: "center",
-    });
+
+    doc
+      .strokeColor("#F36C21")
+      .lineWidth(2)
+      .moveTo(50, doc.y)
+      .lineTo(545, doc.y)
+      .stroke();
+
+    doc.moveDown(1.5);
+
+    /* ===============================
+       TITLE
+    =============================== */
+
+    doc
+      .fillColor("#333")
+      .fontSize(16)
+      .font("Helvetica-Bold")
+      .text("Vendor Settlement Invoice", { align: "center" });
 
     doc.moveDown(2);
-    doc.fontSize(12);
+
+    /* ===============================
+       BASIC DETAILS
+    =============================== */
+
+    doc.fontSize(12).font("Helvetica").fillColor("#333");
 
     doc.text(`Vendor Name: ${data.vendorName}`);
-    doc.text(`Settlement Period: ${data.startDate} → ${data.endDate}`);
+    doc.text(
+      `Settlement Period: ${data.startDate}  →  ${data.endDate}`
+    );
 
-    doc.moveDown();
-    doc.text(`Online Amount: ₹${data.onlineAmount || 0}`);
-    doc.text(`COD Amount: ₹${data.codAmount || 0}`);
-    doc.text(`Vendor Share: ₹${data.vendorShare || 0}`);
-    doc.text(`Cafe Share: ₹${data.cafeShare || 0}`);
-    doc.text(`Tax: ₹${data.tax || 0}`);
+    doc.moveDown(1.2);
 
-    doc.moveDown();
+    /* ===============================
+       AMOUNT DETAILS
+    =============================== */
+
+    const labelX = 50;
+    const valueX = 350;
+
+    const row = (label, value) => {
+      doc
+        .fillColor("#666")
+        .text(label, labelX, doc.y)
+        .fillColor("#000")
+        .text(`₹ ${value || 0}`, valueX, doc.y, {
+          align: "right",
+          width: 150,
+        });
+      doc.moveDown(0.6);
+    };
+
+    row("Online Amount", data.onlineAmount);
+    row("COD Amount", data.codAmount);
+    row("Vendor Share", data.vendorShare);
+    row("Trainscafe Share", data.cafeShare);
+    row("GST", data.tax);
+
+    doc.moveDown(1);
+
+    /* ===============================
+       NET PAYABLE
+    =============================== */
+
     doc
-      .fontSize(13)
-      .text(`Net Payable: ₹${data.settlementAmount || 0}`, { underline: true });
+      .font("Helvetica-Bold")
+      .fontSize(14)
+      .fillColor("#F36C21")
+      .text(`Net Payable: ₹ ${data.settlementAmount || 0}`, {
+        align: "right",
+        underline: true,
+      });
 
-    doc.moveDown();
-    doc.fontSize(12).text(`Status: ${data.settlementStatus || "-"}`);
+    doc.moveDown(1.5);
+
+    /* ===============================
+       STATUS
+    =============================== */
+
+    doc
+      .font("Helvetica")
+      .fontSize(12)
+      .fillColor("#333")
+      .text(`Settlement Status: ${data.settlementStatus || "-"}`);
 
     doc.moveDown(3);
+
+    /* ===============================
+       FOOTER
+    =============================== */
+
     doc
       .fontSize(10)
-      .fillColor("gray")
-      .text("This is a system generated invoice. No signature required.", {
-        align: "center",
-      });
+      .fillColor("#888")
+      .text(
+        "This is a system generated GST invoice. No signature required.",
+        { align: "center" }
+      );
 
     doc.end();
 
