@@ -123,14 +123,14 @@ const Footer = () => {
                       Stations
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link
                       href="/trains"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Trains
                     </Link>
-                  </li>
+                  </li> */}
                   <li>
                     <Link
                       href="/group-food-ordering-in-train"
@@ -155,14 +155,14 @@ const Footer = () => {
                       Online Hotel Booking Services
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link
                       href="/coming-soon"
                       className="text-gray-600 text-sm hover:text-gray-800"
                     >
                       Track Order
                     </Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </div>
