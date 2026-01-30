@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const stationSlice = createSlice({
   name: "station",
   initialState: {
-    selectedStation: null,  // Make sure this is the correct key
+    selectedStation: null,
   },
   reducers: {
     setSelectedStation: (state, action) => {
-      state.selectedStation = action.payload;  // Ensure this key matches with useSelector
+      state.selectedStation = action.payload;
     },
     clearStation: (state) => {
       state.selectedStation = null;

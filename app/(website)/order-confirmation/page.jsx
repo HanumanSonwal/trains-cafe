@@ -23,6 +23,31 @@ const OrderConfirmation = () => {
     setLoading(false);
   }, []);
 
+useEffect(() => {
+  if (!orderData) return;
+
+  if (orderData?.status !== "success" && orderData?.status !== "delivered") {
+    return;
+  }
+
+  const trackingKey = `purchase_tracked_${orderData.order_id || orderData._id}`;
+
+  const alreadyTracked = sessionStorage.getItem(trackingKey);
+  if (alreadyTracked) return;
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "purchase_success",
+    order_id: orderData.order_id || orderData._id,
+    value: Number(orderData.total),
+    currency: "INR",
+  });
+
+  sessionStorage.setItem(trackingKey, "true");
+}, [orderData]);
+
+
+
   const handleDownload = () => {
     const htmlContent = generateInvoiceTemplate(orderData);
     const blob = new Blob([htmlContent], { type: "text/html" });
