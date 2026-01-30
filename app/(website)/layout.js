@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import Script from "next/script";
-import ClientProviders from "../componants/ClientProviders";
+// import ClientProviders from "../componants/ClientProviders";
 import AppShell from "../componants/AppShell";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -284,9 +284,9 @@ export default function RootLayout({ children }) {
         style={{ maxWidth: "575px", margin: "0 auto" }}
       >
         <AntdRegistry>
-          <ClientProviders>
+          {/* <ClientProviders> */}
             <AppShell>{children}</AppShell>
-          </ClientProviders>
+          {/* </ClientProviders> */}
         </AntdRegistry>
 
         <Script
