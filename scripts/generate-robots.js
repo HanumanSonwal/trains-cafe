@@ -1,32 +1,3 @@
-// const { generateRobotsTxt } = require('next-sitemap');
-
-// async function run() {
-//   await generateRobotsTxt({
-//     siteUrl: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
-//     outDir: "./public", // robots.txt iske andar generate hoga
-//     robotsTxtOptions: {
-//       policies: [
-//         {
-//           userAgent: "*",
-//           allow: "/",
-//           disallow: ["/admin", "/dashboard", "/admin-auth", "/api"],
-//         },
-//         { userAgent: "GPTBot", allow: "/" },
-//         { userAgent: "Google-Extended", allow: "/" },
-//         { userAgent: "PerplexityBot", allow: "/" },
-//         { userAgent: "ClaudeBot", allow: "/" },
-//       ],
-//       additionalSitemaps: [
-//         `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/sitemap.xml`,
-//       ],
-//     },
-//   });
-// }
-
-// run();
-
-
-// scripts/generate-robots.js
 const fs = require("fs");
 const path = require("path");
 

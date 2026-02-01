@@ -22,9 +22,9 @@ const tools = [
   { label: "Coolie Services", icon: <TeamOutlined />, link: "/online-coolie-booking" },
   { label: "Hotel Booking", icon: <HomeOutlined />, link: "/online-hotel-booking" },
   { label: "Train B/W Stations", icon: <SwapOutlined />, link: "/train-between-stations" },
-  { label: "Station Arr/Dep", icon: <FieldTimeOutlined />, link: "/station-arr-dep" },
-  { label: "Fare Enquiry", icon: <DollarOutlined />, link: "/fare-enquiry" },
-  { label: "Station Details", icon: <EnvironmentOutlined />, link: "/station-details" },
+  { label: "Updates", icon: <FieldTimeOutlined />, link: "/blog" },
+  { label: "Partner", icon: <DollarOutlined />, link: "/vendor-registration" },
+  { label: "Station Details", icon: <EnvironmentOutlined />, link: "/stations" },
 ];
 
 const Page = () => {
@@ -51,11 +51,10 @@ const Page = () => {
 
       <div className="flex flex-col items-center justify-start bg-white py-8 px-4">
         <h2 className="text-lg md:text-xl font-semibold mb-2 text-gray-800 text-center">
-          All services at one place
+         All Railway Services in One Platform
         </h2>
-        <p className="text-sm text-gray-500 mb-6 text-center max-w-md">
-          Explore all TrainsCafe tools — from booking food to checking train
-          details, fare enquiry, PNR status and more, all in one place!
+        <p className="text-sm text-gray-500 mb-6 text-center max-w-md">Enjoy easy food booking in train, quick PNR checks, train updates, and railway details, all designed to save your time and effort with Trainscafe.
+        
         </p>
 
         <Row gutter={[24, 24]} justify="center" className="max-w-2xl">
