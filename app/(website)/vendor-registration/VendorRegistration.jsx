@@ -46,6 +46,27 @@ const steps1 = [
     image: "/images/real-time-order-tracking-4.png",
   },
 ];
+
+const altKeywords = [
+  "food in train",
+  "food on train",
+  "order food in train",
+  "order online food in train",
+  "train food order online",
+  "food delivery in train",
+  "online food order in train",
+  "railway food order",
+  "train journey food order",
+  "food delivery to train",
+  "railway station food delivery",
+  "veg food in train",
+  "non veg food in train",
+  "best food in train",
+];
+const getRandomAlt = () => {
+  return altKeywords[Math.floor(Math.random() * altKeywords.length)];
+};
+
 const VendorRegistration = () => {
   const [form] = Form.useForm();
 
@@ -298,21 +319,26 @@ const VendorRegistration = () => {
                 India.
               </p>
               <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {steps1.map((step1, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-center text-center"
-                  >
-                    <Image
-                      src={step1.image}
-                      alt={step1.title}
-                      width={200}
-                      height={200}
-                      className="img-fluid"
-                      unoptimized
-                    />
-                  </div>
-                ))}
+                {steps1.map((step1, index) => {
+                  const altText = getRandomAlt();
+
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center text-center"
+                    >
+                      <Image
+                        src={step1.image}
+                        alt={altText}
+                        title={altText}
+                        width={200}
+                        height={200}
+                        className="img-fluid"
+                        unoptimized
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="py-4">
@@ -324,21 +350,26 @@ const VendorRegistration = () => {
               </h3>
 
               <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {steps.map((step, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-center text-center"
-                  >
-                    <Image
-                      src={step.image}
-                      alt={step.title}
-                      width={200}
-                      height={200}
-                      className="img-fluid"
-                      unoptimized
-                    />
-                  </div>
-                ))}
+                {steps.map((step, index) => {
+                  const altText = getRandomAlt();
+
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center text-center"
+                    >
+                      <Image
+                        src={step.image}
+                        alt={altText}
+                        title={altText}
+                        width={200}
+                        height={200}
+                        className="img-fluid"
+                        unoptimized
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="py-4 ">
