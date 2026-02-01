@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStations } from "@/app/redux/menuSlice";
 import { debounce } from "lodash";
+import Image from "next/image";
 const { TextArea } = Input;
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -51,14 +52,16 @@ const VendorRegistration = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-    const { stations, loading: stationsLoading } = useSelector((state) => state.menu);
+  const { stations, loading: stationsLoading } = useSelector(
+    (state) => state.menu,
+  );
 
   useEffect(() => {
     dispatch(fetchStations());
   }, [dispatch]);
-const handleStationSearch = debounce((searchTerm) => {
-  dispatch(fetchStations(searchTerm));
-}, 500);
+  const handleStationSearch = debounce((searchTerm) => {
+    dispatch(fetchStations(searchTerm));
+  }, 500);
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -77,10 +80,12 @@ const handleStationSearch = debounce((searchTerm) => {
     <div className="bg-gray-50 min-h-screen">
       <div className="relative h-40 md:h-60">
         <div>
-          <img
+          <Image
             src="/images/Trainscafe-Banner.webp"
-            alt="food in train by traincafe"
-            className="absolute inset-0 object-cover w-full h-full"
+            alt="Food in train by Trainscafe"
+            fill
+            className="object-cover"
+            priority
           />
         </div>
         <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
@@ -160,16 +165,17 @@ const handleStationSearch = debounce((searchTerm) => {
                 name="Station"
                 rules={[{ required: true, message: "Please select a station" }]}
               >
-           <Select
-  showSearch
-  placeholder={loading ? "Loading stations..." : "Select Station"}
-  size="large"
-  loading={loading}
-  onSearch={handleStationSearch}   // 👈 important
-  filterOption={false}             // 👈 use backend filtering
-  notFoundContent={loading ? "Loading..." : "No stations found"}
->
-
+                <Select
+                  showSearch
+                  placeholder={
+                    loading ? "Loading stations..." : "Select Station"
+                  }
+                  size="large"
+                  loading={loading}
+                  onSearch={handleStationSearch} // 👈 important
+                  filterOption={false} // 👈 use backend filtering
+                  notFoundContent={loading ? "Loading..." : "No stations found"}
+                >
                   {stations && stations.length > 0 ? (
                     stations.map((station) => (
                       <Option key={station._id} value={station._id}>
@@ -297,10 +303,13 @@ const handleStationSearch = debounce((searchTerm) => {
                     key={index}
                     className="flex flex-col items-center text-center"
                   >
-                    <img
+                    <Image
                       src={step1.image}
                       alt={step1.title}
+                      width={200}
+                      height={200}
                       className="img-fluid"
+                      unoptimized
                     />
                   </div>
                 ))}
@@ -320,10 +329,13 @@ const handleStationSearch = debounce((searchTerm) => {
                     key={index}
                     className="flex flex-col items-center text-center"
                   >
-                    <img
+                    <Image
                       src={step.image}
                       alt={step.title}
+                      width={200}
+                      height={200}
                       className="img-fluid"
+                      unoptimized
                     />
                   </div>
                 ))}
@@ -466,72 +478,76 @@ const handleStationSearch = debounce((searchTerm) => {
           <h2 className="font-bold text-[#704D25] mb-2">
             Frequently Asked Questions (FAQs)
           </h2>
-              <Collapse accordion>
-      <Panel
-        header={
-          <h3>
-            Q1. How you can tie-up as vendor with restaurants on train?
-          </h3>
-        }
-        key="1"
-      >
-        <p>
-          For vendor tie-up with restaurants on train, there is always the
-          submission of some important documents such as a valid FSSAI
-          certificate and GST-registered shop.{" "}
-          <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
-          <b>food on train through Trainscafe</b>.
-        </p>
-      </Panel>
+          <Collapse accordion>
+            <Panel
+              header={
+                <h3>
+                  Q1. How you can tie-up as vendor with restaurants on train?
+                </h3>
+              }
+              key="1"
+            >
+              <p>
+                For vendor tie-up with restaurants on train, there is always the
+                submission of some important documents such as a valid FSSAI
+                certificate and GST-registered shop.{" "}
+                <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
+                <b>food on train through Trainscafe</b>.
+              </p>
+            </Panel>
 
-      <Panel
-        header={<h3>Q2. Is local vendors allowed in train?</h3>}
-        key="2"
-      >
-        <p>
-          As trespassers or encroachers of railway land, any unauthorized
-          vendors or hawkers on trains and station property must be removed
-          in accordance with applicable laws (Sections 144 & 147) of the
-          Railways Act, 1989.
-        </p>
-      </Panel>
+            <Panel
+              header={<h3>Q2. Is local vendors allowed in train?</h3>}
+              key="2"
+            >
+              <p>
+                As trespassers or encroachers of railway land, any unauthorized
+                vendors or hawkers on trains and station property must be
+                removed in accordance with applicable laws (Sections 144 & 147)
+                of the Railways Act, 1989.
+              </p>
+            </Panel>
 
-      <Panel
-        header={<h3>Q3. What is the method of getting vendor licence in train?</h3>}
-        key="3"
-      >
-        <p>
-          To get a vendor license in train, you must have certain documents
-          verified by Indian Railways. Trainscafe provides the opportunity
-          to get registered with them as a new vendor.
-        </p>
-      </Panel>
+            <Panel
+              header={
+                <h3>
+                  Q3. What is the method of getting vendor licence in train?
+                </h3>
+              }
+              key="3"
+            >
+              <p>
+                To get a vendor license in train, you must have certain
+                documents verified by Indian Railways. Trainscafe provides the
+                opportunity to get registered with them as a new vendor.
+              </p>
+            </Panel>
 
-      <Panel
-        header={<h3>Q4. How can I become vendor for railways?</h3>}
-        key="4"
-      >
-        <p>
-          To become a vendor for railways, you need to research first the
-          company you want to run and ensure your business is registered with
-          all required documents submitted.
-        </p>
-      </Panel>
+            <Panel
+              header={<h3>Q4. How can I become vendor for railways?</h3>}
+              key="4"
+            >
+              <p>
+                To become a vendor for railways, you need to research first the
+                company you want to run and ensure your business is registered
+                with all required documents submitted.
+              </p>
+            </Panel>
 
-      <Panel
-        header={<h3>Q5. How can I become authorised IRCTC partner?</h3>}
-        key="5"
-      >
-        <p>
-          In order to become an authorised IRCTC partner, you must fill out
-          the registration form for IRCTC agents and upload the required
-          documents. After verification, you will receive an ID and password
-          to log in to the portal.{" "}
-          <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
-          <b>food on train through Trainscafe.</b>
-        </p>
-      </Panel>
-    </Collapse>
+            <Panel
+              header={<h3>Q5. How can I become authorised IRCTC partner?</h3>}
+              key="5"
+            >
+              <p>
+                In order to become an authorised IRCTC partner, you must fill
+                out the registration form for IRCTC agents and upload the
+                required documents. After verification, you will receive an ID
+                and password to log in to the portal.{" "}
+                <b>Get vendor tie-ups with restaurants</b> and start delivering{" "}
+                <b>food on train through Trainscafe.</b>
+              </p>
+            </Panel>
+          </Collapse>
         </div>
       </div>
 
@@ -547,7 +563,7 @@ const handleStationSearch = debounce((searchTerm) => {
             </Link>{" "}
             |{" "}
             <Link
-               href="mailto:info@trainscafe.in"
+              href="mailto:info@trainscafe.in"
               className="font-bold text-blue-600 hover:text-blue-800 underline"
             >
               info@trainscafe.in
