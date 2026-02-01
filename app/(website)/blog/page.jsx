@@ -6,9 +6,9 @@ export async function generateMetadata() {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
   const pageUrl = `${baseUrl}/blog`;
 
-  const baseTitle = "Blogs - Trains Cafe";
+  const baseTitle = "All Train Blogs, Travel Tips & Railway Guides | Trainscafe";
   const baseDescription =
-    "Read our latest blogs about train food delivery, travel tips and more.";
+    "Read train travel blogs on trainscafe covering railway tips, station guides, train food, journey experiences, and Indian Railways travel updates for passengers.";
 
   return {
     title: baseTitle,
