@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import RecentOrders from "@/app/componants/RecentOrders";
 import PromoBanner from "@/app/componants/PromoBanner";
 import CustomerReviews from "@/app/componants/CustomerReviewSlider";
+import Image from "next/image";
 
 const { Meta } = Card;
 const { TabPane } = Tabs;
@@ -49,10 +50,13 @@ const BlogPageClient = () => {
   return (
     <div>
       <div className="relative h-40 md:h-60 mb-4">
-        <img
+     <Image
           src="/images/Trainscafe-Banner.webp"
           alt="food delivery in train"
-          className="absolute inset-0 object-cover w-full h-full"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <h1 className="text-white font-bold text-2xl md:text-4xl">Blogs</h1>
@@ -111,9 +115,12 @@ const BlogPageClient = () => {
                 hoverable
                 cover={
                   <div className="relative">
-                    <img
+                     <Image
                       alt={post.title}
                       src={post.image}
+                      width={600}
+                      height={300}
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       className="w-full h-40 object-cover"
                     />
                     <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-sm px-2 py-1">
@@ -127,10 +134,12 @@ const BlogPageClient = () => {
                     {dayjs(post.updatedAt).format("DD MMM YYYY")}
                   </p>
                   <div className="flex items-center text-sm text-gray-400">
-                    <img
+                      <Image
                       src="/images/user-icon.png"
                       alt="Author"
-                      className="w-4 h-4 mr-2"
+                      width={16}
+                      height={16}
+                      className="mr-2"
                     />
                     <p className="blog-author">By Admin</p>
                   </div>

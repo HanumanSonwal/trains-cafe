@@ -11,6 +11,7 @@ import ItemTable from "./ItemTable";
 import TotalSection from "./TotalSection";
 import CouponSection from "./CouponSection";
 import OrderDetailsForm from "./OrderDetailsForm";
+import Script from "next/script";
 
 const CheckoutPage = () => {
   const { items, vendor, train, station } = useSelector((state) => state.cart);
@@ -334,7 +335,16 @@ const CheckoutPage = () => {
           <div className="loader"></div>
         </div>
       )}
+
+         <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="beforeInteractive"
+        />
+
+
+      
     </>
+    
   );
 };
 

@@ -1,12 +1,23 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { Card, Spin } from "antd";
 import dayjs from "dayjs";
-import PromoBanner from "@/app/componants/PromoBanner";
-import RecentOrders from "@/app/componants/RecentOrders";
-import CustomerReviews from "@/app/componants/CustomerReviewSlider";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+// lazy load heavy sections
+const PromoBanner = dynamic(() => import("@/app/componants/PromoBanner"), {
+  ssr: false,
+});
+const RecentOrders = dynamic(() => import("@/app/componants/RecentOrders"), {
+  ssr: false,
+});
+const CustomerReviews = dynamic(
+  () => import("@/app/componants/CustomerReviewSlider"),
+  { ssr: false }
+);
 
 const { Meta } = Card;
 
@@ -19,10 +30,16 @@ export default function SingleBlogClient({ blog }) {
 
   const fetchRelatedPosts = useCallback(async () => {
     if (!category) return;
+
     try {
-      const res = await fetch(`/api/blog?category=${category}&status=publish`);
+      const res = await fetch(
+        `/api/blog?category=${category}&status=publish`,
+        { cache: "no-store" }
+      );
       const data = await res.json();
-      const filtered = data.docs.filter((p) => p.slug !== slug);
+      const filtered = (data?.docs || []).filter(
+        (p) => p.slug !== slug
+      );
       setRelatedPosts(filtered);
     } catch (err) {
       console.error("Error fetching related posts:", err);
@@ -36,7 +53,10 @@ export default function SingleBlogClient({ blog }) {
   }, [fetchRelatedPosts, category, slug]);
 
   const formattedDate = useMemo(
-    () => (blog ? dayjs(blog.updatedAt).format("DD MMM YYYY") : ""),
+    () =>
+      blog?.updatedAt
+        ? dayjs(blog.updatedAt).format("DD MMM YYYY")
+        : "",
     [blog?.updatedAt]
   );
 
@@ -49,9 +69,12 @@ export default function SingleBlogClient({ blog }) {
           className="shadow-md rounded-lg"
           cover={
             <div className="relative">
-              <img
+              <Image
                 alt={post.title}
                 src={post.image}
+                width={600}
+                height={300}
+                sizes="(max-width: 768px) 100vw, 33vw"
                 className="w-full h-40 object-cover"
               />
               <div className="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white text-xs px-2 py-1">
@@ -66,7 +89,9 @@ export default function SingleBlogClient({ blog }) {
             </p>
             <p className="text-xs text-gray-400">By Admin</p>
           </div>
+
           <Meta title={post.title} description={post.excerpt} />
+
           <div className="flex justify-start mt-4">
             <Link
               href={`/blog/${post.slug}`}
@@ -91,17 +116,22 @@ export default function SingleBlogClient({ blog }) {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <div className="relative h-40 md:h-60 mb-8">
-        <img
+      <div className="relative h-40 md:h-60 mb-8 w-full">
+        <Image
           src={blog.image}
           alt={blog.title}
-          className="absolute inset-0 object-cover w-full h-full"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center px-4">
           <h1 className="text-white text-3xl md:text-5xl font-bold mb-2">
             {blog.title}
           </h1>
-          <p className="text-gray-200">Published on {formattedDate}</p>
+          <p className="text-gray-200">
+            Published on {formattedDate}
+          </p>
         </div>
       </div>
 
@@ -129,14 +159,13 @@ export default function SingleBlogClient({ blog }) {
         </div>
       ) : null}
 
-      {/* ---------- OTHER COMPONENTS ---------- */}
+      {/* ---------- EXTRA SECTIONS ---------- */}
       <PromoBanner />
       <RecentOrders />
       <CustomerReviews />
 
-      {/* ---------- INLINE STYLES ---------- */}
+      {/* ---------- GLOBAL STYLES ---------- */}
       <style jsx global>{`
-        /* ✅ Jodit Editor style matching */
         .jodit-content {
           font-size: 1rem;
           line-height: 1.7;

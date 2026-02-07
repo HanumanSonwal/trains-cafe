@@ -9,6 +9,7 @@ import {
   YoutubeFilled,
 } from "@ant-design/icons";
 import Link from "next/link";
+import Image from "next/image";
 
 const Footer = () => {
   const [showTopNavigation, setShowTopNavigation] = useState(false);
@@ -74,13 +75,17 @@ const Footer = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="sm:text-left">
-                <Link href="/">
-                  <img
-                    src="/images/logo.svg"
-                    alt="Company Logo"
-                    className="w-24  sm:mx-0 mb-4"
-                  />
-                </Link>
+                 <Link href="/">
+                {/* logo – color safe */}
+                <Image
+                  src="/images/logo.svg"
+                  alt="Company Logo"
+                  width={96}
+                  height={40}
+                  unoptimized
+                  className="w-24 mb-4"
+                />
+              </Link>
                 <p className="text-sm text-[#3A3A3A]">
                   Trainscafe is your trusted partner for hygienic and delicious
                   food delivery in train. We ensure fresh meals, timely service,

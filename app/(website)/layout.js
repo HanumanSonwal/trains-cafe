@@ -289,11 +289,7 @@ export default function RootLayout({ children }) {
           </ClientProviders>
         </AntdRegistry>
 
-        <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          strategy="beforeInteractive"
-        />
-
+     
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-PQ7T4DP5"

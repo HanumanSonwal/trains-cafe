@@ -1,56 +1,78 @@
 "use client";
-import React, { useRef, useEffect, useState } from "react";
+
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { Carousel } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const CustomerReviews = () => {
-  const carouselRef = useRef();
+  const carouselRef = useRef(null);
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    fetch("/data/customerReviews.json")
-      .then((res) => res.json())
-      .then((data) => setReviews(data));
+    let mounted = true;
+
+    const loadReviews = async () => {
+      try {
+        const res = await fetch("/data/customerReviews.json");
+        const data = await res.json();
+        if (mounted) setReviews(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to load reviews");
+      }
+    };
+
+    loadReviews();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      carouselRef.current?.next();
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
- const truncateText = (text, wordLimit) => {
+  const truncateText = useCallback((text, wordLimit) => {
     const words = text.split(" ");
     return words.length > wordLimit
       ? words.slice(0, wordLimit).join(" ") + "..."
       : text;
-  };
+  }, []);
+
+  const goPrev = useCallback(() => {
+    carouselRef.current?.prev();
+  }, []);
+
+  const goNext = useCallback(() => {
+    carouselRef.current?.next();
+  }, []);
 
   return (
     <div className="relative max-w-6xl mx-auto px-4 py-8 bg-gray-100 rounded-md mb-5">
       <div className="flex items-center">
+        {/* LEFT */}
         <div className="w-1/3 pr-4">
           <div className="relative mb-4">
-            <img
+            <Image
               src="/images/Testimonial.png"
               alt="Testimonial"
-              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-2/3 w-full"
+              width={260}
+              height={80}
+              unoptimized
+              className="absolute left-1/2 -translate-x-1/2 -translate-y-2/3 w-full"
             />
             <h2 className="text-xl relative z-10 text-[#704D25] font-bold">
               Reviews By Our Customer
             </h2>
           </div>
+
           <div className="flex space-x-4">
             <button
-              onClick={() => carouselRef.current?.prev()}
+              onClick={goPrev}
               className="border text-[#A0522D] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A0522D] hover:text-white"
               style={{ borderColor: "#A0522D" }}
             >
               <LeftOutlined />
             </button>
+
             <button
-              onClick={() => carouselRef.current?.next()}
+              onClick={goNext}
               className="border text-[#A0522D] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#A0522D] hover:text-white"
               style={{ borderColor: "#A0522D" }}
             >
@@ -58,30 +80,43 @@ const CustomerReviews = () => {
             </button>
           </div>
         </div>
+
+        {/* RIGHT */}
         <div className="w-2/3 relative">
-          <Carousel ref={carouselRef} dots={false} autoplay>
-            {reviews.map((review, index) => (
-              <div key={index} className="px-4">
+          <Carousel
+            ref={carouselRef}
+            dots={false}
+            autoplay
+            autoplaySpeed={3000}
+            pauseOnHover
+          >
+            {reviews.map((review) => (
+              <div key={review.id || review.name} className="px-4">
                 <div className="relative p-2">
                   <div className="bg-white shadow-md rounded-lg p-8">
                     <div className="flex justify-between items-center mb-3">
-                      <img
+                      <Image
                         src="/images/Review_icon.png"
                         alt={review.name}
-                        className="w-10 h-10 rounded-full"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
                       />
-                      <img
+                      <Image
                         src="/images/double-quote.png"
                         alt="Quote"
-                        className="w-6 h-6 opacity-50"
+                        width={24}
+                        height={24}
+                        className="opacity-50"
                       />
                     </div>
+
                     <div>
                       <h3 className="font-semibold text-sm mb-1">
                         {review.name}
                       </h3>
                       <p className="text-gray-600 text-xs leading-tight">
-                       {truncateText(review.text, 20)}
+                        {truncateText(review.text, 20)}
                       </p>
                     </div>
                   </div>

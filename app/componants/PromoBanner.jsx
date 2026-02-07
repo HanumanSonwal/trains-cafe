@@ -1,45 +1,40 @@
 "use client";
-import React from "react";
-import { Button, Carousel } from "antd";
+
+import Image from "next/image";
+import { Button } from "antd";
 import Link from "next/link";
 
 const PromoBanner = () => {
-  const images = [
-    "/images/promo.png",
-    "/images/promo.png",
-    "/images/promo.png",
-  ];
-
   const phone = process.env.NEXT_PUBLIC_PHONE;
 
   return (
     <div className="relative mb-4 w-full h-[230px] overflow-hidden rounded-lg max-w-[575px] mx-auto">
-      <Carousel autoplay>
-        {images.map((img, index) => (
-          <div key={index} className="h-[230px]">
-            <div
-              className="w-full h-full bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${img})`,
-              }}
-            />
-          </div>
-        ))}
-      </Carousel>
+      <Image
+        src="/images/promo.png"
+        alt="Promo Banner"
+        fill
+        unoptimized
+        className="object-cover"
+      />
 
       <div className="absolute right-0 top-0 bottom-0 sm:w-1/2 flex flex-col justify-center items-start p-4 sm:p-8 z-10">
         <div className="relative mb-4 w-full">
-          <img
+          <Image
             src="/images/Offer.png"
             alt="Title Overlay"
+            width={120}
+            height={60}
+            unoptimized
             className="absolute left-1/4 -translate-x-1/2 -translate-y-1/2"
           />
+
           <h2 className="relative text-white text-xl sm:text-2xl font-bold leading-tight">
             Exclusive Offer,
             <br />
             Grab It Soon
           </h2>
         </div>
+
         <Link href={`tel:${phone}`}>
           <Button
             type="primary"
