@@ -18,7 +18,7 @@ export default function Header() {
 
   const cartCount = useSelector(
     (state) => state.cart.items.length,
-    shallowEqual
+    shallowEqual,
   );
 
   const openCart = useCallback(() => {
@@ -32,7 +32,6 @@ export default function Header() {
   return (
     <div className="sticky top-0 z-50 mx-auto bg-white shadow-md">
       <header className="flex justify-between items-center p-4 max-w-[575px] mx-auto">
-        {/* LEFT: LOGO */}
         <Link href="/">
           <Image
             src="/images/logo.svg"
@@ -45,12 +44,10 @@ export default function Header() {
           />
         </Link>
 
-        {/* CENTER: DOWNLOAD / INSTALL BUTTON */}
         <div className="flex-1 flex justify-center">
           <RegisterServiceWorker />
         </div>
 
-        {/* RIGHT: CART */}
         <button onClick={openCart} className="cart-button">
           <Badge count={cartCount} showZero>
             <ShoppingCartOutlined style={{ fontSize: 24 }} />

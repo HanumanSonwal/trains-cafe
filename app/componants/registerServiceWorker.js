@@ -1,64 +1,56 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function RegisterServiceWorker() {
-  const deferredPromptRef = useRef(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then((reg) => console.log("SW Registered:", reg.scope))
-        .catch((err) => console.error("SW failed:", err));
+        .then((reg) => console.log("✅ Service Worker registered:", reg.scope))
+        .catch((err) =>
+          console.error("❌ Service Worker registration failed:", err),
+        );
     }
-
-    const installBtn = document.getElementById("installAppBtn");
-
-    const handleBeforeInstall = (e) => {
+    const handleBeforeInstallPrompt = (e) => {
       console.log("🔥 beforeinstallprompt fired");
 
       e.preventDefault();
-      deferredPromptRef.current = e;
-
-      if (installBtn) {
-        installBtn.style.display = "block";
-      }
+      setDeferredPrompt(e);
+      setShowInstall(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-
-    const handleInstallClick = async () => {
-      const deferredPrompt = deferredPromptRef.current;
-      if (!deferredPrompt) return;
-
-      deferredPrompt.prompt();
-
-      const result = await deferredPrompt.userChoice;
-      console.log("User choice:", result.outcome);
-
-      deferredPromptRef.current = null;
-
-      if (installBtn) installBtn.style.display = "none";
-    };
-
-    if (installBtn) {
-      installBtn.addEventListener("click", handleInstallClick);
-    }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-      if (installBtn) {
-        installBtn.removeEventListener("click", handleInstallClick);
-      }
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
     };
   }, []);
 
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+
+    console.log("User choice:", result.outcome);
+
+    setDeferredPrompt(null);
+    setShowInstall(false);
+  };
+
+  if (!showInstall) return null;
+
   return (
     <button
-      id="installAppBtn"
+      onClick={handleInstallClick}
       style={{
-        display: "none",
         backgroundColor: "#d6872a",
         color: "white",
         border: "none",
@@ -66,7 +58,7 @@ export default function RegisterServiceWorker() {
         borderRadius: "10px",
         fontWeight: "600",
         boxShadow: "0px 4px 10px rgba(0,0,0,0.3)",
-        zIndex: "9999",
+        cursor: "pointer",
       }}
     >
       📲 Install App
