@@ -521,6 +521,7 @@ export default function MaintenancePage() {
 
           <div className="eyebrow">Platform Notice</div>
 
+
           {/* Train Illustration */}
           <div className="train-scene">
             {/* Smoke */}
@@ -588,15 +589,15 @@ export default function MaintenancePage() {
           </div>
 
           <p className="description">
-            Hamara platform thodi der ke liye station par ruka hua hai.
-            Hum kuch naya aur behtar leke aa rahe hain — grab a cup of chai
-            aur thoda intezaar karein.
+            Our platform has pulled into the station for a little while.
+            We're brewing something new and better — grab a cup of chai
+            and sit tight, we'll be back shortly.
           </p>
 
           {/* Progress */}
           <div className="progress-section">
             <div className="progress-label">
-              <span>Kaam chal raha hai...</span>
+              <span>Work in progress...</span>
               <strong>{progress}%</strong>
             </div>
             <div className="progress-track">
@@ -608,7 +609,7 @@ export default function MaintenancePage() {
           <div className="info-grid">
             <div className="info-tile">
               <div className="tile-label">Estimated Time</div>
-              <div className="tile-value">Kuch ghante</div>
+              <div className="tile-value">A few hours</div>
             </div>
             <div className="info-tile">
               <div className="tile-label">Live Clock</div>
@@ -624,10 +625,10 @@ export default function MaintenancePage() {
             </div>
           </div>
 
-          <div className="contact-line">
-            Koi urgent kaam ho toh humse milein:{" "}
+          {/* <div className="contact-line">
+            Need urgent help? Reach us at:{" "}
             <a href="mailto:support@traincafe.in">support@traincafe.in</a>
-          </div>
+          </div> */}
 
         </div>
       </div>
