@@ -1,27 +1,43 @@
+// import { NextResponse } from "next/server";
+
+// const MAINTENANCE_MODE = false;
+
+// export function middleware(req) {
+//   const { pathname } = req.nextUrl;
+
+//   const isMaintenancePage = pathname.startsWith("/under-maintinance");
+
+//   // 🟥 Maintenance ON → sabko maintenance page pe bhej
+//   if (MAINTENANCE_MODE) {
+//     if (!isMaintenancePage) {
+//       return NextResponse.redirect(new URL("/under-maintinance", req.url));
+//     }
+//   }
+
+//   // 🟩 Maintenance OFF → maintenance page open nahi hona chahiye
+//   if (!MAINTENANCE_MODE) {
+//     if (isMaintenancePage) {
+//       return NextResponse.redirect(new URL("/", req.url));
+//     }
+//   }
+
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   matcher: ["/((?!_next|api|favicon.ico).*)"],
+// };
+
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 const secret = process.env.NEXTAUTH_SECRET;
-const MAINTENANCE_MODE = false; // Set to true to enable maintenance mode
 
 export async function middleware(req) {
   const token = await getToken({ req, secret });
 
   const { pathname } = req.nextUrl;
 
-  // 🔹 Maintenance Mode
-  if (
-    MAINTENANCE_MODE &&
-    !pathname.startsWith("/admin") &&
-    !pathname.startsWith("/admin-auth") &&
-    !pathname.startsWith("/under-maintinance") &&
-    !pathname.startsWith("/api") &&
-    !pathname.startsWith("/_next")
-  ) {
-    return NextResponse.redirect(new URL("/under-maintinance", req.url));
-  }
-
-  // 🔹 Admin Auth Check
   if (pathname.startsWith("/admin")) {
     if (!token) {
       return NextResponse.redirect(new URL("/admin-auth", req.url));
@@ -32,5 +48,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/admin/:path*"],
 };
