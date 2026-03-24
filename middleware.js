@@ -2,7 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 const secret = process.env.NEXTAUTH_SECRET;
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false; // Set to true to enable maintenance mode
 
 export async function middleware(req) {
   const token = await getToken({ req, secret });
