@@ -341,9 +341,13 @@ const Footer = () => {
 
           {/* Footer Bottom */}
           <div className="mt-8 flex flex-col md:flex-row items-center justify-center py-2 border-t border-gray-200">
-            <div className="text-gray-600 text-center  mb-4 md:mb-0">
-              <p style={{ fontSize: "12px" }}>Copyright 2026 @trainscafe.in</p>
-            </div>
+       <div className="text-gray-600 text-center text-xs md:text-sm space-y-2 mb-4 md:mb-0">
+  <p>© 2026 trainscafe.in. All rights reserved.</p>
+
+  <p className="max-w-2xl mx-auto">
+    Disclaimer: Trainscafe is an independent food ordering platform for train travelers and is not affiliated with IRCTC or Indian Railways.
+  </p>
+</div>
 
             <div className="flex justify-center md:justify-end items-center space-x-4">
               {showTopNavigation && (
