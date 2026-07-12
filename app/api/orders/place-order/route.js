@@ -1,20 +1,19 @@
 import { cartCalculation } from "@/app/lib";
+import Coupon from "@/app/models/coupon";
+import CouponUsage from "@/app/models/couponUsage";
+import Menu from "@/app/models/menu";
 import Order from "@/app/models/order";
 import OrderItems from "@/app/models/orderItems";
 import Station from "@/app/models/station";
-import CouponUsage from "@/app/models/couponUsage";
-import Coupon from "@/app/models/coupon";
-import { NextResponse } from "next/server";
-import { parsePhoneNumber } from "libphonenumber-js";
 import * as EmailValidator from "email-validator";
+import { parsePhoneNumber } from "libphonenumber-js";
+import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
-import Menu from "@/app/models/menu";
-import Category from "@/app/models/category";
 
-const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-  key_secret: process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET,
-});
+// const razorpay = new Razorpay({
+//   key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+//   key_secret: process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET,
+// });
 
 export async function POST(req) {
   try {
@@ -99,6 +98,20 @@ export async function POST(req) {
       }
     }
 
+    // const {
+
+    //   subTotal,
+    //   tax,
+    //   total,
+    //   discount,
+    //   adminDiscountAmount,
+    //   couponDiscount,
+    // } = cartCalculation(cart, coupon, adminDiscountPercent);
+
+    const calculation = cartCalculation(cart, coupon, adminDiscountPercent);
+
+    console.log(calculation);
+
     const {
       subTotal,
       tax,
@@ -106,7 +119,7 @@ export async function POST(req) {
       discount,
       adminDiscountAmount,
       couponDiscount,
-    } = cartCalculation(cart, coupon, adminDiscountPercent);
+    } = calculation;
 
     if (coupon && coupon.minimumAmount > subTotal) {
       return NextResponse.json({
@@ -116,9 +129,28 @@ export async function POST(req) {
     }
 
     let rp_order = null;
-    let paymentDetails = {};
 
+    let paymentDetails = {
+      method: payment.method,
+    };
+
+    // Sirf Razorpay payment ke time initialize hoga
     if (payment.method === "RAZORPAY") {
+      if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Razorpay is not configured.",
+          },
+          { status: 500 },
+        );
+      }
+
+      const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+      });
+
       rp_order = await razorpay.orders.create({
         amount: Math.round(total * 100),
         currency: "INR",
@@ -129,7 +161,7 @@ export async function POST(req) {
         method: "RAZORPAY",
         payment_status: "pending",
         amount: total,
-        tax: tax,
+        tax,
         vpa: "",
         rp_order_id: rp_order.id,
         rp_payment_id: "",
@@ -171,6 +203,7 @@ export async function POST(req) {
     }
 
     const stationRes = await Station.findOne({ code: station.code });
+    console.log(station);
     if (!stationRes) {
       return NextResponse.json({
         success: false,
@@ -209,14 +242,15 @@ export async function POST(req) {
     }));
     await OrderItems.insertMany(orderItems);
 
-    await OrderItems.insertMany(orderItems);
-
     const itemIds = cart.map((item) => item._id);
 
-    const dbItems = await Menu.find({ _id: { $in: itemIds } }).populate(
-      "Category_Id",
-      "title"
-    );
+    const dbItems = await Menu.find({
+      _id: { $in: itemIds },
+    });
+
+    console.log(dbItems);
+
+    console.log(dbItems);
 
     const populatedItems = dbItems.map((dbItem) => {
       const cartItem = cart.find((c) => c._id === dbItem._id.toString());
@@ -277,16 +311,23 @@ export async function POST(req) {
           ...paymentDetails,
           advanced: payment?.advanced || 0,
           remainingAmount: Number(
-            (order.total - (payment?.advanced || 0)).toFixed(2)
+            (order.total - (payment?.advanced || 0)).toFixed(2),
           ),
         },
       },
     });
   } catch (error) {
-    console.error("Error placing order:", error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || "Something went wrong",
-    });
+    console.error("========== ORDER ERROR ==========");
+    console.error(error);
+    console.error(error.stack);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message,
+        stack: error.stack,
+      },
+      { status: 500 },
+    );
   }
 }
