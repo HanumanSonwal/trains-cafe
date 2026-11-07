@@ -22,7 +22,7 @@ export async function middleware(req) {
   }
 
   // 🔹 Admin Auth Check
-  if (pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin-auth")) {
     if (!token) {
       return NextResponse.redirect(new URL("/admin-auth", req.url));
     }

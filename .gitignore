@@ -41,3 +41,5 @@ next-env.d.ts
 /.env.test.local
 
 .env*
+# second build dir used for side-by-side testing
+/.next-test/
