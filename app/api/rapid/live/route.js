@@ -1,82 +1,42 @@
 import { NextResponse } from "next/server";
+import { getLiveTrain, normalizeDate, RailRadarError } from "@/app/lib/railradar";
+import { rateLimit, tooManyRequests } from "@/app/lib/rateLimit";
 
+// Kept at /api/rapid/live so the existing train page keeps working,
+// but the data now comes from RailRadar.
 export async function GET(req) {
+  const limit = rateLimit(req, { scope: "live", limit: 60 });
+  if (!limit.ok) return tooManyRequests(limit.retryAfter);
+
+  const { searchParams } = new URL(req.url);
+  const trainNo = (searchParams.get("trainNo") || "").trim();
+  const date = normalizeDate(searchParams.get("date"));
+
+  if (!/^[A-Za-z0-9 _/-]{1,20}$/.test(trainNo)) {
+    return NextResponse.json(
+      { success: false, message: "Missing or invalid train number" },
+      { status: 400 }
+    );
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const trainNo = searchParams.get("trainNo");
-    const dateString = searchParams.get("date");
-
-    if (!trainNo) {
-      return NextResponse.json(
-        { error: "Missing train number in query parameters" },
-        { status: 400 }
-      );
-    }
-
-    if (!dateString) {
-      return NextResponse.json(
-        { error: "Missing date in query parameters" },
-        { status: 400 }
-      );
-    }
-
-    const sentDate = new Date(dateString);
-    if (isNaN(sentDate.getTime())) {
-      return NextResponse.json(
-        { error: "Invalid date format" },
-        { status: 400 }
-      );
-    }
-
-    const currentDate = new Date();
-
-    const sentDateStartOfDay = new Date(
-      sentDate.getFullYear(),
-      sentDate.getMonth(),
-      sentDate.getDate()
+    const data = await getLiveTrain(trainNo, date);
+    return NextResponse.json(
+      { success: true, data, message: "" },
+      // Live data is 60s fresh upstream; let the CDN reuse it for the same minute.
+      { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" } }
     );
-    const currentDateStartOfDay = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate()
-    );
-
-    const differenceInDays = Math.floor(
-      (currentDateStartOfDay - sentDateStartOfDay) / (1000 * 60 * 60 * 24)
-    );
-
-    const queryParams = new URLSearchParams({
-      trainNo,
-      startDay: differenceInDays.toString(),
-    }).toString();
-
-    const apiUrl = `${process.env.RAPID_URL}v1/liveTrainStatus?${queryParams}`;
-
-    const thirdPartyResponse = await fetch(apiUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-RapidAPI-Host": process.env.RAPID_HOST,
-        "X-RapidAPI-Key": process.env.RAPID_API_KEY,
-      },
-    });
-
-    const data = await thirdPartyResponse.json();
-
-    return NextResponse.json({
-      data: data?.data || null,
-      success: data?.data?.success ?? data?.status ?? false,
-      Timestamp: data?.Timestamp || "",
-      message: data?.message || "",
-    });
   } catch (error) {
-    console.error("API Error:", error);
+    const known = error instanceof RailRadarError;
+    const status = known ? error.status : 500;
+    if (!known || status >= 500) console.error("Live train error:", error.message);
     return NextResponse.json(
       {
-        message: "An error occurred",
-        error: error.message,
+        success: false,
+        data: null,
+        message: known ? error.message : "Could not fetch live train status",
       },
-      { status: 500 }
+      { status }
     );
   }
 }

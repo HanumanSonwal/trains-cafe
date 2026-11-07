@@ -11,7 +11,7 @@ export async function GET(req) {
         query: query
       }).toString();
 
-    const thirdPartyResponse = await fetch(`${process.env.RAPID_URL}/v1/searchStation?${queryParams}` , {
+    const thirdPartyResponse = await fetch(`${process.env.RAPID_URL}  ${queryParams}` , {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ export async function GET(req) {
         //   email: email,
         // }),
     });
-  
+
     const thirdPartyData = await thirdPartyResponse.json();
     return NextResponse.json({
       message: 'Data received successfully',

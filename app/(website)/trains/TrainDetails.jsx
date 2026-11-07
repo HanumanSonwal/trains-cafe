@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { message, Collapse } from "antd";
 import { PhoneOutlined, WhatsAppOutlined } from "@ant-design/icons";
 import VendorCard from "./VendorCard";
@@ -19,12 +19,19 @@ export default function TrainDetails({ params }) {
 
   const { trainNo, trainName } = parseTrainSlug(slug);
 
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
+  const searchParams = useSearchParams();
+
+  // Today in India (UTC would show yesterday before 5:30 AM IST).
+  const getTodayDate = () =>
+    new Date(Date.now() + 330 * 60 * 1000).toISOString().split("T")[0];
+
+  // A PNR search passes the journey date as ?date=YYYY-MM-DD.
+  const getInitialDate = () => {
+    const d = searchParams.get("date");
+    return /^\d{4}-\d{2}-\d{2}$/.test(d || "") ? d : getTodayDate();
   };
 
-  const [journeyDate, setJourneyDate] = useState(getTodayDate);
+  const [journeyDate, setJourneyDate] = useState(getInitialDate);
   const [upcomingStations, setUpcomingStations] = useState([]);
   const [activeKey, setActiveKey] = useState(null);
   const [newMessage, setNewMessage] = useState("");

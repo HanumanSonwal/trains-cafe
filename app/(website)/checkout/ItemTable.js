@@ -54,7 +54,7 @@ export default function ItemTable({ items }) {
       <Table
         dataSource={items}
         columns={columns}
-        rowKey={(record, index) => index}
+        rowKey="_id"
         pagination={false}
         size="middle"
         className="mb-4"
