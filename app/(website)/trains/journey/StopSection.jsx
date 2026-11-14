@@ -25,6 +25,7 @@ export default function StopSection({ stop, train, open, onToggle }) {
     station_name: stop.station_name,
     station_code: stop.station_code,
     eta: stop.eta,
+    eta_date: stop.eta_date, // lets the order carry the real delivery day
     name: stop.station_name,
     code: stop.station_code,
   };

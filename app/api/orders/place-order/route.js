@@ -10,6 +10,8 @@ import * as EmailValidator from "email-validator";
 import Razorpay from "razorpay";
 import Menu from "@/app/models/menu";
 import Category from "@/app/models/category";
+import { notifyOrderPlaced } from "@/app/lib/orderNotify";
+import { resolveDeliveryDateTime } from "@/app/lib/orderMessage";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -194,9 +196,7 @@ export async function POST(req) {
       user_details,
       payment: paymentBody,
       status: "placed",
-      deliveryDateTime: deliveryDateTime
-        ? new Date(deliveryDateTime)
-        : new Date(),
+      deliveryDateTime: resolveDeliveryDateTime(deliveryDateTime, station),
       orderSource: orderSource || "website",
     });
     await order.save();
@@ -243,6 +243,10 @@ export async function POST(req) {
       });
       await couponUsage.save();
     }
+
+    // Cash on delivery is final now, so tell the vendor and the customer right away.
+    // Online payments are announced once the payment is verified (verify-payment).
+    if (payment.method === "COD") await notifyOrderPlaced(order._id);
 
     return NextResponse.json({
       success: true,

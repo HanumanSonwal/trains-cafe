@@ -3,6 +3,7 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import dbConnect from "@/app/lib/dbConnect";
 import order from "@/app/models/order";
+import { notifyOrderPlaced } from "@/app/lib/orderNotify";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -48,6 +49,9 @@ export async function POST(req) {
       },
       { new: true }
     );
+
+    // Paid: now tell the vendor and the customer (sent once per order).
+    await notifyOrderPlaced(orderId);
 
     return NextResponse.json({
       success: true,

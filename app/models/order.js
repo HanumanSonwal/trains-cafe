@@ -116,6 +116,13 @@ const OrderSchema = new mongoose.Schema(
       enum: ["admin", "website"],
       default: "website",
     },
+
+    // WhatsApp order messages (vendor + customer). Optional: older orders simply lack it.
+    whatsapp: {
+      claimedAt: { type: Date, default: null },
+      customer: { ok: Boolean, messageId: String, error: String },
+      vendor: { ok: Boolean, messageId: String, error: String },
+    },
   },
   {
     timestamps: true,
