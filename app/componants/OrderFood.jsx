@@ -95,7 +95,11 @@ export default function OrderFood() {
     const json = await res.json().catch(() => ({}));
     if (!res.ok || !json.success) throw new Error(json.message || "PNR not found");
     const { slug, date } = json.data;
-    router.push(`/trains/${slug}${date ? `?date=${date}` : ""}`);
+    // A journey date in the future selects that day's run. For today (or earlier) leave it
+    // out: RailRadar then returns the run on the road now, which is right even when the
+    // train started yesterday and the passenger boards after midnight.
+    const today = new Date(Date.now() + 330 * 60_000).toISOString().slice(0, 10);
+    router.push(`/trains/${slug}${date && date > today ? `?date=${date}` : ""}`);
   };
 
   const submitLookup = async (query) => {

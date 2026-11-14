@@ -15,7 +15,8 @@ import {
 } from "@/app/redux/cartSlice";
 import { useDispatch } from "react-redux";
 
-function VendorCard({ station, train }) {
+// activeOnly: the journey page lists only kitchens that are switched on.
+function VendorCard({ station, train, activeOnly = false }) {
   const router = useRouter();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ function VendorCard({ station, train }) {
       setError(false);
       try {
         const response = await fetch(
-          `/api/vendors?stationcode=${station.station_code}`
+          `/api/vendors?stationcode=${station.station_code}${activeOnly ? "&status=Active" : ""}`
         );
         const data = await response.json();
         if (data.data && data.data.length > 0) {
