@@ -1,5 +1,5 @@
 import { Card, Rate, Spin } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ClockCircleOutlined,
   LoadingOutlined,
@@ -51,7 +51,11 @@ function VendorCard({ station, train, activeOnly = false }) {
     fetchVendors();
   }, [station.station_name]);
 
+  const redirecting = useRef(false);
   const handleRedirect = (vendor) => {
+    if (redirecting.current) return; // a second tap must not push the page twice
+    redirecting.current = true;
+    setTimeout(() => (redirecting.current = false), 1500); // reopens if the user comes back
     dispatch(addStationDetails({ ...station }));
     dispatch(addVendorDetails({ ...vendor }));
     dispatch(addTrainDetails({ ...train }));
@@ -100,10 +104,20 @@ function VendorCard({ station, train, activeOnly = false }) {
   return (
     <div>
       {vendors.map((vendor, index) => (
+        // The whole card opens the menu, not just the button.
         <Card
-          className="shadow-md mb-4 p-4"
+          className="shadow-md mb-4 p-4 cursor-pointer transition hover:shadow-lg [&_.ant-rate-star]:!cursor-pointer"
           key={index}
           style={{ margin: "10px 0" }}
+          tabIndex={0}
+          aria-label={`Order from Outlet_${index + 1}`}
+          onClick={() => handleRedirect(vendor)}
+          onKeyDown={(e) => {
+            if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              handleRedirect(vendor);
+            }
+          }}
         >
           <div className="flex flex-col md:flex-row items-start">
             <Image
@@ -119,6 +133,7 @@ function VendorCard({ station, train, activeOnly = false }) {
               <div className="flex items-center mt-1">
                 <Rate
                   allowHalf
+                  disabled
                   defaultValue={4.5}
                   style={{ fontSize: 16, color: "#FFB400" }}
                 />
@@ -168,7 +183,10 @@ function VendorCard({ station, train, activeOnly = false }) {
                 </span>
                 <button
                   className="ml-auto px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
-                  onClick={() => handleRedirect(vendor)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // the card's own click would fire a second time
+                    handleRedirect(vendor);
+                  }}
                 >
                   Order Now
                 </button>

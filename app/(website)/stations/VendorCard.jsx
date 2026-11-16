@@ -86,7 +86,20 @@ function VendorCardWithoutTrain({ selectedStation }) {
   const vendorCards = useMemo(
     () =>
       vendors.map((vendor, index) => (
-        <Card className="shadow-md p-4 rounded-lg" key={vendor._id || index}>
+        // The whole card opens the menu, not just the button.
+        <Card
+          className="shadow-md p-4 rounded-lg cursor-pointer transition hover:shadow-lg [&_.ant-rate-star]:!cursor-pointer"
+          key={vendor._id || index}
+          tabIndex={0}
+          aria-label={`Order from ${vendor.name || `Outlet_${index + 1}`}`}
+          onClick={() => redirectingId === null && handleRedirect(vendor)}
+          onKeyDown={(e) => {
+            if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              if (redirectingId === null) handleRedirect(vendor);
+            }
+          }}
+        >
           <div className="flex flex-col md:flex-row items-start">
             <Image
               width={120}
@@ -105,6 +118,7 @@ function VendorCardWithoutTrain({ selectedStation }) {
               <div className="flex items-center mt-1">
                 <Rate
                   allowHalf
+                  disabled
                   defaultValue={4.5}
                   style={{ fontSize: 16, color: "#FFB400" }}
                 />
@@ -143,7 +157,10 @@ function VendorCardWithoutTrain({ selectedStation }) {
                 </span>
                 <button
                   className="p-1 bg-orange-500 text-white rounded hover:bg-orange-600 transition flex items-center justify-center min-w-[80px]"
-                  onClick={() => handleRedirect(vendor)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // the card's own click would fire a second time
+                    handleRedirect(vendor);
+                  }}
                   disabled={redirectingId === vendor._id}
                 >
                   {redirectingId === vendor._id ? (
