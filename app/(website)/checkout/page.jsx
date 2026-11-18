@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, message, Radio, Divider, Form } from "antd";
+import { Button, message, Divider, Form } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { placeOrder } from "@/services/orders";
@@ -11,13 +11,17 @@ import ItemTable from "./ItemTable";
 import TotalSection from "./TotalSection";
 import CouponSection from "./CouponSection";
 import OrderDetailsForm from "./OrderDetailsForm";
+import PaymentMethod from "./PaymentMethod";
+
+// Online payment is offered only when a Razorpay key id is configured (the secret never reaches the browser).
+const ONLINE_PAYMENT = Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
 
 const CheckoutPage = () => {
   const { items, vendor, train, station } = useSelector((state) => state.cart);
   const [form] = Form.useForm();
   const email = Form.useWatch("email", form);
   const mobile = Form.useWatch("mobile", form);
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState(ONLINE_PAYMENT ? "RAZORPAY" : "COD");
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -134,9 +138,18 @@ const CheckoutPage = () => {
     setLoading(false);
     setPaymentProcessing(true);
 
+    // The amount to charge is the one the server calculated for this order, not the browser's own sum.
+    const amountPaise = Math.round(Number(order.payment?.amount ?? payableAmount) * 100);
+    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    if (!keyId || typeof window.Razorpay !== "function") {
+      message.error("Online payment is not available right now. Please choose cash on delivery.");
+      setPaymentProcessing(false);
+      return;
+    }
+
     const razorpayOptions = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
-      amount: payableAmount * 100,
+      key: keyId,
+      amount: amountPaise,
       currency: "INR",
       name: "Trains Cafe",
       description: "Train Food Order",
@@ -154,7 +167,7 @@ const CheckoutPage = () => {
             localStorage.setItem("orderData", JSON.stringify(order));
             dispatch(resetCart());
             router.push("/order-confirmation");
-          } else message.error("Payment verification failed.");
+          } else message.error(verifyData.message || "Payment verification failed.");
         } catch {
           message.error("Payment verification failed.");
         } finally {
@@ -171,7 +184,13 @@ const CheckoutPage = () => {
       theme: { color: "#D49929" },
     };
 
-    new window.Razorpay(razorpayOptions).open();
+    const rzp = new window.Razorpay(razorpayOptions);
+    // The bank declined or the payment broke: tell the customer and let them try again.
+    rzp.on("payment.failed", (response) => {
+      message.error(response?.error?.description || "Payment failed. Please try again.");
+      setPaymentProcessing(false);
+    });
+    rzp.open();
   };
 
   const handlePlaceOrder = async (values) => {
@@ -277,41 +296,11 @@ const CheckoutPage = () => {
               onDiscountChange={setDiscount}
             />
 
-            {/* <div className="bg-white shadow rounded-lg p-4 mt-4">
-              <h2 className="text-xl font-bold mb-4">Payment Options</h2>
-              <Radio.Group
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                className="flex flex-col md:flex-row gap-4"
-              >
-                {["RAZORPAY", "COD"].map((method) => (
-                  <Radio.Button
-                    key={method}
-                    value={method}
-                    className={`rounded !p-0 !bg-white flex items-center justify-center w-[130px] ${
-                      paymentMethod === method
-                        ? "!border-[2px] !border-[#D49929]"
-                        : "!border !border-gray-200"
-                    }`}
-                    style={{
-                      boxShadow: "none",
-                      height: "55px",
-                      marginRight: "20px",
-                    }}
-                  >
-                    <Image
-                      src={`/images/paymentMethod/${
-                        method === "RAZORPAY" ? "img1.svg" : "img2.svg"
-                      }`}
-                      alt={method}
-                      width={120}
-                      height={method === "RAZORPAY" ? 30 : 40}
-                      className="object-contain"
-                    />
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-            </div> */}
+            <PaymentMethod
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+              onlineAvailable={ONLINE_PAYMENT}
+            />
 
             <Button
               type="primary"
@@ -319,7 +308,7 @@ const CheckoutPage = () => {
               htmlType="submit"
               loading={loading || paymentProcessing}
             >
-              Place Order
+              {paymentMethod === "RAZORPAY" ? `Pay ₹${payableAmount.toFixed(2)} & Place Order` : "Place Order"}
             </Button>
           </Form>
 

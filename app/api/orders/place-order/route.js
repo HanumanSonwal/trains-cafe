@@ -7,38 +7,87 @@ import Coupon from "@/app/models/coupon";
 import { NextResponse } from "next/server";
 import { parsePhoneNumber } from "libphonenumber-js";
 import * as EmailValidator from "email-validator";
-import Razorpay from "razorpay";
+import mongoose from "mongoose";
 import Menu from "@/app/models/menu";
 import Category from "@/app/models/category";
 import { notifyOrderPlaced } from "@/app/lib/orderNotify";
 import { resolveDeliveryDateTime } from "@/app/lib/orderMessage";
+import { rateLimit, tooManyRequests } from "@/app/lib/rateLimit";
+import sessionChecker from "@/app/lib/sessionPermission";
+import { MIN_PAISE, getRazorpay, razorpayFailure, toPaise } from "@/app/lib/razorpay";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+const MAX_QTY = 50;
+
+/**
+ * Website visitors must not set their own prices. Every item is looked up again in the database
+ * (and must belong to the chosen vendor), and the price used is the one stored there.
+ * Returns the trusted cart, or { error } when something does not add up.
+ */
+async function trustedCartFor(rawCart, vendorId) {
+  if (!Array.isArray(rawCart) || !rawCart.length || rawCart.length > 100) return { error: "Your cart is empty" };
+  if (!mongoose.isValidObjectId(vendorId)) return { error: "Invalid vendor" };
+
+  const wanted = new Map(); // item id -> quantity (duplicates are added up)
+  for (const line of rawCart) {
+    const qty = Number(line?.quantity);
+    if (!mongoose.isValidObjectId(line?._id) || !Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) {
+      return { error: "Invalid item in cart" };
+    }
+    wanted.set(String(line._id), Math.min(MAX_QTY, (wanted.get(String(line._id)) || 0) + qty));
+  }
+
+  const found = await Menu.find({ _id: { $in: [...wanted.keys()] }, Vendor: vendorId })
+    .select("Price Final_Price")
+    .lean();
+  if (found.length !== wanted.size) return { error: "Some items are no longer available. Please refresh your cart" };
+
+  return {
+    cart: found.map((m) => {
+      const unit = m.Final_Price ?? m.Price;
+      return { _id: String(m._id), quantity: wanted.get(String(m._id)), price: unit, Final_Price: unit };
+    }),
+  };
+}
 
 export async function POST(req) {
   try {
+    const limit = rateLimit(req, { scope: "place-order", limit: 10 });
+    if (!limit.ok) return tooManyRequests(limit.retryAfter);
+
     const {
       vendor,
       station,
       cacategory,
       train,
       payment,
-      cart,
+      cart: rawCart,
       user_details,
       couponCode,
-      adminDiscountPercent = 0,
+      adminDiscountPercent: requestedDiscount = 0,
       deliveryDateTime,
-      orderSource,
+      orderSource: requestedSource,
     } = await req.json();
 
-    if (!vendor || !station || !train || !payment) {
+    if (!vendor || !station || !train || !payment || !user_details) {
       return NextResponse.json({
         success: false,
         message: "Invalid request. Required fields missing.",
       });
+    }
+
+    // Staff placing an order from the admin panel may set prices, discounts and the source.
+    // Everyone else gets server-side prices, no extra discount, and source "website".
+    const isStaff = await sessionChecker(req, "orders", true);
+    let cart = rawCart;
+    let adminDiscountPercent = 0;
+    let orderSource = "website";
+    if (isStaff) {
+      adminDiscountPercent = Math.min(100, Math.max(0, Number(requestedDiscount) || 0));
+      orderSource = requestedSource || "website";
+    } else {
+      const checked = await trustedCartFor(rawCart, vendor?._id);
+      if (checked.error) return NextResponse.json({ success: false, message: checked.error });
+      cart = checked.cart;
     }
 
     const { email, mobile } = user_details;
@@ -121,11 +170,24 @@ export async function POST(req) {
     let paymentDetails = {};
 
     if (payment.method === "RAZORPAY") {
-      rp_order = await razorpay.orders.create({
-        amount: Math.round(total * 100),
-        currency: "INR",
-        receipt: `receipt_order_${Date.now()}`,
-      });
+      const amount = toPaise(total);
+      if (!(amount >= MIN_PAISE)) {
+        return NextResponse.json({
+          success: false,
+          message: "The amount is too low for online payment. Please choose cash on delivery",
+        });
+      }
+      try {
+        rp_order = await getRazorpay().orders.create({
+          amount,
+          currency: "INR",
+          receipt: `receipt_order_${Date.now()}`,
+        });
+      } catch (rpError) {
+        const { status, message } = razorpayFailure(rpError);
+        console.error("Razorpay order failed:", rpError?.error?.description || rpError?.message);
+        return NextResponse.json({ success: false, message }, { status });
+      }
 
       paymentDetails = {
         method: "RAZORPAY",
@@ -195,6 +257,8 @@ export async function POST(req) {
       totalDiscount: discount,
       user_details,
       payment: paymentBody,
+      // links the order to its Razorpay order, so verify-payment can reject a payment made for another order
+      rpOrderId: rp_order?.id,
       status: "placed",
       deliveryDateTime: resolveDeliveryDateTime(deliveryDateTime, station),
       orderSource: orderSource || "website",
@@ -207,8 +271,6 @@ export async function POST(req) {
       Quantity: item.quantity,
       Price: item.price,
     }));
-    await OrderItems.insertMany(orderItems);
-
     await OrderItems.insertMany(orderItems);
 
     const itemIds = cart.map((item) => item._id);
