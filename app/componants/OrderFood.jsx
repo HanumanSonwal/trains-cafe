@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createStationSlug, createTrainSlug } from "@/utils/slugify";
 import { MIN_QUERY_LENGTH } from "@/app/lib/searchConfig";
 import { loadSuggestions, useSuggestions } from "@/app/hooks/useSuggestions";
+import BoardingDate from "@/app/componants/BoardingDate";
 
 const MODES = [
   { key: "pnr", label: "PNR", placeholder: "Enter PNR Number to Order", inputMode: "numeric" },
@@ -32,6 +33,7 @@ export default function OrderFood() {
   const [active, setActive] = useState(-1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [boardingDate, setBoardingDate] = useState(""); // "" = the run on the road now
 
   const current = useMemo(() => MODES.find((m) => m.key === mode), [mode]);
   const isLookup = mode !== "pnr";
@@ -102,20 +104,23 @@ export default function OrderFood() {
     router.push(`/trains/${slug}${date && date > today ? `?date=${date}` : ""}`);
   };
 
+  // A chosen boarding date selects that day's run of the train (?date= on the train page).
+  const go = (href) => router.push(mode === "train" && boardingDate ? `${href}?date=${boardingDate}` : href);
+
   const submitLookup = async (query) => {
-    if (selected) return router.push(optionHref(mode, selected));
+    if (selected) return go(optionHref(mode, selected));
     if (query.length < MIN_QUERY_LENGTH) {
       return setError(mode === "train" ? "Enter a train name or number" : "Enter a station name or code");
     }
     // Typed without picking: resolve through the same cache the list uses.
     const list = await loadSuggestions(mode, query);
     const match = list.find((o) => isExactMatch(mode, o, query)) || list[0];
-    if (match) return router.push(optionHref(mode, match));
+    if (match) return go(optionHref(mode, match));
 
     // Search found nothing but the input still looks like a valid id.
-    if (mode === "train" && /^\d{5}$/.test(query)) return router.push(`/trains/${createTrainSlug("train", query)}`);
+    if (mode === "train" && /^\d{5}$/.test(query)) return go(`/trains/${createTrainSlug("train", query)}`);
     if (mode === "station" && /^[A-Za-z]{2,5}$/.test(query)) {
-      return router.push(`/stations/${createStationSlug(query, query)}`);
+      return go(`/stations/${createStationSlug(query, query)}`);
     }
     setError(`No ${mode} found, please check and try again`);
   };
@@ -289,6 +294,16 @@ export default function OrderFood() {
               </ul>
             )}
           </form>
+
+          {mode === "train" && (
+            <div className="mt-3">
+              <BoardingDate
+                value={boardingDate}
+                onChange={setBoardingDate}
+                hint="Optional. Pick the day your train leaves its first station, or skip to see the train running now."
+              />
+            </div>
+          )}
 
           <p role="alert" className={`mt-2 px-2 text-center text-xs sm:text-sm text-red-600 ${error ? "" : "hidden"}`}>
             {error}

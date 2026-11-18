@@ -16,6 +16,13 @@ export class RailRadarError extends Error {
   }
 }
 
+// Messages a passenger can act on (shown on the train page when a chosen date has no run).
+const FRIENDLY = {
+  TRAIN_NOT_RUNNING: "This train doesn't run on the selected date. Please pick another date.",
+  HISTORICAL_NOT_INCLUDED: "Live status is available only for the last 30 days. Please pick a recent date.",
+  TRAIN_NOT_FOUND: "We couldn't find this train number. Please check it and try again.",
+};
+
 // Circuit breaker: after a quota (429), server or auth failure, stop calling
 // RailRadar for a short while instead of burning more requests on doomed calls.
 let cooldownUntil = 0;
@@ -73,7 +80,7 @@ export async function railradar(path, { params = {}, revalidate = 0, timeout = 8
     const msg =
       res.status === 429
         ? "Too many requests, please try again shortly"
-        : json?.error?.message || `RailRadar request failed (${res.status})`;
+        : FRIENDLY[code] || json?.error?.message || `RailRadar request failed (${res.status})`;
     throw new RailRadarError(msg, res.status || 502, code);
   }
   return json;

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import BoardingDate from "@/app/componants/BoardingDate";
 import { ArrowLeftOutlined, PhoneOutlined, WhatsAppOutlined } from "@ant-design/icons";
 import { useLiveTrain } from "@/app/hooks/useLiveTrain";
 import { useKitchens } from "@/app/hooks/useKitchens";
@@ -64,7 +65,10 @@ function ContactButtons() {
  */
 export default function JourneyView({ trainNo, trainName, date }) {
   const router = useRouter();
+  const pathname = usePathname();
   const live = useLiveTrain(trainNo, date);
+  // Changing the day reloads the same page with ?date=; clearing it goes back to the run on the road now.
+  const changeDate = (iso) => router.replace(iso ? `${pathname}?date=${iso}` : pathname, { scroll: false });
   const { kitchens, failed } = useKitchens();
 
   const [filter, setFilter] = useState(null); // null = automatic
@@ -139,7 +143,11 @@ export default function JourneyView({ trainNo, trainName, date }) {
         </div>
       </header>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-3">
+        <BoardingDate variant="bar" value={date || data?.run_date || ""} onChange={changeDate} />
+      </div>
+
+      <div className="mt-3 space-y-3">
         {live.loading && <Skeleton />}
 
         {!live.loading && !data && (
