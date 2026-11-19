@@ -12,6 +12,7 @@ import Image from "next/image";
 import { addStationDetails, addVendorDetails } from "@/app/redux/cartSlice";
 import { useDispatch } from "react-redux";
 import Link from "next/link";
+import { trackSelectVendor } from "@/app/lib/analytics";
 
 function VendorCardWithoutTrain({ selectedStation }) {
   const router = useRouter();
@@ -28,6 +29,7 @@ function VendorCardWithoutTrain({ selectedStation }) {
   const handleRedirect = useCallback(
     (vendor) => {
       setRedirectingId(vendor._id);
+      trackSelectVendor(vendor, selectedStation);
       dispatch(addStationDetails({ ...selectedStation }));
       dispatch(addVendorDetails({ ...vendor }));
 

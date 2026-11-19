@@ -6,6 +6,7 @@ import { createStationSlug, createTrainSlug } from "@/utils/slugify";
 import { MIN_QUERY_LENGTH } from "@/app/lib/searchConfig";
 import { loadSuggestions, useSuggestions } from "@/app/hooks/useSuggestions";
 import BoardingDate from "@/app/componants/BoardingDate";
+import { trackSearch } from "@/app/lib/analytics";
 
 const MODES = [
   { key: "pnr", label: "PNR", placeholder: "Enter PNR Number to Order", inputMode: "numeric" },
@@ -132,6 +133,7 @@ export default function OrderFood() {
     setSubmitting(true);
     try {
       const query = value.trim();
+      trackSearch(mode, query, mode === "train" && boardingDate ? { boarding_date: boardingDate } : {});
       await (mode === "pnr" ? submitPnr(query) : submitLookup(query));
     } catch (err) {
       setError(err.message || "Something went wrong, please try again");

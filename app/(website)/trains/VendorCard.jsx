@@ -14,6 +14,7 @@ import {
   addVendorDetails,
 } from "@/app/redux/cartSlice";
 import { useDispatch } from "react-redux";
+import { trackSelectVendor } from "@/app/lib/analytics";
 
 // activeOnly: the journey page lists only kitchens that are switched on.
 function VendorCard({ station, train, activeOnly = false }) {
@@ -55,6 +56,7 @@ function VendorCard({ station, train, activeOnly = false }) {
   const handleRedirect = (vendor) => {
     if (redirecting.current) return; // a second tap must not push the page twice
     redirecting.current = true;
+    trackSelectVendor(vendor, station, train);
     setTimeout(() => (redirecting.current = false), 1500); // reopens if the user comes back
     dispatch(addStationDetails({ ...station }));
     dispatch(addVendorDetails({ ...vendor }));

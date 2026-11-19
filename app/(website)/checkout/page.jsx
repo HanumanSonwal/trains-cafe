@@ -12,6 +12,7 @@ import TotalSection from "./TotalSection";
 import CouponSection from "./CouponSection";
 import OrderDetailsForm from "./OrderDetailsForm";
 import PaymentMethod from "./PaymentMethod";
+import { trackBeginCheckout, trackPaymentInfo } from "@/app/lib/analytics";
 
 // Online payment is offered only when a Razorpay key id is configured (the secret never reaches the browser).
 const ONLINE_PAYMENT = Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
@@ -29,6 +30,14 @@ const CheckoutPage = () => {
   const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   const leadIdRef = React.useRef(null);
+
+  // begin_checkout once per visit, when the cart first has items
+  const checkoutTracked = React.useRef(false);
+  React.useEffect(() => {
+    if (checkoutTracked.current || !items.length) return;
+    checkoutTracked.current = true;
+    trackBeginCheckout(items);
+  }, [items]);
 
   const createLead = async (mobile) => {
     if (leadIdRef.current || !mobile || mobile.length !== 10) return;
@@ -298,7 +307,10 @@ const CheckoutPage = () => {
 
             <PaymentMethod
               value={paymentMethod}
-              onChange={setPaymentMethod}
+              onChange={(method) => {
+                setPaymentMethod(method);
+                trackPaymentInfo(items, method);
+              }}
               onlineAvailable={ONLINE_PAYMENT}
             />
 

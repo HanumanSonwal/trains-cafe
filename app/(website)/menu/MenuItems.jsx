@@ -3,6 +3,7 @@ import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 import Image from "next/image";
+import { trackAddToCart, trackRemoveFromCart } from "@/app/lib/analytics";
 
 // A steady 3.8 - 4.9 rating per item (from its id), so it never jumps on re-render.
 const ratingFor = (id) => {
@@ -37,7 +38,7 @@ function CartControl({ item, quantity, onAdd, onChange }) {
         <button
           type="button"
           aria-label={`Remove one ${item.name}`}
-          onClick={() => onChange(item._id, quantity - 1)}
+          onClick={() => onChange(item, quantity - 1, quantity)}
           className="grid h-full w-8 place-items-center text-[13px] transition active:bg-[#704D25]"
         >
           <MinusOutlined />
@@ -48,7 +49,7 @@ function CartControl({ item, quantity, onAdd, onChange }) {
         <button
           type="button"
           aria-label={`Add one more ${item.name}`}
-          onClick={() => onChange(item._id, quantity + 1)}
+          onClick={() => onChange(item, quantity + 1, quantity)}
           className="grid h-full w-8 place-items-center text-[13px] transition active:bg-[#704D25]"
         >
           <PlusOutlined />
@@ -136,9 +137,18 @@ const MenuItems = memo(({ items }) => {
     return map;
   }, [cartItems]);
 
-  const handleAdd = useCallback((item) => dispatch(addItemToCart({ ...item })), [dispatch]);
+  const handleAdd = useCallback(
+    (item) => {
+      dispatch(addItemToCart({ ...item }));
+      trackAddToCart(item);
+    },
+    [dispatch]
+  );
   const handleChange = useCallback(
-    (id, quantity) => dispatch(updateItemQuantity({ id, quantity: Math.max(0, quantity) })),
+    (item, quantity, previous) => {
+      dispatch(updateItemQuantity({ id: item._id, quantity: Math.max(0, quantity) }));
+      (quantity > previous ? trackAddToCart : trackRemoveFromCart)(item);
+    },
     [dispatch]
   );
 

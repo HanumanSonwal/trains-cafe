@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { trackViewMenu } from "@/app/lib/analytics";
 import { Switch, Spin } from "antd";
 import { getVendorCategoriesAndMenuItems } from "@/services/vendors";
 import { useSearchParams } from "next/navigation";
@@ -52,6 +53,14 @@ export default function MenuClient() {
   );
 
   const vendorInfo = categories[0] || {};
+
+  // view_menu once per vendor, when its menu has loaded
+  const menuTracked = useRef("");
+  useEffect(() => {
+    if (loading || !vendorInfo.vendor || menuTracked.current === vendorId) return;
+    menuTracked.current = vendorId;
+    trackViewMenu(vendorInfo.vendor, vendorInfo.station, categories.length);
+  }, [loading, vendorInfo.vendor, vendorInfo.station, vendorId, categories.length]);
 
   // Measure the real header height once and on resize.
   useEffect(() => {

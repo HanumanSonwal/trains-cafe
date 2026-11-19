@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
@@ -7,6 +7,7 @@ import { addItemToCart, updateItemQuantity } from "@/app/redux/cartSlice";
 import { useRouter } from "next/navigation";
 import RecentOrders from "@/app/componants/RecentOrders";
 import Image from "next/image";
+import { trackViewCart, trackAddToCart, trackRemoveFromCart } from "@/app/lib/analytics";
 
 const CartItem = React.memo(({ item, onIncrease, onDecrease }) => {
   const displayPrice = item.Final_Price ?? item.price;
@@ -61,6 +62,14 @@ const CartPage = () => {
     [cartItems]
   );
 
+  // view_cart once per visit, when the cart first has items (the saved cart can load a moment late)
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (viewed.current || !cartItems.length) return;
+    viewed.current = true;
+    trackViewCart(cartItems);
+  }, [cartItems]);
+
   const handleProceedToCheckout = useCallback(() => {
     router.push("/checkout");
   }, [router]);
@@ -68,6 +77,7 @@ const CartPage = () => {
   const handleIncreaseQuantity = useCallback(
     (item) => {
       dispatch(addItemToCart({ ...item }));
+      trackAddToCart(item);
     },
     [dispatch]
   );
@@ -81,6 +91,7 @@ const CartPage = () => {
         dispatch(
           updateItemQuantity({ id: item._id, quantity: currentQuantity - 1 })
         );
+        trackRemoveFromCart(item);
       } else if (currentQuantity === 1) {
         setItemToRemove(item);
         setModalOpen(true);
@@ -92,6 +103,7 @@ const CartPage = () => {
   const handleConfirmRemove = useCallback(() => {
     if (itemToRemove) {
       dispatch(updateItemQuantity({ id: itemToRemove._id, quantity: 0 }));
+      trackRemoveFromCart(itemToRemove);
     }
     setModalOpen(false);
     setItemToRemove(null);

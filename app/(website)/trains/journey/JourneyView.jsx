@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import BoardingDate from "@/app/componants/BoardingDate";
+import { trackContact } from "@/app/lib/analytics";
 import { ArrowLeftOutlined, PhoneOutlined, WhatsAppOutlined } from "@ant-design/icons";
 import { useLiveTrain } from "@/app/hooks/useLiveTrain";
 import { useKitchens } from "@/app/hooks/useKitchens";
@@ -44,11 +45,12 @@ function Notice({ tone = "info", title, children }) {
 function ContactButtons() {
   return (
     <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-      <a href={`tel:${phone}`} className="inline-flex min-h-[40px] items-center gap-1.5 rounded-full bg-[#704D25] px-4 text-sm font-semibold text-white hover:bg-[#5a3d1d]">
+      <a href={`tel:${phone}`} onClick={() => trackContact("call", "train_journey")} className="inline-flex min-h-[40px] items-center gap-1.5 rounded-full bg-[#704D25] px-4 text-sm font-semibold text-white hover:bg-[#5a3d1d]">
         <PhoneOutlined /> Order via Call
       </a>
       <a
         href={`https://wa.me/${whatsapp}`}
+        onClick={() => trackContact("whatsapp", "train_journey")}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex min-h-[40px] items-center gap-1.5 rounded-full border border-gray-300 bg-white px-4 text-sm font-semibold text-gray-800 hover:bg-gray-50"

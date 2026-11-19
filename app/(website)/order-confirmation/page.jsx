@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { generateInvoiceTemplate } from "@/templates/generateInvoiceTemplate";
+import { trackOrderPlaced } from "@/app/lib/analytics";
 
 const { Title, Text } = Typography;
 
@@ -23,29 +24,12 @@ const OrderConfirmation = () => {
     setLoading(false);
   }, []);
 
-useEffect(() => {
-  if (!orderData) return;
-
-  if (orderData?.status !== "success" && orderData?.status !== "delivered") {
-    return;
-  }
-
-  const trackingKey = `purchase_tracked_${orderData.order_id || orderData._id}`;
-
-  const alreadyTracked = sessionStorage.getItem(trackingKey);
-  if (alreadyTracked) return;
-
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: "purchase_success",
-    order_id: orderData.order_id || orderData._id,
-    value: Number(orderData.total),
-    currency: "INR",
-  });
-
-  sessionStorage.setItem(trackingKey, "true");
-}, [orderData]);
-
+  // This page opens only after the order succeeded (COD placed, or online payment verified), so
+  // this is the moment to tell Tag Manager. The old check waited for status "success", which an
+  // order never has (it is "placed" or "confirm"), so the event never fired.
+  useEffect(() => {
+    if (orderData) trackOrderPlaced(orderData);
+  }, [orderData]);
 
 
   const handleDownload = () => {
