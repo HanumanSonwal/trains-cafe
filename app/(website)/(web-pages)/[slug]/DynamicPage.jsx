@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "antd";
-import Spinner from "@/app/componants/spinner/Spinner";
+import { PageSkeleton } from "@/app/componants/Skeletons";
 import OrderFood from "@/app/componants/OrderFood";
 import Custom404 from "@/app/componants/Custom404";
 import HeroSection from "@/app/componants/HeroSection";
@@ -11,17 +11,17 @@ import dynamic from "next/dynamic";
 
 const CustomerReviews = dynamic(
   () => import("@/app/componants/CustomerReviewSlider"),
-  { ssr: false, loading: () => <Spinner /> }
+  { ssr: false, loading: () => <PageSkeleton /> }
 );
 
 const PromoBanner = dynamic(() => import("@/app/componants/PromoBanner"), {
   ssr: false,
-  loading: () => <Spinner />,
+  loading: () => <PageSkeleton />,
 });
 
 const RecentOrders = dynamic(() => import("@/app/componants/RecentOrders"), {
   ssr: false,
-  loading: () => <Spinner />,
+  loading: () => <PageSkeleton />,
 });
 
 function DynamicPage({ page, slug, previewHtml, shouldTruncate }) {

@@ -1,6 +1,8 @@
-export const dynamic = "force-dynamic";
+// The page HTML is cached and refreshed every 5 minutes (kitchen lists load live in the browser).
+export const revalidate = 300;
 
 import { parseStationSlug } from "@/utils/slugify";
+import { getWebStation } from "@/app/lib/siteContent";
 import DynamicStationPage from "./DynamicStationPage";
 
 export async function generateMetadata({ params }) {
@@ -54,25 +56,17 @@ export default async function Page({ params }) {
   return <DynamicStationPage slug={params.slug} serverData={data} />;
 }
 
+// Read straight from the database (cached), not over HTTP from our own API.
 async function getStationData(slug) {
   const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
   const pageUrl = `${baseUrl}/stations/${slug}`;
-
   const { stationName, stationCode } = parseStationSlug(slug);
 
-  const apiSlug = stationCode.toLowerCase();
-
-  const apiUrl = `${baseUrl}/api/web-station/${apiSlug}`;
-
   try {
-    const res = await fetch(apiUrl, { cache: "no-store" });
-
-    if (!res.ok) return { data: null, baseUrl, pageUrl, stationName };
-
-    const data = await res.json();
-
+    const data = await getWebStation(stationCode);
     return { data, baseUrl, pageUrl, stationName };
   } catch (e) {
+    console.error("Station page content failed:", e.message);
     return { data: null, baseUrl, pageUrl, stationName };
   }
 }

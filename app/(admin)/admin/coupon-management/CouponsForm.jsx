@@ -16,7 +16,8 @@ import dayjs from 'dayjs';
 
 const couponSchema = z.object({
   title: z.string().nonempty('Please enter the coupon title'),
-  code: z.string().nonempty('Please enter the coupon code'),
+  code: z.string().regex(/^[A-Za-z0-9]{3,12}$/, 'Code: 3-12 letters or digits, no spaces'),
+  description: z.string().max(120, 'Keep it under 120 characters').optional(),
   startDate: z
     .date({ required_error: 'Start date is required' })
     .refine((val) => !isNaN(val.getTime()), 'Please select a valid start date'),
@@ -41,6 +42,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
     () => ({
       title: initialValues?.title || '',
       code: initialValues?.code || '',
+      description: initialValues?.description || '',
       startDate: initialValues?.startDate
         ? new Date(initialValues.startDate)
         : null,
@@ -154,9 +156,28 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
       render={({ field }) => (
         <div>
           <label className="block mb-1">Coupon Code</label>
-          <Input {...field} placeholder="Enter coupon code" />
+          <Input
+            {...field}
+            maxLength={12}
+            onChange={(e) => field.onChange(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+            placeholder="E.g. FLAT150"
+          />
           {errors.code && (
             <p className="text-red-500 text-sm">{errors.code.message}</p>
+          )}
+        </div>
+      )}
+    />
+
+    <Controller
+      name="description"
+      control={control}
+      render={({ field }) => (
+        <div className="md:col-span-2">
+          <label className="block mb-1">Offer line (shown on the website card)</label>
+          <Input {...field} maxLength={120} placeholder="E.g. Perfect for group & family travel" />
+          {errors.description && (
+            <p className="text-red-500 text-sm">{errors.description.message}</p>
           )}
         </div>
       )}
@@ -229,7 +250,7 @@ const CouponsForm = ({ open, onCancel, initialValues, fetchCoupons }) => {
             {...field}
             options={[
               { value: 'percentage', label: 'Percentage' },
-              { value: 'flat', label: 'Flat' },
+              { value: 'flat', label: 'Flat (₹ off)' },
             ]}
             style={{ width: '100%' }}
           />

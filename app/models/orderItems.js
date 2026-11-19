@@ -7,4 +7,7 @@ const OrderItemsSchema = new mongoose.Schema({
     Price: { type: Number, required: true, min: 0 },
 });
 
+// the orders list loads the items of a whole page with one $in query on this field
+OrderItemsSchema.index({ Order_Id: 1 });
+
 export default mongoose.models.OrderItems || mongoose.model('OrderItems', OrderItemsSchema);

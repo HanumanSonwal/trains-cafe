@@ -3,6 +3,7 @@ import BlogSection from "../componants/BlogSection";
 import CustomerReviewSlider from "../componants/CustomerReviewSlider";
 import HeroSection from "../componants/HeroSection";
 import OrderFood from "../componants/OrderFood";
+import OffersSection from "../componants/OffersSection";
 import PromoBanner from "../componants/PromoBanner";
 import RecentOrders from "../componants/RecentOrders";
 import StepsSection from "../componants/StepsSection";
@@ -29,6 +30,7 @@ export default function Home() {
       
       <HeroSection />
       <OrderFood />
+      <OffersSection />
       <StepsSection />
       <PromoBanner />
       <RecentOrders />

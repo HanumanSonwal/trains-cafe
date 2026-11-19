@@ -1,10 +1,11 @@
+import { memo } from "@/app/lib/memoCache";
 import { NextResponse } from "next/server";
 import connectDB from "@/app/lib/dbConnect";
 import Order from "@/app/models/order";
 import Vendor from "@/app/models/vendor";
 import Menu from "@/app/models/menu";
 
-export async function GET() {
+async function compute() {
   try {
     await connectDB();
 
@@ -271,11 +272,17 @@ export async function GET() {
       };
     });
 
-    const pendingOrders = await Order.find({ status: "placed" })
-      .populate("vendor")
-      .populate("station")
-      .populate("user_details")
-      .sort({ createdAt: -1 });
+    // only the latest few are listed (and only the fields the list shows)
+    const [pendingOrders, pendingCount] = await Promise.all([
+      Order.find({ status: "placed" })
+        .select("order_id status createdAt deliveryDateTime total user_details vendor station")
+        .populate("vendor", "Vendor_Name")
+        .populate("station", "name code")
+        .sort({ createdAt: -1 })
+        .limit(8)
+        .lean(),
+      Order.countDocuments({ status: "placed" }),
+    ]);
 
     return NextResponse.json({
       summaryCards: {
@@ -320,6 +327,7 @@ export async function GET() {
 
       monthlySales,
       pendingOrders,
+      pendingCount,
     });
   } catch (error) {
     console.error("Dashboard API Error:", error);
@@ -327,5 +335,20 @@ export async function GET() {
       { error: "Internal Server Error" },
       { status: 500 }
     );
+  }
+}
+
+// Roughly 17 aggregate queries. The dashboard is opened often and the numbers only need to be
+// fresh to the minute, so one computation is shared for 60 seconds (and by parallel viewers).
+export async function GET() {
+  try {
+    const body = await memo("dashboard-sales", 60_000, async () => {
+      const res = await compute();
+      if (!res.ok) throw new Error("dashboard failed");
+      return res.json();
+    });
+    return NextResponse.json(body, { headers: { "Cache-Control": "private, max-age=30" } });
+  } catch {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

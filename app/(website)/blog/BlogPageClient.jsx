@@ -7,6 +7,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import RecentOrders from "@/app/componants/RecentOrders";
 import PromoBanner from "@/app/componants/PromoBanner";
+import { CardGridSkeleton } from "@/app/componants/Skeletons";
 import CustomerReviews from "@/app/componants/CustomerReviewSlider";
 
 const { Meta } = Card;
@@ -16,7 +17,7 @@ const BlogPageClient = () => {
   const [blogPosts, setBlogPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchBlogPosts = useCallback(async () => {
     const categoryQuery =
@@ -28,7 +29,7 @@ const BlogPageClient = () => {
       const response = await fetch(
         `/api/blog?status=publish${categoryQuery}${searchQuery}`,
         {
-          cache: "no-store",
+          cache: "default",
         }
       );
       const data = await response.json();
@@ -98,8 +99,8 @@ const BlogPageClient = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 px-4 mb-4">
         {loading ? (
-          <div className="col-span-2 text-center text-gray-400">
-            Loading blogs...
+          <div className="md:col-span-2">
+            <CardGridSkeleton count={4} />
           </div>
         ) : filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (

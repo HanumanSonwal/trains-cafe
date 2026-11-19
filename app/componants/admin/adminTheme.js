@@ -1,0 +1,35 @@
+// Ant Design theme for both panels: white surfaces, brand orange, softer corners.
+export const adminTheme = {
+  token: {
+    colorPrimary: "#D6872A",
+    colorLink: "#B8651B",
+    colorText: "#1f2937",
+    colorTextSecondary: "#6b7280",
+    colorBorder: "#e5e7eb",
+    colorBorderSecondary: "#eef0f3",
+    colorBgLayout: "#f6f7f9",
+    colorBgContainer: "#ffffff",
+    borderRadius: 10,
+    borderRadiusLG: 14,
+    fontFamily: "var(--font-admin), Inter, system-ui, sans-serif",
+    fontSize: 14,
+    controlHeight: 38,
+    motionDurationMid: "0.22s",
+  },
+  components: {
+    Button: { fontWeight: 600, primaryShadow: "0 6px 14px rgba(214,135,42,0.28)", defaultShadow: "none" },
+    Table: {
+      headerBg: "#fafafb",
+      headerColor: "#6b7280",
+      headerSplitColor: "transparent",
+      rowHoverBg: "#fffaf3",
+      borderColor: "#f0f1f4",
+      cellPaddingBlock: 14,
+    },
+    Card: { borderRadiusLG: 16 },
+    Modal: { borderRadiusLG: 18 },
+    Input: { activeShadow: "0 0 0 3px rgba(214,135,42,0.15)" },
+    Select: { optionSelectedBg: "#fff3e0" },
+    Tag: { borderRadiusSM: 8 },
+  },
+};

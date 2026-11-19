@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Input, Spin, Empty } from "antd";
+import React, { useState, useEffect, useMemo } from "react";
+import { fetchOffers } from "@/app/lib/publicApi";
+import { offerLabel } from "@/app/lib/offers";
+import { CardGridSkeleton } from "@/app/componants/Skeletons";
+import { Input, Empty } from "antd";
 import {
   CheckCircleFilled,
   CopyOutlined,
@@ -15,29 +18,23 @@ const CouponList = () => {
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState(null);
 
-  const fetchCoupons = async (query = "") => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/coupon?page=1&limit=10&search=${query}`);
-      const data = await res.json();
-      setCoupons(data.docs || []);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // live coupons from the cached public API (search is done in the browser)
   useEffect(() => {
-    fetchCoupons();
+    let alive = true;
+    fetchOffers()
+      .then((json) => alive && setCoupons(json.data || []))
+      .catch(() => {})
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      fetchCoupons(search);
-    }, 500);
-    return () => clearTimeout(delay);
-  }, [search]);
+  const shown = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return coupons;
+    return coupons.filter((c) => c.title?.toLowerCase().includes(q) || c.code?.toLowerCase().includes(q));
+  }, [coupons, search]);
 
   return (
     <>
@@ -67,14 +64,12 @@ const CouponList = () => {
       </div>
       <div className="max-w-5xl mx-auto px-4 py-10 bg-[#FAF3CC]  ">
         {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <Spin size="large" />
-          </div>
-        ) : coupons.length === 0 ? (
+          <CardGridSkeleton count={3} />
+        ) : shown.length === 0 ? (
           <Empty description="No coupons found" />
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coupons.map((coupon) => (
+            {shown.map((coupon) => (
               <div
                 key={coupon._id}
                 className="relative bg-[#FFF8E1] rounded-2xl shadow-md border border-dashed border-[#D6872A]/50 overflow-hidden group hover:shadow-lg transition-all duration-300"
@@ -84,7 +79,7 @@ const CouponList = () => {
                 <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#FAF3CC] rounded-full border border-[#D6872A]/30"></div>
 
                 <div className="bg-gradient-to-r from-[#D6872A] to-[#6F4D27] text-white text-center py-3 font-semibold text-lg tracking-wide">
-                  {coupon.discount?.value}% OFF
+                  {offerLabel(coupon)}
                 </div>
 
                 <div className="p-4 text-center">

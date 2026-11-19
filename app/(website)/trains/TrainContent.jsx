@@ -1,125 +1,61 @@
-"use client";
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Button, message } from "antd";
-import Spinner from "@/app/componants/spinner/Spinner";
-import axios from "axios";
-import TrainData from "./TrainData";
 
-export default function TrainContent({ slug }) {
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const parts = slug.split("-");
-  const trainNo = parts[parts.length - 1];
-  const trainName = parts.slice(0, -1).join(" ");
-
-  const fetchPage = async (slug) => {
-    try {
-      const res = await axios.get(`/api/web-train/${trainNo}`);
-      const data = res.data;
-      setPage(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setError(error.response?.data?.message || "An error occurred");
-    }
-  };
-
-  useEffect(() => {
-    fetchPage(slug)
-      .then(() => setLoading(false))
-      .catch(() => setLoading(false));
-  }, [slug]);
-
-  if (loading) return <Spinner />;
-  if (error || !page)
-    return <TrainData trainName={trainName} trainNo={trainNo} />;
+/**
+ * SEO text under the live journey. Rendered on the server, so search engines
+ * get it in the first HTML. Uses the admin-written page for this train when
+ * there is one, otherwise a short generic guide (no made-up timings).
+ */
+export default function TrainContent({ trainNo, trainName, page }) {
+  const name = trainName || "your train";
 
   return (
-    <article class="max-w-3xl mx-auto mt-8">
-      {/* <header>
-    <h3 
-      style={{ color: '#704d25' }} 
-      class="text-2xl md:text-3xl font-bold text-coffee-600 mb-4">
-      {page.title || "No Title Provided"}
-    </h3>
-  </header> */}
-
-      <section>
-        <div
-          class="text-gray-700 text-base md:text-lg leading-relaxed ck-content mb-8"
-          dangerouslySetInnerHTML={{
-            __html:
-              page.pageData || "<p>No content available for this page.</p>",
-          }}
+    <article className="mx-auto mt-8 max-w-3xl">
+      {page?.pageData ? (
+        <section
+          className="ck-content mb-8 text-base leading-relaxed text-gray-700 md:text-lg"
+          dangerouslySetInnerHTML={{ __html: page.pageData }}
         />
-      </section>
-
-      <footer className="bg-coffee-600 text-white py-6 mt-8">
-        <div style={{ color: "#704d25" }} className="text-center text-sm">
+      ) : (
+        <section className="mb-8 space-y-3 text-[15px] leading-relaxed text-gray-700">
+          <h2 className="!text-xl font-bold text-[#704D25]">
+            Order Food in {name} ({trainNo})
+          </h2>
           <p>
-            Need help? Reach us at{" "}
-            <Link
-              href="tel:+918696963496"
-              className="font-bold text-blue-600 hover:text-blue-800 underline"
-            >
-              +91-8696963496
+            <Link href="/" className="font-semibold text-blue-600 underline hover:text-blue-800">
+              Order food in train
             </Link>{" "}
-            |{" "}
-            <Link
-               href="mailto:info@trainscafe.in"
-              className="font-bold text-blue-600 hover:text-blue-800 underline"
-            >
-              info@trainscafe.in
-            </Link>
+            <strong>{name}</strong> (<strong>{trainNo}</strong>) online and get fresh, hygienic meals delivered to
+            your seat at the stations ahead on your journey.
           </p>
-          <p className="mt-2">
-            &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+          <h3 className="!text-lg font-semibold text-gray-900">How to order in {name}</h3>
+          <ol className="list-decimal space-y-1 pl-5">
+            <li>Pick the station where you want your food from the stops above.</li>
+            <li>Choose a restaurant and add your favourite dishes.</li>
+            <li>Enter your mobile number, coach and seat (PNR is optional).</li>
+            <li>Pay online or choose cash on delivery.</li>
+            <li>Your meal is delivered to your seat when the train reaches the station.</li>
+          </ol>
+          <p>
+            All partner restaurants are FSSAI licensed. For group or bulk orders in train {trainNo}, call or
+            WhatsApp us.
+          </p>
+        </section>
+      )}
+
+      <footer className="mt-8 py-6">
+        <div className="text-center text-sm text-[#704d25]">
+          <p>
+            Need help? Call{" "}
+            <a href="tel:+918696963496" className="font-bold text-blue-600 underline hover:text-blue-800">
+              +91-8696963496
+            </a>{" "}
+            or mail{" "}
+            <a href="mailto:info@trainscafe.in" className="font-bold text-blue-600 underline hover:text-blue-800">
+              info@trainscafe.in
+            </a>
           </p>
         </div>
       </footer>
-
-      <style jsx global>{`
-        .ck-content {
-           {
-            /* overflow-x: auto; */
-          }
-          font-size: 1rem;
-        }
-
-        .ck-content table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 1rem 0;
-        }
-
-        .ck-content th,
-        .ck-content td {
-          border: 1px solid #ddd;
-          padding: 0.75rem;
-          text-align: left;
-        }
-
-        .ck-content th {
-          background-color: #f5f5f5;
-          font-weight: bold;
-        }
-
-        .ck-content tr:nth-child(even) {
-          background-color: #fafafa;
-        }
-
-        .ck-content tr:hover {
-          background-color: #f0f0f0;
-        }
-
-        @media (max-width: 768px) {
-          .ck-content th,
-          .ck-content td {
-            font-size: 0.875rem;
-          }
-        }
-      `}</style>
     </article>
   );
 }

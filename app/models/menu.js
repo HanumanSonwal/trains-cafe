@@ -64,4 +64,7 @@ const MenuSchema = new mongoose.Schema(
   }
 );
 
+// a kitchen's menu (website) and its veg / non-veg lists
+MenuSchema.index({ Vendor: 1, Food_Type: 1 });
+
 export default mongoose.models.Menu || mongoose.model("Menu", MenuSchema);

@@ -1,0 +1,80 @@
+/* Admin panels (both /admin and /super-panel). Scoped to .admin-shell so the website is untouched. */
+
+.admin-shell {
+  font-family: var(--font-admin), Inter, system-ui, sans-serif;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* the website's global heading sizes use !important; panels set their own */
+.admin-shell h1, .admin-shell h2, .admin-shell h3, .admin-shell h4 {
+  font-family: inherit;
+}
+
+/* soft spotlight that follows the pointer on stat cards */
+.spot-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(260px circle at var(--x, 50%) var(--y, 0%), rgba(214, 135, 42, 0.10), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.spot-card:hover::before { opacity: 1; }
+
+/* Older pages wrap themselves in a cream box with inline styles. Turn those into clean white panels. */
+.admin-main [style*="background-color: rgb(250, 243, 204)"],
+.admin-main [style*="background: rgb(250, 243, 204)"] {
+  background: #ffffff !important;
+  border: 1px solid #eef0f3;
+  border-radius: 16px !important;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04) !important;
+}
+.admin-main h2[style*="rgb(111, 77, 39)"] {
+  color: #111827 !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+
+/* buttons: gentle lift + press, and a light sweep on primary buttons */
+.admin-shell .ant-btn { transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease; }
+.admin-shell .ant-btn:not(:disabled):hover { transform: translateY(-1px); }
+.admin-shell .ant-btn:not(:disabled):active { transform: translateY(0) scale(0.98); }
+.admin-shell .ant-btn-primary { position: relative; overflow: hidden; }
+.admin-shell .ant-btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -60%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+  pointer-events: none;
+}
+.admin-shell .ant-btn-primary:not(:disabled):hover::after { left: 130%; }
+
+/* tables */
+.admin-shell .ant-table-wrapper .ant-table { background: transparent; }
+.admin-shell .ant-table-thead > tr > th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+.admin-shell .ant-table-tbody > tr { transition: background-color 0.15s ease; }
+.admin-shell .ant-pagination .ant-pagination-item-active { border-color: #D6872A; }
+.admin-shell .ant-pagination .ant-pagination-item-active a { color: #D6872A; }
+
+/* modals and drawers open with a soft rise */
+.admin-shell .ant-modal .ant-modal-content { box-shadow: 0 24px 60px rgba(16, 24, 40, 0.18); }
+
+/* thin scrollbars in the panel */
+.admin-shell *::-webkit-scrollbar { width: 8px; height: 8px; }
+.admin-shell *::-webkit-scrollbar-thumb { background: #d9dce1; border-radius: 8px; }
+.admin-shell *::-webkit-scrollbar-thumb:hover { background: #c3c7ce; }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

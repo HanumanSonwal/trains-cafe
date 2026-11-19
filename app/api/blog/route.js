@@ -97,8 +97,11 @@ export async function GET(req) {
 
     const options = {
       page,
-      limit,
+      limit: Math.min(limit, 100),
       sort: { createdAt: -1 },
+      lean: true,
+      // public lists (status=publish) do not need the full article body; the admin list still gets it
+      ...(!slug && status === "publish" ? { select: "-content" } : {}),
     };
 
     const result = await Blog.paginate(filter, options);

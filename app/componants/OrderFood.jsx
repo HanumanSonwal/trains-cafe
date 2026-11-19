@@ -7,6 +7,7 @@ import { MIN_QUERY_LENGTH } from "@/app/lib/searchConfig";
 import { loadSuggestions, useSuggestions } from "@/app/hooks/useSuggestions";
 import BoardingDate from "@/app/componants/BoardingDate";
 import { trackSearch } from "@/app/lib/analytics";
+import { saveJourney } from "@/app/lib/journeyStore";
 
 const MODES = [
   { key: "pnr", label: "PNR", placeholder: "Enter PNR Number to Order", inputMode: "numeric" },
@@ -98,6 +99,7 @@ export default function OrderFood() {
     const json = await res.json().catch(() => ({}));
     if (!res.ok || !json.success) throw new Error(json.message || "PNR not found");
     const { slug, date } = json.data;
+    saveJourney(pnr, json.data); // checkout fills train, coach and seat from this
     // A journey date in the future selects that day's run. For today (or earlier) leave it
     // out: RailRadar then returns the run on the road now, which is right even when the
     // train started yesterday and the passenger boards after midnight.

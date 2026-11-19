@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { Card, Spin } from "antd";
+import { useMemo } from "react";
+import { Card } from "antd";
 import dayjs from "dayjs";
 import PromoBanner from "@/app/componants/PromoBanner";
 import RecentOrders from "@/app/componants/RecentOrders";
@@ -10,31 +10,8 @@ import Link from "next/link";
 
 const { Meta } = Card;
 
-export default function SingleBlogClient({ blog }) {
-  const [relatedPosts, setRelatedPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const slug = blog?.slug;
-  const category = blog?.category;
-
-  const fetchRelatedPosts = useCallback(async () => {
-    if (!category) return;
-    try {
-      const res = await fetch(`/api/blog?category=${category}&status=publish`);
-      const data = await res.json();
-      const filtered = data.docs.filter((p) => p.slug !== slug);
-      setRelatedPosts(filtered);
-    } catch (err) {
-      console.error("Error fetching related posts:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [category, slug]);
-
-  useEffect(() => {
-    if (category && slug) fetchRelatedPosts();
-  }, [fetchRelatedPosts, category, slug]);
-
+// The post and its related posts come from the server (no client fetch, no spinner).
+export default function SingleBlogClient({ blog, relatedPosts = [] }) {
   const formattedDate = useMemo(
     () => (blog ? dayjs(blog.updatedAt).format("DD MMM YYYY") : ""),
     [blog?.updatedAt]
@@ -66,7 +43,7 @@ export default function SingleBlogClient({ blog }) {
             </p>
             <p className="text-xs text-gray-400">By Admin</p>
           </div>
-          <Meta title={post.title} description={post.excerpt} />
+          <Meta title={post.title} description={post.description} />
           <div className="flex justify-start mt-4">
             <Link
               href={`/blog/${post.slug}`}
@@ -82,8 +59,12 @@ export default function SingleBlogClient({ blog }) {
 
   if (!blog) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spin size="large" tip="Loading blog..." />
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <p className="text-xl font-bold text-[#704D25]">Blog not found</p>
+        <p className="mt-2 text-sm text-gray-500">This post may have been moved or removed.</p>
+        <Link href="/blog" className="mt-5 inline-block rounded-full bg-[#704D25] px-5 py-2 text-sm font-semibold text-white">
+          See all blogs
+        </Link>
       </div>
     );
   }
@@ -114,11 +95,7 @@ export default function SingleBlogClient({ blog }) {
       </div>
 
       {/* ---------- RELATED BLOGS ---------- */}
-      {loading ? (
-        <div className="flex justify-center py-8">
-          <Spin size="large" tip="Loading related blogs..." />
-        </div>
-      ) : relatedPosts.length > 0 ? (
+      {relatedPosts.length > 0 ? (
         <div className="max-w-6xl mx-auto px-4 mb-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
             Related Blogs in {blog.category}

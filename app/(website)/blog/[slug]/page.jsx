@@ -1,6 +1,8 @@
 import SingleBlogClient from "./SingleBlogClient";
+import { getBlog, getRelatedBlogs } from "@/app/lib/siteContent";
 
-export const dynamic = "force-dynamic";
+// Cached HTML, refreshed every 5 minutes; read from the database directly (no self-HTTP).
+export const revalidate = 300;
 
 export async function generateMetadata({ params }) {
   const slug = params.slug;
@@ -8,13 +10,7 @@ export async function generateMetadata({ params }) {
   const pageUrl = `${baseUrl}/blog/${slug}`;
 
   try {
-    const res = await fetch(`${baseUrl}/api/blog?slug=${slug}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`Failed to fetch blog: ${res.status}`);
-
-    const data = await res.json();
-    const blog = data?.docs?.[0];
+    const blog = await getBlog(slug);
 
     if (!blog) {
       return {
@@ -73,19 +69,12 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
   try {
-    const res = await fetch(`${baseUrl}/api/blog?slug=${params.slug}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("Blog not found");
-
-    const data = await res.json();
-    const blog = data?.docs?.[0] || null;
-
-    return <SingleBlogClient blog={blog} />;
+    const blog = await getBlog(params.slug);
+    const relatedPosts = blog ? await getRelatedBlogs(blog.category, blog.slug).catch(() => []) : [];
+    return <SingleBlogClient blog={blog} relatedPosts={relatedPosts} />;
   } catch (err) {
-    console.error("Page fetch error:", err);
+    console.error("Blog page failed:", err.message);
     return <div className="p-6 text-center">Error loading blog...</div>;
   }
 }

@@ -13,6 +13,7 @@ import CouponSection from "./CouponSection";
 import OrderDetailsForm from "./OrderDetailsForm";
 import PaymentMethod from "./PaymentMethod";
 import { trackBeginCheckout, trackPaymentInfo } from "@/app/lib/analytics";
+import { saveContact } from "@/app/lib/journeyStore";
 
 // Online payment is offered only when a Razorpay key id is configured (the secret never reaches the browser).
 const ONLINE_PAYMENT = Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
@@ -20,7 +21,6 @@ const ONLINE_PAYMENT = Boolean(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID);
 const CheckoutPage = () => {
   const { items, vendor, train, station } = useSelector((state) => state.cart);
   const [form] = Form.useForm();
-  const email = Form.useWatch("email", form);
   const mobile = Form.useWatch("mobile", form);
   const [paymentMethod, setPaymentMethod] = useState(ONLINE_PAYMENT ? "RAZORPAY" : "COD");
   const [couponCode, setCouponCode] = useState("");
@@ -186,7 +186,6 @@ const CheckoutPage = () => {
       modal: { ondismiss: () => setPaymentProcessing(false) },
       prefill: {
         name: values.name,
-        email: values.email,
         contact: values.mobile,
       },
       notes: { order_id: order._id },
@@ -227,6 +226,7 @@ const CheckoutPage = () => {
 
       if (response?.success && response?.data?._id) {
         const order = response.data;
+        saveContact(values); // the next order on this device starts with name + mobile filled in
 
         await deleteLead();
 
@@ -280,6 +280,23 @@ const CheckoutPage = () => {
               form={form}
               createLead={createLead}
               updateLead={updateLead}
+              trainNumber={train?.train_number || train?.trainNo || ""}
+            />
+
+            <CouponSection
+              mobile={mobile}
+              items={items}
+              couponCode={couponCode}
+              onApplied={(code, amount) => {
+                setCouponCode(code);
+                setDiscount(Number(amount) || 0);
+                setIsOpen(true); // show the bill with the discount line
+              }}
+              onRemoved={() => {
+                setCouponCode("");
+                setDiscount(0);
+              }}
+              onNeedMobile={() => form.scrollToField("mobile", { block: "center", behavior: "smooth" })}
             />
 
             <div className="bg-white shadow rounded-lg p-4 mt-4">
@@ -298,12 +315,6 @@ const CheckoutPage = () => {
                 totalItem={items.length}
               />
             </div>
-
-            <CouponSection
-              {...{ email, mobile, items, couponCode }}
-              onCouponCodeChange={setCouponCode}
-              onDiscountChange={setDiscount}
-            />
 
             <PaymentMethod
               value={paymentMethod}

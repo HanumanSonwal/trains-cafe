@@ -33,6 +33,9 @@ const VendorSchema = new mongoose.Schema(
   }
 );
 
+// station page / train stop: active kitchens at one station
+VendorSchema.index({ Station: 1, Status: 1 });
+
 VendorSchema.pre("save", async function (next) {
   if (this.isNew && !this.vendorId) {
     try {

@@ -15,7 +15,7 @@ export async function GET(req, context) {
 
         await dbConnect();
 
-        const result = await WebStation.findOne({ slug, status: 'published' });
+        const result = await WebStation.findOne({ slug, status: 'published' }).lean();
 
         if (!result) {
             return NextResponse.json({
@@ -23,10 +23,10 @@ export async function GET(req, context) {
             }, { status: 404 });
         }
 
-        const stationDetails = await StationModel.findById(result.Station);
+        const stationDetails = await StationModel.findById(result.Station).lean();
 
         return NextResponse.json({
-            ...result.toObject(),
+            ...result,
             StationDetails: stationDetails || null
         });
 

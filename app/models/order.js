@@ -117,6 +117,23 @@ const OrderSchema = new mongoose.Schema(
       default: "website",
     },
 
+    // Internal team notes and the reason an order was cancelled. Never shown to customers.
+    notes: {
+      type: [
+        new mongoose.Schema(
+          {
+            text: { type: String, required: true, maxlength: 500 },
+            kind: { type: String, enum: ["note", "cancel", "status"], default: "note" },
+            by: { type: String, default: "" },
+            at: { type: Date, default: Date.now },
+          },
+          { _id: true }
+        ),
+      ],
+      default: [],
+    },
+    cancelReason: { type: String, default: "" },
+
     // WhatsApp order messages (vendor + customer). Optional: older orders simply lack it.
     whatsapp: {
       claimedAt: { type: Date, default: null },
@@ -128,6 +145,10 @@ const OrderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// admin list: newest first, filtered by status; dashboard: by date
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
 
 OrderSchema.pre("save", async function (next) {
   if (this.isNew && !this.order_id) {

@@ -4,7 +4,7 @@ const couponUsageSchema = new mongoose.Schema(
     {
         email: {
             type: String,
-            required: true,
+            default: "",
         },
         phone: {
             type: String,
@@ -17,6 +17,9 @@ const couponUsageSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+// "has this mobile already used this coupon?"
+couponUsageSchema.index({ code: 1, phone: 1 }, { unique: true });
 
 export default mongoose.models.CouponUsage ||
     mongoose.model("CouponUsage", couponUsageSchema);

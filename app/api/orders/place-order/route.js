@@ -90,14 +90,16 @@ export async function POST(req) {
       cart = checked.cart;
     }
 
-    const { email, mobile } = user_details;
-
-    if (!EmailValidator.validate(email)) {
+    const { mobile } = user_details;
+    // Email is optional (checkout no longer asks for it); when one is sent it must be valid.
+    const email = String(user_details.email || "").trim();
+    if (email && !EmailValidator.validate(email)) {
       return NextResponse.json({
         success: false,
-        message: "Invalid email for applying coupon",
+        message: "Please enter a valid email or leave it empty",
       });
     }
+    const phone10 = String(mobile || "").replace(/\D/g, "").slice(-10);
 
     try {
       const phoneNumber = parsePhoneNumber(mobile, "IN");
@@ -115,12 +117,10 @@ export async function POST(req) {
     }
 
     let coupon = null;
-    if (couponCode) {
-      const isCouponUsed = await CouponUsage.findOne({
-        code: couponCode,
-        email,
-        phone: mobile,
-      });
+    const code = String(couponCode || "").trim().toUpperCase();
+    if (code) {
+      // one use per mobile number
+      const isCouponUsed = await CouponUsage.findOne({ code, phone: phone10 });
 
       if (isCouponUsed) {
         return NextResponse.json({
@@ -130,7 +130,7 @@ export async function POST(req) {
       }
 
       coupon = await Coupon.findOne({
-        code: couponCode,
+        code,
         status: "published",
       });
 
@@ -263,15 +263,35 @@ export async function POST(req) {
       deliveryDateTime: resolveDeliveryDateTime(deliveryDateTime, station),
       orderSource: orderSource || "website",
     });
-    await order.save();
 
-    const orderItems = cart.map((item) => ({
-      Order_Id: order._id,
-      Item_Id: item._id,
-      Quantity: item.quantity,
-      Price: item.price,
-    }));
-    await OrderItems.insertMany(orderItems);
+    // Claim the coupon for this mobile number first. The unique (code, phone) index makes
+    // this atomic, so two orders sent at the same moment cannot both use the coupon.
+    let claim = null;
+    if (coupon) {
+      try {
+        claim = await CouponUsage.create({ code, email, phone: phone10 });
+      } catch (err) {
+        if (err?.code === 11000) {
+          return NextResponse.json({ success: false, message: "Coupon already used" });
+        }
+        throw err;
+      }
+    }
+
+    try {
+      await order.save();
+
+      const orderItems = cart.map((item) => ({
+        Order_Id: order._id,
+        Item_Id: item._id,
+        Quantity: item.quantity,
+        Price: item.price,
+      }));
+      await OrderItems.insertMany(orderItems);
+    } catch (err) {
+      if (claim) await CouponUsage.deleteOne({ _id: claim._id }).catch(() => {}); // the order failed: give the coupon back
+      throw err;
+    }
 
     const itemIds = cart.map((item) => item._id);
 
@@ -296,15 +316,6 @@ export async function POST(req) {
       };
     });
     await order.populate("station");
-
-    if (coupon) {
-      const couponUsage = new CouponUsage({
-        code: couponCode,
-        email,
-        phone: mobile,
-      });
-      await couponUsage.save();
-    }
 
     // Cash on delivery is final now, so tell the vendor and the customer right away.
     // Online payments are announced once the payment is verified (verify-payment).

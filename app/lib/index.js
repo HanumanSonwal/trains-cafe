@@ -30,6 +30,10 @@ export const cartCalculation = (cart, coupon = null, extraDiscount = null) => {
       manualDiscount = (parseFloat(extraDiscount) / 100) * subTotal;
     }
 
+    // discounts can never take the bill below zero
+    couponDiscount = Math.min(Math.max(0, couponDiscount || 0), subTotal);
+    manualDiscount = Math.min(Math.max(0, manualDiscount || 0), subTotal - couponDiscount);
+
     const afterDiscount = subTotal - couponDiscount - manualDiscount;
 
     tax = afterDiscount * 0.05;

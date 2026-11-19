@@ -8,11 +8,20 @@ const couponSchema = new mongoose.Schema(
             trim: true,
             required: true,
         },
+        // short line shown on the offer card, e.g. "Perfect for group & family travel"
+        description: {
+            type: String,
+            trim: true,
+            default: "",
+            maxlength: 120,
+        },
         code: {
             type: String,
             unique: true,
             required: true,
-            maxlength: 5,
+            trim: true,
+            uppercase: true,
+            maxlength: 12,
         },
        startDate: {
             type: Date,
@@ -25,16 +34,19 @@ const couponSchema = new mongoose.Schema(
         minimumAmount: {
             type: Number,
             required: true,
+            min: 0,
         },
         discount: {
+            // "fix" and "flat" both mean a fixed rupee amount
             type: {
                 type: String,
-                enum: ["fix", "percentage"],
+                enum: ["fix", "flat", "percentage"],
                 required: true,
             },
             value: {
                 type: Number,
                 required: true,
+                min: 0,
             },
         },
         status: {

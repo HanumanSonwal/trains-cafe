@@ -10,6 +10,9 @@ const StationSchema = new mongoose.Schema({
   stationId: { type: Number, unique: true },
 });
 
+// lookups by station code (place-order, kitchen lists)
+StationSchema.index({ code: 1 });
+
 StationSchema.pre("save", async function (next) {
   if (this.isNew) {
     try {

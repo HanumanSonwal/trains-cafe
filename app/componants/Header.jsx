@@ -61,14 +61,18 @@ export default function Header() {
   return (
     <div className="sticky top-0 z-50 mx-auto">
       <header className="relative flex flex-col items-center p-4 bg-white shadow-md">
-        <div className="flex justify-between items-center w-full">
-          <Link href="/">
+        {/* phones: button centred between logo and cart; wider screens: exactly centred */}
+        <div className="flex w-full items-center justify-between sm:grid sm:grid-cols-[1fr_auto_1fr]">
+          <Link href="/" className="shrink-0 sm:justify-self-start">
             <img src="/images/logo.svg" alt="Logo" className="h-10" />
           </Link>
 
-          <RegisterServiceWorker />
+          {/* centred in the space between the logo and the cart, so it never runs into the logo on phones */}
+          <div className="flex min-w-0 flex-1 justify-center px-2">
+            <RegisterServiceWorker />
+          </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-4 sm:justify-self-end">
             <button className="cart-button" onClick={toggleCart}>
               <Badge count={totalUniqueItems} showZero>
                 <ShoppingCartOutlined style={{ fontSize: "24px" }} />

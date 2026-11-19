@@ -1,12 +1,15 @@
 import { Input, Form, Row, Col, Divider } from "antd";
 import { useEffect, useRef, useState } from "react";
+import { loadContact, loadJourney, saveJourney } from "@/app/lib/journeyStore";
 
-const OrderDetailsForm = ({ createLead, updateLead, form }) => {
+const OrderDetailsForm = ({ createLead, updateLead, form, trainNumber }) => {
   const pnr = Form.useWatch("pnr", form);
   const [pnrLookup, setPnrLookup] = useState({ loading: false, message: "" });
   const latestPnr = useRef("");
   const updateLeadRef = useRef(updateLead);
   updateLeadRef.current = updateLead;
+  const createLeadRef = useRef(createLead);
+  createLeadRef.current = createLead;
 
   useEffect(() => {
     const value = String(pnr || "").trim();
@@ -42,6 +45,7 @@ const OrderDetailsForm = ({ createLead, updateLead, form }) => {
           seatNo: details.seatNo || "",
         };
         form.setFieldsValue(fields);
+        saveJourney(value, details); // next order on this device starts filled in
         await updateLeadRef.current({ ...form.getFieldsValue(), ...fields });
 
         const hasSeat = fields.coach || fields.seatNo;
@@ -64,6 +68,36 @@ const OrderDetailsForm = ({ createLead, updateLead, form }) => {
     };
   }, [pnr, form]);
 
+  // Prefill once: name + mobile from the last order, and the PNR searched on the home
+  // page (train, coach, seat) unless the cart is for a different train.
+  // Declared after the PNR effect so that effect sees the PNR as already looked up.
+  useEffect(() => {
+    const fill = {};
+    const contact = loadContact();
+    if (contact?.mobile && !form.getFieldValue("mobile")) fill.mobile = contact.mobile;
+    if (contact?.name && !form.getFieldValue("name")) fill.name = contact.name;
+
+    const journey = loadJourney();
+    const cartTrain = String(trainNumber || "");
+    const typedPnr = form.getFieldValue("pnr");
+    if (journey && (!typedPnr || typedPnr === journey.pnr) && (!cartTrain || cartTrain === journey.trainNo)) {
+      latestPnr.current = journey.pnr;
+      Object.assign(fill, {
+        pnr: journey.pnr,
+        trainNo: journey.trainNo,
+        coach: journey.coach,
+        seatNo: journey.seatNo,
+      });
+      setPnrLookup({ loading: false, message: "Train details filled from your PNR." });
+    } else if (cartTrain && !form.getFieldValue("trainNo")) {
+      fill.trainNo = cartTrain;
+    }
+
+    if (Object.keys(fill).length) form.setFieldsValue(fill);
+    if (fill.mobile) createLeadRef.current(fill.mobile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="bg-white shadow rounded-lg p-2 sm:p-4">
       <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
@@ -84,6 +118,8 @@ const OrderDetailsForm = ({ createLead, updateLead, form }) => {
           >
             <Input
               placeholder="Mobile Number"
+              inputMode="tel"
+              autoComplete="tel-national"
               maxLength={10}
               onBlur={() => {
                 const mobile = form.getFieldValue("mobile");
@@ -97,15 +133,6 @@ const OrderDetailsForm = ({ createLead, updateLead, form }) => {
           <Form.Item name="name" label="Name" style={{ marginBottom: 12 }}>
             <Input
               placeholder="Name"
-              onBlur={() => updateLead(form.getFieldsValue())}
-            />
-          </Form.Item>
-        </Col>
-
-        <Col xs={24} sm={12}>
-          <Form.Item name="email" label="Email" style={{ marginBottom: 12 }}>
-            <Input
-              placeholder="Email"
               onBlur={() => updateLead(form.getFieldsValue())}
             />
           </Form.Item>
@@ -129,9 +156,14 @@ const OrderDetailsForm = ({ createLead, updateLead, form }) => {
       <Divider orientation="left">Train Details</Divider>
       <Row gutter={[8, 8]}>
         <Col xs={24} sm={12}>
-          <Form.Item name="pnr" label="PNR" style={{ marginBottom: 12 }}>
+          <Form.Item
+            name="pnr"
+            label="PNR (Optional)"
+            style={{ marginBottom: 12 }}
+            rules={[{ pattern: /^\d{10}$/, message: "PNR has 10 digits (or leave it empty)" }]}
+          >
             <Input
-              placeholder="Enter 10 Digit PNR"
+              placeholder="10 digit PNR (fills train & seat)"
               inputMode="numeric"
               maxLength={10}
               onBlur={() => updateLead(form.getFieldsValue())}
